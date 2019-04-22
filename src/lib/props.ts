@@ -1,4 +1,4 @@
-import { hookIntoMount, awaitMounted } from './template-util';
+import { hookIntoMount, awaitMounted } from './util';
 import { CHANGE_TYPE } from './base';
 
 export const refPrefix = '___complex_ref';

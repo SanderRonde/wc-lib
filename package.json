@@ -2,7 +2,9 @@
 	"name": "wclib",
 	"version": "1.0.0",
 	"description": "A webcomponent framework",
-	"main": "build/wclib.js",
+	"main": "build/es/wc.js",
+	"browser": "build/es/wc.js",
+	"module": "build/cjs/wc.js",
 	"author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
 	"license": "MIT",
 	"private": true,
@@ -14,6 +16,6 @@
 		"@types/node": "^11.13.7"
 	},
 	"scripts": {
-		"install": "tsc"
+		"install": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json"
 	}
 }

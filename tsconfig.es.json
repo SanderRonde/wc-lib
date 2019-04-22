@@ -17,7 +17,9 @@
         "noUnusedParameters": true,
         "experimentalDecorators": true,
         "strictPropertyInitialization": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "declaration": true,
+		"outDir": "build/es/"
 	},
     "compileOnSave": true,
     "allowJs": true,

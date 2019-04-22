@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "removeComments": true,
+        "preserveConstEnums": false,
+        "listFiles": false,
+        "pretty": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "target": "es6",
+        "noUnusedParameters": true,
+        "experimentalDecorators": true,
+        "strictPropertyInitialization": true,
+        "strictNullChecks": true,
+        "declaration": true,
+        "outDir": "build/cjs/"
+	},
+    "compileOnSave": true,
+    "allowJs": true,
+    "include": [
+        "src/",
+        "typings/"
+    ]
+}

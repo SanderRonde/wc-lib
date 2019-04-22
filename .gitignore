@@ -59,3 +59,4 @@ jspm_packages/
 
 src/**/*.js
 src/**/*.map
+build/

@@ -1,6 +1,7 @@
 import { WebComponentTemplateManager, CUSTOM_CSS_PROP_NAME } from './template-manager';
 import { CHANGE_TYPE, TemplateFn } from './base';
 import { EventListenerObj } from './listener';
+import { Theme } from './webcomponent-types';
 
 class CustomCSSClass {
 	public hasCustomCSS: boolean|null = null;
@@ -51,7 +52,7 @@ export abstract class WebComponentCustomCSSManager<E extends EventListenerObj> e
 		return (this.___customCSSClass.hasCustomCSS = true);
 	}
 
-	public customCSS() {
+	public customCSS(): TemplateFn<any, Theme, any>|TemplateFn<any, Theme, any>[] {
 		return this.___customCSSClass.getCustomCSS();
 	}
 }

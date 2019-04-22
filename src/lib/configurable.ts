@@ -13,10 +13,10 @@ export class ConfigurableWebComponent<ELS extends {
 	IDS: {};
 	CLASSES: {}
 }, E extends EventListenerObj = {}> extends WebComponent<ELS, E> {
-	public html!: TemplateFn;
+	public html!: TemplateFn<any, any, any>;
 	public static config: WebComponentConfiguration;
 	public config!: WebComponentConfiguration;
-	public css!: TemplateFn;
+	public css!: TemplateFn<any, any, any>;
 	public get self(): typeof ConfiguredComponent { return {} as any}
 }
 
@@ -50,9 +50,9 @@ export function genIsAccessor(name: string, component: () => typeof WebComponent
 
 export interface WebComponentConfiguration {
 	is: string;
-	css: TemplateFn|TemplateFn[];
+	css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
 	dependencies?: (typeof WebComponentBase|null)[];
-	html: TemplateFn;
+	html: TemplateFn<any, any, any>;
 }
 export abstract class ConfiguredComponent extends WebComponentBase {
 	static is: ComponentIs;

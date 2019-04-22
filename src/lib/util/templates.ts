@@ -13,7 +13,7 @@ export function mapArr<T>(result: any[], fallback: string|T = '') {
 }
 
 
-export function joinTemplates<T extends WebComponent<any>>(...templates: TemplateFn<T>[]): TemplateFn<T> {
+export function joinTemplates<T extends WebComponent<any>>(...templates: TemplateFn<T, any, any>[]): TemplateFn<T, any, any> {
 	const changeType = templates.reduce((prev, template) => {
 		if (template.changeOn & CHANGE_TYPE.ALWAYS ||
 			prev & CHANGE_TYPE.ALWAYS) {
@@ -35,7 +35,7 @@ export function joinTemplates<T extends WebComponent<any>>(...templates: Templat
 			}
 		return CHANGE_TYPE.NEVER;
 	}, CHANGE_TYPE.NEVER);
-	return new TemplateFn<T>(function (html) {
+	return new TemplateFn<T, any, any>(function (html) {
 		return html`
 			${mapArr(templates.map((template) => {
 				return template.renderTemplate(changeType, this);

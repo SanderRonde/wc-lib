@@ -194,7 +194,7 @@ class TemplateClass {
 	}
 }
 
-type ComplexValue = TemplateFn|Function|Object;
+type ComplexValue = TemplateFn<any, any, any>|Function|Object;
 export abstract class WebComponentTemplateManager<E extends EventListenerObj> extends WebComponentI18NManager<E> {
 	private ___templateClass: TemplateClass = new TemplateClass(this);
 	

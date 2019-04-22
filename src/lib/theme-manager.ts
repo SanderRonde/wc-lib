@@ -1,22 +1,8 @@
 import { WebComponentHierarchyManager } from './hierarchy-manager';
 import { EventListenerObj } from './listener';
-import { Theme } from './webcomponent-types';
 import { CHANGE_TYPE } from './base';
 
-const noTheme: Theme = {
-	accent: {
-		main: '#F00',
-		weak: '#F00',
-	},
-	background: '#000',
-	error: '#F00',
-	primary: {
-		main: '#F00',
-		weak: '#F00',
-	},
-	success: '#0F0',
-	text: '#000'
-};
+const noTheme = {};
 export abstract class WebComponentThemeManger<E extends EventListenerObj> extends WebComponentHierarchyManager<E> {
 	constructor() {
 		super();
@@ -43,7 +29,7 @@ export abstract class WebComponentThemeManger<E extends EventListenerObj> extend
 			|| WebComponentThemeManger.__defaultTheme;
 	}
 
-	public getTheme<T extends Theme = Theme>(): T {
+	public getTheme<T>(): T {
 		if (WebComponentThemeManger.__theme) {
 			const themeName = this.getThemeName();
 			if (themeName && themeName in WebComponentThemeManger.__theme) {
@@ -54,10 +40,10 @@ export abstract class WebComponentThemeManger<E extends EventListenerObj> extend
 	}
 
 	private static __theme: {
-		[name: string]: Theme;
+		[name: string]: any;
 	}|null = null;
 	static initTheme<T extends {
-		[name: string]: Theme;
+		[name: string]: any;
 	}>({ theme, defaultTheme }: {
 		theme: T;
 		defaultTheme?: Extract<keyof T, string>
@@ -70,7 +56,7 @@ export abstract class WebComponentThemeManger<E extends EventListenerObj> extend
 
 	private static __defaultTheme: string;
 	static setDefaultTheme<T extends {
-		[name: string]: Theme;
+		[name: string]: any;
 	}>(name: Extract<keyof T, string>) {
 		this.__defaultTheme = name;
 	}

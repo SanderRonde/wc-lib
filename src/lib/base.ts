@@ -2,7 +2,6 @@ import { WebComponentThemeManger } from './theme-manager';
 import { ConfiguredComponent } from './configurable';
 import { TemplateResult, render } from 'lit-html';
 import { WebComponentDefiner } from './definer';
-import { Theme } from './webcomponent-types';
 import { WebComponent } from './component';
 
 function repeat(size: number) {
@@ -57,7 +56,7 @@ export const enum CHANGE_TYPE {
 
 type Templater<R> = (strings: TemplateStringsArray, ...values: any[]) => R;
 
-type TemplateRenderFunction<C extends WebComponent<any, any>, T extends Theme, TR> = (this: C, 
+type TemplateRenderFunction<C extends WebComponent<any, any>, T, TR> = (this: C, 
 	complexHTML: Templater<TR>,
 	props: C['props'], theme: T) => TR;
 
@@ -77,8 +76,8 @@ export type TemplateFnConfig<R> = {
 	template: TemplateRenderFunction<any, any, R>
 };
 type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => any;
-export class TemplateFn<C extends WebComponent<any, any> = any, T extends Theme = Theme, 
-	R = any> {
+export class TemplateFn<C extends WebComponent<any, any>, T, 
+	R> {
 		private _lastRenderChanged: boolean = true;
 
 		constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
@@ -198,11 +197,11 @@ export class TemplateFn<C extends WebComponent<any, any> = any, T extends Theme 
 	}
 
 class BaseClassElementInstance {
-	public ___cssArr: TemplateFn[]|null = null;
-	public ___privateCSS: TemplateFn[]|null = null;
+	public ___cssArr: TemplateFn<any, any, any>[]|null = null;
+	public ___privateCSS: TemplateFn<any, any, any>[]|null = null;
 	public __cssSheets: {
 		sheet: CSSStyleSheet;
-		template: TemplateFn;
+		template: TemplateFn<any, any, any>;
 	}[]|null = null;
 }
 
@@ -228,12 +227,12 @@ class BaseClass {
 		return classInstance;
 	}
 	
-	private get __cssArr(): TemplateFn[] {
+	private get __cssArr(): TemplateFn<any, any, any>[] {
 		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
 		return (this.instance.___cssArr = 
 			makeArray(this._self.self.config.css));
 	};
-	public get __privateCSS(): TemplateFn[] {
+	public get __privateCSS(): TemplateFn<any, any, any>[] {
 		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;
 		return (this.instance.___privateCSS = 
 			this.__cssArr.filter((template) => {
@@ -371,7 +370,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	/**
 	 * The render method that will render this component's HTML
 	 */
-	public abstract html: TemplateFn = new TemplateFn(() => {
+	public abstract html: TemplateFn<any, any, any> = new TemplateFn(() => {
 		throw new Error('No render method implemented');	
 	}, CHANGE_TYPE.ALWAYS);
 
@@ -383,7 +382,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	/**
 	 * The templates that will render this component's css
 	 */
-	public abstract css: TemplateFn|TemplateFn[] = new TemplateFn(null, CHANGE_TYPE.NEVER);
+	public abstract css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = new TemplateFn(null, CHANGE_TYPE.NEVER);
 
 	/**
 	 * A function signaling whether this component has custom CSS applied to it
@@ -395,7 +394,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	/**
 	 * Gets this component's custom CSS templates
 	 */
-	public customCSS(): TemplateFn|TemplateFn[] {
+	public customCSS(): TemplateFn<any, any, any>|TemplateFn<any, any, any>[] {
 		return [];
 	}
 

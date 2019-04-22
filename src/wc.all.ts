@@ -12,4 +12,3 @@ export * from './lib/shared';
 export * from './lib/template-manager';
 export * from './lib/util';
 export * from './lib/theme-manager';
-export * from './lib/webcomponent-types';

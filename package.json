@@ -1,15 +1,19 @@
 {
-  "name": "wclib",
-  "version": "1.0.0",
-  "description": "A webcomponent framework",
-  "main": "build/wclib.js",
-  "author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
-  "license": "MIT",
-  "private": true,
-  "dependencies": {
-    "lit-html": "^1.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^11.13.7"
-  }
+	"name": "wclib",
+	"version": "1.0.0",
+	"description": "A webcomponent framework",
+	"main": "build/wclib.js",
+	"author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
+	"license": "MIT",
+	"private": true,
+	"dependencies": {
+		"lit-html": "^1.0.0",
+		"typescript": "^3.4.4"
+	},
+	"devDependencies": {
+		"@types/node": "^11.13.7"
+	},
+	"scripts": {
+		"install": "tsc"
+	}
 }

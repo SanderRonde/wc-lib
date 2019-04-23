@@ -81,7 +81,7 @@ export type TemplateFnConfig<R> = {
 type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => any;
 export class TemplateFn<C extends {
 	props: any;
-} = WebComponent<any, any>, T = any, R = any> {
+} = WebComponent<any, any>, T = void, R = any> {
 		private _lastRenderChanged: boolean = true;
 
 		constructor(_template: (TemplateRenderFunction<C, T, R>)|null,

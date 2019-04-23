@@ -278,7 +278,7 @@ export abstract class WebComponentTemplateManager<E extends EventListenerObj> ex
 		return new TemplateClass.templateResult(strings, values, 'html', this.___templateClass.templateProcessor);
 	}
 
-	public initComplexTemplateProvider(config: LitHTMLConfig) {
+	public static initComplexTemplateProvider(config: LitHTMLConfig) {
 		TemplateClass._templateSettings = config;
 	}
 

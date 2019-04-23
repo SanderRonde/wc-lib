@@ -4,7 +4,8 @@ import { EventListenerObj } from './listener';
 
 class CustomCSSClass {
 	public hasCustomCSS: boolean|null = null;
-	private __noCustomCSS: TemplateFn<any, any, any> = new TemplateFn(null, CHANGE_TYPE.NEVER);
+	private __noCustomCSS: TemplateFn<any, any, any> = 
+		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 
 	constructor(private _self: WebComponentCustomCSSManager<any>) { }
 

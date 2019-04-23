@@ -77,7 +77,7 @@ export type TemplateFnConfig<R> = {
 	changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.THEME|CHANGE_TYPE.PROP;
 	template: TemplateRenderFunction<any, any, R>
 };
-type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => any;
+export type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => any;
 export class TemplateFn<C extends {
 	props: any;
 } = WebComponent<any, any>, T = void, R = any> {
@@ -366,7 +366,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 */
 	public abstract html: TemplateFn<any, any, any> = new TemplateFn(() => {
 		throw new Error('No render method implemented');	
-	}, CHANGE_TYPE.ALWAYS);
+	}, CHANGE_TYPE.ALWAYS, () => {});
 
 	/**
 	 * The element's constructor
@@ -376,7 +376,8 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	/**
 	 * The templates that will render this component's css
 	 */
-	public abstract css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = new TemplateFn(null, CHANGE_TYPE.NEVER);
+	public abstract css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
+		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 
 	/**
 	 * A function signaling whether this component has custom CSS applied to it

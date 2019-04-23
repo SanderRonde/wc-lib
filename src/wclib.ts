@@ -1,6 +1,14 @@
-export { config, ConfigurableWebComponent } from './lib/configurable';
-import { ConfigurableWebComponent } from './lib/configurable';
-export { Props, PROP_TYPE, ComplexType } from './lib/props';
-export { CHANGE_TYPE, TemplateFn } from './lib/base';
-
-export default ConfigurableWebComponent;
+export * from './lib/base';
+export * from './lib/component';
+export * from './lib/configurable';
+export * from './lib/custom-css-manager';
+export * from './lib/definer';
+export * from './lib/hierarchy-manager';
+export * from './lib/i18n-manager';
+export * from './lib/listener';
+export * from './lib/listeners';
+export * from './lib/props';
+export * from './lib/shared';
+export * from './lib/template-manager';
+export * from './lib/util';
+export * from './lib/theme-manager';

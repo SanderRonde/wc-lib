@@ -1,8 +1,4 @@
-import { 
-	TemplateResult, isDirective, Part, NodePart, TemplateProcessor, 
-	AttributeCommitter, PropertyCommitter, EventPart, BooleanAttributePart, 
-	isPrimitive, noChange 
-} from 'lit-html';
+import { TemplateProcessor, EventPart, Part, NodePart } from 'lit-html';
 import { TemplateFn, CHANGE_TYPE, bindToClass } from './base';
 import { RenderOptions } from 'lit-html/lib/render-options';
 import { WebComponentThemeManger } from './theme-manager';
@@ -17,10 +13,17 @@ class ClassAttributePart implements Part {
 	public value: any = undefined;
 	private _pendingValue: any = undefined;
 
-	constructor(public element: Element, public name: string, public strings: string[]) {}
+	constructor(public element: Element, public name: string, public strings: string[],
+		private _config: LitHTMLConfig) {}
+
+	private _isPrimitive(value: any): boolean {
+		return (
+			value === null ||
+			!(typeof value === 'object' || typeof value === 'function'));
+	}
 
 	setValue(value: any): void {
-		if (value !== noChange && (!isPrimitive(value) || value !== this.value)) {
+		if (value !== this._config.noChange && (!this._isPrimitive(value) || value !== this.value)) {
 			this._pendingValue = value;
 		}
 	}
@@ -34,12 +37,12 @@ class ClassAttributePart implements Part {
 	}
 
 	commit() {
-		while (isDirective(this._pendingValue)) {
+		while (this._config.isDirective(this._pendingValue)) {
 			const directive = this._pendingValue;
-			this._pendingValue = noChange;
+			this._pendingValue = this._config.noChange;
 			directive(this);
 		}
-		if (this._pendingValue === noChange) {
+		if (this._pendingValue === this._config.noChange) {
 			return;
 		}
 		if (typeof this._pendingValue === 'string' || typeof this._pendingValue === 'number') {
@@ -50,7 +53,7 @@ class ClassAttributePart implements Part {
 			const classString = this._getClassNameString(this._pendingValue);
 			this.element.setAttribute(this.name, classString);
 		}
-		this._pendingValue = noChange;
+		this._pendingValue = this._config.noChange;
 	}
 }
 
@@ -59,21 +62,22 @@ class ComplexValuePart implements Part {
 	private _pendingValue: any = undefined;
 
 	constructor(public element: Element, public name: string, public strings: string[],
-		public genRef: (value: ComplexValue) => string) {}
+		public genRef: (value: ComplexValue) => string,
+		private _config: LitHTMLConfig) {}
 
 	setValue(value: any): void {
-		if (value !== noChange && value !== this.value) {
+		if (value !== this._config.noChange && value !== this.value) {
 			this._pendingValue = value;
 		}
 	}
 
 	commit() {
-		while (isDirective(this._pendingValue)) {
+		while (this._config.isDirective(this._pendingValue)) {
 			const directive = this._pendingValue;
-			this._pendingValue = noChange;
+			this._pendingValue = this._config.noChange;
 			directive(this);
 		}
-		if (this._pendingValue === noChange) {
+		if (this._pendingValue === this._config.noChange) {
 			return;
 		}
 		if (this.name === CUSTOM_CSS_PROP_NAME && !(this._pendingValue instanceof TemplateFn)) {
@@ -83,101 +87,172 @@ class ComplexValuePart implements Part {
 		
 		this.element.setAttribute(this.name, this.genRef(this._pendingValue));
 		this.value = this._pendingValue;
-		this._pendingValue = noChange;
+		this._pendingValue = this._config.noChange;
 	}
 }
 
-class ComponentEventPart extends EventPart {
-	element: WebComponentThemeManger<any>|Element;
-
-	constructor(element: WebComponentThemeManger<any>|Element, eventName: string, 
-		eventContext?: EventTarget) {
-			super(element, eventName, eventContext);
-			this.element = element;
-			this.eventName = eventName;
-			this.eventContext = eventContext;
+function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfig) {
+	return class ComponentEventPart extends eventPart {
+		element: WebComponentThemeManger<any>|Element;
+	
+		constructor(element: WebComponentThemeManger<any>|Element, eventName: string, 
+			eventContext?: EventTarget) {
+				super(element, eventName, eventContext);
+				this.element = element;
+				this.eventName = eventName;
+				this.eventContext = eventContext;
+			}
+	
+		commit() {
+			while (config.isDirective(this._pendingValue)) {
+				const directive = this._pendingValue;
+				this._pendingValue = config.noChange as any;
+				(directive as any)(this);
+			}
+			if (this._pendingValue === config.noChange) {
+				return;
+			}
+		  
+			const newListener = this._pendingValue;
+			const oldListener = this.value;
+			const shouldRemoveListener = newListener == null ||
+				oldListener != null &&
+					(newListener.capture !== oldListener.capture ||
+					newListener.once !== oldListener.once ||
+					newListener.passive !== oldListener.passive);
+			const shouldAddListener =
+				newListener != null && (oldListener == null || shouldRemoveListener);
+		  
+			if (!(this.element instanceof WebComponentThemeManger)) {
+				console.warn('Attempting to listen using webcomponent listener on non-webcomponent element',
+					`Name: ${this.eventName}, element:`, this.element);
+			}
+			if (shouldRemoveListener) {
+				(<WebComponentThemeManger<any>>this.element)
+					.clearListener(this.eventName);
+			}
+			if (shouldAddListener) {
+				(<WebComponentThemeManger<any>>this.element)
+					.listen(this.eventName, this.handleEvent.bind(this));
+			}
+			this.value = newListener;
+			this._pendingValue = config.noChange as any;
 		}
-
-	commit() {
-		while (isDirective(this._pendingValue)) {
-			const directive = this._pendingValue;
-			this._pendingValue = noChange as any;
-			directive(this);
-		}
-		if (this._pendingValue === noChange) {
-			return;
-		}
-	  
-		const newListener = this._pendingValue;
-		const oldListener = this.value;
-		const shouldRemoveListener = newListener == null ||
-			oldListener != null &&
-				(newListener.capture !== oldListener.capture ||
-				newListener.once !== oldListener.once ||
-				newListener.passive !== oldListener.passive);
-		const shouldAddListener =
-			newListener != null && (oldListener == null || shouldRemoveListener);
-	  
-		if (!(this.element instanceof WebComponentThemeManger)) {
-			console.warn('Attempting to listen using webcomponent listener on non-webcomponent element',
-				`Name: ${this.eventName}, element:`, this.element);
-		}
-		if (shouldRemoveListener) {
-			(<WebComponentThemeManger<any>>this.element)
-				.clearListener(this.eventName);
-		}
-		if (shouldAddListener) {
-			(<WebComponentThemeManger<any>>this.element)
-				.listen(this.eventName, this.handleEvent.bind(this));
-		}
-		this.value = newListener;
-		this._pendingValue = noChange as any;
 	}
 }
 
 class ComplexTemplateProcessor implements TemplateProcessor {
 	constructor(public component: WebComponentTemplateManager<any>,
-		public genRef: (value: ComplexValue) => string) { }
+		public genRef: (value: ComplexValue) => string,
+		private _config: LitHTMLConfig) { }
+	
+	private __componentEventPart: RetVal<typeof getComponentEventPart>;
+	private get _componentEventPart() {
+		if (this.__componentEventPart) {
+			return this.__componentEventPart;
+		}
+		return (this.__componentEventPart = getComponentEventPart(
+			this._config.EventPart as typeof EventPart, this._config));
+	}
 
 	handleAttributeExpressions(
-		element: Element, name: string, strings: string[]): Part[] {
+		element: Element, name: string, strings: string[]): PartLike[] {
 			const prefix = name[0];
 			if (prefix === '.') {
 				//Property
-				const comitter = new PropertyCommitter(element, name.slice(1), strings);
+				const comitter = new this._config.PropertyCommitter(element, name.slice(1), strings);
       			return comitter.parts;
 			} else if (prefix === '@') {
 				if (name[1] === '@') {
-					return [new ComponentEventPart(element, name.slice(2), this.component)];
+					return [new this._componentEventPart(element, name.slice(2), this.component)];
 				} else {
 					//Listeners
-					return [new EventPart(element, name.slice(1), this.component)];
+					return [new this._config.EventPart(element, name.slice(1), this.component)];
 				}
 			} else if (prefix === '?') {
 				//Booleans
-				return [new BooleanAttributePart(element, name.slice(1), strings)];
+				return [new this._config.BooleanAttributePart(element, name.slice(1), strings)];
 			} else if (name === 'class') {
 				//Classname attribute
-				return [new ClassAttributePart(element, name, strings)];
+				return [new ClassAttributePart(element, name, strings, this._config)];
 			} else if (prefix === '#' || name === CUSTOM_CSS_PROP_NAME) {
 				//Objects, functions, templates, arrays
 				if (prefix === '#') {
 					name = name.slice(1);
 				}
-				return [new ComplexValuePart(element, name, strings, this.genRef)];
+				return [new ComplexValuePart(element, name, strings, this.genRef,
+					this._config)];
 			}
-			const committer = new AttributeCommitter(element, name, strings);
+			const committer = new this._config.AttributeCommitter(element, name, strings);
 			return committer.parts;
 		}
 
 	handleTextExpression(options: RenderOptions) {
-		return new NodePart(options);
+		return new this._config.NodePart(options) as NodePart;
 	}
 }
 
+declare class PartLike {
+	constructor(...args: any[]);
+	
+	value: unknown;
+	setValue(value: unknown): void;
+  	commit(): void;
+}
+
+declare class CommiterLike {
+	constructor(...args: any[]);
+	
+	parts: PartLike[];
+	commit(): void;
+}
+
+declare class TemplateResultLike {
+	constructor(...args: any[]);
+
+	getHTML(): string
+	getTemplateElement(): HTMLTemplateElement;
+}
+
+interface LitHTMLConfig {
+	TemplateResult: typeof TemplateResultLike;
+	PropertyCommitter: typeof CommiterLike;
+	EventPart: typeof PartLike;
+	BooleanAttributePart: typeof PartLike;
+	AttributeCommitter: typeof CommiterLike;
+	NodePart: typeof PartLike;
+
+	isDirective: (value: any) => boolean;
+	noChange: any;
+	
+}
+
+type RetVal<F> = F extends (...args: any[]) => infer R ? R : void;
+
 class TemplateClass {
 	public reffed: ComplexValue[] = [];
-	public templateProcessor: ComplexTemplateProcessor = new ComplexTemplateProcessor(this._self, this.genRef);
+	private _templateProcessor: ComplexTemplateProcessor|null = null;
+	public get templateProcessor(): ComplexTemplateProcessor {
+		if (this._templateProcessor !== null) {
+			return this._templateProcessor;
+		}
+		return (this._templateProcessor = new ComplexTemplateProcessor(this._self, this.genRef,
+			TemplateClass._templateSettings));
+	};
+
+	public static _templateSettings: LitHTMLConfig|null = null;
+
+	public static get templateResult(): typeof TemplateResultLike {
+		if (!this._templateSettings) {
+			console.warn('Missing templater, please initialize it ' +
+				'by calling ' +
+				'WebComponentTemplateManager.initComplexTemplateProvider({' + 
+				'	//TODO:' +
+				'})');
+			return class X {} as any;
+		}
+		return this._templateSettings.TemplateResult;
+	}
 
 	constructor(private _self: WebComponentTemplateManager<any>) { }
 
@@ -198,10 +273,13 @@ type ComplexValue = TemplateFn<any, any, any>|Function|Object;
 export abstract class WebComponentTemplateManager<E extends EventListenerObj> extends WebComponentI18NManager<E> {
 	private ___templateClass: TemplateClass = new TemplateClass(this);
 	
-
 	@bindToClass
-	public generateHTMLTemplate(strings: TemplateStringsArray, ...values: any[]): TemplateResult {
-		return new TemplateResult(strings, values, 'html', this.___templateClass.templateProcessor);
+	public generateHTMLTemplate(strings: TemplateStringsArray, ...values: any[]): TemplateResultLike {
+		return new TemplateClass.templateResult(strings, values, 'html', this.___templateClass.templateProcessor);
+	}
+
+	public initComplexTemplateProvider(config: LitHTMLConfig) {
+		TemplateClass._templateSettings = config;
 	}
 
 	public getRef(ref: string) {

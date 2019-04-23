@@ -1,7 +1,7 @@
 import { WebComponentThemeManger } from './theme-manager';
 import { EventListenerObj } from './listener';
 import { CHANGE_TYPE } from './base';
-import { directive, Part } from 'lit-html';
+import { Part } from 'lit-html';
 
 class I18NClass {
 	public static path: string = '/i18n/';
@@ -19,7 +19,7 @@ class I18NClass {
 	public static currentLang: string|null = null;
 	public static defaultLang: string|null = null;
 	public static returner: (promise: Promise<string>, content: string) => any =
-		I18NClass.createWaiter;
+		(_, c) => c
 	private _elementLang: string|null = null;
 
 	constructor(private _self: WebComponentI18NManager<any>) { }
@@ -71,21 +71,6 @@ class I18NClass {
 	public async waitForKey(key: string) {
 		await this.__loadCurrentLang();
 		return I18NClass.langFiles[this.lang][key];
-	}
-
-	private static readonly until = directive((promise: Promise<string>, content: string) => (part: Part) => {
-		part.setValue(content);
-			part.commit();
-			promise.then((value) => {
-				if (part.value === content) {
-					part.setValue(value);
-					part.commit();
-				}
-			});
-	});
-
-	public static createWaiter(promise: Promise<string>, content: string) {
-		return this.until(promise, content);
 	}
 
 	public preprocess(prom: Promise<string>, process?: (str: string) => string): Promise<string> {
@@ -154,7 +139,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		const value = this.__prom(key);
 		if (typeof value === 'string') return process ? process(value) : value;
 
-		return I18NClass.createWaiter(
+		return I18NClass.returner(
 			this.___i18nClass.preprocess(value, process), `{{${key}}}`);
 	}
 }

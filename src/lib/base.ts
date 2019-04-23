@@ -1,6 +1,5 @@
 import { WebComponentThemeManger } from './theme-manager';
 import { ConfiguredComponent } from './configurable';
-import { TemplateResult, render } from 'lit-html';
 import { WebComponentDefiner } from './definer';
 import { WebComponent } from './component';
 
@@ -116,8 +115,7 @@ export class TemplateFn<C extends {
 						}
 					}
 					const rendered = this._template === null ?
-						templater`` : (this._template instanceof TemplateResult) ?
-							this._template : typeSafeCall(this._template as TemplateRenderFunction<C, T, R|TR>, 
+						templater`` : typeSafeCall(this._template as TemplateRenderFunction<C, T, R|TR>, 
 								component, templater, component.props, 
 								'getTheme' in component ? 
 									(component as unknown as WebComponentThemeManger<any>)
@@ -185,8 +183,6 @@ export class TemplateFn<C extends {
 		public render(template: R, target: HTMLElement) {
 			if (this._renderer) {
 				this._renderer(template, target);
-			} else {
-				render(<TemplateResult><unknown>template, target);
 			}
 		}
 
@@ -194,8 +190,6 @@ export class TemplateFn<C extends {
 			if (!this._lastRenderChanged) return;
 			if (this._renderer) {
 				this._renderer(template, target);
-			} else {
-				render(<TemplateResult><unknown>template, target);
 			}
 		}
 	}

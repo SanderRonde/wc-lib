@@ -84,13 +84,13 @@ export class TemplateFn<C extends {
 		private _lastRenderChanged: boolean = true;
 
 		constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
-			changeOn: CHANGE_TYPE.NEVER, renderer?: Renderer<R>);
+			changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R>);
 		constructor(_template: (TemplateRenderFunction<C, T, R>),
 			changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.PROP|CHANGE_TYPE.THEME, 
-			renderer?: Renderer<R>);
+			renderer: Renderer<R>);
 		constructor(private _template: (TemplateRenderFunction<C, T, R>)|null,
 			public changeOn: CHANGE_TYPE, 
-			private _renderer?: Renderer<R>) { }
+			private _renderer: Renderer<R>) { }
 
 		private _renderWithTemplater<TR>(changeType: CHANGE_TYPE, component: C,
 			templater: Templater<TR>): {
@@ -181,16 +181,12 @@ export class TemplateFn<C extends {
 			}
 
 		public render(template: R, target: HTMLElement) {
-			if (this._renderer) {
-				this._renderer(template, target);
-			}
+			this._renderer(template, target);
 		}
 
 		public renderIfNew(template: R, target: HTMLElement) {
 			if (!this._lastRenderChanged) return;
-			if (this._renderer) {
-				this._renderer(template, target);
-			}
+			this._renderer(template, target);
 		}
 	}
 

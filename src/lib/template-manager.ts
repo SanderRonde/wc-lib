@@ -146,9 +146,9 @@ class ComplexTemplateProcessor implements TemplateProcessor {
 		public genRef: (value: ComplexValue) => string,
 		private _config: LitHTMLConfig) { }
 	
-	private __componentEventPart: RetVal<typeof getComponentEventPart>;
+	private __componentEventPart: RetVal<typeof getComponentEventPart>|null = null;
 	private get _componentEventPart() {
-		if (this.__componentEventPart) {
+		if (this.__componentEventPart !== null) {
 			return this.__componentEventPart;
 		}
 		return (this.__componentEventPart = getComponentEventPart(
@@ -237,7 +237,7 @@ class TemplateClass {
 			return this._templateProcessor;
 		}
 		return (this._templateProcessor = new ComplexTemplateProcessor(this._self, this.genRef,
-			TemplateClass._templateSettings));
+			TemplateClass._templateSettings!));
 	};
 
 	public static _templateSettings: LitHTMLConfig|null = null;

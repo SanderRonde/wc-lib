@@ -1,7 +1,6 @@
 import { WebComponentThemeManger } from './theme-manager';
 import { EventListenerObj } from './listener';
 import { CHANGE_TYPE } from './base';
-import { Part } from 'lit-html';
 
 class I18NClass {
 	public static path: string = '/i18n/';

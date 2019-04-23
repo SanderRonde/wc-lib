@@ -1,6 +1,6 @@
-import { EventListenerObj, WebComponentListenable } from "./listener";
-import { ConfigurableWebComponent } from './configurable';
-import { bindToClass } from './base';
+import { EventListenerObj, WebComponentListenable } from './listener.js';
+import { ConfigurableWebComponent } from './configurable.js';
+import { bindToClass } from './base.js';
 
 type GlobalPropsFunctions<G extends {
 	[key: string]: any;

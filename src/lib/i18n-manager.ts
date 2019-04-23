@@ -1,6 +1,6 @@
-import { WebComponentThemeManger } from './theme-manager';
-import { EventListenerObj } from './listener';
-import { CHANGE_TYPE } from './base';
+import { WebComponentThemeManger } from './theme-manager.js';
+import { EventListenerObj } from './listener.js';
+import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
 	public static path: string = '/i18n/';

@@ -1,4 +1,4 @@
-import { WebComponentBase } from './base';
+import { WebComponentBase } from './base.js';
 
 export interface EventListenerObj {
 	[key: string]: {

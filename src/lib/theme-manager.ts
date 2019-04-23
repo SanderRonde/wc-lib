@@ -1,6 +1,6 @@
-import { WebComponentHierarchyManager } from './hierarchy-manager';
-import { EventListenerObj } from './listener';
-import { CHANGE_TYPE } from './base';
+import { WebComponentHierarchyManager } from './hierarchy-manager.js';
+import { EventListenerObj } from './listener.js';
+import { CHANGE_TYPE } from './base.js';
 
 const noTheme = {};
 export abstract class WebComponentThemeManger<E extends EventListenerObj> extends WebComponentHierarchyManager<E> {

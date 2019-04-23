@@ -1,6 +1,6 @@
-import { ComponentIs } from './configurable';
-import { WebComponent } from './component';
-import { WebComponentBase } from './base';
+import { ComponentIs } from './configurable.js';
+import { WebComponent } from './component.js';
+import { WebComponentBase } from './base.js';
 
 interface ExtendedProcess extends NodeJS.Process {
 	HTMLElement: typeof HTMLElement;

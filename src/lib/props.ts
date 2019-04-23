@@ -1,5 +1,5 @@
-import { hookIntoMount, awaitMounted } from './util';
-import { CHANGE_TYPE } from './base';
+import { hookIntoMount, awaitMounted } from './util.js';
+import { CHANGE_TYPE } from './base.js';
 
 export const refPrefix = '___complex_ref';
 

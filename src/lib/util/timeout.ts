@@ -1,4 +1,4 @@
-import { wait } from '../shared';
+import { wait } from '../shared.js';
 
 const timeouts: WeakMap<any, Map<string, NodeJS.Timer>> = new WeakMap();
 /**

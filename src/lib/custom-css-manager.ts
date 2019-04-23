@@ -1,6 +1,6 @@
-import { WebComponentTemplateManager, CUSTOM_CSS_PROP_NAME } from './template-manager';
-import { CHANGE_TYPE, TemplateFn } from './base';
-import { EventListenerObj } from './listener';
+import { WebComponentTemplateManager, CUSTOM_CSS_PROP_NAME } from './template-manager.js';
+import { CHANGE_TYPE, TemplateFn } from './base.js';
+import { EventListenerObj } from './listener.js';
 
 class CustomCSSClass {
 	public hasCustomCSS: boolean|null = null;

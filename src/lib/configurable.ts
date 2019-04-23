@@ -1,6 +1,6 @@
-import { TemplateFn, WebComponentBase } from './base';
-import { EventListenerObj } from './listener';
-import { WebComponent } from './component';
+import { TemplateFn, WebComponentBase } from './base.js';
+import { EventListenerObj } from './listener.js';
+import { WebComponent } from './component.js';
 
 export class ConfigurableWebComponent<ELS extends {
 	IDS: {

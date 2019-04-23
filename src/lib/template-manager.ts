@@ -1,11 +1,11 @@
 import { TemplateProcessor, EventPart, Part, NodePart } from 'lit-html';
-import { TemplateFn, CHANGE_TYPE, bindToClass } from './base';
+import { TemplateFn, CHANGE_TYPE, bindToClass } from './base.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
-import { WebComponentThemeManger } from './theme-manager';
-import { WebComponentI18NManager } from './i18n-manager';
-import { classNames, ClassNamesArg } from './shared';
-import { EventListenerObj } from './listener';
-import { refPrefix } from './props';
+import { WebComponentThemeManger } from './theme-manager.js';
+import { WebComponentI18NManager } from './i18n-manager.js';
+import { classNames, ClassNamesArg } from './shared.js';
+import { EventListenerObj } from './listener.js';
+import { refPrefix } from './props.js';
 
 export const CUSTOM_CSS_PROP_NAME = 'custom-css';
 

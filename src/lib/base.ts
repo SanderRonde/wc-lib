@@ -1,7 +1,7 @@
-import { WebComponentThemeManger } from './theme-manager';
-import { ConfiguredComponent } from './configurable';
-import { WebComponentDefiner } from './definer';
-import { WebComponent } from './component';
+import { WebComponentThemeManger } from './theme-manager.js';
+import { ConfiguredComponent } from './configurable.js';
+import { WebComponentDefiner } from './definer.js';
+import { WebComponent } from './component.js';
 
 function repeat(size: number) {
 	return new Array(size).fill(0);

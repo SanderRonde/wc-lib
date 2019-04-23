@@ -1,6 +1,6 @@
-export { supportsPassive } from './shared'
-import { supportsPassive } from './shared'
-import { WebComponent } from './component';
+export { supportsPassive } from './shared.js'
+import { supportsPassive } from './shared.js'
+import { WebComponent } from './component.js';
 
 type IDMap = Map<string, (this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any>;
 const listenedToElements: WeakMap<WebComponent, {

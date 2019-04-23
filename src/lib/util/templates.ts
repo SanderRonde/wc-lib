@@ -1,5 +1,5 @@
-import { TemplateFn, CHANGE_TYPE, Renderer } from '../base';
-import { WebComponent } from '../component';
+import { TemplateFn, CHANGE_TYPE, Renderer } from '../base.js';
+import { WebComponent } from '../component.js';
 
 /**
  * Map an array but return an empty string if its length is 0

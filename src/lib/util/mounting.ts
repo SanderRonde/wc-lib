@@ -1,6 +1,6 @@
-import { WebComponent } from '../component';
-import { WebComponentBase } from '../base';
-import { wait } from '../shared';
+import { WebComponent } from '../component.js';
+import { WebComponentBase } from '../base.js';
+import { wait } from '../shared.js';
 
 function waitForMountedCallback(el: WebComponentBase): Promise<() => void> {
 	const realEl = el as WebComponent;

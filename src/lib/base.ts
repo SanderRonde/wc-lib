@@ -56,7 +56,9 @@ export const enum CHANGE_TYPE {
 
 type Templater<R> = (strings: TemplateStringsArray, ...values: any[]) => R;
 
-type TemplateRenderFunction<C extends WebComponent<any, any>, T, TR> = (this: C, 
+type TemplateRenderFunction<C extends {
+	props: any;
+}, T, TR> = (this: C, 
 	complexHTML: Templater<TR>,
 	props: C['props'], theme: T) => TR;
 
@@ -64,10 +66,11 @@ type TemplateRenderFunction<C extends WebComponent<any, any>, T, TR> = (this: C,
  * Maps templaters -> components -> functions -> results
  */
 const templaterMap: WeakMap<Templater<any>, 
-	WeakMap<WebComponent<any, any>, 
-		WeakMap<TemplateFn<any, any, any>, 
-			//Any = R in TemplateFn
-			any|null>>> = new WeakMap();
+	WeakMap<{
+		props: any;
+	}, WeakMap<TemplateFn<any, any, any>, 
+		//Any = R in TemplateFn
+		any|null>>> = new WeakMap();
 export type TemplateFnConfig<R> = {
 	changeOn: CHANGE_TYPE.NEVER;
 	template: R|null;
@@ -76,8 +79,9 @@ export type TemplateFnConfig<R> = {
 	template: TemplateRenderFunction<any, any, R>
 };
 type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => any;
-export class TemplateFn<C extends WebComponent<any, any> = any, T = any, 
-	R = any> {
+export class TemplateFn<C extends {
+	props: any;
+} = WebComponent<any, any>, T = any, R = any> {
 		private _lastRenderChanged: boolean = true;
 
 		constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
@@ -165,7 +169,7 @@ export class TemplateFn<C extends WebComponent<any, any> = any, T = any,
 
 		public renderTemplate(changeType: CHANGE_TYPE, component: C): R {
 			const { changed, rendered } = this._renderWithTemplater(changeType, component,
-				component.generateHTMLTemplate as unknown as Templater<R>);
+				(component as unknown as WebComponent<any, any>).generateHTMLTemplate as unknown as Templater<R>);
 			this._lastRenderChanged = changed;
 			return rendered;
 		}

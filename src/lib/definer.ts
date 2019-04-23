@@ -97,6 +97,28 @@ class DefinerClass {
 	}
 }
 
+export class DefineData {
+	public static defined: number = 0;
+	private static _listeners: ((amount: number) => any)[] = [];
+
+	public static increment() {
+		this.defined++;
+		this._listeners.forEach(l => l(this.defined));
+	}
+
+	public static onDefine(listener: (amount: number) => any) {
+		this._listeners.push(listener);
+	}
+
+	public static onReach(amount: number, listener: (amount: number) => any) {
+		this._listeners.push((currentAmount) => {
+			if (currentAmount === amount) {
+				listener(amount);
+			}
+		});
+	}
+}
+
 export abstract class WebComponentDefiner extends elementBase {
 	public ___definerClass: DefinerClass = new DefinerClass();
 	private static ___definerClass: typeof DefinerClass = DefinerClass;
@@ -147,6 +169,7 @@ export abstract class WebComponentDefiner extends elementBase {
 		}
 		define(this.is.name, this.is.component);
 		this.___definerClass.defined.push(this.is.name);
+		DefineData.increment();
 
 		this.___definerClass.finishLoad();
 	}

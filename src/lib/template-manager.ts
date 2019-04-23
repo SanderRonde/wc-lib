@@ -247,7 +247,14 @@ class TemplateClass {
 			console.warn('Missing templater, please initialize it ' +
 				'by calling ' +
 				'WebComponentTemplateManager.initComplexTemplateProvider({' + 
-				'	//TODO:' +
+				'	TemplateResult: {{lit-html.TemplateResult}}' +
+				'	PropertyCommitter: {{lit-html.PropertyCommitter}}' +
+				'	EventPart: {{lit-html.EventPart}}' +
+				'	BooleanAttributePart: {{lit-html.BooleanAttributePart}}' +
+				'	AttributeCommitter: {{lit-html.AttributeCommitter}}' +
+				'	NodePart: {{lit-html.TemplateResult}}' +
+				'	isDirective: {{lit-html.isDirective}}' +
+				'	noChange: {{lit-html.noChange}}' +
 				'})');
 			return class X {} as any;
 		}

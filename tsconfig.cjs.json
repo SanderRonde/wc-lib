@@ -18,6 +18,7 @@
         "experimentalDecorators": true,
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
+        "strictBindCallApply": true,
         "declaration": true,
         "outDir": "build/cjs/"
 	},

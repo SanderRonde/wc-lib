@@ -115,7 +115,7 @@ export class TemplateFn<C extends {
 						}
 					}
 					const rendered = this._template === null ?
-						templater`` : typeSafeCall(this._template as TemplateRenderFunction<C, T, R|TR>, 
+						templater`` : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
 								component, templater, component.props, 
 								'getTheme' in component ? 
 									(component as unknown as WebComponentThemeManger<any>)
@@ -131,7 +131,7 @@ export class TemplateFn<C extends {
 					this.changeOn & changeType ||
 					!templateMap.has(this)) {
 						//Change, rerender
-						const rendered = typeSafeCall(this._template as TemplateRenderFunction<C, T, R|TR>, 
+						const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
 							component, templater, component.props, 
 							'getTheme' in component ? 
 								(component as unknown as WebComponentThemeManger<any>)

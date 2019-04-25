@@ -33,7 +33,7 @@ export type ClassNamesArg = string|number|{
 }|string[]|{
 	[key: string]: any;
 }[];
-export function classNames(...args: ClassNamesArg[]) {
+export function classNames(...args: ClassNamesArg[]): string {
 	var classes = [];
 
 	for (const arg of args) {

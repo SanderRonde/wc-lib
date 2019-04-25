@@ -167,7 +167,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 			I18NClass.preprocess(value), `{{${key}}}`);
 	}
 
-	public static __(key: string, ...values: any[]) {
+	public static async __(key: string, ...values: any[]) {
 		const value = (() => {
 			if (I18NClass.isReady) {
 				return I18NClass.getMessage(
@@ -178,7 +178,6 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		})();
 		if (typeof value === 'string') return value;
 
-		return I18NClass.returner(
-			I18NClass.preprocess(value), `{{${key}}}`);
+		return I18NClass.preprocess(value);
 	}
 }

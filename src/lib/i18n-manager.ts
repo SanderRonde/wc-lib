@@ -3,7 +3,7 @@ import { EventListenerObj } from './listener.js';
 import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
-	public static path: string = '/i18n/';
+	public static format: string = '/i18n/';
 	public static langFiles: {
 		[key: string]: {
 			[key: string]: string;
@@ -46,7 +46,7 @@ class I18NClass {
 
 	private static async __loadLang(lang: string) {
 		if (lang in this.__langPromises) return;
-		const prom = fetch(`${this.path}${lang}.json`).then(r => r.json());
+		const prom = fetch(this.format.replace(/$LANG$/g, lang)).then(r => r.json());
 		this.__langPromises[lang] = prom;
 		this.langFiles[lang] = await prom;
 	}
@@ -109,18 +109,15 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	}
 	
 	public static initI18N({
-		path,
+		format,
 		defaultLang,
 		returner
 	}: {
-		path: string;
+		format: string;
 		defaultLang: string;
 		returner?: (promise: Promise<string>, content: string) => any;
 	}) {
-		if (!path.endsWith('/')) {
-			path = path + '/';
-		}
-		I18NClass.path = path;
+		I18NClass.format = format;
 		if (returner) {
 			I18NClass.returner = returner;
 		}

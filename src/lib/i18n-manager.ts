@@ -4,6 +4,12 @@ import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
 	public static format: string = '/i18n/';
+	public static getMessage: (langFile: any, key: string) => string = 
+		(file: {
+			[key: string]: string;
+		}, key: string) => {
+			return file[key];
+		}
 	public static langFiles: {
 		[key: string]: {
 			[key: string]: string;
@@ -73,7 +79,8 @@ class I18NClass {
 
 	public async waitForKey(key: string) {
 		await this.__loadCurrentLang();
-		return I18NClass.langFiles[this.lang][key];
+		return I18NClass.getMessage(
+			I18NClass.langFiles[this.lang], key);
 	}
 
 	public preprocess(prom: Promise<string>, process?: (str: string) => string): Promise<string> {
@@ -115,13 +122,18 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	public static initI18N({
 		format,
 		defaultLang,
+		getMessage,
 		returner
 	}: {
 		format: string;
 		defaultLang: string;
+		getMessage?: (langFile: any, key: string) => string;
 		returner?: (promise: Promise<string>, content: string) => any;
 	}) {
 		I18NClass.format = format;
+		if (getMessage) {
+			I18NClass.getMessage = getMessage;
+		}
 		if (returner) {
 			I18NClass.returner = returner;
 		}
@@ -130,7 +142,8 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 
 	public __prom(key: string) {
 		if (this.___i18nClass.isReady) {
-			return I18NClass.langFiles[this.___i18nClass.lang][key]
+			return I18NClass.getMessage(
+				I18NClass.langFiles[this.___i18nClass.lang], key);
 		}
 		return this.___i18nClass.waitForKey(key);
 	}

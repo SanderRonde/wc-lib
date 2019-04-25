@@ -60,7 +60,8 @@ class I18NClass {
 	private async __loadCurrentLang() {
 		if (this.lang in I18NClass.langFiles) return;
 		if (this.lang in I18NClass.__langPromises) {
-			return I18NClass.__langPromises[this.lang];
+			await I18NClass.__langPromises[this.lang];
+			return;
 		}
 		I18NClass.__loadLang(this.lang);
 		await I18NClass.__langPromises[this.lang];

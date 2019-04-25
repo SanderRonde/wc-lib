@@ -48,7 +48,8 @@ type TemplateRenderFunction<C extends {
 	props: any;
 }, T, TR> = (this: C, 
 	complexHTML: Templater<TR>,
-	props: C['props'], theme: T) => TR;
+	props: C['props'], theme: T,
+	changeType: CHANGE_TYPE) => TR;
 
 /**
  * Maps templaters -> components -> functions -> results
@@ -108,7 +109,7 @@ export class TemplateFn<C extends {
 								component, templater, component.props, 
 								'getTheme' in component ? 
 									(component as unknown as WebComponentThemeManger<any>)
-										.getTheme<T>() : null as any);
+										.getTheme<T>() : null as any, changeType);
 					templateMap.set(this, rendered);
 					return {
 						changed: true,
@@ -124,7 +125,7 @@ export class TemplateFn<C extends {
 							component, templater, component.props, 
 							'getTheme' in component ? 
 								(component as unknown as WebComponentThemeManger<any>)
-									.getTheme<T>() : null as any);
+									.getTheme<T>() : null as any, changeType);
 						templateMap.set(this, rendered);
 						return {
 							changed: true,

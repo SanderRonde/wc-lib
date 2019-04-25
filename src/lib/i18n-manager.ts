@@ -141,7 +141,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		I18NClass.defaultLang = defaultLang;
 	}
 
-	public __prom(key: string, values: any[]) {
+	public __prom(key: string, ...values: any[]) {
 		if (I18NClass.isReady) {
 			return I18NClass.getMessage(
 				I18NClass.langFiles[I18NClass.lang], key,
@@ -152,7 +152,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	
 	public __process(key: string, process?: (str: string) => string,
 		...values: any[]) {
-			const value = this.__prom(key, values);
+			const value = this.__prom(key, ...values);
 			if (typeof value === 'string') return process ? process(value) : value;
 
 			return I18NClass.returner(
@@ -160,7 +160,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		}
 
 	public __(key: string, ...values: any[]) {
-		const value = this.__prom(key, values);
+		const value = this.__prom(key, ...values);
 		if (typeof value === 'string') return value;
 
 		return I18NClass.returner(

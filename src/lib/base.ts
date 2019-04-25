@@ -34,17 +34,6 @@ export function bindToClass<T extends Function>(_target: object, propertyKey: st
 		};
 	}
 
-type InferThis<T extends (this: any, ...args: any[]) => any> = 
-	T extends (this: infer D, ...args: any[]) => any ? D : void;
-type InferArgs<T extends (this: any, ...args: any[]) => any> = 
-	T extends (this: any, ...args: infer R) => any ? R : void[];
-type InferReturn<T extends (this: any, ...args: any[]) => any> = 
-T extends (this: any, ...args: any[]) => infer R ? R : void;
-function typeSafeCall<T extends (this: any, ...args: any[]) => any>(fn: T, 
-	thisCtx: InferThis<T>, ...args: InferArgs<T>): InferReturn<T> {
-		return fn.call(thisCtx, ...args);
-	}
-
 export const enum CHANGE_TYPE {
 	PROP = 1, 
 	THEME = 2, 

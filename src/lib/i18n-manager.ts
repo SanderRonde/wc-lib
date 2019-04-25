@@ -46,7 +46,7 @@ class I18NClass {
 
 	private static async __loadLang(lang: string) {
 		if (lang in this.__langPromises) return;
-		const prom = fetch(this.format.replace(/$LANG$/g, lang)).then(r => r.json());
+		const prom = fetch(this.format.replace(/\$LANG\$/g, lang)).then(r => r.json());
 		this.__langPromises[lang] = prom;
 		this.langFiles[lang] = await prom;
 	}

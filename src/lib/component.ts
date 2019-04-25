@@ -11,8 +11,7 @@ type IDMapFn<IDS> = {
 	 */
 	<K extends keyof HTMLElementTagNameMap>(selector: K): HTMLElementTagNameMap[K] | null;
     <K extends keyof SVGElementTagNameMap>(selector: K): SVGElementTagNameMap[K] | null;
-    <E extends Element = Element>(selector: string): E | null;
-	(selector: string): HTMLElement|null;
+    <E extends HTMLElement = HTMLElement>(selector: string): E | null;
 } & IDS;
 
 type PropChangeEvents = 'beforePropChange'|'propChange';

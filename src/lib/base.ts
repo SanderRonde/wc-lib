@@ -39,7 +39,7 @@ export const enum CHANGE_TYPE {
 	THEME = 2, 
 	NEVER = 4,
 	LANG = 8, 
-	ALWAYS = 16
+	ALWAYS = 11
 }
 
 type Templater<R> = (strings: TemplateStringsArray, ...values: any[]) => R;
@@ -116,9 +116,7 @@ export class TemplateFn<C extends {
 						rendered: rendered as TR
 					}
 				}
-				if (this.changeOn & CHANGE_TYPE.ALWAYS || 
-					changeType & CHANGE_TYPE.ALWAYS ||
-					this.changeOn & changeType ||
+				if (this.changeOn & changeType ||
 					!templateMap.has(this)) {
 						//Change, rerender
 						const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
@@ -316,7 +314,7 @@ class BaseClass {
 			change = CHANGE_TYPE.ALWAYS;
 		}
 
-		if (!(change & CHANGE_TYPE.THEME || change & CHANGE_TYPE.ALWAYS)) {
+		if (!(change & CHANGE_TYPE.THEME)) {
 			// Only render on theme or everything change
 			return;
 		}

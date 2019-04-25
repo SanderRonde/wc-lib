@@ -158,11 +158,11 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 				this.___i18nClass.preprocess(value, process), `{{${key}}}`);
 		}
 
-	public __(key: string, process?: (str: string) => string, ...values: any[]) {
+	public __(key: string, ...values: any[]) {
 		const value = this.__prom(key, values);
-		if (typeof value === 'string') return process ? process(value) : value;
+		if (typeof value === 'string') return value;
 
 		return I18NClass.returner(
-			this.___i18nClass.preprocess(value, process), `{{${key}}}`);
+			this.___i18nClass.preprocess(value), `{{${key}}}`);
 	}
 }

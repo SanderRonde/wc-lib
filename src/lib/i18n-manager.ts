@@ -4,7 +4,7 @@ import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
 	public static format: string = '/i18n/';
-	public static getMessage: (langFile: any, key: string) => string = 
+	public static getMessage: (langFile: any, key: string, values: any[]) => string = 
 		(file: {
 			[key: string]: string;
 		}, key: string) => {
@@ -77,10 +77,10 @@ class I18NClass {
 		return this.lang in I18NClass.langFiles;
 	}
 
-	public async waitForKey(key: string) {
+	public async waitForKey(key: string, values: any[]) {
 		await this.__loadCurrentLang();
 		return I18NClass.getMessage(
-			I18NClass.langFiles[this.lang], key);
+			I18NClass.langFiles[this.lang], key, values);
 	}
 
 	public preprocess(prom: Promise<string>, process?: (str: string) => string): Promise<string> {
@@ -127,7 +127,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	}: {
 		format: string;
 		defaultLang: string;
-		getMessage?: (langFile: any, key: string) => string;
+		getMessage?: (langFile: any, key: string, values: any[]) => string;
 		returner?: (promise: Promise<string>, content: string) => any;
 	}) {
 		I18NClass.format = format;
@@ -140,16 +140,26 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		I18NClass.defaultLang = defaultLang;
 	}
 
-	public __prom(key: string) {
+	public __prom(key: string, values: any[]) {
 		if (this.___i18nClass.isReady) {
 			return I18NClass.getMessage(
-				I18NClass.langFiles[this.___i18nClass.lang], key);
+				I18NClass.langFiles[this.___i18nClass.lang], key,
+					values);
 		}
-		return this.___i18nClass.waitForKey(key);
+		return this.___i18nClass.waitForKey(key, values);
 	}
+	
+	public __process(key: string, process?: (str: string) => string,
+		...values: any[]) {
+			const value = this.__prom(key, values);
+			if (typeof value === 'string') return process ? process(value) : value;
 
-	public __(key: string, process?: (str: string) => string) {
-		const value = this.__prom(key);
+			return I18NClass.returner(
+				this.___i18nClass.preprocess(value, process), `{{${key}}}`);
+		}
+
+	public __(key: string, process?: (str: string) => string, ...values: any[]) {
+		const value = this.__prom(key, values);
 		if (typeof value === 'string') return process ? process(value) : value;
 
 		return I18NClass.returner(

@@ -128,7 +128,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	}: {
 		format: string;
 		defaultLang: string;
-		getMessage?: (langFile: any, key: string, values: any[]) => string;
+		getMessage?: (langFile: any, key: string, values: any[]) => string|Promise<string>;
 		returner?: (promise: Promise<string>, content: string) => any;
 	}) {
 		I18NClass.format = format;

@@ -142,12 +142,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	}
 
 	public __prom(key: string, ...values: any[]) {
-		if (I18NClass.isReady) {
-			return I18NClass.getMessage(
-				I18NClass.langFiles[I18NClass.lang], key,
-					values);
-		}
-		return I18NClass.waitForKey(key, values);
+		return WebComponentI18NManager.__prom(key, ...values);
 	}
 	
 	public __process(key: string, process?: (str: string) => string,
@@ -160,24 +155,22 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		}
 
 	public __(key: string, ...values: any[]) {
-		const value = this.__prom(key, ...values);
-		if (typeof value === 'string') return value;
+		return WebComponentI18NManager.__(key, ...values);
+	}
 
-		return I18NClass.returner(
-			I18NClass.preprocess(value), `{{${key}}}`);
+	public static __prom(key: string, ...values: any[]) {
+		if (I18NClass.isReady) {
+			return I18NClass.getMessage(
+				I18NClass.langFiles[I18NClass.lang], key,
+					values);
+		}
+		return I18NClass.waitForKey(key, values);
 	}
 
 	public static __(key: string, ...values: any[]) {
-		const value = (() => {
-			if (I18NClass.isReady) {
-				return I18NClass.getMessage(
-					I18NClass.langFiles[I18NClass.lang], key,
-						values);
-			}
-			return I18NClass.waitForKey(key, values);
-		})();
+		const value = this.__prom(key, ...values);
 		if (typeof value === 'string') return value;
 
-		return I18NClass.preprocess(value);
+		return I18NClass.returner(value, `{{${key}}}`);
 	}
 }

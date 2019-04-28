@@ -4,7 +4,7 @@ import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
 	public static format: string = '/i18n/';
-	public static getMessage: (langFile: any, key: string, values: any[]) => string = 
+	public static getMessage: (langFile: any, key: string, values: any[]) => string|Promise<string> = 
 		(file: {
 			[key: string]: string;
 		}, key: string) => {

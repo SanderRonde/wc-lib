@@ -218,27 +218,27 @@ export abstract class WebComponent<ELS extends {
 			[key: string]: Style<any>;
 		}
 	} = {
-		id: new Proxy({}, {
+		id: typeof Proxy !== 'undefined' ? new Proxy({}, {
 			get(_, id) {
 				return new Style({
 					id: id as string
 				});
 			}
-		}),
-		class: new Proxy({}, {
+		}) : {},
+		class: typeof Proxy !== 'undefined' ? new Proxy({}, {
 			get(_, className) {
 				return new Style({
 					className: className as string
 				});
 			}
-		}),
-		tag: new Proxy({}, {
+		}) : {},
+		tag: typeof Proxy !== 'undefined' ? new Proxy({}, {
 			get(_, tag) {
 				return new Style({
 					tag: tag as string
 				});
 			}
-		})
+		}) : {}
 	} as {
 		id: {
 			[P in keyof ELS["IDS"]]: Style<ELS["IDS"][P]>;

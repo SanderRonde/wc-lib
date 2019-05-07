@@ -217,10 +217,10 @@ class BaseClass {
 	public get __privateCSS(): TemplateFn<any, any, any>[] {
 		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;
 		return (this.instance.___privateCSS = 
-			this.__cssArr.filter((template) => {
+			this.canUseConstructedCSS ? this.__cssArr.filter((template) => {
 				return !(template.changeOn === CHANGE_TYPE.THEME ||
 					template.changeOn & CHANGE_TYPE.NEVER);
-			}));
+			}) : this.__cssArr);
 	};
 
 	constructor(private _self: WebComponentBase) { }

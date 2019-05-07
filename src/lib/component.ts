@@ -131,6 +131,42 @@ class ComponentClass<ELS extends {
 	public clearMap() {
 		this.idMap.clear();
 	}
+
+	public idMapProxy: IDMapFn<ELS["IDS"]>| null = null;
+	public supportsProxy: boolean = typeof Proxy !== 'undefined';
+
+	public genIdMapProxy(self: WebComponent<any, any>): IDMapFn<ELS["IDS"]> {
+		const __this = this;
+		return new Proxy((selector: string) => {
+			return self.root.querySelector(selector) as HTMLElement;
+		}, {
+			get(_, id) {
+				if (typeof id !== 'string') {
+					return null;
+				}
+				const cached = __this.idMap.get(id);
+				if (cached && self.shadowRoot!.contains(cached)) {
+					return cached;
+				}
+				const el = self.root.getElementById(id);
+				if (el) {
+					__this.idMap.set(id, el as ELS["IDS"][keyof ELS["IDS"]]);
+				}
+				return el;
+			}
+		}) as IDMapFn<ELS["IDS"]>;
+	}
+
+	public getIdMapSnapshot(self: WebComponent<any, any>) {
+		const snapshot: Partial<IDMapFn<ELS["IDS"]>> = ((selector: string) => {
+			self.root.querySelector(selector) as HTMLElement;
+		}) as IDMapFn<ELS["IDS"]>
+		for (const item of self.root.querySelectorAll('[id]')) {
+			(snapshot as any)[item.id as any] = item;
+		}
+
+		return snapshot as IDMapFn<ELS["IDS"]>;
+	}
 }
 
 export abstract class WebComponent<ELS extends {
@@ -158,27 +194,15 @@ export abstract class WebComponent<ELS extends {
 	/**
 	 * Access this component's children based on their IDs or query something
 	 */
-	$: IDMapFn<ELS["IDS"]> = (() => {
-		const __this = this;
-		return new Proxy((selector: string) => {
-			return this.root.querySelector(selector) as HTMLElement;
-		}, {
-			get(_, id) {
-				if (typeof id !== 'string') {
-					return null;
-				}
-				const cached = __this.___componentClass.idMap.get(id);
-				if (cached && __this.shadowRoot!.contains(cached)) {
-					return cached;
-				}
-				const el = __this.root.getElementById(id);
-				if (el) {
-					__this.___componentClass.idMap.set(id, el as ELS["IDS"][keyof ELS["IDS"]]);
-				}
-				return el;
-			}
-		});
-	})() as IDMapFn<ELS["IDS"]>;
+	get $(): IDMapFn<ELS["IDS"]> {
+		if (this.___componentClass.supportsProxy) {
+			return this.___componentClass.idMapProxy ||
+				(this.___componentClass.idMapProxy = this.___componentClass.genIdMapProxy(this))
+		}
+
+		// Re-generate the ID map every time
+		return this.___componentClass.getIdMapSnapshot(this);
+	}
 
 	/**
 	 * Generate styles for this component in a type-safe manner

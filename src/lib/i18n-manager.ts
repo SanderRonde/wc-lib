@@ -50,9 +50,35 @@ class I18NClass {
 		}
 	}
 
+	private static async __fetch(url: string) {
+		if ('fetch' in window && typeof window.fetch !== undefined) {
+			return fetch(url).then(r => r.text());
+		}
+
+		return new Promise<string>((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.open('GET', url);
+			xhr.onreadystatechange = () => {
+				if (xhr.readyState === XMLHttpRequest.DONE) {
+					if (xhr.status >= 200 && xhr.status < 300) {
+						resolve(xhr.responseText);
+					} else {
+						reject(new Error(`Failed xhr: ${xhr.status}`));
+					}
+				}
+			}
+			xhr.send();
+		});
+	}
+
 	private static async __loadLang(lang: string) {
 		if (lang in this.__langPromises) return;
-		const prom = fetch(this.format.replace(/\$LANG\$/g, lang)).then(r => r.json());
+		const prom = new Promise<{
+			[key: string]: string;
+		}>(async (resolve) => {
+			const text = await this.__fetch(this.format.replace(/\$LANG\$/g, lang));
+			resolve(JSON.parse(text));
+		});
 		this.__langPromises[lang] = prom;
 		this.langFiles[lang] = await prom;
 	}

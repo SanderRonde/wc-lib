@@ -89,7 +89,7 @@ class I18NClass {
 			this.defaultLang!;
 	}
 
-	private static async __loadCurrentLang() {
+	static async loadCurrentLang() {
 		if (this.lang in this.langFiles) return;
 		if (this.lang in this.__langPromises) {
 			await this.__langPromises[this.lang];
@@ -105,7 +105,7 @@ class I18NClass {
 
 
 	public static async waitForKey(key: string, values: any[]) {
-		await this.__loadCurrentLang();
+		await this.loadCurrentLang();
 		return this.getMessage(
 			this.langFiles[this.lang], key, values);
 	}
@@ -198,5 +198,9 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		if (typeof value === 'string') return value;
 
 		return I18NClass.returner(value, `{{${key}}}`);
+	}
+
+	public static get langReady() {
+		return I18NClass.loadCurrentLang();
 	}
 }

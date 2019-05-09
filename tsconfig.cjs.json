@@ -6,7 +6,6 @@
         "moduleResolution": "node",
         "noImplicitAny": true,
         "noImplicitThis": true,
-        "removeComments": true,
         "preserveConstEnums": false,
         "listFiles": false,
         "pretty": true,

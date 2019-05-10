@@ -14,96 +14,10 @@ type IDMapFn<IDS> = {
     <E extends HTMLElement = HTMLElement>(selector: string): E | null;
 } & IDS;
 
-type PropChangeEvents = 'beforePropChange'|'propChange';
-
-class Style<C> {
-	private _id?: string;
-	private _className?: string;
-	private _tag?: string;
-
-	constructor({
-		className, id, tag
-	}: {
-		id?: string;
-		className?: string;
-		tag?: string;
-	}, private _link?: {
-		type: 'and'|'or';
-		style: Style<any>;
-	}) {
-		this._id = id;
-		this._tag = tag;
-		this._className = className;
-	}
-
-	private _connectLinks(dataType: 'id'|'class'|'tag'): string {
-		if (!this._link) {
-			return '';
-		}
-		if (this._link.type === 'and') {
-			return this._link.style.getDataType(dataType);
-		} else if (this._link.type === 'or') {
-			return `, ${this._link.style.getDataType(dataType)}`;
-		}
-		return '';
-	}
-
-	public getDataType(dataType: 'id'|'class'|'tag'): string {
-		switch (dataType) {
-			case 'id':
-				return this.id;
-			case 'class':
-				return this.className;
-			case 'tag':
-				return this.tag;
-		}
-	}
-
-	public get id(): string {
-		return `#${this._id || 'undef'}${this._connectLinks('id')}`;
-	}
-
-	public get className(): string {
-		return `.${this._className || 'undef'}${this._connectLinks('class')}`;
-	}
-
-	public get tag(): string {
-		return `${this._tag || 'undef'}${this._connectLinks('tag')}`;
-	}
-
-	private _clone() {
-		return {
-			id: this._id,
-			className: this._className,
-			tag: this._tag
-		}
-	}
-
-	public or(style: Style<any>) {
-		return new Style<C>(this._clone(), {
-			type: 'or',
-			style
-		});
-	}
-
-	public and(style: Style<any>) {
-		return new Style<C>(this._clone(), {
-			type: 'and',
-			style
-		});
-	}
-
-	public withClass(className: string) {
-		return new Style<C>(this._clone(), {
-			type: 'and',
-			style: new Style<any>({
-				className: className
-			})
-		});
-	}
-
-	public MARKER = '';
-}
+/**
+ * Type of property change events that can be listened for
+ */
+export type PropChangeEvents = 'beforePropChange'|'propChange';
 
 class ComponentClass<ELS extends {
 	IDS: {
@@ -169,10 +83,24 @@ class ComponentClass<ELS extends {
 	}
 }
 
+
+/**
+ * The class that wraps up all subclasses of a webcomponent
+ * 
+ * @template ELS - The elements found in this component's HTML
+ * @template E - An object map of events to its args and return value. See
+ * 	`WebComponentListenable` for more info
+ */
 export abstract class WebComponent<ELS extends {
+	/**
+	 * All child elements of this component by ID
+	 */
 	IDS: {
 		[key: string]: HTMLElement|SVGElement;
 	};
+	/**
+	 * All child elements of this component by class
+	 */
 	CLASSES: {
 		[key: string]: HTMLElement|SVGElement;
 	}
@@ -180,9 +108,26 @@ export abstract class WebComponent<ELS extends {
 	IDS: {};
 	CLASSES: {}
 }, E extends EventListenerObj = {}> extends WebComponentCustomCSSManager<E> {
+	/**
+	 * The class associated with this one that
+	 * contains some functions required for 
+	 * it to function
+	 * 
+	 * @private
+	 * @readonly
+	 */
 	private ___componentClass: ComponentClass<ELS> = new ComponentClass<ELS>();
 
+	/**
+	 * An array of functions that get called when this
+	 * component gets unmounted. These will dispose
+	 * of any open listeners or similar garbage
+	 */
 	protected disposables: (() => void)[] = [];
+
+	/**
+	 * Whether this component has been mounted
+	 */
 	public isMounted: boolean = false;
 
 	constructor() {
@@ -192,7 +137,13 @@ export abstract class WebComponent<ELS extends {
 	}
 
 	/**
-	 * Access this component's children based on their IDs or query something
+	 * An object that contains all children
+	 * of this element mapped by their ID. 
+	 * This object can also be called with a
+	 * query, which is just a proxy call to 
+	 * `this.root.querySelector`
+	 * 
+	 * @readonly
 	 */
 	get $(): IDMapFn<ELS["IDS"]> {
 		if (this.___componentClass.supportsProxy) {
@@ -205,54 +156,13 @@ export abstract class WebComponent<ELS extends {
 	}
 
 	/**
-	 * Generate styles for this component in a type-safe manner
-	 */
-	styles: {
-		id: {
-			[P in keyof ELS["IDS"]]: Style<ELS["IDS"][P]>;
-		}
-		class: {
-			[P in keyof ELS["CLASSES"]]: Style<ELS["CLASSES"][P]>;
-		}
-		tag: {
-			[key: string]: Style<any>;
-		}
-	} = {
-		id: typeof Proxy !== 'undefined' ? new Proxy({}, {
-			get(_, id) {
-				return new Style({
-					id: id as string
-				});
-			}
-		}) : {},
-		class: typeof Proxy !== 'undefined' ? new Proxy({}, {
-			get(_, className) {
-				return new Style({
-					className: className as string
-				});
-			}
-		}) : {},
-		tag: typeof Proxy !== 'undefined' ? new Proxy({}, {
-			get(_, tag) {
-				return new Style({
-					tag: tag as string
-				});
-			}
-		}) : {}
-	} as {
-		id: {
-			[P in keyof ELS["IDS"]]: Style<ELS["IDS"][P]>;
-		}
-		class: {
-			[P in keyof ELS["CLASSES"]]: Style<ELS["CLASSES"][P]>;
-		}
-		tag: {
-			[key: string]: Style<any>;
-		}
-	};
-
-	/**
-	 * Apply querySelectorAll to this component's root
+	 * Proxy for `this.root.querySelectorAll(selector)`
+	 * 
+	 * @template E - An element
+	 * @param {string} selector - The query to use
+	 * 
+	 * @returns {NodeListOf<HTMLElement|SVGElement|E>} A list of
+	 * 	nodes that are the result of this query
 	 */
 	$$<K extends keyof HTMLElementTagNameMap>(selector: K): NodeListOf<HTMLElementTagNameMap[K]>;
     $$<K extends keyof SVGElementTagNameMap>(selector: K): NodeListOf<SVGElementTagNameMap[K]>;
@@ -284,7 +194,7 @@ export abstract class WebComponent<ELS extends {
 
 	/**
 	 * Called when the component is mounted to the dom for the first time.
-	 * 	This will be part of the "constructor" and will slow down the initial render
+	 * This will be part of the "constructor" and will slow down the initial render
 	 */
 	layoutMounted() {}
 
@@ -298,6 +208,21 @@ export abstract class WebComponent<ELS extends {
 	 */
 	unmounted() {}
 
+	/**
+	 * Listeners for property change events on this node
+	 * 
+	 * @template P - The properties of this node
+	 * 
+	 * @param {PropChangeEvents} event - The type of change
+	 * 	to listen for. Either a `propChange` or a 
+	 * 	`beforePropChange` event
+	 * @param {(key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void} listener - The
+	 * 	listener that should be called when the event is fired. 
+	 * 	This listener is called with the name of the changed
+	 * 	property, the new value and the old value respectively
+	 * @param {boolean} [once] - Whther the listener should only
+	 * 	be called once
+	 */
 	public listenProp<P extends Props & {
 		[key: string]: any;
 	}>(event: PropChangeEvents, 

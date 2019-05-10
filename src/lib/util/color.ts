@@ -1,10 +1,21 @@
+/**
+ * An interface representing a color by
+ * containing its `r`, `g`, `b` and
+ * `a` properties
+ */
 interface RGBAColorRepresentation {
 	r: number;
 	g: number;
 	b: number;
 	a: number;
 }
-interface RGBColorRepresentation {
+
+/**
+ * An interface representing a color by
+ * containing its `r`, `g`, `b` and (optionally)
+ * `a` properties
+ */
+export interface RGBColorRepresentation {
 	r: number;
 	g: number;
 	b: number;
@@ -239,49 +250,88 @@ function colorNameToHex(name: string): string {
 	return name;
 }
 
-export function changeOpacity(color: string, opacity: number) {
+/**
+ * Changes the opacity of a given color to the specified number (between 0 and 100).
+ * Overrides the opacity. So if the passed color has opacity 50 and 25 is passed,
+ * the new opacity is 0.25 instead of 0.25*0.50
+ * 
+ * @param {string} color - The color to change
+ * @param {number} opacity - The new opacity. A number between 0 and 100
+ * 
+ * @returns {string} The new color
+ */
+export function changeOpacity(color: string, opacity: number): string {
 	const colorRepr = getColorRepresentation(color);
 	return toStringColor({...colorRepr, a: opacity});
 }
 
-export function isDark(color: string) {
+/**
+ * Returns true if the color is dark, where a dark color has
+ * r, g and b values lower than 100 after multiplying them with 
+ * the opacity. Exact formula:
+ * 
+ * `r * a < 100 && g * a < 100 && b * a < 100`
+ * 
+ * @param {string} color - The color to check
+ * 
+ * @returns {boolean} Whether this is a dark color
+ */
+export function isDark(color: string): boolean {
 	const { r, g, b, a } = getColorRepresentation(color);
 	return r * a < 100 && g * a < 100 && b * a < 100;
 }
 
-export function RGBToRGBA(color: RGBColorRepresentation, alpha?: number): RGBAColorRepresentation {
-	if (typeof alpha !== 'number') {
-		alpha = 100;
-	}
-	if (typeof color.a === 'number') {
-		return color as RGBAColorRepresentation;
-	}
+/**
+ * Converts a string in color RGB color representation format to
+ * one in RGBA color representation after specifying its alpha value
+ * 
+ * @param {RGBColorRepresentation} color - The color to change
+ * @param {number} [alpha] An optional alpha value. Is set to 100 by default
+ * 
+ * @returns {RGBAColorRepresentation} The color in RGBA color representation
+ */
+export function RGBToRGBA(color: RGBColorRepresentation, alpha: number = 100): RGBAColorRepresentation {
 	return {...color, a: alpha }
 }
 
-export function mergeColors(color1: string|RGBColorRepresentation, color2: string|RGBColorRepresentation, negate: boolean = false): string {
-	if (typeof color1 === 'string') {
-		color1 = getColorRepresentation(color1);
-	} else {
-		color1 = RGBToRGBA(color1);
-	}
-	if (typeof color2 === 'string') {
-		color2 = getColorRepresentation(color2);
-	} else {
-		color2 = RGBToRGBA(color2, 0);
-	}
+/**
+ * Merges two colors by adding their individual `r`, `g`,
+ * `b` and `a` properties. This can be used to give an existing
+ * color a tint of some other color. When `subtract` is set to true,
+ * subtracts the second color instead, allowing for darkening
+ * 
+ * @param {string|RGBColorRepresentation|RGBAColorRepresentation} color1 - The first (base) color
+ * @param {string|RGBColorRepresentation|RGBAColorRepresentation} color2 - The second color which is
+ * 	added or (if `subtract` is true) subtracted from the first color
+ * @param {boolean} [subtract] - Whether to subtract the second color
+ * instead of adding it (false by default)
+ * 
+ * @returns {string} The new (merged) color
+ */
+export function mergeColors(color1: string|RGBColorRepresentation|RGBAColorRepresentation, 
+	color2: string|RGBColorRepresentation|RGBAColorRepresentation, subtract: boolean = false): string {
+		if (typeof color1 === 'string') {
+			color1 = getColorRepresentation(color1);
+		} else {
+			color1 = RGBToRGBA(color1);
+		}
+		if (typeof color2 === 'string') {
+			color2 = getColorRepresentation(color2);
+		} else {
+			color2 = RGBToRGBA(color2, 0);
+		}
 
-	if (negate) {
-		color2.r *= -1;
-		color2.g *= -1;
-		color2.b *= -1;
-		(color2 as RGBAColorRepresentation).a *= -1;
-	}
+		if (subtract) {
+			color2.r *= -1;
+			color2.g *= -1;
+			color2.b *= -1;
+			(color2 as RGBAColorRepresentation).a *= -1;
+		}
 
-	return toStringColor({
-		r: color1.r + color2.r,
-		g: color1.g + color2.g,
-		b: color1.b + color2.b,
-		a: (color1 as RGBAColorRepresentation).a + (color2 as RGBAColorRepresentation).a
-	});
-}
+		return toStringColor({
+			r: color1.r + color2.r,
+			g: color1.g + color2.g,
+			b: color1.b + color2.b,
+			a: (color1 as RGBAColorRepresentation).a + (color2 as RGBAColorRepresentation).a
+		});
+	}

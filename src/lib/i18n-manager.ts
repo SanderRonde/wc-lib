@@ -3,7 +3,7 @@ import { EventListenerObj } from './listener.js';
 import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
-	public static format: string = '/i18n/';
+	public static urlFormat: string = '/i18n/';
 	public static getMessage: (langFile: any, key: string, values: any[]) => string|Promise<string> = 
 		(file: {
 			[key: string]: string;
@@ -76,7 +76,7 @@ class I18NClass {
 		const prom = new Promise<{
 			[key: string]: string;
 		}>(async (resolve) => {
-			const text = await this.__fetch(this.format.replace(/\$LANG\$/g, lang));
+			const text = await this.__fetch(this.urlFormat.replace(/\$LANG\$/g, lang));
 			resolve(JSON.parse(text));
 		});
 		this.__langPromises[lang] = prom;
@@ -119,7 +119,21 @@ class I18NClass {
 	}
 }
 
+/**
+ * The class that manages all i18n (internationalization) functions
+ * 
+ * @template E - An object map of events to its args and return value. See
+ * 	`WebComponentListenable` for more info
+ */
 export abstract class WebComponentI18NManager<E extends EventListenerObj> extends WebComponentThemeManger<E> {
+	/**
+	 * The class associated with this one that
+	 * contains some functions required for 
+	 * it to function
+	 * 
+	 * @private
+	 * @readonly
+	 */
 	private ___i18nClass: I18NClass = new I18NClass(this);
 
 	constructor() {
@@ -135,29 +149,60 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		this.___i18nClass.setInitialLang();
 	}
 
-	
-	public setLang<L extends string>(lang: L) {
+	/**
+	 * Sets the current language
+	 * 
+	 * @param {string} lang - The language to set it to, a regular string
+	 */
+	public setLang<L extends string>(lang: L): void {
 		this.globalProps<{
 			lang: string;
 		}>().set('lang', lang);
 	}
 
-	public getLang() {
+	/**
+	 * Gets the currently active language
+	 */
+	public getLang(): string {
 		return I18NClass.currentLang!;
 	}
 	
+	/**
+	 * Initializes i18n with a few important settings
+	 */
 	public static initI18N({
-		format,
+		urlFormat,
 		defaultLang,
 		getMessage,
 		returner
 	}: {
-		format: string;
+		/**
+		 * The format of the language URLs where $LANG$ is replaced with the language.
+		 * For example if the language is `en` and the `urlFormat` is 
+		 * "/_locales/$LANG$.json" it would fetch it from "/_locales/en.json"
+		 */
+		urlFormat: string;
+		/**
+		 * The default language to use. This is a simple string
+		 */
 		defaultLang: string;
+		/**
+		 * An optional override of the default `getMessage` function. This function
+		 * gets the message from the language file given the file, a key and some 
+		 * replacement values and returns a message string or a promise resolving to one. 
+		 * The default function returns `file[key]`
+		 */
 		getMessage?: (langFile: any, key: string, values: any[]) => string|Promise<string>;
-		returner?: (promise: Promise<string>, content: string) => any;
+		/**
+		 * A final step called before the `this.__` function returns. This is called with
+		 * a promise that resolves to a message as the first argument and a placeholder
+		 * as the second argument. The placeholder is of the form "{{key}}".
+		 * This can be used as a way to return lit-html directives or similar
+		 * constructs to your templates instead of simple promises
+		 */
+		returner?: (messagePromise: Promise<string>, placeHolder: string) => any;
 	}) {
-		I18NClass.format = format;
+		I18NClass.urlFormat = urlFormat;
 		if (getMessage) {
 			I18NClass.getMessage = getMessage;
 		}
@@ -167,24 +212,57 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		I18NClass.defaultLang = defaultLang;
 	}
 
-	public __prom(key: string, ...values: any[]) {
+	/**
+	 * Returns a promise that resolves to the message. You will generally
+	 * want to use this inside the class itself since it resolves to a simple promise.
+	 * 
+	 * **Note:** Does not call the `options.returner` function before returning.
+	 * 
+	 * @param {string} key - The key to search for in the messages file
+	 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+	 * 		that can be used as placeholders or something similar
+	 * 
+	 * @returns {Promise<string>} A promise that resolves to the found message
+	 */
+	public __prom(key: string, ...values: any[]): Promise<string> {
 		return WebComponentI18NManager.__prom(key, ...values);
 	}
-	
-	public __process(key: string, process?: (str: string) => string,
-		...values: any[]) {
-			const value = this.__prom(key, ...values);
-			if (typeof value === 'string') return process ? process(value) : value;
 
-			return I18NClass.returner(
-				I18NClass.preprocess(value, process), `{{${key}}}`);
-		}
-
-	public __(key: string, ...values: any[]) {
+	/**
+	 * Returns either a string or whatever the `options.returner` function
+	 * returns. If you have not set the `options.returner` function, this will
+	 * return either a string or a promise that resolves to a string. Since
+	 * this function calls `options.returner` with the promise if the i18n file
+	 * is not loaded yet.
+	 * 
+	 * You will generally want to use this function inside your templates since it
+	 * allows for the `options.returner` function to return a template-friendly
+	 * value that can display a placeholder or something of the sort
+	 * 
+	 * @template R - The return value of your returner function
+	 * @param {string} key - The key to search for in the messages file
+	 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+	 * 		that can be used as placeholders or something similar
+	 * 
+	 * @returns {string|R} A promise that resolves to the found message
+	 */
+	public __<R>(key: string, ...values: any[]): string|R {
 		return WebComponentI18NManager.__(key, ...values);
 	}
 
-	public static __prom(key: string, ...values: any[]) {
+	/**
+	 * Returns a promise that resolves to the message. You will generally
+	 * want to use this inside the class itself since it resolves to a simple promise.
+	 * 
+	 * **Note:** Does not call the `options.returner` function before returning.
+	 * 
+	 * @param {string} key - The key to search for in the messages file
+	 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+	 * 		that can be used as placeholders or something similar
+	 * 
+	 * @returns {Promise<string>} A promise that resolves to the found message
+	 */
+	public static async __prom(key: string, ...values: any[]): Promise<string> {
 		if (I18NClass.isReady) {
 			return I18NClass.getMessage(
 				I18NClass.langFiles[I18NClass.lang], key,
@@ -193,13 +271,36 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		return I18NClass.waitForKey(key, values);
 	}
 
-	public static __(key: string, ...values: any[]) {
+	/**
+	 * Returns either a string or whatever the `options.returner` function
+	 * returns. If you have not set the `options.returner` function, this will
+	 * return either a string or a promise that resolves to a string. Since
+	 * this function calls `options.returner` with the promise if the i18n file
+	 * is not loaded yet.
+	 * 
+	 * You will generally want to use this function inside your templates since it
+	 * allows for the `options.returner` function to return a template-friendly
+	 * value that can display a placeholder or something of the sort
+	 * 
+	 * @template R - The return value of your returner function
+	 * @param {string} key - The key to search for in the messages file
+	 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+	 * 		that can be used as placeholders or something similar
+	 * 
+	 * @returns {string|R} A promise that resolves to the found message
+	 */
+	public static __<R>(key: string, ...values: any[]): string|R {
 		const value = this.__prom(key, ...values);
 		if (typeof value === 'string') return value;
 
 		return I18NClass.returner(value, `{{${key}}}`);
 	}
 
+	/**
+	 * A promise that resolves when the current language is loaded
+	 * 
+	 * @readonly
+	 */
 	public static get langReady() {
 		return I18NClass.loadCurrentLang();
 	}

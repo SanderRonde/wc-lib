@@ -1,3 +1,6 @@
+/**
+ * The default theme type
+ */
 export interface Theme {
 	/**
 	 * The primary color

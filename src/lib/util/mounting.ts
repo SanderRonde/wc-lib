@@ -15,7 +15,18 @@ function waitForMountedCallback(el: WebComponentBase): Promise<() => void> {
 	});
 }
 
-export async function awaitMounted(el: WebComponentBase) {
+/**
+ * Waits for given component to be mounted to the DOM.
+ * This can be handy when an element has just been created
+ * (for example through `document.createElement`) but it 
+ * has not yet finished mounting to the dom
+ * 
+ * @param {WebComponentBase} el - The element to watch
+ * 
+ * @returns {Promise<void>} A promise that resolves when
+ * the component has been mounted
+ */
+export async function awaitMounted(el: WebComponentBase): Promise<void> {
 	const realEl = el as WebComponent;
 	if (realEl.isMounted) {
 		return;
@@ -30,7 +41,20 @@ export async function awaitMounted(el: WebComponentBase) {
 	});
 }
 
-export async function hookIntoMount(el: WebComponentBase, fn: () => void) {
+/**
+ * Overrides an element's `.mounted` function and calls
+ * the passed function before calling the original function.
+ * This can be handy if you need to modify an element before
+ * it gets rendered to the DOM but after it has been mounted
+ * 
+ * @param {WebComponentBase} el - The element to watch
+ * @param {() => void)} fn - The function to run instead
+ * 
+ * @returns {Promise<void>} A promise that resolves when
+ * 	the element has been mounted (and as such your function)
+ * 	was ran
+ */
+export async function hookIntoMount(el: WebComponentBase, fn: () => void): Promise<void> {
 	const realEl = el as WebComponent;
 	if (realEl.isMounted) {
 		fn();

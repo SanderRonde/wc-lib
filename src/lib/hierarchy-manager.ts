@@ -2,11 +2,41 @@ import { EventListenerObj, WebComponentListenable } from './listener.js';
 import { ConfigurableWebComponent } from './configurable.js';
 import { bindToClass } from './base.js';
 
+/**
+ * Global properties functions returned by
+ * `component.globalProps()`
+ * 
+ * @template G - The global properties
+ */
 type GlobalPropsFunctions<G extends {
 	[key: string]: any;
 }> = {
+	/**
+	 * Gets all global properties
+	 */
 	all: G;
+	/**
+	 * Gets global property with given name
+	 * 
+	 * @template K - The key
+	 * 
+	 * @param {Extract<K, string>} key - The
+	 * 	name of the property to get
+	 * @returns {G[K]} The property
+	 */
 	get<K extends keyof G>(key: Extract<K, string>): G[K];
+	/**
+	 * Sets global property with given name
+	 * 
+	 * @template K - The key
+	 * @template V - The value
+	 * 
+	 * @param {Extract<K, string>} key - The
+	 * 	name of the property to get
+	 * @param {V} value - The value of the 
+	 * 	property to set it to
+	 * @returns {G[K]} The property
+	 */
 	set<K extends keyof G, V extends G[K]>(key: Extract<K, string>, value: V): void;
 }
 
@@ -157,9 +187,30 @@ class HierarchyClass {
 	public globalPropsFns: GlobalPropsFunctions<any>|null = null;
 }
 
+/**
+ * The class that is responsible for managing 
+ * the hierarchy of the page, establishing a
+ * root node and allowing for global properties
+ * to flow from children to the root and back to
+ * children
+ * 
+ * @template E - An object map of events to its args and return value. See
+ * 	`WebComponentListenable` for more info
+ */
 export abstract class WebComponentHierarchyManager<E extends EventListenerObj> extends WebComponentListenable<E> {
+	/**
+	 * The class associated with this one that
+	 * contains some functions required for 
+	 * it to function
+	 * 
+	 * @private
+	 * @readonly
+	 */
 	public ___hierarchyClass: HierarchyClass = new HierarchyClass(this);
 
+	/**
+	 * Called when the component is mounted to the dom
+	 */
 	connectedCallback() {
 		this.___hierarchyClass.isRoot = this.hasAttribute('_root');
 		this.___definerClass.internals.globalProperties = {...{
@@ -170,6 +221,16 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 		this.___hierarchyClass.registerToParent();
 	}
 
+	/**
+	 * Registers `element` as the child of this
+	 * component
+	 * 
+	 * @template G - Global properties
+	 * @param {WebComponentHierarchyManager<any>} element - The
+	 * 	component that is registered as the child of this one
+	 * 
+	 * @returns {G} The global properties
+	 */
 	public registerChild<G extends {
 		[key: string]: any;
 	}>(element: WebComponentHierarchyManager<any>): G {
@@ -178,6 +239,13 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 		return this.___definerClass.internals.globalProperties as G;
 	}
 
+	/**
+	 * Gets the global properties functions
+	 * 
+	 * @template G - The global properties
+	 * @returns {GlobalPropsFunctions<G>} Functions
+	 * 	that get and set global properties
+	 */
 	public globalProps<G extends {
 		[key: string]: any;
 	}>(): GlobalPropsFunctions<G> {
@@ -209,6 +277,13 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 		return (this.___hierarchyClass.globalPropsFns = fns);
 	}
 
+	/**
+	 * Gets the root node of the global hierarchy
+	 * 
+	 * @template T - The type of the root
+	 * 
+	 * @returns {T} The root
+	 */
 	public getRoot<T>(): T {
 		if (this.___hierarchyClass.isRoot) {
 			return <T><any>this;
@@ -216,10 +291,34 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 		return this.___hierarchyClass.parent!.getRoot();
 	}
 
+	/**
+	 * Runs a function for every component in this
+	 * global hierarchy
+	 * 
+	 * @template R - The return type of given function
+	 * 
+	 * @param {(element: ConfigurableWebComponent<any>) => R} fn - The
+	 * 	function that is ran on every component
+	 * 
+	 * @returns {R[]} All return values in an array
+	 */
 	public runGlobalFunction<R>(fn: (element: ConfigurableWebComponent<any>) => R): R[] {
 		return this.___hierarchyClass.propagateThroughTree(fn);
 	}
 
+	/**
+	 * Listeners for global property changes
+	 * 
+	 * @template GP - The global properties
+	 * 
+	 * @param {'globalPropChange'} event - The
+	 * 	event to listen for
+	 * @param {(prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void} listener - 
+	 * 	The listener that is called when the
+	 * 	event is fired
+	 * @param {boolean} [once] - Whether to 
+	 * 	only fire this event once
+	 */
 	public listenGP<GP extends {
 		[key: string]: any;
 	}>(event: 'globalPropChange', 

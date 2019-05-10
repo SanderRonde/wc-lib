@@ -1,6 +1,11 @@
 import { hookIntoMount, awaitMounted } from './util.js';
 import { CHANGE_TYPE } from './base.js';
 
+/**
+ * The prefix used for complex references
+ * 
+ * @constant
+ */
 export const refPrefix = '___complex_ref';
 
 function getterWithVal<R>(component: {
@@ -43,6 +48,23 @@ function getterWithVal<R>(component: {
 	}
 }
 
+/**
+ * Gets the property with name `name`
+ * from `element`
+ * 
+ * @template R - The return value
+ * 
+ * @param {HTMLElement & { getParentRef(ref: string): any; }} element - The	
+ * 	element from which to get the property
+ * @param {string} name - The name of the property
+ * @param {boolean} strict - Whether to use strict mode.
+ * 	If true, boolean type values are only true
+ * 	if the value is 'true', not just any truthy value
+ * @param {'string'|'number'|'bool'|typeof complex} type - The
+ * 	type of the value
+ * 
+ * @returns {boolean|string|number|undefined|R} The value
+ */
 export function getter<R>(element: HTMLElement & {
 	getParentRef(ref: string): any;
 }, name: string, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R;
@@ -64,6 +86,20 @@ export function getter<R>(element: HTMLElement & {
 	return getterWithVal(element, element.getAttribute(name), strict, type);
 }
 
+/**
+ * Sets the property with name `name`
+ * to `value`
+ * 
+ * @param {(key: string, val: string) => void} setAttrFn - The
+ * 	original `element.setAttribute` function
+ * @param {(key: string) => void, name: string} removeAttrFn - The
+ * 	original `element.removeAttribute` function
+ * @param {string} name - The name of the property
+ * @param {string|boolean|number} value - The value to
+ * 	set it to
+ * @param {'string'|'number'|'bool'|typeof complex} type - The
+ * 	type of the value
+ */
 export function setter(setAttrFn: (key: string, val: string) => void, 
 	removeAttrFn: (key: string) => void, name: string, 
 	value: string|boolean|number, type: 'string'|'number'|'bool'|typeof complex): void;
@@ -127,9 +163,21 @@ type GetTSType<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> =
 			V['type'] extends ComplexType<infer R> ? R :
 				void : void;
 
+/**
+ * Basic property types for properties
+ */
 export const enum PROP_TYPE {
+	/**
+	 * A string
+	 */
 	STRING = 'string',
+	/**
+	 * A number
+	 */
 	NUMBER = 'number',
+	/**
+	 * A boolean
+	 */
 	BOOL = 'bool'
 }
 type ComplexType<T> = typeof complex & {
@@ -138,6 +186,16 @@ type ComplexType<T> = typeof complex & {
 
 const complex = Symbol('complex type');
 
+/**
+ * A complex type value. This will be typed
+ * as whatever is passed as a template 
+ * parameter to this function
+ * 
+ * @template T - The type to set it to
+ * 
+ * @returns {Symbol} A symbol representing
+ * 	complex types
+ */
 export function ComplexType<T>(): ComplexType<T> {
 	return complex as ComplexType<T>;
 }
@@ -733,7 +791,25 @@ namespace PropsDefiner {
 		}
 }
 
+/**
+ * A class used to define properties for components
+ */
 export class Props {
+	/**
+	 * Defines properties on this component
+	 * 
+	 * @template P - The public properties
+	 * @template T - The private propertie
+	 * @template R - The return value
+	 * 
+	 * @param {HTMLElement & { renderToDOM(changeType: CHANGE_TYPE): void; getParentRef(ref: string): any; isMounted: boolean; fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[] }} element - The
+	 * 	element on which to define these properties
+	 * @param {{ reflect?: P; priv?: T; }} [config] - The
+	 * 	configuration for these properties
+	 * 
+	 * @returns {Props & R} The properties for 
+	 * 	this component
+	 */
 	static define<P extends {
 		[key: string]: DefinePropTypes|DefinePropTypeConfig;
 	}, T extends {

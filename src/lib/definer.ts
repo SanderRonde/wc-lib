@@ -119,16 +119,44 @@ export class DefineData {
 	}
 }
 
+/**
+ * The class that manages defining of this component
+ * and its dependencies
+ */
 export abstract class WebComponentDefiner extends elementBase {
+	/**
+	 * The class associated with this one that
+	 * contains some functions required for 
+	 * it to function
+	 * 
+	 * @private
+	 * @readonly
+	 */
 	public ___definerClass: DefinerClass = new DefinerClass();
+	/**
+	 * The class associated with this one that
+	 * contains some functions required for 
+	 * it to function
+	 * 
+	 * @private
+	 * @readonly
+	 */
 	private static ___definerClass: typeof DefinerClass = DefinerClass;
 
 	/**
-	 * Any dependencies this component depends on
+	 * Dependencies of this component. If this
+	 * component uses other components in its
+	 * template, adding them to this array will
+	 * make sure they are defined before this
+	 * component is
+	 * 
+	 * @readonly
 	 */
 	public static dependencies: (typeof WebComponentBase|null)[] = [];
 	/**
-	 * A tuple consisting of the name of the component and its class
+	 * The name of this component and its constructor
+	 * 
+	 * @readonly
 	 */
 	public static is: ComponentIs;
 	
@@ -147,6 +175,11 @@ export abstract class WebComponentDefiner extends elementBase {
 
 	/**
 	 * Define this component and its dependencies as a webcomponent
+	 * so they can be used
+	 * 
+	 * @param {boolean} [isRoot] - Set to true if this is
+	 * 	not a dependency (which most definitions aren't)
+	 * 	True by default
 	 */
 	static define(isRoot: boolean = true) {
 		if (isRoot && this.___definerClass.finished) {

@@ -19,9 +19,28 @@ class CustomCSSClass {
 	}
 }
 
+/**
+ * The class that manages custom CSS
+ * 
+ * @template E - An object map of events to its args and return value. See
+ * 	`WebComponentListenable` for more info
+ */
 export abstract class WebComponentCustomCSSManager<E extends EventListenerObj> extends WebComponentTemplateManager<E> {
+	/**
+	 * The class associated with this one that
+	 * contains some functions required for 
+	 * it to function
+	 * 
+	 * @private
+	 * @readonly
+	 */
 	private ___customCSSClass: CustomCSSClass = new CustomCSSClass(this);
 
+	/**
+	 * Whether this component has been mounted
+	 * 
+	 * @readonly
+	 */
 	public abstract isMounted: boolean;
 
 	constructor() {
@@ -36,6 +55,11 @@ export abstract class WebComponentCustomCSSManager<E extends EventListenerObj> e
 		}
 	}
 
+	/**
+	 * A function signaling whether this component has custom CSS applied to it
+	 * 
+	 * @returns {boolean} Whether this component uses custom CSS
+	 */
 	public __hasCustomCSS() {
 		if (this.___customCSSClass.hasCustomCSS !== null) {
 			return this.___customCSSClass.hasCustomCSS;
@@ -52,6 +76,12 @@ export abstract class WebComponentCustomCSSManager<E extends EventListenerObj> e
 		return (this.___customCSSClass.hasCustomCSS = true);
 	}
 
+	/**
+	 * Gets this component's custom CSS templates
+	 * 
+	 * @returns {TemplateFn<any, any, any>|TemplateFn<any, any, any>[]} The
+	 * 	custom CSS templates
+	 */
 	public customCSS(): TemplateFn<any, any, any>|TemplateFn<any, any, any>[] {
 		return this.___customCSSClass.getCustomCSS();
 	}

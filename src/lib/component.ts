@@ -1,6 +1,6 @@
 import { WebComponentCustomCSSManager } from './custom-css-manager.js';
-import { removeAllElementListeners } from './listeners.js';
-import { CHANGE_TYPE, bindToClass } from './base.js';
+import { Listeners } from './listeners.js';
+import { bindToClass, CHANGE_TYPE } from './base.js';
 import { EventListenerObj } from './listener.js';
 import { Props } from './props.js';
 
@@ -186,7 +186,7 @@ export abstract class WebComponent<ELS extends {
 	 * Called when the component is unmounted from the dom
 	 */
 	disconnectedCallback() {
-		removeAllElementListeners(this as any);
+		Listeners.removeAllElementListeners(this as any);
 		this.disposables.forEach(disposable => disposable());
 		this.disposables = [];
 		this.isMounted = false;

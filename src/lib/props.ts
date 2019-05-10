@@ -1,4 +1,4 @@
-import { awaitMounted, hookIntoMount } from './util/mounting.js';
+import { Mounting } from './util/mounting.js';
 import { CHANGE_TYPE } from './base.js';
 
 /**
@@ -735,7 +735,7 @@ namespace PropsDefiner {
 						getter(this._rep.component, propName, strict, type) as any, 
 						watch, watchProperties);
 				} else {
-					await hookIntoMount(this._rep.component as any, () => {
+					await Mounting.hookIntoMount(this._rep.component as any, () => {
 						if (!isPrivate || this._rep.component.getAttribute(propName) !== '_') {
 							this._rep.propValues[mapKey] = watchValue(createQueueRenderFn(this._rep.component), 
 								getter(this._rep.component, propName, strict, type) as any, 
@@ -754,12 +754,12 @@ namespace PropsDefiner {
 					this._rep.propValues[mapKey] = watchValue(
 						createQueueRenderFn(this._rep.component), 
 						defaultValue as any, watch, watchProperties);
-					await hookIntoMount(this._rep.component as any, () => {
+					await Mounting.hookIntoMount(this._rep.component as any, () => {
 						setter(this._rep.setAttr, this._rep.removeAttr, propName, 
 							isPrivate ? '_' : defaultValue, type);
 					});
 				} else if (isPrivate || type === complex) {
-					await hookIntoMount(this._rep.component as any, () => {
+					await Mounting.hookIntoMount(this._rep.component as any, () => {
 						setter(this._rep.setAttr, this._rep.removeAttr, propName,
 							isPrivate ? '_' : this._rep.propValues[mapKey] as any, type);
 					});
@@ -775,7 +775,7 @@ namespace PropsDefiner {
 			const element = new ElementRepresentation(component);
 
 			element.overrideAttributeFunctions();
-			awaitMounted(component as any).then(() => {
+			Mounting.awaitMounted(component as any).then(() => {
 				element.runQueued();
 			});
 

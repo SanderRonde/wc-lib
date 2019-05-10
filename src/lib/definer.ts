@@ -6,7 +6,7 @@ interface ExtendedProcess extends NodeJS.Process {
 	HTMLElement: typeof HTMLElement;
 }
 
-export function define(name: string, component: any) {
+function define(name: string, component: any) {
 	if (window.customElements.get(name)) {
 		return;
 	}
@@ -97,7 +97,7 @@ class DefinerClass {
 	}
 }
 
-export class DefineData {
+export class DefineMetadata {
 	public static defined: number = 0;
 	private static _listeners: ((amount: number) => any)[] = [];
 
@@ -202,7 +202,7 @@ export abstract class WebComponentDefiner extends elementBase {
 		}
 		define(this.is.name, this.is.component);
 		this.___definerClass.defined.push(this.is.name);
-		DefineData.increment();
+		DefineMetadata.increment();
 
 		this.___definerClass.finishLoad();
 	}

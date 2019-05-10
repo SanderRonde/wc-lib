@@ -15,33 +15,6 @@ export function wait(time: number): Promise<void> {
 	});
 }
 
-let _supportsPassive: boolean | null = null;
-/**
- * Returns true if this browser supports
- * passive event listeners
- * 
- * @returns {boolean} Whether this browser
- * 	supports passive event listeners
- */
-export function supportsPassive(): boolean {
-	if (_supportsPassive !== null) {
-		return _supportsPassive;
-	}
-	_supportsPassive = false;
-	try {
-		var opts = Object.defineProperty({}, 'passive', {
-			get: function () {
-				_supportsPassive = true;
-			}
-		});
-		const tempFn = () => { };
-		window.addEventListener("testPassive", tempFn, opts);
-		window.removeEventListener("testPassive", tempFn, opts);
-	}
-	catch (e) { }
-	return _supportsPassive;
-}
-
 // From https://github.com/JedWatson/classnames
 
 /**

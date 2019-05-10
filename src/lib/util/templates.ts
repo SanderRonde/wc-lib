@@ -15,7 +15,7 @@ import { WebComponent } from '../component.js';
  * @returns {any[]|string|T} The array if its length is greater
  * 	than zero and the fallback value otherwise
  */
-export function createArrayFallback<T>(result: any[], fallback: string|T = ''): any[] | string | T {
+function createArrayFallback<T>(result: any[], fallback: string|T = ''): any[] | string | T {
 	if (result.length === 0) {
 		return fallback;
 	}

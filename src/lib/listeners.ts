@@ -1,6 +1,31 @@
-export { supportsPassive } from './shared.js'
-import { supportsPassive } from './shared.js'
 import { WebComponent } from './component.js';
+
+let _supportsPassive: boolean | null = null;
+/**
+ * Returns true if this browser supports
+ * passive event listeners
+ * 
+ * @returns {boolean} Whether this browser
+ * 	supports passive event listeners
+ */
+function supportsPassive(): boolean {
+	if (_supportsPassive !== null) {
+		return _supportsPassive;
+	}
+	_supportsPassive = false;
+	try {
+		var opts = Object.defineProperty({}, 'passive', {
+			get: function () {
+				_supportsPassive = true;
+			}
+		});
+		const tempFn = () => { };
+		window.addEventListener("testPassive", tempFn, opts);
+		window.removeEventListener("testPassive", tempFn, opts);
+	}
+	catch (e) { }
+	return _supportsPassive;
+}
 
 type IDMap = Map<string, (this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any>;
 const listenedToElements: WeakMap<WebComponent, {

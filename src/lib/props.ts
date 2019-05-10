@@ -1,4 +1,4 @@
-import { hookIntoMount, awaitMounted } from './util.js';
+import { awaitMounted, hookIntoMount } from './util/mounting.js';
 import { CHANGE_TYPE } from './base.js';
 
 /**

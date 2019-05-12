@@ -176,6 +176,7 @@ export abstract class WebComponent<ELS extends {
 	 */
 	connectedCallback() {
 		super.connectedCallback();
+		Props.onConnect(this);
 		this.renderToDOM(CHANGE_TYPE.ALWAYS);
 		this.layoutMounted();
 

@@ -1,4 +1,4 @@
-import { Mounting } from './util/mounting.js';
+import { WebComponent } from './component.js';
 import { CHANGE_TYPE } from './base.js';
 
 /**
@@ -428,6 +428,33 @@ function watchValue(render: QueueRenderFn, value: any, watch: boolean, watchProp
 	return value;
 }
 
+const connectMap = new WeakMap<HTMLElement, any>();
+const connectedElements = new WeakSet<HTMLElement>();
+
+export async function awaitConnected(el: WebComponent): Promise<void> {
+    if (connectedElements.has(el)) return;
+    await new Promise(async (resolve) => {
+        const arr = connectMap.get(el) || [];
+        arr.push(resolve);
+        connectMap.set(el, arr);
+    });
+}
+
+export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<void> {
+    if (connectedElements.has(el)) {
+        fn(); 
+        return;
+    }
+    await new Promise(async (resolve) => {
+        const arr = connectMap.get(el) || [];
+        arr.push(() => {
+            fn();
+            resolve();
+        });
+        connectMap.set(el, arr);
+    });
+}
+
 namespace PropsDefiner {
 	// Reflect and private type configs
 	interface PropTypeConfig {
@@ -735,7 +762,7 @@ namespace PropsDefiner {
 						getter(this._rep.component, propName, strict, type) as any, 
 						watch, watchProperties);
 				} else {
-					await Mounting.hookIntoMount(this._rep.component as any, () => {
+					await hookIntoConnect(this._rep.component as any, () => {
 						if (!isPrivate || this._rep.component.getAttribute(propName) !== '_') {
 							this._rep.propValues[mapKey] = watchValue(createQueueRenderFn(this._rep.component), 
 								getter(this._rep.component, propName, strict, type) as any, 
@@ -754,12 +781,12 @@ namespace PropsDefiner {
 					this._rep.propValues[mapKey] = watchValue(
 						createQueueRenderFn(this._rep.component), 
 						defaultValue as any, watch, watchProperties);
-					await Mounting.hookIntoMount(this._rep.component as any, () => {
+					await hookIntoConnect(this._rep.component as any, () => {
 						setter(this._rep.setAttr, this._rep.removeAttr, propName, 
 							isPrivate ? '_' : defaultValue, type);
 					});
 				} else if (isPrivate || type === complex) {
-					await Mounting.hookIntoMount(this._rep.component as any, () => {
+					await hookIntoConnect(this._rep.component as any, () => {
 						setter(this._rep.setAttr, this._rep.removeAttr, propName,
 							isPrivate ? '_' : this._rep.propValues[mapKey] as any, type);
 					});
@@ -775,7 +802,7 @@ namespace PropsDefiner {
 			const element = new ElementRepresentation(component);
 
 			element.overrideAttributeFunctions();
-			Mounting.awaitMounted(component as any).then(() => {
+			awaitConnected(component as any).then(() => {
 				element.runQueued();
 			});
 
@@ -872,6 +899,15 @@ export class Props {
 			PropsDefiner.define(props as Props & Partial<R>, element, config);
 			return props as Props & R;
 		}
+
+	static onConnect(element: HTMLElement) {
+		if (connectMap.has(element)) {
+			for (const listener of connectMap.get(element)!) {
+				listener();
+			}
+		}
+		connectedElements.add(element);
+	}
 }
 
 type DEFAULT_EVENTS = {

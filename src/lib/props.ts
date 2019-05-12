@@ -791,6 +791,17 @@ namespace PropsDefiner {
 		}
 }
 
+export type PropConfigObject = {
+	[key: string]: DefinePropTypes|DefinePropTypeConfig;
+};
+
+export type PropReturn<PUB extends PropConfigObject, PRIV extends PropConfigObject> = {
+	[K in keyof PUB]: GetTSType<PUB[K]>;
+} & {
+	[K in keyof PRIV]: GetTSType<PRIV[K]>;
+}
+
+
 /**
  * A class used to define properties for components
  */
@@ -798,97 +809,69 @@ export class Props {
 	/**
 	 * Defines properties on this component
 	 * 
-	 * @template P - The public properties
-	 * @template T - The private propertie
+	 * @template PUB - The public properties
+	 * @template PRIV - The private propertie
 	 * @template R - The return value
 	 * 
 	 * @param {HTMLElement & { renderToDOM(changeType: CHANGE_TYPE): void; getParentRef(ref: string): any; isMounted: boolean; fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[] }} element - The
 	 * 	element on which to define these properties
-	 * @param {{ reflect?: P; priv?: T; }} [config] - The
+	 * @param {{ reflect?: PUB; priv?: PRIV; }} [config] - The
 	 * 	configuration for these properties
 	 * 
 	 * @returns {Props & R} The properties for 
 	 * 	this component
 	 */
-	static define<P extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, T extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, R extends {
-		[K in keyof P]: GetTSType<P[K]>;
-	} & {
-		[K in keyof T]: GetTSType<T[K]>;
-	}>(element: HTMLElement & {
-		renderToDOM(changeType: CHANGE_TYPE): void;
-		getParentRef(ref: string): any;
-		fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-			event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-	}, props: {
-		reflect: P;
-		priv: T;
-	}): Props & {
-		[K in keyof P]: GetTSType<P[K]>;
-	} & {
-		[K in keyof T]: GetTSType<T[K]>;
-	};
-	static define<P extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, T extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, R extends {
-		[K in keyof P]: GetTSType<P[K]>;
-	} & {
-		[K in keyof T]: GetTSType<T[K]>;
-	}>(element: HTMLElement & {
-		renderToDOM(changeType: CHANGE_TYPE): void;
-		getParentRef(ref: string): any;
-		fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-			event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-	}, props: {
-		priv?: T;
-	}): Props & {
-		[K in keyof T]: GetTSType<T[K]>;
-	};
-	static define<P extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, T extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, R extends {
-		[K in keyof P]: GetTSType<P[K]>;
-	} & {
-		[K in keyof T]: GetTSType<T[K]>;
-	}>(element: HTMLElement & {
-		renderToDOM(changeType: CHANGE_TYPE): void;
-		getParentRef(ref: string): any;
-		fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-			event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-	}, props: {
-		reflect: P;
-	}): Props & {
-		[K in keyof P]: GetTSType<P[K]>;
-	};
-	static define<P extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, T extends {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	}, R extends {
-		[K in keyof P]: GetTSType<P[K]>;
-	} & {
-		[K in keyof T]: GetTSType<T[K]>;
-	}>(element: HTMLElement & {
-		renderToDOM(changeType: CHANGE_TYPE): void;
-		getParentRef(ref: string): any;
-		isMounted: boolean;
-		fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-			event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-	}, config: {
-		reflect?: P;
-		priv?: T;
-	} = {}): Props & R {
-		const props = new Props();
-		PropsDefiner.define(props as Props & Partial<R>, element, config);
-		return props as Props & R;
-	}
+	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
+		element: HTMLElement & {
+			renderToDOM(changeType: CHANGE_TYPE): void;
+			getParentRef(ref: string): any;
+			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
+				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
+		}, props: {
+			reflect: PUB;
+			priv: PRIV;
+		}): Props & {
+			[K in keyof PUB]: GetTSType<PUB[K]>;
+		} & {
+			[K in keyof PRIV]: GetTSType<PRIV[K]>;
+		};
+	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
+		element: HTMLElement & {
+			renderToDOM(changeType: CHANGE_TYPE): void;
+			getParentRef(ref: string): any;
+			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
+				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
+		}, props: {
+			priv?: PRIV;
+		}): Props & {
+			[K in keyof PRIV]: GetTSType<PRIV[K]>;
+		};
+	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
+		element: HTMLElement & {
+			renderToDOM(changeType: CHANGE_TYPE): void;
+			getParentRef(ref: string): any;
+			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
+				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
+		}, props: {
+			reflect: PUB;
+		}): Props & {
+			[K in keyof PUB]: GetTSType<PUB[K]>;
+		};
+	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
+		element: HTMLElement & {
+			renderToDOM(changeType: CHANGE_TYPE): void;
+			getParentRef(ref: string): any;
+			isMounted: boolean;
+			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
+				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
+		}, config: {
+			reflect?: PUB;
+			priv?: PRIV;
+		} = {}): Props & R {
+			const props = new Props();
+			PropsDefiner.define(props as Props & Partial<R>, element, config);
+			return props as Props & R;
+		}
 }
 
 type DEFAULT_EVENTS = {

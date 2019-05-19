@@ -88,6 +88,13 @@ export const enum CHANGE_TYPE {
  */
 export type Templater<R> = (strings: TemplateStringsArray, ...values: any[]) => R;
 
+export type TemplateRenderResult = {
+	strings: string[]|TemplateStringsArray;
+	values: any[];
+}|{
+	toText(): string;
+}|string;
+
 /**
  * A template render function that gets called on
  * specified change
@@ -101,7 +108,7 @@ export type Templater<R> = (strings: TemplateStringsArray, ...values: any[]) => 
  */
 export type TemplateRenderFunction<C extends {
 	props: any;
-}, T, TR> = (
+}, T, TR extends TemplateRenderResult> = (
 	/**
 	 * The base component
 	 */
@@ -185,7 +192,7 @@ export type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => 
  */
 export class TemplateFn<C extends {
 	props: any;
-} = WebComponent<any, any>, T = void, R = any> {
+} = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> {
 		private _lastRenderChanged: boolean = true;
 
 		/**
@@ -211,7 +218,7 @@ export class TemplateFn<C extends {
 			public changeOn: CHANGE_TYPE, 
 			private _renderer: Renderer<R>) { }
 
-		private _renderWithTemplater<TR>(changeType: CHANGE_TYPE, component: C,
+		private _renderWithTemplater<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
 			templater: Templater<TR>): {
 				changed: boolean;
 				rendered: TR
@@ -267,12 +274,26 @@ export class TemplateFn<C extends {
 				};
 			}
 
-		private static _textRenderer(strings: TemplateStringsArray, ...values: any[]): string {
+		private static _textRenderer(strings: TemplateStringsArray|string[], ...values: any[]): string {
 			const result: string[] = [strings[0]];
 			for (let i = 0; i < values.length; i++) {
 				result.push(values[i], strings[i + 1]);
 			}
 			return result.join('');
+		}
+
+		private static _templateResultToText(result: TemplateRenderResult) {
+			if (typeof result === 'string') return result;
+
+			if ('toText' in result && typeof result.toText === 'function') {
+				return result.toText();
+			}
+			if ('strings' in result && 'values' in result) {
+				return this._textRenderer(result.strings, ...result.values);
+			}
+			throw new Error('Failed to convert template to text because there ' +
+				'is no .toText() and no .strings and .values properties either ' +
+				'(see TemplateRenderResult)');
 		}
 
 		/**
@@ -286,7 +307,12 @@ export class TemplateFn<C extends {
 		public renderAsText(changeType: CHANGE_TYPE, component: C): string {
 			const { changed, rendered } = this._renderWithTemplater(changeType, component,
 				TemplateFn._textRenderer);
+
 			this._lastRenderChanged = changed;
+			if (typeof rendered !== 'string') {
+				// Not text yet
+				return TemplateFn._templateResultToText(rendered);
+			}
 			return rendered;
 		}
 
@@ -321,7 +347,7 @@ export class TemplateFn<C extends {
 		 * 
 		 * @returns {TR} The return value of the templater
 		 */
-		public renderSame<TR>(changeType: CHANGE_TYPE, component: C,
+		public renderSame<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
 			templater: Templater<TR>): TR {
 				const { changed, rendered } = this._renderWithTemplater(changeType, component,
 					templater);

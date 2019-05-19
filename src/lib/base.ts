@@ -543,9 +543,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public abstract readonly html: TemplateFn<any, any, any> = new TemplateFn(() => {
-		throw new Error('No render method implemented');	
-	}, CHANGE_TYPE.ALWAYS, () => {});
+	public abstract readonly html: TemplateFn<any, any, any>;
 
 	/**
 	 * The element's constructor
@@ -559,8 +557,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public abstract readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
-		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
+	public abstract readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
 
 	/**
 	 * A function signaling whether this component has custom CSS applied to it

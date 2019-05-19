@@ -455,6 +455,18 @@ export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<
     });
 }
 
+export interface PropComponent extends HTMLElement {
+	renderToDOM(changeType: CHANGE_TYPE): void;
+	getParentRef(ref: string): any;
+	isMounted: boolean;
+	fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
+		event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
+	self: {
+		mixins?: any[];
+	}
+	props: PropReturn<any, any>;
+}
+
 namespace PropsDefiner {
 	// Reflect and private type configs
 	interface PropTypeConfig {
@@ -471,22 +483,10 @@ namespace PropsDefiner {
 		reflectToAttr: B;
 	};
 	type Keys<R extends PropTypeConfig, P extends PropTypeConfig> = (KeyPart<R, true>|KeyPart<P, false>)[];
-	type Element = HTMLElement & {
-		renderToDOM(changeType: CHANGE_TYPE): void;
-		getParentRef(ref: string): any;
-		isMounted: boolean;
-		fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-			event: EV, ...params: DEFAULT_EVENTS[EV]['args']): R[]
-	};
 
-	const renderMap: WeakMap<HTMLElement, CHANGE_TYPE> = new WeakMap();
+	const renderMap: WeakMap<PropComponent, CHANGE_TYPE> = new WeakMap();
 
-	function queueRender(element: HTMLElement & {
-		renderToDOM(changeType: CHANGE_TYPE): void;
-		getParentRef(ref: string): any;
-		fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-			event: EV, ...params: DEFAULT_EVENTS[EV]['args']): R[]
-	}, changeType: CHANGE_TYPE) {
+	function queueRender(element: PropComponent, changeType: CHANGE_TYPE) {
 		if (renderMap.has(element)) {
 			const mapped = renderMap.get(element);
 			//Check if this change type has higher priority
@@ -506,12 +506,7 @@ namespace PropsDefiner {
 		}, 0);
 	}
 
-	function createQueueRenderFn(element: HTMLElement & {
-		renderToDOM(changeType: CHANGE_TYPE): void;
-		getParentRef(ref: string): any;
-		fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-			event: EV, ...params: DEFAULT_EVENTS[EV]['args']): R[]
-	}) {
+	function createQueueRenderFn(element: PropComponent) {
 		return (changeType: CHANGE_TYPE) => {
 			queueRender(element, changeType);
 		}
@@ -536,7 +531,7 @@ namespace PropsDefiner {
 			remove: []
 		};
 
-		constructor(public component: Element) {
+		constructor(public component: PropComponent) {
 			this.setAttr = component.setAttribute.bind(component);
 			this.removeAttr = component.removeAttribute.bind(component);
 		}
@@ -640,7 +635,10 @@ namespace PropsDefiner {
 				el.removeAttr(key);
 		}
 
-	const propConfigs: WeakMap<Props, ElementRepresentation<PropTypeConfig, PropTypeConfig>> = new WeakMap();
+	const propConfigs: WeakMap<Props, {
+		element: ElementRepresentation<PropTypeConfig, PropTypeConfig>;
+		composite: boolean;
+	}> = new WeakMap();
 
 	class Property<R extends PropTypeConfig, P extends PropTypeConfig, K extends KeyPart<R, true>|KeyPart<P, false>,
 		Z extends ReturnType<R, P>> {
@@ -814,7 +812,7 @@ namespace PropsDefiner {
 		}
 
 	export function define<R extends PropTypeConfig, P extends PropTypeConfig, Z extends ReturnType<R, P>>(
-		props: Props & Partial<Z>, component: Element, config: {
+		props: Props & Partial<Z>, component: PropComponent, config: {
 			reflect?: R;
 			priv?: P;
 		} = {}) {
@@ -822,12 +820,27 @@ namespace PropsDefiner {
 
 			element.overrideAttributeFunctions();
 			awaitConnected(component as any).then(() => {
+				if (component.self.mixins && 
+					Array.isArray(component.self.mixins) && 
+					component.self.mixins.length &&
+					propConfigs.has(props)) {
+						const { composite, element } = propConfigs.get(props)!;
+						if (!composite) {
+							console.warn('Properties of mixins are not being merged. ' +
+								'Please call "Props.defineProps" with "super.props" as ' +
+								'the third parameter', element);
+						}
+					}
+
 				element.runQueued();
 			});
 
 			defineProperties(element, props, config);
 			
-			propConfigs.set(props, element);
+			propConfigs.set(props, {
+				composite: false,
+				element
+			});
 		}
 
 	export function joinProps<R extends PropTypeConfig, P extends PropTypeConfig, PP extends PropReturn<any, any>>(
@@ -838,9 +851,13 @@ namespace PropsDefiner {
 			if (!propConfigs.has(previousProps)) {
 				throw new Error('Previous props not defined');
 			}
-			const element = propConfigs.get(previousProps)!;
+			const { element } = propConfigs.get(previousProps)!;
 
 			defineProperties(element, previousProps, config);
+			propConfigs.set(previousProps, {
+				composite: true,
+				element
+			})
 		}
 }
 
@@ -854,7 +871,6 @@ export type PropReturn<PUB extends PropConfigObject, PRIV extends PropConfigObje
 	[K in keyof PRIV]: GetTSType<PRIV[K]>;
 }
 
-
 /**
  * A class used to define properties for components
  */
@@ -867,7 +883,7 @@ export class Props {
 	 * @template R - The return value
 	 * @template PP - The parent's properties
 	 * 
-	 * @param {HTMLElement & { renderToDOM(changeType: CHANGE_TYPE): void; getParentRef(ref: string): any; isMounted: boolean; fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[] }} element - The
+	 * @param {PropComponent} element - The
 	 * 	element on which to define these properties
 	 * @param {{ reflect?: PUB; priv?: PRIV; }} [config] - The
 	 * 	configuration for these properties
@@ -879,12 +895,7 @@ export class Props {
 	 * 	this component
 	 */
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: {
+		element: PropComponent, props: {
 			reflect: PUB;
 			priv: PRIV;
 		}): Props & {
@@ -893,41 +904,21 @@ export class Props {
 			[K in keyof PRIV]: GetTSType<PRIV[K]>;
 		};
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: {
+		element: PropComponent, props: {
 			priv: PRIV;
 		}): Props & {
 			[K in keyof PRIV]: GetTSType<PRIV[K]>;
 		};
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: {
+		element: PropComponent, props: {
 			reflect: PUB;
 		}): Props & {
 			[K in keyof PUB]: GetTSType<PUB[K]>;
 		};
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: { }): Props;
+		element: PropComponent, props: { }): Props;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: {
+		element: PropComponent, props: {
 			reflect: PUB;
 			priv: PRIV;
 		}, parentProps: PP): Props & {
@@ -936,42 +927,21 @@ export class Props {
 			[K in keyof PRIV]: GetTSType<PRIV[K]>;
 		} & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: {
+		element: PropComponent, props: {
 			priv: PRIV;
 		}, parentProps: PP): Props & {
 			[K in keyof PRIV]: GetTSType<PRIV[K]>;
 		} & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: {
+		element: PropComponent, props: {
 			reflect: PUB;
 		}, parentProps: PP): Props & {
 			[K in keyof PUB]: GetTSType<PUB[K]>;
 		} & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, props: { }, parentProps: PP): Props & PP;
+		element: PropComponent, props: { }, parentProps: PP): Props & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: HTMLElement & {
-			renderToDOM(changeType: CHANGE_TYPE): void;
-			getParentRef(ref: string): any;
-			isMounted: boolean;
-			fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
-				event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
-		}, config: {
+		element: PropComponent, config: {
 			reflect?: PUB;
 			priv?: PRIV;
 		} = {}, parentProps?: PP): Props & R & PP {

@@ -1,4 +1,4 @@
-import { TemplateFn, WebComponentBase } from './base.js';
+import { TemplateFn, WebComponentBase, CHANGE_TYPE } from './base.js';
 import { EventListenerObj } from './listener.js';
 import { WebComponent } from './component.js';
 
@@ -53,6 +53,12 @@ export class ConfigurableWebComponent<ELS extends {
 	 * @readonly
 	 */
 	public get self(): typeof ConfiguredComponent { return {} as any}
+	/**
+	 * Components from which this component should inherit
+	 * 
+	 * @readonly
+	 */
+	public static mixins: (MixinFn<any, any>)[];
 }
 
 /**
@@ -102,13 +108,19 @@ export interface WebComponentConfiguration {
 	 * 
 	 * @readonly
 	 */
-	readonly dependencies?: (typeof WebComponentBase|null)[];
+	readonly dependencies?: (typeof WebComponentBase)[];
 	/**
 	 * The render method that will render this component's HTML
 	 * 
 	 * @readonly
 	 */
 	readonly html: TemplateFn<any, any, any>;
+	/**
+	 * Components from which this component should inherit
+	 * 
+	 * @readonly
+	 */
+	readonly mixins?: (MixinFn<any, any>)[];
 }
 
 /**
@@ -117,7 +129,7 @@ export interface WebComponentConfiguration {
  * from `ConfigurableWebComponent` and decorated
  * with `@configure`
  */
-export abstract class ConfiguredComponent extends WebComponentBase {
+export class ConfiguredComponent extends WebComponentBase {
 	/**
 	 * The name of this component and its constructor
 	 * 
@@ -133,15 +145,181 @@ export abstract class ConfiguredComponent extends WebComponentBase {
 	 * 
 	 * @readonly
 	 */
-	static dependencies: (typeof WebComponentBase | null)[]
+	static dependencies: (typeof WebComponentBase)[]
 	/**
 	 * The config uses to configure this component
 	 * 
 	 * @readonly
 	 */
 	static config: WebComponentConfiguration;
+	/**
+	 * Components from which this component should inherit.
+	 * You should also call
+	 * 
+	 * @readonly
+	 */
+	static mixins: (MixinFn<any, any>)[];
+	/**
+	 * The element's constructor
+	 * 
+	 * @readonly
+	 */
+	public get self(): typeof ConfiguredComponent { return {} as any}
+
+	/**
+	 * The template(s) that will render this component's css
+	 * 
+	 * @readonly
+	 */
+	public readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
+		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
+	/**
+	 * The render method that will render this component's HTML
+	 * 
+	 * @readonly
+	 */
+	public readonly html: TemplateFn<any, any, any> = new TemplateFn(() => {
+		throw new Error('No render method implemented');	
+	}, CHANGE_TYPE.ALWAYS, () => {});
 }
 
+export class Mixin extends ConfiguredComponent {
+	css = super.css || [] as TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	html = super.html || null as unknown as TemplateFn<any, any, any>
+}
+
+export type MixinFn<M extends typeof Mixin, MM extends Mixin> = (<S extends typeof Mixin>(superclass: S) => M & {
+	new(...args: any[]): MM;
+});
+
+export function mixin(): void;
+export function mixin<M1 extends typeof Mixin, MM1 extends Mixin>(mixin1: MixinFn<M1, MM1>): M1 & {
+	new(...args: any[]): MM1;
+};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin
+	>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>
+		): M1 & M2 & {
+			new(...args: any[]): MM1 & MM2;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>
+		): M1 & M2 & M3 & {
+			new(...args: any[]): MM1 & MM2 & MM3;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
+		mixin4: MixinFn<M4, MM4>, 
+		): M1 & M2 & M3 & M4 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
+	MM5 extends Mixin>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
+		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, 
+		): M1 & M2 & M3 & M4 & M5 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
+	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
+		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
+		): M1 & M2 & M3 & M4 & M5 & M6 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
+	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
+	M7 extends typeof Mixin, MM7 extends Mixin>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
+		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
+		mixin7: MixinFn<M7, MM7>, 
+		): M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
+	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
+	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
+	MM8 extends Mixin>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
+		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
+		mixin7: MixinFn<M7, MM7>, mixin8: MixinFn<M8, MM8>, 
+		): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
+	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
+	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
+	MM8 extends Mixin, M9 extends typeof Mixin, MM9 extends Mixin>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
+		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
+		mixin7: MixinFn<M7, MM7>, mixin8: MixinFn<M8, MM8>, mixin9: MixinFn<M9, MM9>, 
+		): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
+	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
+	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
+	MM8 extends Mixin, M9 extends typeof Mixin, MM9 extends Mixin,
+	M10 extends typeof Mixin, MM10 extends Mixin>(
+		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
+		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
+		mixin7: MixinFn<M7, MM7>, mixin8: MixinFn<M8, MM8>, mixin9: MixinFn<M9, MM9>, 
+		mixin10: MixinFn<M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
+		};
+export function mixin<
+	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
+	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
+	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
+	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
+	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
+	MM8 extends Mixin, M9 extends typeof Mixin, MM9 extends Mixin,
+	M10 extends typeof Mixin, MM10 extends Mixin>(
+		mixin1?: MixinFn<M1, MM1>, mixin2?: MixinFn<M2, MM2>, mixin3?: MixinFn<M3, MM3>, 
+		mixin4?: MixinFn<M4, MM4>, mixin5?: MixinFn<M5, MM5>, mixin6?: MixinFn<M6, MM6>, 
+		mixin7?: MixinFn<M7, MM7>, mixin8?: MixinFn<M8, MM8>, mixin9?: MixinFn<M9, MM9>, 
+		mixin10?: MixinFn<M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
+		} {
+			let current = Mixin;
+			const mixins = [
+				mixin1, mixin2, mixin3, mixin4, mixin5,
+				mixin6, mixin7, mixin8, mixin9, mixin10
+			];
+			for (const mixin of mixins) {
+				if (!mixin) break;
+				current = (mixin as MixinFn<any, any>)(current);
+			}
+			return current as any;
+		}
+
+	
 /**
  * Configures a component to make sure it can
  * be defined
@@ -152,7 +330,8 @@ export abstract class ConfiguredComponent extends WebComponentBase {
 export function config(config: WebComponentConfiguration) {
 	const {
 		is, html,
-		dependencies = []	
+		mixins = [],
+		dependencies = []
 	} = config;
 	return <ELS extends {
 	IDS: {
@@ -167,6 +346,7 @@ export function config(config: WebComponentConfiguration) {
 			static is = genIs(is, WebComponentConfig);
 			static dependencies = dependencies
 			static config = config;
+			static mixins = mixins;
 			config = config;
 			html = html;
 			css = config.css;
@@ -174,6 +354,11 @@ export function config(config: WebComponentConfiguration) {
 				return <any>WebComponentConfig as typeof ConfiguredComponent;
 			}
 		}
+
+		(<typeof ConfiguredComponent><any>target).config = config;
+		(<typeof ConfiguredComponent><any>target).mixins = mixins;
+		(<typeof ConfiguredComponent><any>target).dependencies = dependencies;
+
 		return <any>WebComponentConfig as T;
 	}
 }

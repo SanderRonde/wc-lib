@@ -9,11 +9,11 @@
 	"license": "MIT",
 	"private": true,
 	"dependencies": {
-		"lit-html": "^1.0.0",
 		"typescript": "^3.4.4"
 	},
 	"devDependencies": {
-		"@types/node": "^11.13.7"
+		"@types/node": "^11.13.7",
+		"lit-html": "^1.0.0"
 	},
 	"scripts": {
 		"install": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json"

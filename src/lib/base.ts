@@ -390,7 +390,7 @@ class BaseClass {
 	private get __cssArr(): TemplateFn<any, any, any>[] {
 		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
 		return (this.instance.___cssArr = 
-			makeArray(this._self.self.config.css));
+			makeArray(this._self.self.config.css || []));
 	};
 	public get __privateCSS(): TemplateFn<any, any, any>[] {
 		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;

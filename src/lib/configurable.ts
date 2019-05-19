@@ -98,7 +98,7 @@ export interface WebComponentConfiguration {
 	 * 
 	 * @readonly
 	 */
-	readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	readonly css?: TemplateFn<any, any, any>|TemplateFn<any, any, any>[]|null;
 	/**
 	 * Dependencies of this component. If this
 	 * component uses other components in its
@@ -330,6 +330,7 @@ export function mixin<
 export function config(config: WebComponentConfiguration) {
 	const {
 		is, html,
+		css = [],
 		mixins = [],
 		dependencies = []
 	} = config;
@@ -349,7 +350,7 @@ export function config(config: WebComponentConfiguration) {
 			static mixins = mixins;
 			config = config;
 			html = html;
-			css = config.css;
+			css = css || [];
 			get self() {
 				return <any>WebComponentConfig as typeof ConfiguredComponent;
 			}

@@ -1,22 +1,5 @@
 import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../src/wclib.js';
-import { render, html } from 'lit-html';
-
-export interface RenderTestWindow extends Window {
-	renderCalled: {
-		never: number;
-		prop: number;
-		theme: number;
-		lang: number;
-		always: number;
-		'prop-theme': number;
-		'prop-lang': number;
-		'theme-lang': number;
-		all: number;
-	}
-}
-
-declare const window: RenderTestWindow;
-window.renderCalled = {} as any;
+import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`

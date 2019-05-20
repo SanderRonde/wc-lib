@@ -6,7 +6,7 @@ import * as path from 'path';
 export const USAGE_TEST_PORT = 1251;
 
 const httpServer = createServer({
-	root: path.join(__dirname, 'test/usage/')
+	root: path.join(__dirname, '../../')
 });
 httpServer.listen(USAGE_TEST_PORT, async () => {
 	cypress.run({

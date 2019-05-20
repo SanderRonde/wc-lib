@@ -16,7 +16,8 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 		'cypress.json'), {
 			encoding: 'utf8'
 		})),
-		record: process.argv.indexOf('--no-record') ? false : true
+		record: process.argv.indexOf('--no-record') ? false : true,
+		key: process.env.key
 	}).then((results) => {
 		console.log('Done');
 		httpServer.close();

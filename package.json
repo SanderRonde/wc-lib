@@ -26,6 +26,6 @@
 	},
 	"scripts": {
 		"install": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json",
-		"test": "yarn run install && tsc -p test/tsconfig.es.json && tsc -p test/tsconfig.cjs.json && node test/ui/test-cypress.js"
+		"test": "yarn run install && tsc -p test/tsconfig.es.json && tsc -p test/tsconfig.cjs.json && node test/usage/test.js"
 	}
 }

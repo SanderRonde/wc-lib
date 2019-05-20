@@ -24,5 +24,8 @@
 	"include": [
 		"**/*",
 		"../typings/"
-	]
+    ],
+    "exclude": [
+        "test.ts"
+    ]
 }

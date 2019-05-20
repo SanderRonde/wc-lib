@@ -78,7 +78,11 @@ export const enum CHANGE_TYPE {
 	/**
 	 * Any change
 	 */
-	ALWAYS = 11
+	ALWAYS = 11,
+	/**
+	 * A forced user-engaged change
+	 */
+	FORCE = 27
 }
 
 /**
@@ -657,7 +661,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * @param {CHANGE_TYPE} [change] The change type. This
 	 * 	is set to always render if not supplied
 	 */
-	public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.ALWAYS) {
+	public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.FORCE) {
 		if (this.___baseClass.disableRender) return;
 		if (this.___baseClass.doPreRenderLifecycle() === false) {
 			return;
@@ -666,19 +670,20 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 		if (this.___baseClass.canUseConstructedCSS) {
 			this.___baseClass.renderConstructedCSS(change);
 		}
+		const renderType: 'render'|'renderIfNew' = change === CHANGE_TYPE.FORCE ? 'render' : 'renderIfNew';
 		this.___baseClass.__privateCSS.forEach((sheet, index) => {
-			sheet.renderIfNew(
+			sheet[renderType](
 				sheet.renderTemplate(change, this as any), 
-				this.___baseClass.renderContainers.css[index]);
+				this.___baseClass.renderContainers.css[index]);	
 		});
 		if (this.__hasCustomCSS()) {
 			makeArray(this.customCSS()).forEach((sheet, index) => {
-				sheet.renderIfNew(
+				sheet[renderType](
 					sheet.renderTemplate(change, this as any),
 					this.___baseClass.renderContainers.customCSS[index]);
 			});
 		}
-		this.html.renderIfNew(
+		this.html[renderType](
 			this.html.renderTemplate(change, this as any), 
 			this.___baseClass.renderContainers.html);
 		this.___baseClass.doPostRenderLifecycle();

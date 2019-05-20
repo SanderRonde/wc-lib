@@ -213,11 +213,9 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 	 */
 	connectedCallback() {
 		this.___hierarchyClass.isRoot = this.hasAttribute('_root');
-		this.___definerClass.internals.globalProperties = {...{
-			theme: 'light',
-			isWeb: (location.protocol === 'http:' || location.protocol === 'https:') ?
-				'true' : 'false'
-		}, ...this.___hierarchyClass.getGlobalProperties()};
+		this.___definerClass.internals.globalProperties = {
+			...this.___hierarchyClass.getGlobalProperties()
+		};
 		this.___hierarchyClass.registerToParent();
 	}
 

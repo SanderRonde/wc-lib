@@ -160,8 +160,9 @@ class HierarchyClass {
 	}, P extends keyof G = keyof G, V extends G[P] = G[P]>(key: Extract<P, string>,
 		value: V) {
 			if (this._self.___definerClass.internals.globalProperties[key] !== value) {
+				const oldVal = this._self.___definerClass.internals.globalProperties[key];
 				this._self.___definerClass.internals.globalProperties[key] = value;
-				this._self.fire('globalPropChange', key, value);
+				this._self.fire('globalPropChange', key, value, oldVal);
 			}
 		}
 

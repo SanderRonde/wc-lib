@@ -34,16 +34,14 @@ context('Base', function() {
 	context('Properties/Methods', () => {
 		it('exposes an `html` property that contains the template', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assert.property(el, 'html', 'html property exists');
-				assert.isDefined(el.html, 'value is defined');
+				assertPropertyExists(el, 'html');
 				
 				assertTemplate(el.html);
 			});
 		});
 		it('exposes a `css` property that contains the template(s)', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assert.property(el, 'css', 'css property exists');
-				assert.isDefined(el.css, 'value is defined');
+				assertPropertyExists(el, 'css');
 				
 				if (Array.isArray(el.css)) {
 					assert.isAtLeast(el.css.length, 1, 'has at least one css template');

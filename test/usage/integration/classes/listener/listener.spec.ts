@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
-import { TestElement } from "./elements/test-element";
 import { assertMethodExists } from "../../../lib/assertions";
+import { TestElement } from "../elements/test-element";
 
 context('Listener', function() {
 	before(() => {

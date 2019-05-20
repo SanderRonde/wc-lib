@@ -1,5 +1,5 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../src/wclib.js';
-import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../src/wclib.js';
+import { render, html } from 'lit-html';
 
 export interface RenderTestWindow extends Window {
 	renderCalled: {

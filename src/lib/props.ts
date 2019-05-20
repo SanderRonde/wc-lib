@@ -464,7 +464,6 @@ export interface PropComponent extends HTMLElement {
 	self: {
 		mixins?: any[];
 	}
-	props: PropReturn<any, any>;
 }
 
 namespace PropsDefiner {

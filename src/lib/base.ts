@@ -212,7 +212,7 @@ export class TemplateFn<C extends {
 		constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
 			changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R>);
 		constructor(_template: (TemplateRenderFunction<C, T, R>),
-			changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.PROP|CHANGE_TYPE.THEME, 
+			changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.PROP|CHANGE_TYPE.THEME|CHANGE_TYPE.LANG, 
 			renderer: Renderer<R>);
 		constructor(private _template: (TemplateRenderFunction<C, T, R>)|null,
 			public changeOn: CHANGE_TYPE, 

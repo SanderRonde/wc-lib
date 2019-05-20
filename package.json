@@ -12,8 +12,17 @@
 		"typescript": "^3.4.4"
 	},
 	"devDependencies": {
+		"@types/fs-extra": "^7.0.0",
+		"@types/http-server": "^0.10.0",
 		"@types/node": "^11.13.7",
-		"lit-html": "^1.0.0"
+		"chai": "^4.2.0",
+		"chai-jquery": "^2.1.0",
+		"cypress": "^3.3.0",
+		"fs-extra": "^8.0.1",
+		"http-server": "^0.11.1",
+		"jquery": "^3.4.1",
+		"lit-html": "^1.0.0",
+		"lodash": "^4.17.11"
 	},
 	"scripts": {
 		"install": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json"

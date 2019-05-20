@@ -58,5 +58,8 @@ jspm_packages/
 .next
 
 src/**/*.js
-src/**/*.map
+**/*.map
 build/
+temp/
+test/usage/**/*.js
+!test/usage/plugins/index.js

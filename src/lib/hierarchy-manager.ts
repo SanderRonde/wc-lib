@@ -213,10 +213,13 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 	 */
 	connectedCallback() {
 		this.___hierarchyClass.isRoot = this.hasAttribute('_root');
-		this.___definerClass.internals.globalProperties = {
-			...this.___hierarchyClass.getGlobalProperties()
-		};
+		this.___definerClass.internals.globalProperties = {};
 		this.___hierarchyClass.registerToParent();
+		if (this.___hierarchyClass.isRoot) {
+			this.___definerClass.internals.globalProperties = {
+				...this.___hierarchyClass.getGlobalProperties()
+			};	
+		}
 	}
 
 	/**

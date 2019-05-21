@@ -19,3 +19,8 @@ export function assertMethodExists<O extends {
 	assert.isFunction(object[key], `${key} is a function`);
 }
 
+export function assertPromise(value: Promise<any>) {
+	return cy.window().then((window) => {
+		assert.instanceOf(value, (window as any).Promise, 'is a promise');
+	});
+}

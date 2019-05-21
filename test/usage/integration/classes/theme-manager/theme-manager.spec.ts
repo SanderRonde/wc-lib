@@ -48,7 +48,7 @@ function getDeepThemedElements() {
 		});
 }
 
-context('Listener', function() {
+context('Theme Manager', function() {
 	before(() => {
 		cy.visit('http://localhost:1251/test/usage/integration/classes/theme-manager/theme-manager.fixture.html');
 	});

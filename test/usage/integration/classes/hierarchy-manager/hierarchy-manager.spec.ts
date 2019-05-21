@@ -1,11 +1,11 @@
 /// <reference types="Cypress" />
 
+import { ConfigurableWebComponent } from "../../../../../src/wclib";
 import { TestGlobalProperties } from "./hierarchy-manager.fixture";
 import { assertMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "./elements/parent-element";
 import { TestElement } from "../elements/test-element";
 import { RootElement } from "./elements/root-element";
-import { ConfigurableWebComponent } from "../../../../../src/wclib";
 
 function getAllElements() {
 	return cy.get('root-element')

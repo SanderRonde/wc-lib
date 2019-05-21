@@ -95,7 +95,7 @@ class I18NClass {
 			this.defaultLang!;
 	}
 
-	static async loadCurrentLang() {
+	static async loadCurrentLang(): Promise<any> {
 		let loadingLang = this.lang;
 		if (loadingLang in this.langFiles) return;
 		if (loadingLang in this.__langPromises) {

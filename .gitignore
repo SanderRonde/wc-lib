@@ -62,5 +62,5 @@ src/**/*.js
 build/
 temp/
 test/usage/**/*.js
-!test/usage/plugins/index.js
-!test/usage/support/index.js
+!test/usage/support/
+test/usage/support/commands.js

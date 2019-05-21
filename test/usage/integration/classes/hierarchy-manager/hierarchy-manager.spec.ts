@@ -47,7 +47,6 @@ function assertDefaultProps(element: RootElement|TestElement|ParentElement) {
 
 context('Hierarchy-Manager', function() {
 	before(() => {
-		cy.server();
 		cy.visit('http://localhost:1251/test/usage/integration/classes/hierarchy-manager/hierarchy-manager.fixture.html');
 	});
 

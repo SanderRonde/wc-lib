@@ -50,7 +50,6 @@ function getDeepThemedElements() {
 
 context('Listener', function() {
 	before(() => {
-		cy.server();
 		cy.visit('http://localhost:1251/test/usage/integration/classes/theme-manager/theme-manager.fixture.html');
 	});
 

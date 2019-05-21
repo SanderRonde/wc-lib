@@ -20,7 +20,6 @@ function assertTemplate(template: TemplateFn) {
 
 context('Base', function() {
 	before(() => {
-		cy.server();
 		cy.visit('http://localhost:1251/test/usage/integration/classes/base/base.fixture.html');
 	});
 

@@ -5,7 +5,6 @@ import { TestElement } from "../elements/test-element";
 
 context('Listener', function() {
 	before(() => {
-		cy.server();
 		cy.visit('http://localhost:1251/test/usage/integration/classes/listener/listener.fixture.html');
 	});
 

@@ -34,11 +34,11 @@ class I18NClass {
 			lang: string;
 		}>().get('lang');
 		if (lang === undefined) {
-			this.setLang(I18NClass.__loadingLang!);
+			this.setLang(I18NClass.__loadingLang!, true);
 		}
 	}
 
-	public async setLang(lang: string) {
+	public async setLang(lang: string, delayRender: boolean = false) {
 		if (I18NClass.__loadingLang !== lang) {
 			I18NClass.__loadingLang = lang;
 			await I18NClass.__loadLang(lang);
@@ -46,7 +46,13 @@ class I18NClass {
 		}
 		if (this._elementLang !== lang) {
 			this._elementLang = lang;
-			this._self.renderToDOM(CHANGE_TYPE.LANG);
+			if (delayRender) {
+				setTimeout(() => {
+					this._self.renderToDOM(CHANGE_TYPE.LANG);
+				}, 0);
+			} else {
+				this._self.renderToDOM(CHANGE_TYPE.LANG);
+			}
 		}
 	}
 

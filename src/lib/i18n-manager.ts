@@ -52,7 +52,7 @@ class I18NClass {
 
 	private static async __fetch(url: string) {
 		if ('fetch' in window && typeof window.fetch !== undefined) {
-			return fetch(url).then(r => r.text());
+			return window.fetch(url).then(r => r.text());
 		}
 
 		return new Promise<string>((resolve, reject) => {
@@ -164,7 +164,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	 * Gets the currently active language
 	 */
 	public getLang(): string {
-		return I18NClass.currentLang!;
+		return I18NClass.lang!;
 	}
 	
 	/**

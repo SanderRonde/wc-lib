@@ -96,13 +96,20 @@ class I18NClass {
 	}
 
 	static async loadCurrentLang() {
-		if (this.lang in this.langFiles) return;
-		if (this.lang in this.__langPromises) {
-			await this.__langPromises[this.lang];
+		let loadingLang = this.lang;
+		if (loadingLang in this.langFiles) return;
+		if (loadingLang in this.__langPromises) {
+			await this.__langPromises[loadingLang];
+
+			// Language has changed in the meantime
+			if (this.lang !== loadingLang) return this.loadCurrentLang();
 			return;
 		}
-		this.__loadLang(this.lang);
-		await this.__langPromises[this.lang];
+		this.__loadLang(loadingLang);
+		await this.__langPromises[loadingLang];
+
+		// Language has changed in the meantime
+		if (this.lang !== loadingLang) return this.loadCurrentLang();
 	}
 
 	public static get isReady() {

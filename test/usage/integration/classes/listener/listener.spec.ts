@@ -9,17 +9,17 @@ context('Listener', function() {
 	});
 
 	context('Properties/Methods', () => {
-		it('exposes a `listen` method', () => {
+		it('exposes a #listen method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'listen');
 			});
 		});
-		it('exposes a `fire` method', () => {
+		it('exposes a #fire method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'fire');
 			});
 		});
-		it('exposes a `clearListener` method', () => {
+		it('exposes a #clearListener method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'clearListener');
 			});

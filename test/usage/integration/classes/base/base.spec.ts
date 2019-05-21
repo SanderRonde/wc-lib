@@ -31,14 +31,14 @@ context('Base', function() {
 		});
 	});
 	context('Properties/Methods', () => {
-		it('exposes an `html` property that contains the template', () => {
+		it('exposes an .html property that contains the template', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
 				assertPropertyExists(el, 'html');
 				
 				assertTemplate(el.html);
 			});
 		});
-		it('exposes a `css` property that contains the template(s)', () => {
+		it('exposes a .css property that contains the template(s)', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
 				assertPropertyExists(el, 'css');
 				
@@ -52,7 +52,7 @@ context('Base', function() {
 				}
 			});
 		});
-		it('exposes a `customCSS` property that contains the template(s)', () => {
+		it('exposes a .customCSS property that contains the template(s)', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'customCSS');
 				
@@ -66,7 +66,7 @@ context('Base', function() {
 				}
 			});
 		});
-		it('exposes a `root` property that contains the shadowRoot', () => {
+		it('exposes a .root property that contains the shadowRoot', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
 				assertPropertyExists(el, 'root');
 				const rootProp = el.root;
@@ -74,7 +74,7 @@ context('Base', function() {
 					'shadowRoots match');
 			});
 		});
-		it('exposes a `self` property that contains a reference to the constructor', () => {
+		it('exposes a .self property that contains a reference to the constructor', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
 				assertPropertyExists(el, 'self');
 
@@ -82,7 +82,7 @@ context('Base', function() {
 				assert.strictEqual(self, el.constructor);
 			});
 		});
-		it('exposes a `renderToDOM` method', () => {
+		it('exposes a #renderToDOM method', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'renderToDOM');
 			});
@@ -145,7 +145,7 @@ context('Base', function() {
 				});
 			});
 		});
-		it('cancels rendering when false is returned by `preRender`', () => {
+		it('cancels rendering when false is returned by #preRender', () => {
 			cy.get('#test').then(async ([ el ]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'renderToDOM');
 

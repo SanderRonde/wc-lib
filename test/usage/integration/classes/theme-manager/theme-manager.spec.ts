@@ -54,22 +54,22 @@ context('Listener', function() {
 	});
 
 	context('Properties/Methods', () => {
-		it('exposes a `getThemeName` method', () => {
+		it('exposes a #getThemeName method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'getThemeName');
 			});
 		});
-		it('exposes a `getTheme` method', () => {
+		it('exposes a #getTheme method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'getTheme');
 			});
 		});
-		it('exposes a static `initTheme` method', () => {
+		it('exposes a static #initTheme method', () => {
 			cy.window().then((window: TestWindow) => {
 				assertMethodExists(window.TestElement, 'initTheme');
 			});
 		});
-		it('exposes a static `setDefaultTheme` method', () => {
+		it('exposes a static #setDefaultTheme method', () => {
 			cy.window().then((window: TestWindow) => {
 				assertMethodExists(window.TestElement, 'setDefaultTheme');
 			});

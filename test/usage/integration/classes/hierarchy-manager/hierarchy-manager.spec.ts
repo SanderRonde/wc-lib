@@ -51,27 +51,27 @@ context('Hierarchy-Manager', function() {
 	});
 
 	context('Properties/Methods', () => {
-		it('exposes a `registerChild` method', () => {
+		it('exposes a #registerChild method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'registerChild');
 			});
 		});
-		it('exposes a `globalProps` method', () => {
+		it('exposes a #globalProps method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'globalProps');
 			});
 		});
-		it('exposes a `getRoot` method', () => {
+		it('exposes a #getRoot method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'getRoot');
 			});
 		});
-		it('exposes a `runGlobalFunction` method', () => {
+		it('exposes a #runGlobalFunction method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'runGlobalFunction');
 			});
 		});
-		it('exposes a `listenGP` method', () => {
+		it('exposes a #listenGP method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'listenGP');
 			});

@@ -196,37 +196,50 @@ context('Listener', function() {
 				// The only way for its styles to change is for an
 				// adoptedStylesheet to change the global styles
 				// for the themed-element element
-				getDeepThemedElements().then((elements) => {
-					cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
-						for (const element of [...elements, ...separate]) {
-							assert.strictEqual(
-								window.getComputedStyle(element.$('.text')!)
-									.color, usedThemes[defaultTheme].color1,
-									'color1 is used');
-							assert.strictEqual(
-								window.getComputedStyle(element.$('.text2')!)
-									.color, usedThemes[defaultTheme].color2,
-									'color2 is used');
-						}
+
+				// Check for support
+				cy.window().then((window) => {
+					try { 
+						new (window as any).CSSStyleSheet(); 
+						return true; 
+					} catch(e) { 
+						return false;
+					}
+				}).then((supportsAdoptedStylesheets) => {
+					if (!supportsAdoptedStylesheets) return;
+
+					getDeepThemedElements().then((elements) => {
+						cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
+							for (const element of [...elements, ...separate]) {
+								assert.strictEqual(
+									window.getComputedStyle(element.$('.text')!)
+										.color, usedThemes[defaultTheme].color1,
+										'color1 is used');
+								assert.strictEqual(
+									window.getComputedStyle(element.$('.text2')!)
+										.color, usedThemes[defaultTheme].color2,
+										'color2 is used');
+							}
+						});
 					});
-				});
 
-				cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
-					el.globalProps<ThemeGlobalProps>().set('theme', 'second');
-				});
+					cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
+						el.globalProps<ThemeGlobalProps>().set('theme', 'second');
+					});
 
-				getDeepThemedElements().then((elements) => {
-					cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
-						for (const element of [...elements, ...separate]) {
-							assert.strictEqual(
-								window.getComputedStyle(element.$('.text')!)
-									.color, usedThemes['second'].color1,
-									'color1 is used');
-							assert.strictEqual(
-								window.getComputedStyle(element.$('.text2')!)
-									.color, usedThemes['second'].color2,
-									'color2 is used');
-						}
+					getDeepThemedElements().then((elements) => {
+						cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
+							for (const element of [...elements, ...separate]) {
+								assert.strictEqual(
+									window.getComputedStyle(element.$('.text')!)
+										.color, usedThemes['second'].color1,
+										'color1 is used');
+								assert.strictEqual(
+									window.getComputedStyle(element.$('.text2')!)
+										.color, usedThemes['second'].color2,
+										'color2 is used');
+							}
+						});
 					});
 				});
 			});

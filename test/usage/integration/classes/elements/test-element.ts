@@ -38,3 +38,9 @@ export class TestElement extends ConfigurableWebComponent<{
 		}
 	});
 }
+
+export interface TestWindow extends Window {
+	TestElement: typeof TestElement;
+}
+declare const window: TestWindow;
+window.TestElement = TestElement;

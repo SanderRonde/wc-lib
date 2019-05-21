@@ -1,12 +1,8 @@
 /// <reference types="Cypress" />
 
-import { assertMethodExists } from "../../../lib/assertions.js";
 import { ThemedElement, ThemedElementParent } from "./elements/themed-element.js";
-import { TestElement } from "../elements/test-element";
-
-export interface TestThemeManagerWindow extends Window {
-	TestElement: typeof TestElement;
-}
+import { TestElement, TestWindow } from "../elements/test-element";
+import { assertMethodExists } from "../../../lib/assertions.js";
 
 export interface TestTheme {
 	color1: string;
@@ -70,12 +66,12 @@ context('Listener', function() {
 			});
 		});
 		it('exposes a static `initTheme` method', () => {
-			cy.window().then((window: TestThemeManagerWindow) => {
+			cy.window().then((window: TestWindow) => {
 				assertMethodExists(window.TestElement, 'initTheme');
 			});
 		});
 		it('exposes a static `setDefaultTheme` method', () => {
-			cy.window().then((window: TestThemeManagerWindow) => {
+			cy.window().then((window: TestWindow) => {
 				assertMethodExists(window.TestElement, 'setDefaultTheme');
 			});
 		});

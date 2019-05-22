@@ -224,6 +224,49 @@ export type MixinFn<S, M, MM> = (superclass: S) => M & {
  * 
  */
 
+/**
+ * Configures a component to make sure it can
+ * be defined
+ * 
+ * @param {WebComponentConfiguration} config - The
+ * 	configuration for this component
+ */
+export function config(config: WebComponentConfiguration) {
+	const {
+		is, html,
+		css = [],
+		mixins = [],
+		dependencies = []
+	} = config;
+	return <ELS extends {
+	IDS: {
+		[key: string]: HTMLElement|SVGElement;
+	};
+	CLASSES: {
+		[key: string]: HTMLElement|SVGElement;
+	}
+}, T, E extends EventListenerObj = {}>(target: T): T => {
+		const targetComponent = <any>target as typeof WebComponent;
+		class WebComponentConfig extends targetComponent<ELS, E> implements WebComponentBase {
+			static is = is;
+			static dependencies = dependencies
+			static mixins = mixins;
+			static html = html;
+			static css = css || [];
+
+			get self() {
+				return <any>WebComponentConfig as typeof ConfiguredComponent;
+			}
+		}
+
+		(<typeof ConfiguredComponent><any>target).mixins = mixins;
+		(<typeof ConfiguredComponent><any>target).dependencies = dependencies;
+
+		return <any>WebComponentConfig as T;
+	}
+}
+
+
 interface DefaultClass {
 	new(...args: any[]): {};
 }
@@ -399,45 +442,3 @@ export function mixin<
 			}
 			return current as any;
 		}
-	
-/**
- * Configures a component to make sure it can
- * be defined
- * 
- * @param {WebComponentConfiguration} config - The
- * 	configuration for this component
- */
-export function config(config: WebComponentConfiguration) {
-	const {
-		is, html,
-		css = [],
-		mixins = [],
-		dependencies = []
-	} = config;
-	return <ELS extends {
-	IDS: {
-		[key: string]: HTMLElement|SVGElement;
-	};
-	CLASSES: {
-		[key: string]: HTMLElement|SVGElement;
-	}
-}, T, E extends EventListenerObj = {}>(target: T): T => {
-		const targetComponent = <any>target as typeof WebComponent;
-		class WebComponentConfig extends targetComponent<ELS, E> implements WebComponentBase {
-			static is = is;
-			static dependencies = dependencies
-			static mixins = mixins;
-			static html = html;
-			static css = css || [];
-
-			get self() {
-				return <any>WebComponentConfig as typeof ConfiguredComponent;
-			}
-		}
-
-		(<typeof ConfiguredComponent><any>target).mixins = mixins;
-		(<typeof ConfiguredComponent><any>target).dependencies = dependencies;
-
-		return <any>WebComponentConfig as T;
-	}
-}

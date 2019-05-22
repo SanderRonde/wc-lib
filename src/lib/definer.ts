@@ -135,11 +135,12 @@ class DefinerClass {
 						'or an array of them');
 				}
 			}
-		} else if (!this.__isTemplate(component.css)) {
-			throw new WCLibError(component, 
-				'Component\'s css template should be an instance of the TemplateFn class ' +
-				'or an array of them');
-		}
+		} else if (component.css !== null && component.css !== undefined &&
+			!this.__isTemplate(component.css)) {
+				throw new WCLibError(component, 
+					'Component\'s css template should be an instance of the TemplateFn class ' +
+					'or an array of them');
+			}
 	}
 }
 

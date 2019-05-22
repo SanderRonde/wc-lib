@@ -220,7 +220,6 @@ context('Base', function() {
 								cy.window().then(async (cyWindow: RenderTestWindow) => {
 									const renders = cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled];
 
-									debugger;
 									element.renderToDOM(changeType);
 
 									if (shouldChange) {

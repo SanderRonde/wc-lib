@@ -1,5 +1,5 @@
 import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../src/wclib.js';
-import { render, html } from 'lit-html';
+import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
 import { TestElement } from './test-element.js';
 
 const ParentElementHTML = new TemplateFn<ParentElement>(() => {

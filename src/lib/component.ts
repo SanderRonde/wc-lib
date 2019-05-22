@@ -74,7 +74,7 @@ class ComponentClass<ELS extends {
 
 	public getIdMapSnapshot(self: WebComponent<any, any>) {
 		const snapshot: Partial<IDMapFn<ELS["IDS"]>> = ((selector: string) => {
-			self.root.querySelector(selector) as HTMLElement;
+			return self.root.querySelector(selector) as HTMLElement;
 		}) as IDMapFn<ELS["IDS"]>
 		for (const item of self.root.querySelectorAll('[id]')) {
 			(snapshot as any)[item.id as any] = item;

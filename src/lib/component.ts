@@ -195,6 +195,7 @@ export abstract class WebComponent<ELS extends {
 		this.disposables.forEach(disposable => disposable());
 		this.disposables = [];
 		this.isMounted = false;
+		this.unmounted();
 	}
 
 	/**

@@ -3,7 +3,7 @@
 import { ConfigurableWebComponent } from "../../../../../src/wclib";
 import { TestGlobalProperties } from "./hierarchy-manager.fixture";
 import { expectMethodExists } from "../../../lib/assertions";
-import { ParentElement } from "./elements/parent-element";
+import { ParentElement } from "../elements/parent-element";
 import { TestElement } from "../elements/test-element";
 import { RootElement } from "./elements/root-element";
 

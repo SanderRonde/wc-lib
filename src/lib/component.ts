@@ -3,6 +3,7 @@ import { Listeners } from './listeners.js';
 import { bindToClass, CHANGE_TYPE } from './base.js';
 import { EventListenerObj } from './listener.js';
 import { Props } from './props.js';
+import { WCLibError } from './shared.js';
 
 
 type IDMapFn<IDS> = {
@@ -182,6 +183,11 @@ export abstract class WebComponent<ELS extends {
 	 */
 	connectedCallback() {
 		super.connectedCallback();
+		if (!this.self) {
+			throw new WCLibError(this, 
+				'Missing .self property on component');
+		}
+
 		Props.onConnect(this);
 		this.renderToDOM(CHANGE_TYPE.ALWAYS);
 		this.layoutMounted();

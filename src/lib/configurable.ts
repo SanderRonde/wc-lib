@@ -81,7 +81,7 @@ export interface WebComponentConfiguration {
 	 * 
 	 * @readonly
 	 */
-	readonly html: TemplateFnLike;
+	readonly html: TemplateFnLike|null;
 	/**
 	 * Components from which this component should inherit.
 	 * These are not applied by setting this value. You need

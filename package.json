@@ -25,7 +25,7 @@
 		"lodash": "^4.17.11"
 	},
 	"scripts": {
-		"install": "tsc -p tsconfig.es.json && tsc -p tsconfig.cjs.json",
-		"test": "yarn run install && tsc -p test/tsconfig.es.json && tsc -p test/tsconfig.cjs.json && node test/usage/test.js"
+		"install": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
+		"test": "yarn run install && tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json && node test/usage/test.js"
 	}
 }

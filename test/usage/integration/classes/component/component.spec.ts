@@ -308,28 +308,40 @@ context('Component', function() {
 				}
 			});
 		});
-		it('runs querySelector on the local root when calling #$', () => {
-			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				const selectors = [
-					'#divId', '.divClass', 'div',
-					'#headerId', '.headerClass', 'h1',
-					'div[id]', 'div[class]',
-					'h1[id]', 'h1[class]',
-					'*',
-					'nonexistent'
-				];
-				for (const selector of selectors) {
-					expect(el.$(selector) === el.root.querySelector(selector),
-						'selectors return the same value')
-							.to.be.true;
-				}
-			});
-		});
 		context('Proxy', () => {
+			it('runs querySelector on the local root when calling #$', () => {
+				cy.get('#test').then(([el]: JQuery<TestElement>) => {
+					const selectors = [
+						'#divId', '.divClass', 'div',
+						'#headerId', '.headerClass', 'h1',
+						'div[id]', 'div[class]',
+						'h1[id]', 'h1[class]',
+						'*',
+						'nonexistent'
+					];
+					for (const selector of selectors) {
+						expect(el.$(selector) === el.root.querySelector(selector),
+							'selectors return the same value')
+								.to.be.true;
+					}
+				});
+			});
 			it('returns element with given ID when accessed', () => {
 				cy.get('#test').then(([el]: JQuery<TestElement>) => {
 					cy.get('#test')
 						.shadowFind('div').then(([div]: JQuery<HTMLDivElement>) => {
+							expect(el.$.divId === div, 'found the correct element')
+								.to.be.true;
+						});
+				});
+			});
+			it('caches an element if called multiple times', () => {
+				cy.get('#test').then(([el]: JQuery<TestElement>) => {
+					cy.get('#test')
+						.shadowFind('div').then(([div]: JQuery<HTMLDivElement>) => {
+							expect(el.$.divId === div, 'found the correct element')
+								.to.be.true;
+							// No real way to check this except for code coverage
 							expect(el.$.divId === div, 'found the correct element')
 								.to.be.true;
 						});
@@ -340,12 +352,34 @@ context('Component', function() {
 					expect((el.$ as any).nonexistent).to.be.undefined;
 				});
 			});
+			it('returns undefined if the selector is not a string', () => {
+				cy.get('#test').then(([el]: JQuery<TestElement>) => {
+					expect((el.$ as any)[1]).to.be.undefined;
+				});
+			});
 		});
 		context('No-Proxy', () => {
 			beforeEach(() => {
 				cy.visit('http://localhost:1251/test/usage/integration/classes/component/component.fixture.html', {
 					onBeforeLoad(win) {
 						delete (win as any).Proxy;
+					}
+				});
+			});
+			it('runs querySelector on the local root when calling #$', () => {
+				cy.get('#test').then(([el]: JQuery<TestElement>) => {
+					const selectors = [
+						'#divId', '.divClass', 'div',
+						'#headerId', '.headerClass', 'h1',
+						'div[id]', 'div[class]',
+						'h1[id]', 'h1[class]',
+						'*',
+						'nonexistent'
+					];
+					for (const selector of selectors) {
+						expect(el.$(selector) === el.root.querySelector(selector),
+							'selectors return the same value')
+								.to.be.true;
 					}
 				});
 			});

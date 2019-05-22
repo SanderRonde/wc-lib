@@ -40,7 +40,7 @@ export class ConfigurableWebComponent<ELS extends {
 	 * 
 	 * @readonly
 	 */
-	public get self(): (typeof ConfiguredComponent|typeof WebComponentBase) { return {} as any}
+	public get self(): (typeof ConfiguredComponent|typeof WebComponentBase) { return null as any}
 	/**
 	 * Components from which this component should inherit
 	 * 

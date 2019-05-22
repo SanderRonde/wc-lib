@@ -19,6 +19,7 @@
         "strictNullChecks": true,
         "strictBindCallApply": true,
         "declaration": true,
+        "sourceMap": true,
         "outDir": "build/cjs/"
 	},
     "compileOnSave": true,

@@ -64,3 +64,4 @@ temp/
 test/usage/**/*.js
 !test/usage/support/
 test/usage/support/commands.js
+instrumented/

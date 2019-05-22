@@ -1,7 +1,8 @@
 
 /** Code below modified from Cypress select source
  * 
- * https://github.com/cypress-io/cypress/blob/2b2b6d99a9f1bf232d9c7396b25390913d5f2b18/packages/driver/src/cy/commands/actions/select.coffee
+ * https://github.com/cypress-io/cypress/blob/2b2b6d99a9f1bf232d9c7396b25390913d5f2b18/packages/driver/
+ * src/cy/commands/actions/select.coffee
  * 
  */
 

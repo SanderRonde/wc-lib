@@ -18,14 +18,26 @@
 		"chai": "^4.2.0",
 		"chai-jquery": "^2.1.0",
 		"cypress": "^3.3.0",
+		"cypress-istanbul": "^1.2.0",
 		"fs-extra": "^8.0.1",
+		"gulp": "^4.0.2",
+		"gulp-replace": "^1.0.0",
 		"http-server": "^0.11.1",
+		"istanbul-lib-coverage": "^2.0.5",
 		"jquery": "^3.4.1",
 		"lit-html": "^1.0.0",
-		"lodash": "^4.17.11"
+		"lodash": "^4.17.11",
+		"nyc": "^14.1.1",
+		"source-map-support": "^0.5.12"
 	},
 	"scripts": {
-		"install": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
-		"test": "yarn run install && tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json && node test/usage/test.js"
+		"compile": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
+		"compile:test": "tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json",
+		"compile:all": "npm run compile && npm run compile:test",
+		"install": "npm run compile",
+		"cypress": "node test/usage/test.js",
+		"test": "npm run compile:all && npm run cypress",
+		"coverage:prep": "npm run compile:all && nyc instrument src/ instrumented/ && gulp replaceTestImports",
+		"coverage": "npm run coverage:prep && nyc --reporter=html npm run cypress"
 	}
 }

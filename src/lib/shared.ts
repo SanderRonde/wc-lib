@@ -1,3 +1,6 @@
+import { WebComponentDefiner } from "../wclib.js";
+import { WebComponentBase } from "./base.js";
+
 /**
  * Waits for `time` milliseconds
  * 
@@ -62,4 +65,14 @@ export function classNames(...args: ClassNamesArg[]): string {
 	}
 
 	return classes.join(' ');
+}
+
+export class WCLibError extends Error {
+	constructor(
+		public component: (WebComponentDefiner|
+			typeof WebComponentDefiner|
+			WebComponentBase|
+			typeof WebComponentBase), message?: string) {
+				super(`${message || 'error'} (see error.component)`);
+			}
 }

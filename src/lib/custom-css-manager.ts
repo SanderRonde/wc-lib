@@ -60,7 +60,7 @@ export abstract class WebComponentCustomCSSManager<E extends EventListenerObj> e
 	 * 
 	 * @returns {boolean} Whether this component uses custom CSS
 	 */
-	public __hasCustomCSS() {
+	public __hasCustomCSS(): boolean {
 		if (this.___customCSSClass.hasCustomCSS !== null) {
 			return this.___customCSSClass.hasCustomCSS;
 		}

@@ -28,19 +28,19 @@ export class ConfigurableWebComponent<ELS extends {
 	 * 
 	 * @readonly
 	 */
-	public static readonly html: TemplateFn<any, any, any>;
+	public static html: TemplateFn<any, any, any>;
 	/**
 	 * The templates(s) that will render this component's css
 	 * 
 	 * @readonly
 	 */
-	public static readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	public static css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
 	/**
 	 * The element's constructor
 	 * 
 	 * @readonly
 	 */
-	public get self(): typeof ConfiguredComponent { return {} as any}
+	public get self(): (typeof ConfiguredComponent|typeof WebComponentBase) { return {} as any}
 	/**
 	 * Components from which this component should inherit
 	 * 
@@ -108,21 +108,21 @@ export class ConfiguredComponent extends WebComponentBase {
 	 * 
 	 * @readonly
 	 */
-	public get self(): typeof ConfiguredComponent { return {} as any}
+	public get self(): (typeof ConfiguredComponent|typeof WebComponentBase) { return {} as any}
 
 	/**
 	 * The template(s) that will render this component's css
 	 * 
 	 * @readonly
 	 */
-	public static readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
+	public static css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
 		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 	/**
 	 * The render method that will render this component's HTML
 	 * 
 	 * @readonly
 	 */
-	public static readonly html: TemplateFn<any, any, any> = 
+	public static html: TemplateFn<any, any, any> = 
 		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 	/**
 	 * Dependencies of this component. If this

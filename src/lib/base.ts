@@ -571,7 +571,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public static readonly html: TemplateFn<any, any, any>;
+	public static html: TemplateFn<any, any, any>;
 
 	/**
 	 * The element's constructor
@@ -585,7 +585,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public static readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	public static css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
 
 	/**
 	 * A function signaling whether this component has custom CSS applied to it

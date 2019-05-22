@@ -578,7 +578,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public abstract get self(): typeof ConfiguredComponent;
+	public abstract get self(): (typeof ConfiguredComponent|typeof WebComponentBase);
 
 	/**
 	 * The template(s) that will render this component's css

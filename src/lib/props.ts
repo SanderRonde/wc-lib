@@ -463,7 +463,7 @@ export interface PropComponent extends HTMLElement {
 		event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]
 	self: {
 		mixins?: any[];
-	}
+	}|any;
 }
 
 namespace PropsDefiner {

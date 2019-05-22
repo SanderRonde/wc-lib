@@ -183,122 +183,122 @@ context('Base', function() {
 				});
 			});
 		});
-		context('Change types', () => {
-			before(() => {
-				cy.document().then((document) => {
-					document.body.appendChild(document.createElement('render-test-never'));
-					document.body.appendChild(document.createElement('render-test-prop'));
-					document.body.appendChild(document.createElement('render-test-theme'));
-					document.body.appendChild(document.createElement('render-test-lang'));
-					document.body.appendChild(document.createElement('render-test-always'));
-					document.body.appendChild(document.createElement('render-test-prop-theme'));
-					document.body.appendChild(document.createElement('render-test-prop-lang'));
-					document.body.appendChild(document.createElement('render-test-theme-lang'));
-					document.body.appendChild(document.createElement('render-test-all'));
-				});
+	});
+	context('Change types', () => {
+		before(() => {
+			cy.document().then((document) => {
+				document.body.appendChild(document.createElement('render-test-never'));
+				document.body.appendChild(document.createElement('render-test-prop'));
+				document.body.appendChild(document.createElement('render-test-theme'));
+				document.body.appendChild(document.createElement('render-test-lang'));
+				document.body.appendChild(document.createElement('render-test-always'));
+				document.body.appendChild(document.createElement('render-test-prop-theme'));
+				document.body.appendChild(document.createElement('render-test-prop-lang'));
+				document.body.appendChild(document.createElement('render-test-theme-lang'));
+				document.body.appendChild(document.createElement('render-test-all'));
 			});
+		});
 
-			function genChangeTypeCases(changeType: CHANGE_TYPE, changeTypes: {
-				never: boolean;
-				prop: boolean;
-				theme: boolean;
-				lang: boolean;
-				always: boolean;
-				'prop-theme': boolean;
-				'prop-lang': boolean;
-				'theme-lang': boolean;
-				all: boolean;
-			}) {
-				for (const change in changeTypes) {
-					const shouldChange = changeTypes[change as keyof typeof changeTypes];
-					it(shouldChange ? 
-						`renders change-type "${change}"` : 
-						`does not render change-type "${change}"`, () => {
-							cy.get(`render-test-${change}`).then(([element]: JQuery<TestElementBase>) => {
-								cy.window().then(async (cyWindow: RenderTestWindow) => {
-									const renders = cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled];
+		function genChangeTypeCases(changeType: CHANGE_TYPE, changeTypes: {
+			never: boolean;
+			prop: boolean;
+			theme: boolean;
+			lang: boolean;
+			always: boolean;
+			'prop-theme': boolean;
+			'prop-lang': boolean;
+			'theme-lang': boolean;
+			all: boolean;
+		}) {
+			for (const change in changeTypes) {
+				const shouldChange = changeTypes[change as keyof typeof changeTypes];
+				it(shouldChange ? 
+					`renders change-type "${change}"` : 
+					`does not render change-type "${change}"`, () => {
+						cy.get(`render-test-${change}`).then(([element]: JQuery<TestElementBase>) => {
+							cy.window().then(async (cyWindow: RenderTestWindow) => {
+								const renders = cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled];
 
-									element.renderToDOM(changeType);
+								element.renderToDOM(changeType);
 
-									if (shouldChange) {
-										assert.strictEqual(
-											cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled],
-											renders + 1, 'render was called');
-									} else {
-										assert.strictEqual(
-											cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled],
-											renders, 'render was not called');
-									}
-								});
+								if (shouldChange) {
+									assert.strictEqual(
+										cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled],
+										renders + 1, 'render was called');
+								} else {
+									assert.strictEqual(
+										cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled],
+										renders, 'render was not called');
+								}
 							});
 						});
-				}
+					});
 			}
+		}
 
-			context('CHANGE_TYPE.PROP', () => {
-				genChangeTypeCases(CHANGE_TYPE.PROP, {
-					never: false,
-					prop: true,
-					theme: false,
-					lang: false,
-					always: true,
-					"prop-theme": true,
-					"prop-lang": true,
-					"theme-lang": false,
-					all: true
-				});
+		context('CHANGE_TYPE.PROP', () => {
+			genChangeTypeCases(CHANGE_TYPE.PROP, {
+				never: false,
+				prop: true,
+				theme: false,
+				lang: false,
+				always: true,
+				"prop-theme": true,
+				"prop-lang": true,
+				"theme-lang": false,
+				all: true
 			});
-			context('CHANGE_TYPE.THEME', () => {
-				genChangeTypeCases(CHANGE_TYPE.THEME, {
-					never: false,
-					prop: false,
-					theme: true,
-					lang: false,
-					always: true,
-					"prop-theme": true,
-					"prop-lang": false,
-					"theme-lang": true,
-					all: true
-				});
+		});
+		context('CHANGE_TYPE.THEME', () => {
+			genChangeTypeCases(CHANGE_TYPE.THEME, {
+				never: false,
+				prop: false,
+				theme: true,
+				lang: false,
+				always: true,
+				"prop-theme": true,
+				"prop-lang": false,
+				"theme-lang": true,
+				all: true
 			});
-			context('CHANGE_TYPE.LANG', () => {
-				genChangeTypeCases(CHANGE_TYPE.LANG, {
-					never: false,
-					prop: false,
-					theme: false,
-					lang: true,
-					always: true,
-					"prop-theme": false,
-					"prop-lang": true,
-					"theme-lang": true,
-					all: true
-				});
+		});
+		context('CHANGE_TYPE.LANG', () => {
+			genChangeTypeCases(CHANGE_TYPE.LANG, {
+				never: false,
+				prop: false,
+				theme: false,
+				lang: true,
+				always: true,
+				"prop-theme": false,
+				"prop-lang": true,
+				"theme-lang": true,
+				all: true
 			});
-			context('CHANGE_TYPE.ALWAYS', () => {
-				genChangeTypeCases(CHANGE_TYPE.ALWAYS, {
-					never: false,
-					prop: true,
-					theme: true,
-					lang: true,
-					always: true,
-					"prop-theme": true,
-					"prop-lang": true,
-					"theme-lang": true,
-					all: true
-				});
+		});
+		context('CHANGE_TYPE.ALWAYS', () => {
+			genChangeTypeCases(CHANGE_TYPE.ALWAYS, {
+				never: false,
+				prop: true,
+				theme: true,
+				lang: true,
+				always: true,
+				"prop-theme": true,
+				"prop-lang": true,
+				"theme-lang": true,
+				all: true
 			});
-			context('CHANGE_TYPE.FORCE', () => {
-				genChangeTypeCases(CHANGE_TYPE.FORCE, {
-					never: false,
-					prop: true,
-					theme: true,
-					lang: true,
-					always: true,
-					"prop-theme": true,
-					"prop-lang": true,
-					"theme-lang": true,
-					all: true
-				});
+		});
+		context('CHANGE_TYPE.FORCE', () => {
+			genChangeTypeCases(CHANGE_TYPE.FORCE, {
+				never: false,
+				prop: true,
+				theme: true,
+				lang: true,
+				always: true,
+				"prop-theme": true,
+				"prop-lang": true,
+				"theme-lang": true,
+				all: true
 			});
 		});
 	});

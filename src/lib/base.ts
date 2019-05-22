@@ -131,8 +131,6 @@ export type TemplateRenderFunction<C extends {
 	 * **Examples**:
 	 * 
 	 * 
-	 * * `<my-element .prop="x">` Will set the property `prop`
-	 * 	directly instead of setting the attribute
 	 * * `<div @click="${this.someFunc}">` Will call
 	 * 	`this.someFunc` when the `click` event is fired
 	 * * `<my-element @@customevent="${this.someFunc}">` will call

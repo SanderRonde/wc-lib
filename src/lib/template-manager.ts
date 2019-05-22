@@ -163,11 +163,7 @@ class ComplexTemplateProcessor implements TemplateProcessor {
 	handleAttributeExpressions(
 		element: Element, name: string, strings: string[]): PartLike[] {
 			const prefix = name[0];
-			if (prefix === '.') {
-				//Property
-				const comitter = new this._config.PropertyCommitter(element, name.slice(1), strings);
-      			return comitter.parts;
-			} else if (prefix === '@') {
+			if (prefix === '@') {
 				if (name[1] === '@') {
 					return [new this._componentEventPart(element, name.slice(2), this.component)];
 				} else {
@@ -341,8 +337,6 @@ type ComplexValue = TemplateFn<any, any, any>|Function|Object;
  * 
  * **Examples:**
  * 
- * * `<my-element .prop="x">` Will set the property `prop`
- * 	directly instead of setting the attribute
  * * `<div @click="${this.someFunc}">` Will call
  * 	`this.someFunc` when the `click` event is fired
  * * `<my-element @@customevent="${this.someFunc}">` will call

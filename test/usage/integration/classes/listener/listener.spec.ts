@@ -249,7 +249,6 @@ context('Listener', function() {
 				el.listen('test2', () => expectedValues[4]);
 
 				const retVals = el.fire('test2');
-				console.log(retVals);
 				assert.lengthOf(retVals, expectedValues.length,
 					'retvals is the same length as the amount of listeners');
 				assert.deepEqual(retVals, expectedValues,

@@ -116,6 +116,15 @@ class DefinerClass {
 		if (component.is.indexOf('-') === -1) {
 			throw new WCLibError(component, 'Webcomponent names need to contain a dash "-"');
 		}
+		if (/[A-Z]/.test(component.is)) {
+			throw new WCLibError(component, 'Webcomponent names can not contain uppercase ASCII characters.');
+		}
+		if (/^\d/i.test(component.is)) {
+			throw new WCLibError(component, 'Webcomponent names can not start with a digit.');
+		}
+		if (/^-/i.test(component.is)) {
+			throw new WCLibError(component, 'Webcomponent names can not start with a hyphen.');
+		}
 
 		if (component.html === undefined) {
 			throw new WCLibError(component, 

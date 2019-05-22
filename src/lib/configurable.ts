@@ -1,4 +1,4 @@
-import { TemplateFn, WebComponentBase, CHANGE_TYPE } from './base.js';
+import { TemplateFn, WebComponentBase, CHANGE_TYPE, TemplateFnLike } from './base.js';
 import { EventListenerObj } from './listener.js';
 import { WebComponent } from './component.js';
 
@@ -28,13 +28,13 @@ export class ConfigurableWebComponent<ELS extends {
 	 * 
 	 * @readonly
 	 */
-	public static html: TemplateFn<any, any, any>;
+	public static html: TemplateFnLike;
 	/**
 	 * The templates(s) that will render this component's css
 	 * 
 	 * @readonly
 	 */
-	public static css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	public static css: TemplateFnLike|TemplateFnLike[];
 	/**
 	 * The element's constructor
 	 * 
@@ -65,7 +65,7 @@ export interface WebComponentConfiguration {
 	 * 
 	 * @readonly
 	 */
-	readonly css?: TemplateFn<any, any, any>|TemplateFn<any, any, any>[]|null;
+	readonly css?: TemplateFnLike|TemplateFnLike[]|null;
 	/**
 	 * Dependencies of this component. If this
 	 * component uses other components in its
@@ -81,7 +81,7 @@ export interface WebComponentConfiguration {
 	 * 
 	 * @readonly
 	 */
-	readonly html: TemplateFn<any, any, any>;
+	readonly html: TemplateFnLike;
 	/**
 	 * Components from which this component should inherit.
 	 * These are not applied by setting this value. You need
@@ -118,14 +118,14 @@ export class ConfiguredComponent extends WebComponentBase {
 	 * 
 	 * @readonly
 	 */
-	public static css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
+	public static css: TemplateFnLike|TemplateFnLike[] = 
 		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 	/**
 	 * The render method that will render this component's HTML
 	 * 
 	 * @readonly
 	 */
-	public static html: TemplateFn<any, any, any> = 
+	public static html: TemplateFnLike = 
 		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 	/**
 	 * Dependencies of this component. If this

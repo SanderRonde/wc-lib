@@ -2,9 +2,9 @@
 
 import { expectPropertyExists, expectPrivatePropertyExists, expectMethodExists } from "../../../lib/assertions";
 import { TestElement, TestElementBase, RenderTestWindow } from "./elements/test-element";
-import { TemplateFn, CHANGE_TYPE } from "../../../../../src/wclib";
+import { CHANGE_TYPE, TemplateFnLike } from "../../../../../src/wclib";
 
-function assertTemplate(template: TemplateFn) {
+function assertTemplate(template: TemplateFnLike) {
 	expectPrivatePropertyExists(template, '_template');
 	expectPrivatePropertyExists(template, '_renderer');
 	expectPrivatePropertyExists(template, '_lastRenderChanged');

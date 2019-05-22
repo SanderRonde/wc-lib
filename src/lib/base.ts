@@ -184,6 +184,22 @@ const templaterMap: WeakMap<Templater<any>,
  */
 export type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => any;
 
+export interface TemplateFnLike {
+	changeOn: CHANGE_TYPE;
+
+	renderAsText(changeType: CHANGE_TYPE, component: {
+		props: any;
+	}): string;
+	renderTemplate(changeType: CHANGE_TYPE, component: {
+		props: any; 
+	}): any|null;
+	renderSame(changeType: CHANGE_TYPE, component: { 
+		props: any; 
+	}, templater: any): any|string|null;
+	render(template: any|null, target: HTMLElement): void;
+	renderIfNew(template: any|null, target: HTMLElement): void;
+}
+
 /**
  * A template class that renders given template
  * when given change occurs using given renderer
@@ -194,7 +210,7 @@ export type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => 
  */
 export class TemplateFn<C extends {
 	props: any;
-} = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> {
+} = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> implements TemplateFnLike {
 		private _lastRenderChanged: boolean = true;
 
 		/**
@@ -348,10 +364,10 @@ export class TemplateFn<C extends {
 		 * @param {templater<TR>} templater - The templater (
 		 * 	generally of the parent)
 		 * 
-		 * @returns {TR|null} The return value of the templater
+		 * @returns {TR|null|string} The return value of the templater
 		 */
 		public renderSame<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
-			templater: Templater<TR>): TR|null {
+			templater: Templater<TR|string>): TR|null|string {
 				const { changed, rendered } = this._renderWithTemplater(changeType, component,
 					templater);
 				this._lastRenderChanged = changed;
@@ -388,11 +404,11 @@ export class TemplateFn<C extends {
 	}
 
 class BaseClassElementInstance {
-	public ___cssArr: TemplateFn<any, any, any>[]|null = null;
-	public ___privateCSS: TemplateFn<any, any, any>[]|null = null;
+	public ___cssArr: TemplateFnLike[]|null = null;
+	public ___privateCSS: TemplateFnLike[]|null = null;
 	public __cssSheets: {
 		sheet: CSSStyleSheet;
-		template: TemplateFn<any, any, any>;
+		template: TemplateFnLike;
 	}[]|null = null;
 }
 
@@ -418,12 +434,12 @@ class BaseClass {
 		return classInstance;
 	}
 	
-	private get __cssArr(): TemplateFn<any, any, any>[] {
+	private get __cssArr(): TemplateFnLike[] {
 		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
 		return (this.instance.___cssArr = 
 			makeArray(this._self.self.css || []));
 	};
-	public get __privateCSS(): TemplateFn<any, any, any>[] {
+	public get __privateCSS(): TemplateFnLike[] {
 		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;
 		return (this.instance.___privateCSS = 
 			this.canUseConstructedCSS ? this.__cssArr.filter((template) => {
@@ -574,7 +590,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public static html: TemplateFn<any, any, any>;
+	public static html: TemplateFnLike|null;
 
 	/**
 	 * The element's constructor
@@ -588,7 +604,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public static css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	public static css: TemplateFnLike|TemplateFnLike[]|null;
 
 	/**
 	 * A function signaling whether this component has custom CSS applied to it
@@ -602,10 +618,10 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	/**
 	 * Gets this component's custom CSS templates
 	 * 
-	 * @returns {TemplateFn<any, any, any>|TemplateFn<any, any, any>[]} The
+	 * @returns {TemplateFnLike|TemplateFnLike[]} The
 	 * 	custom CSS templates
 	 */
-	public customCSS(): TemplateFn<any, any, any>|TemplateFn<any, any, any>[] {
+	public customCSS(): TemplateFnLike|TemplateFnLike[] {
 		return [];
 	}
 
@@ -684,9 +700,11 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 					this.___baseClass.renderContainers.customCSS[index]);
 			});
 		}
-		this.self.html[renderType](
-			this.self.html.renderTemplate(change, this as any), 
-			this.___baseClass.renderContainers.html);
+		if (this.self.html) {
+			this.self.html[renderType](
+				this.self.html.renderTemplate(change, this as any), 
+				this.___baseClass.renderContainers.html);
+		}
 		this.___baseClass.doPostRenderLifecycle();
 	}
 

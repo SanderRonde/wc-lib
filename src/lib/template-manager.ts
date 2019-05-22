@@ -1,5 +1,5 @@
+import { bindToClass, TemplateFn, CHANGE_TYPE, TemplateFnLike } from './base.js';
 import { TemplateProcessor, EventPart, Part, NodePart } from 'lit-html';
-import { bindToClass, TemplateFn, CHANGE_TYPE } from './base.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
 import { WebComponentThemeManger } from './theme-manager.js';
 import { WebComponentI18NManager } from './i18n-manager.js';
@@ -326,7 +326,7 @@ class TemplateClass {
 	}
 }
 
-type ComplexValue = TemplateFn<any, any, any>|Function|Object;
+type ComplexValue = TemplateFnLike|Function|Object;
 
 /**
  * The class that is responsible for providing the

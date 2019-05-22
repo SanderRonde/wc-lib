@@ -1,10 +1,10 @@
 import { WebComponentTemplateManager, CUSTOM_CSS_PROP_NAME } from './template-manager.js';
-import { CHANGE_TYPE, TemplateFn } from './base.js';
+import { CHANGE_TYPE, TemplateFn, TemplateFnLike } from './base.js';
 import { EventListenerObj } from './listener.js';
 
 class CustomCSSClass {
 	public hasCustomCSS: boolean|null = null;
-	private __noCustomCSS: TemplateFn<any, any, any> = 
+	private __noCustomCSS: TemplateFnLike = 
 		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 
 	constructor(private _self: WebComponentCustomCSSManager<any>) { }
@@ -15,7 +15,7 @@ class CustomCSSClass {
 		}
 
 		return this._self.getParentRef(
-			this._self.getAttribute(CUSTOM_CSS_PROP_NAME)!) as TemplateFn<any, any, any>|TemplateFn<any, any, any>[]
+			this._self.getAttribute(CUSTOM_CSS_PROP_NAME)!) as TemplateFnLike|TemplateFnLike[]
 	}
 }
 
@@ -79,10 +79,10 @@ export abstract class WebComponentCustomCSSManager<E extends EventListenerObj> e
 	/**
 	 * Gets this component's custom CSS templates
 	 * 
-	 * @returns {TemplateFn<any, any, any>|TemplateFn<any, any, any>[]} The
+	 * @returns {TemplateFnLike|TemplateFnLike[]} The
 	 * 	custom CSS templates
 	 */
-	public customCSS(): TemplateFn<any, any, any>|TemplateFn<any, any, any>[] {
+	public customCSS(): TemplateFnLike|TemplateFnLike[] {
 		return this.___customCSSClass.getCustomCSS();
 	}
 }

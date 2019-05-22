@@ -109,6 +109,10 @@ context('Base', function() {
 	});
 
 	context('Rendering', () => {
+		beforeEach(() => {
+			cy.visit('http://localhost:1251/test/usage/integration/classes/base/base.fixture.html');
+		});
+
 		it('re-renders the element when a property is changed', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'renderToDOM');
@@ -149,22 +153,16 @@ context('Base', function() {
 			cy.get('#test').then(async ([ el ]: JQuery<TestElement>) => {
 				assertMethodExists(el, 'renderToDOM');
 
-				// Reset x
-				el.props.x = 1;
+				// Don't cancel initial render
+				cy.wait(100).then(() => {
+					el.preRender = () => false;
+					el.props.x = 2;
 
-				cy.wait(50)
-					.get('#test')
-					.shadowFind('h1')
-					.shadowContains('1')
-					.then(async () => {
-						el.preRender = () => false;
-						el.props.x = 2;
-
-						cy.wait(50)
-							.get('#test')
-							.shadowFind('h1')
-							.shadowContains('1');
-					});
+					cy.wait(50)
+						.get('#test')
+						.shadowFind('h1')
+						.shadowContains('1');
+				});
 			});
 		});
 		it('calls firstRender on the very first render', () => {

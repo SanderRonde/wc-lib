@@ -172,7 +172,9 @@ export abstract class WebComponent<ELS extends {
 	}
 
 	/**
-	 * Called when the component is mounted to the dom
+	 * Called when the component is mounted to the dom.
+	 * Be sure to always call `super.connectedCallback()`
+	 * 	if you override this method
 	 */
 	connectedCallback() {
 		super.connectedCallback();
@@ -185,6 +187,8 @@ export abstract class WebComponent<ELS extends {
 
 	/**
 	 * Called when the component is unmounted from the dom
+	 * Be sure to always call `super.disconnectedCallback()`
+	 * 	if you override this method
 	 */
 	disconnectedCallback() {
 		Listeners.removeAllElementListeners(this as any);

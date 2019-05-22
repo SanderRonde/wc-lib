@@ -46,7 +46,7 @@ export class ConfigurableWebComponent<ELS extends {
 	 * 
 	 * @readonly
 	 */
-	public static mixins?: (MixinFn<any, any>)[];
+	public static mixins?: (MixinFn<any, any, any>)[];
 }
 
 /**
@@ -85,12 +85,13 @@ export interface WebComponentConfiguration {
 	/**
 	 * Components from which this component should inherit.
 	 * These are not applied by setting this value. You need
-	 * to inherit from `mixin(yourMixins)`. Setting this
-	 * property only adds some error checking.
+	 * to inherit from 
+	 * `mixin(ConfigurableWebComponent, yourMixins)`. 
+	 * Setting this property only adds some error checking.
 	 * 
 	 * @readonly
 	 */
-	readonly mixins?: (MixinFn<any, any>)[];
+	readonly mixins?: (MixinFn<any, any, any>)[];
 }
 
 /**
@@ -143,142 +144,261 @@ export class ConfiguredComponent extends WebComponentBase {
 	 * 
 	 * @readonly
 	 */
-	static mixins?: (MixinFn<any, any>)[];
+	static mixins?: (MixinFn<any, any, any>)[];
 }
 
-export class Mixin extends ConfiguredComponent { }
+/**
+ * A mixin base for use with the `@config` method
+ * of configuring the element
+ */
+export const ConfigurableMixin = (_superFn: any) => ConfigurableWebComponent;
 
-export type MixinFn<M extends typeof Mixin, MM extends Mixin> = (<S extends typeof Mixin>(superclass: S) => M & {
+class NonAbstractWebComponent extends WebComponent {
+	get self() { return null as any };
+}
+/**
+ * A mixin base for use with the manual adding of
+ * the `.css`, `.html`, `.is` and `.self` properties
+ */
+export const Mixin = (_superFn: any) => NonAbstractWebComponent;
+
+/**
+ * A function that, when passed a super-class
+ * extends that superclass and returns the new
+ * extended class
+ */
+export type MixinFn<S, M, MM> = (superclass: S) => M & {
 	new(...args: any[]): MM;
-});
-
-export function mixin(): void;
-export function mixin<M1 extends typeof Mixin, MM1 extends Mixin>(mixin1: MixinFn<M1, MM1>): M1 & {
-	new(...args: any[]): MM1;
 };
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin
-	>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>
-		): M1 & M2 & {
+
+/**
+ * Joins given mixins into a single merged class.
+ * Be sure to pass the base class 
+ * (`Mixin`, `MixinConfigured` or your
+ * own class) as the first argument to make sure it
+ * inherits from that as well when creating the
+ * final component. If you want to merge
+ * properties as well, make sure to pass `super.props`
+ * as the third argument to `Props.define` when you
+ * call it (see examples).
+ * 
+ * **Examples:**
+ * ```js
+ const A = (superFn) => class A extends superFn {
+	 a = 0
+ }
+ const B = (superFn) => class B extends superFn {
+	 b = 1 
+ }
+ const C = mixin(A, B);
+ new C().a; // 0
+ new C().b; // 1
+
+ const D = (superFn) => class D extends superFn { 
+	 props = Define.props(this, { 
+		 d: PROP_TYPE.NUMBER 
+	})} 
+ }
+ const E = (superFn) => class E extends superFn { 
+	 props = Define.props(this, { 
+		 e: PROP_TYPE.NUMBER 
+	}, super.props) 
+ }
+ const F = mixin(D, E);
+ new F().props; // { d: number, e: number }
+
+ const Loggable = (superFn) => class Loggable extends superFn {
+	log(...args) { 
+		console.log(...args);
+	}
+ }
+ @config({
+	// ...
+ })
+ class LoggableElement extends mixin(ConfigurableMixin, Loggable) {
+	constructor() {
+		this.log('exists!');
+	}
+ }
+ ```
+ * 
+ */
+
+interface DefaultClass {
+	new(...args: any[]): {};
+}
+
+export function mixin(): DefaultClass;
+export function mixin<M1, MM1>(mixin1: MixinFn<DefaultClass, M1, MM1>): M1 & {
+	new(...args: any[]): MM1 & any;
+};
+export function mixin<M1, MM1, M2, MM2 >(
+	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+		new(...args: any[]): MM1;
+	}, M2, MM2>): M1 & M2 & {
+		new(...args: any[]): MM1 & MM2 & any;
+	};
+export function mixin<M1, MM1, M2, MM2, M3, MM3,>(
+	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+		new(...args: any[]): MM1;
+	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
+		new(...args: any[]): MM1 & MM2;
+	}, M3, MM3>
+	): M1 & M2 & M3 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & any;
+	};
+export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4>(
+	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+		new(...args: any[]): MM1;
+	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
+		new(...args: any[]): MM1 & MM2;
+	}, M3, MM3>, 
+	mixin4: MixinFn<M1 & M2 & M3 & {
+		new(...args: any[]): MM1 & MM2 & MM3;
+	}, M4, MM4>): M1 & M2 & M3 & M4 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & any;
+	};
+export function mixin<M1, MM1, M2, MM2, M3, MM3 ,M4, MM4, M5 ,MM5 >(
+	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+		new(...args: any[]): MM1;
+	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
+		new(...args: any[]): MM1 & MM2;
+	}, M3, MM3>, 
+	mixin4: MixinFn<M1 & M2 & M3 & {
+		new(...args: any[]): MM1 & MM2 & MM3;
+	}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+	}, M5, MM5>): M1 & M2 & M3 & M4 & M5 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & any;
+	};
+export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6 >(
+	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+		new(...args: any[]): MM1;
+	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
+		new(...args: any[]): MM1 & MM2;
+	}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
+		new(...args: any[]): MM1 & MM2 & MM3;
+	}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+	}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+	}, M6, MM6>): M1 & M2 & M3 & M4 & M5 & M6 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & any;
+	};
+export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5 ,MM5, M6, MM6, M7, MM7 >(
+	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+		new(...args: any[]): MM1;
+	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
+		new(...args: any[]): MM1 & MM2;
+	}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
+		new(...args: any[]): MM1 & MM2 & MM3;
+	}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+	}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+	}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+	}, M7, MM7>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & any;
+	};
+export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
+	M7, MM7, M8, MM8>(
+		mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+			new(...args: any[]): MM1;
+		}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
 			new(...args: any[]): MM1 & MM2;
-		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>
-		): M1 & M2 & M3 & {
+		}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
 			new(...args: any[]): MM1 & MM2 & MM3;
-		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
-		mixin4: MixinFn<M4, MM4>, 
-		): M1 & M2 & M3 & M4 & {
+		}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
-		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
-	MM5 extends Mixin>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
-		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, 
-		): M1 & M2 & M3 & M4 & M5 & {
+		}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
-		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
-	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
-		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
-		): M1 & M2 & M3 & M4 & M5 & M6 & {
+		}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
-		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
-	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
-	M7 extends typeof Mixin, MM7 extends Mixin>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
-		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
-		mixin7: MixinFn<M7, MM7>, 
-		): M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
+		}, M7, MM7>, mixin8: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+		}, M8, MM8>, ): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & any;
 		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
-	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
-	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
-	MM8 extends Mixin>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
-		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
-		mixin7: MixinFn<M7, MM7>, mixin8: MixinFn<M8, MM8>, 
-		): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
+export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
+	M7, MM7, M8, MM8, M9, MM9 >(
+		mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+			new(...args: any[]): MM1;
+		}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
+			new(...args: any[]): MM1 & MM2;
+		}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
+			new(...args: any[]): MM1 & MM2 & MM3;
+		}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+		}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+		}, M7, MM7>, mixin8: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+		}, M8, MM8>, mixin9: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+		}, M9, MM9>, ): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & any;
 		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
-	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
-	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
-	MM8 extends Mixin, M9 extends typeof Mixin, MM9 extends Mixin>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
-		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
-		mixin7: MixinFn<M7, MM7>, mixin8: MixinFn<M8, MM8>, mixin9: MixinFn<M9, MM9>, 
-		): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
+export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
+	M7, MM7, M8, MM8, M9, MM9, M10, MM10 >(
+		mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+			new(...args: any[]): MM1;
+		}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
+			new(...args: any[]): MM1 & MM2;
+		}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
+			new(...args: any[]): MM1 & MM2 & MM3;
+		}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+		}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+		}, M7, MM7>, mixin8: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+		}, M8, MM8>, mixin9: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+		}, M9, MM9>, mixin10: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
+		}, M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10 & any;
 		};
 export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
-	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
-	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
-	MM8 extends Mixin, M9 extends typeof Mixin, MM9 extends Mixin,
-	M10 extends typeof Mixin, MM10 extends Mixin>(
-		mixin1: MixinFn<M1, MM1>, mixin2: MixinFn<M2, MM2>, mixin3: MixinFn<M3, MM3>, 
-		mixin4: MixinFn<M4, MM4>, mixin5: MixinFn<M5, MM5>, mixin6: MixinFn<M6, MM6>, 
-		mixin7: MixinFn<M7, MM7>, mixin8: MixinFn<M8, MM8>, mixin9: MixinFn<M9, MM9>, 
-		mixin10: MixinFn<M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
-		};
-export function mixin<
-	M1 extends typeof Mixin, MM1 extends Mixin, M2 extends typeof Mixin, 
-	MM2 extends Mixin, M3 extends typeof Mixin, MM3 extends Mixin,
-	M4 extends typeof Mixin, MM4 extends Mixin, M5 extends typeof Mixin,
-	MM5 extends Mixin, M6 extends typeof Mixin, MM6 extends Mixin,
-	M7 extends typeof Mixin, MM7 extends Mixin, M8 extends typeof Mixin, 
-	MM8 extends Mixin, M9 extends typeof Mixin, MM9 extends Mixin,
-	M10 extends typeof Mixin, MM10 extends Mixin>(
-		mixin1?: MixinFn<M1, MM1>, mixin2?: MixinFn<M2, MM2>, mixin3?: MixinFn<M3, MM3>, 
-		mixin4?: MixinFn<M4, MM4>, mixin5?: MixinFn<M5, MM5>, mixin6?: MixinFn<M6, MM6>, 
-		mixin7?: MixinFn<M7, MM7>, mixin8?: MixinFn<M8, MM8>, mixin9?: MixinFn<M9, MM9>, 
-		mixin10?: MixinFn<M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
+	M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6, M7, MM7, M8,
+	MM8, M9, MM9, M10, MM10 >(
+		mixin1?: MixinFn<DefaultClass, M1, MM1>, mixin2?: MixinFn<M1 & {
+			new(...args: any[]): MM1;
+		}, M2, MM2>, mixin3?: MixinFn<M1 & M2 & {
+			new(...args: any[]): MM1 & MM2;
+		}, M3, MM3>, mixin4?: MixinFn<M1 & M2 & M3 & {
+			new(...args: any[]): MM1 & MM2 & MM3;
+		}, M4, MM4>, mixin5?: MixinFn<M1 & M2 & M3 & M4 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		}, M5, MM5>, mixin6?: MixinFn<M1 & M2 & M3 & M4 & M5 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+		}, M6, MM6>, mixin7?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+		}, M7, MM7>, mixin8?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+		}, M8, MM8>, mixin9?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+		}, M9, MM9>, mixin10?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
+		}, M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10 & any;
 		} {
-			let current = Mixin;
+			let current = class {};
 			const mixins = [
 				mixin1, mixin2, mixin3, mixin4, mixin5,
 				mixin6, mixin7, mixin8, mixin9, mixin10
 			];
 			for (const mixin of mixins) {
 				if (!mixin) break;
-				current = (mixin as MixinFn<any, any>)(current);
+				current = (mixin as MixinFn<any, any, any>)(current);
 			}
 			return current as any;
 		}
-
 	
 /**
  * Configures a component to make sure it can

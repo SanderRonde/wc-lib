@@ -223,7 +223,7 @@ export class TemplateFn<C extends {
 		private _renderWithTemplater<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
 			templater: Templater<TR>): {
 				changed: boolean;
-				rendered: TR
+				rendered: TR|null;
 			 } {
 				if (!templaterMap.has(templater)) {
 					templaterMap.set(templater, new WeakMap());
@@ -243,7 +243,7 @@ export class TemplateFn<C extends {
 						}
 					}
 					const rendered = this._template === null ?
-						templater`` : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
+						null : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
 								component, templater, component.props, 
 								'getTheme' in component ? 
 									(component as unknown as WebComponentThemeManger<any>)
@@ -284,8 +284,9 @@ export class TemplateFn<C extends {
 			return result.join('');
 		}
 
-		private static _templateResultToText(result: TemplateRenderResult) {
+		private static _templateResultToText(result: TemplateRenderResult|null) {
 			if (typeof result === 'string') return result;
+			if (result === null) return '';
 
 			if ('toText' in result && typeof result.toText === 'function') {
 				return result.toText();
@@ -325,10 +326,10 @@ export class TemplateFn<C extends {
 		 * @param {CHANGE_TYPE} changeType - The type of change that occurred
 		 * @param {C} component - The base component
 		 * 
-		 * @returns {R} The intermediate value that
+		 * @returns {R|null} The intermediate value that
 		 * 	can be passed to the renderer
 		 */
-		public renderTemplate(changeType: CHANGE_TYPE, component: C): R {
+		public renderTemplate(changeType: CHANGE_TYPE, component: C): R|null {
 			const { changed, rendered } = this._renderWithTemplater(changeType, component,
 				(component as unknown as WebComponent<any, any>).generateHTMLTemplate as unknown as Templater<R>);
 			this._lastRenderChanged = changed;
@@ -347,10 +348,10 @@ export class TemplateFn<C extends {
 		 * @param {templater<TR>} templater - The templater (
 		 * 	generally of the parent)
 		 * 
-		 * @returns {TR} The return value of the templater
+		 * @returns {TR|null} The return value of the templater
 		 */
 		public renderSame<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
-			templater: Templater<TR>): TR {
+			templater: Templater<TR>): TR|null {
 				const { changed, rendered } = this._renderWithTemplater(changeType, component,
 					templater);
 				this._lastRenderChanged = changed;
@@ -360,12 +361,13 @@ export class TemplateFn<C extends {
 		/**
 		 * Renders a template to given HTML element
 		 * 
-		 * @param {R} template - The template to render in its
+		 * @param {R|null} template - The template to render in its
 		 * 	intermediate form
 		 * @param {HTMLElement} target - The element to render
 		 * 	it to
 		 */
-		public render(template: R, target: HTMLElement) {
+		public render(template: R|null, target: HTMLElement) {
+			if (template === null) return;
 			this._renderer(template, target);
 		}
 
@@ -373,12 +375,13 @@ export class TemplateFn<C extends {
 		 * Renders this template to DOM if it has changed as of
 		 * the last call to the template function
 		 * 
-		 * @param {R} template - The template to render in its
+		 * @param {R|null} template - The template to render in its
 		 * 	intermediate form
 		 * @param {HTMLElement} target - The element to render
 		 * 	it to
 		 */
-		public renderIfNew(template: R, target: HTMLElement) {
+		public renderIfNew(template: R|null, target: HTMLElement) {
+			if (template === null) return;
 			if (!this._lastRenderChanged) return;
 			this._renderer(template, target);
 		}

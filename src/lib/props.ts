@@ -597,9 +597,9 @@ namespace PropsDefiner {
 
 				if (prevVal === newVal) return;
 				
-				el.component.fire('beforePropChange', casingKey, prevVal, newVal);
+				el.component.fire('beforePropChange', casingKey, newVal, prevVal);
 				el.propValues[casingKey] = newVal as any;
-				el.component.fire('propChange', casingKey, prevVal, newVal);
+				el.component.fire('propChange', casingKey, newVal, prevVal);
 
 				if (watch) {
 					queueRender(el.component, CHANGE_TYPE.PROP);
@@ -627,9 +627,9 @@ namespace PropsDefiner {
 
 					if (prevVal === newVal) return;
 
-					el.component.fire('beforePropChange', casingKey, prevVal, newVal);
+					el.component.fire('beforePropChange', casingKey, newVal, prevVal);
 					el.propValues[casingKey] = newVal;
-					el.component.fire('propChange', casingKey, prevVal, newVal);
+					el.component.fire('propChange', casingKey, newVal, prevVal);
 
 					if (watch) {
 						queueRender(el.component, CHANGE_TYPE.PROP);
@@ -705,12 +705,12 @@ namespace PropsDefiner {
 					},
 					set(value) {
 						const prevVal = _this._props[mapKey];
-						_this._rep.component.fire('beforePropChange', key, prevVal, value);
+						_this._rep.component.fire('beforePropChange', key, value, prevVal);
 
 						if (_this._props[mapKey] === value) return;
 
 						_this._props[mapKey] = value;
-						_this._rep.component.fire('propChange', key, prevVal, value);
+						_this._rep.component.fire('propChange', key, value, prevVal);
 					}
 				});
 			}
@@ -744,9 +744,9 @@ namespace PropsDefiner {
 
 						if (_this._props[mapKey] === value) return;
 						const prevVal = _this._rep.propValues[mapKey];
-						_this._rep.component.fire('beforePropChange', key, prevVal, value);
+						_this._rep.component.fire('beforePropChange', key, value, prevVal);
 						_this._rep.propValues[mapKey] = value;
-						_this._rep.component.fire('propChange', key, prevVal, value);
+						_this._rep.component.fire('propChange', key, value, prevVal);
 						if (_this._propertyConfig.reflectToAttr) {
 							setter(_this._rep.setAttr, _this._rep.removeAttr, propName, 
 								isPrivate ? '_' : original, type);

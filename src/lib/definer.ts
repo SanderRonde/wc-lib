@@ -1,5 +1,6 @@
+import { WebComponentBase, TemplateFn, CHANGE_TYPE } from './base.js';
 import { WebComponent } from './component.js';
-import { WebComponentBase } from './base.js';
+import { WCLibError } from './shared.js';
 
 interface ExtendedProcess extends NodeJS.Process {
 	HTMLElement: typeof HTMLElement;
@@ -41,8 +42,6 @@ class DefinerClass {
 	 * All defined webcomponents
 	 */
 	public static defined: string[] = [];
-
-	constructor() { }
 
 	public static finished: boolean = false;
 	public static listeners: {
@@ -92,6 +91,54 @@ class DefinerClass {
 				component.isMounted = true;
 				component.mounted();
 			});
+		}
+	}
+
+	private static __isTemplate(value: any): value is TemplateFn {
+		if (typeof value.changeOn !== 'number' ||
+			typeof value.renderAsText !== 'function' ||
+			typeof value.renderTemplate !== 'function' ||
+			typeof value.renderSame !== 'function' ||
+			typeof value.render !== 'function' ||
+			typeof value.renderIfNew !== 'function') {
+				return false;
+			}
+		return true;
+	}
+
+	public static checkProps(component: typeof WebComponent) {
+		if (!component.is) {
+			throw new WCLibError(component, 'Component is missing static is property');
+		}
+		if (typeof component.is !== 'string') {
+			throw new WCLibError(component, 'Component name is not a string');
+		}
+		if (component.is.indexOf('-') === -1) {
+			throw new WCLibError(component, 'Webcomponent names need to contain a dash "-"');
+		}
+
+		if (component.html === undefined) {
+			throw new WCLibError(component, 
+				'Component is missing static html property (set to null to suppress)');
+		}
+		if (component.html === null) {
+			component.html = new TemplateFn<any>(null, CHANGE_TYPE.NEVER, () => {});
+		} else if (!this.__isTemplate(component.html)) {
+			throw new WCLibError(component, 
+				'Component\'s html template should be an instance of the TemplateFn class');
+		}
+		if (Array.isArray(component.css)) {
+			for (const template of component.css) {
+				if (!this.__isTemplate(template)) {
+					throw new WCLibError(component, 
+						'Component\'s css template should be an instance of the TemplateFn class ' +
+						'or an array of them');
+				}
+			}
+		} else if (!this.__isTemplate(component.css)) {
+			throw new WCLibError(component, 
+				'Component\'s css template should be an instance of the TemplateFn class ' +
+				'or an array of them');
 		}
 	}
 }
@@ -187,14 +234,9 @@ export abstract class WebComponentDefiner extends elementBase {
 			this.___definerClass.listeners = [];
 		}
 
+		this.___definerClass.checkProps(this as typeof WebComponent);
 		for (const dependency of this.dependencies || []) {
 			dependency && dependency.define(false);
-		}
-		if (!this.is) {
-			throw new Error('No component definition given (name and class)')
-		}
-		if (!this.is) {
-			throw new Error('No name given for component');
 		}
 		define(this.is, this);
 		this.___definerClass.defined.push(this.is);

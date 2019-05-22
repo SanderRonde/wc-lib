@@ -3,8 +3,8 @@ import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`
-		<div>Test</div>
-		<h1>${props.x}</h1>
+		<div class="divClass" id="divId">Test</div>
+		<h1 id="headerId" class="headerClass">${props.x}</h1>
 	`;
 }, CHANGE_TYPE.PROP, render);
 
@@ -18,8 +18,14 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends ConfigurableWebComponent<{
-	IDS: {};
-	CLASSES: {};
+	IDS: {
+		divId: HTMLDivElement;
+		headerId: HTMLHeadingElement;
+	};
+	CLASSES: {
+		divClass: HTMLDivElement;
+		headerClass: HTMLHeadingElement;
+	};
 }, {
 	test: {
 		args: [number, number];

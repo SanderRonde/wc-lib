@@ -1,21 +1,21 @@
 /// <reference types="Cypress" />
 
-import { assertPropertyExists, assertPrivatePropertyExists, assertMethodExists } from "../../../lib/assertions";
+import { expectPropertyExists, expectPrivatePropertyExists, expectMethodExists } from "../../../lib/assertions";
 import { TestElement, TestElementBase, RenderTestWindow } from "./elements/test-element";
 import { TemplateFn, CHANGE_TYPE } from "../../../../../src/wclib";
 
 function assertTemplate(template: TemplateFn) {
-	assertPrivatePropertyExists(template, '_template');
-	assertPrivatePropertyExists(template, '_renderer');
-	assertPrivatePropertyExists(template, '_lastRenderChanged');
+	expectPrivatePropertyExists(template, '_template');
+	expectPrivatePropertyExists(template, '_renderer');
+	expectPrivatePropertyExists(template, '_lastRenderChanged');
 
-	assertPropertyExists(template, 'changeOn');
+	expectPropertyExists(template, 'changeOn');
 	
-	assertMethodExists(template, 'renderAsText');
-	assertMethodExists(template, 'renderTemplate');
-	assertMethodExists(template, 'renderSame');
-	assertMethodExists(template, 'render');
-	assertMethodExists(template, 'renderIfNew');
+	expectMethodExists(template, 'renderAsText');
+	expectMethodExists(template, 'renderTemplate');
+	expectMethodExists(template, 'renderSame');
+	expectMethodExists(template, 'render');
+	expectMethodExists(template, 'renderIfNew');
 }
 
 context('Base', function() {
@@ -33,17 +33,18 @@ context('Base', function() {
 	context('Properties/Methods', () => {
 		it('exposes an .html property that contains the template', () => {
 			cy.window().then((window: RenderTestWindow) => {
-				assertPropertyExists(window.TestElement, 'html');
+				expectPropertyExists(window.TestElement, 'html');
 
 				assertTemplate(window.TestElement.html);
 			});
 		});
 		it('exposes an .css property that contains the template(s)', () => {
 			cy.window().then((window: RenderTestWindow) => {
-				assertPropertyExists(window.TestElement, 'css');
+				expectPropertyExists(window.TestElement, 'css');
 
 				if (Array.isArray(window.TestElement.css)) {
-					assert.isAtLeast(window.TestElement.css.length, 1, 'has at least one css template');
+					expect(window.TestElement.css.length).to.be.at.least(1,
+						'has at least one css template');
 					for (const css of window.TestElement.css) {
 						assertTemplate(css);	
 					}
@@ -54,7 +55,7 @@ context('Base', function() {
 		});
 		it('exposes a .customCSS property that contains the template(s)', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'customCSS');
+				expectMethodExists(el, 'customCSS');
 				
 				const customCSS = el.customCSS();
 				if (Array.isArray(customCSS)) {
@@ -68,30 +69,30 @@ context('Base', function() {
 		});
 		it('exposes a .root property that contains the shadowRoot', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertPropertyExists(el, 'root');
+				expectPropertyExists(el, 'root');
 				const rootProp = el.root;
-				assert.strictEqual(rootProp, el.shadowRoot, 
-					'shadowRoots match');
+				expect(rootProp).to.be.equal(el.shadowRoot, 
+					'shadowRoots match')
 			});
 		});
 		it('exposes a .self property that contains a reference to the constructor', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertPropertyExists(el, 'self');
+				expectPropertyExists(el, 'self');
 
 				const self = el.self;
-				assert.strictEqual(self, el.constructor);
+				expect(self).to.be.equal(el.constructor);
 			});
 		});
 		it('exposes a #renderToDOM method', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'renderToDOM');
+				expectMethodExists(el, 'renderToDOM');
 			});
 		});
 		it('exposes render hooks', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'preRender');
-				assertMethodExists(el, 'postRender');
-				assertMethodExists(el, 'firstRender');
+				expectMethodExists(el, 'preRender');
+				expectMethodExists(el, 'postRender');
+				expectMethodExists(el, 'firstRender');
 			});
 		});
 	});
@@ -115,7 +116,7 @@ context('Base', function() {
 
 		it('re-renders the element when a property is changed', () => {
 			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'renderToDOM');
+				expectMethodExists(el, 'renderToDOM');
 				cy.get('#test')
 					.shadowFind('h1')
 					.shadowContains('1')
@@ -130,28 +131,22 @@ context('Base', function() {
 		});
 		it('calls the render hooks when rendering', () => {
 			cy.get('#test').then(async ([ el ]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'renderToDOM');
+				expectMethodExists(el, 'renderToDOM');
 
-				let preRenderCalled: boolean = false;
-				let postRenderCalled: boolean = false;
-				el.preRender = () => {
-					preRenderCalled = true;
-				}
-				el.postRender = () => {
-					postRenderCalled = true;
-				}
+				el.preRender = cy.spy() as any;
+				el.postRender = cy.spy() as any;
 
 				el.props.x = 2;
 
 				cy.wait(50).then(() => {
-					assert.isTrue(preRenderCalled, 'preRender was called');
-					assert.isTrue(postRenderCalled, 'postRender was called');
+					expect(el.preRender).to.be.called;
+					expect(el.postRender).to.be.called;
 				});
 			});
 		});
 		it('cancels rendering when false is returned by #preRender', () => {
 			cy.get('#test').then(async ([ el ]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'renderToDOM');
+				expectMethodExists(el, 'renderToDOM');
 
 				// Don't cancel initial render
 				cy.wait(100).then(() => {
@@ -167,19 +162,15 @@ context('Base', function() {
 		});
 		it('calls firstRender on the very first render', () => {
 			cy.document().then((document) => {
-				let firstRenderCalls = 0;
-	
 				const el = document.createElement('test-element') as TestElement;
-				el.firstRender = () => {
-					firstRenderCalls++;
-				}
+				el.firstRender = cy.spy() as any;
 				el.id = 'test2';
 				document.body.appendChild(el);
 	
 				cy.get('#test2').then(([el]: JQuery<TestElement>) => {
 					el.props.x = 2;
 	
-					assert.strictEqual(firstRenderCalls, 1, 'firstRender was only called');
+					expect(el.firstRender).to.be.calledOnce;
 				});
 			});
 		});
@@ -222,13 +213,11 @@ context('Base', function() {
 								element.renderToDOM(changeType);
 
 								if (shouldChange) {
-									assert.strictEqual(
-										cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled],
-										renders + 1, 'render was called');
+									expect(cyWindow.renderCalled).to.have.property(change)
+										.to.be.equal(renders + 1, 'render was called');
 								} else {
-									assert.strictEqual(
-										cyWindow.renderCalled[change as keyof typeof cyWindow.renderCalled],
-										renders, 'render was not called');
+									expect(cyWindow.renderCalled).to.have.property(change)
+										.to.be.equal(renders, 'render was not called');
 								}
 							});
 						});

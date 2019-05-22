@@ -2,7 +2,7 @@
 
 import { ThemedElement, ThemedElementParent } from "./elements/themed-element.js";
 import { TestElement, TestWindow } from "../elements/test-element";
-import { assertMethodExists } from "../../../lib/assertions.js";
+import { expectMethodExists } from "../../../lib/assertions.js";
 
 export interface TestTheme {
 	color1: string;
@@ -56,22 +56,22 @@ context('Theme Manager', function() {
 	context('Properties/Methods', () => {
 		it('exposes a #getThemeName method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'getThemeName');
+				expectMethodExists(el, 'getThemeName');
 			});
 		});
 		it('exposes a #getTheme method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'getTheme');
+				expectMethodExists(el, 'getTheme');
 			});
 		});
 		it('exposes a static #initTheme method', () => {
 			cy.window().then((window: TestWindow) => {
-				assertMethodExists(window.TestElement, 'initTheme');
+				expectMethodExists(window.TestElement, 'initTheme');
 			});
 		});
 		it('exposes a static #setDefaultTheme method', () => {
 			cy.window().then((window: TestWindow) => {
-				assertMethodExists(window.TestElement, 'setDefaultTheme');
+				expectMethodExists(window.TestElement, 'setDefaultTheme');
 			});
 		});
 	});
@@ -81,7 +81,7 @@ context('Theme Manager', function() {
 			it('uses the default theme name', () => {
 				getDefaultThemedElements().then((elements) => {
 					for (const element of elements) {
-						assert.strictEqual(element.getThemeName(), defaultTheme,
+						expect(element.getThemeName()).to.be.equal(defaultTheme,
 							'default theme name is set');
 					}
 				});
@@ -89,20 +89,20 @@ context('Theme Manager', function() {
 			it('uses the default theme', () => {
 				getDefaultThemedElements().then((elements) => {
 					for (const element of elements) {
-						assert.deepEqual(element.getTheme(), usedThemes[defaultTheme],
+						expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme],
 							'default theme is set');
 					}
 				});
 			});
 			it('uses the different theme name when a global theme prop is set', () => {
 				cy.get('themed-element[id=different]').then(([el]: JQuery<ThemedElement>) => {
-					assert.strictEqual(el.getThemeName(), 'second',
+					expect(el.getThemeName()).to.be.equal('second',
 						'uses different theme name');
 				});
 			});
 			it('uses the different theme when a global theme prop is set', () => {
 				cy.get('themed-element[id=different]').then(([el]: JQuery<ThemedElement>) => {
-					assert.deepEqual(el.getTheme(), usedThemes['second'],
+					expect(el.getTheme()).to.be.deep.equal(usedThemes['second'],
 						'uses different theme');
 				});
 			});
@@ -110,13 +110,13 @@ context('Theme Manager', function() {
 				getDeepThemedElements().then((elements) => {
 					cy.window().then((window) => {
 						for (const element of elements) {
-							assert.strictEqual(
-								window.getComputedStyle(element.$('.text')!)
-									.color, usedThemes[defaultTheme].color1,
+							expect(window.getComputedStyle(element.$('.text')!))
+								.to.have.property('color')
+								.to.be.equal(usedThemes[defaultTheme].color1,
 									'color1 is used');
-							assert.strictEqual(
-								window.getComputedStyle(element.$('.text2')!)
-									.color, usedThemes[defaultTheme].color2,
+							expect(window.getComputedStyle(element.$('.text2')!))
+								.to.have.property('color')
+								.to.be.equal(usedThemes[defaultTheme].color2,
 									'color2 is used');
 						}
 					});
@@ -134,9 +134,9 @@ context('Theme Manager', function() {
 			it('changes the theme across all elements in the scope', () => {
 				getDefaultThemedElements().then((elements) => {
 					for (const element of elements) {
-						assert.strictEqual(element.getThemeName(), defaultTheme,
+						expect(element.getThemeName()).to.be.equal(defaultTheme,
 							'default theme name is set');
-						assert.deepEqual(element.getTheme(), usedThemes[defaultTheme],
+						expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme],
 							'default theme is set');
 					}
 				});
@@ -147,23 +147,23 @@ context('Theme Manager', function() {
 
 				getDefaultThemedElements().then((elements) => {
 					for (const element of elements) {
-						assert.strictEqual(element.getThemeName(), 'second',
-							'theme name is changed');
-						assert.deepEqual(element.getTheme(), usedThemes['second'],
-							'theme is changed');
+						expect(element.getThemeName()).to.be.equal('second',
+							'default theme name is set');
+						expect(element.getTheme()).to.be.deep.equal(usedThemes['second'],
+							'default theme is set');
 					}
 				});
 			});
 			it('applies the changed theme', () => {
 				getDeepThemedElements().then((elements) => {
 					for (const element of elements) {
-						assert.strictEqual(
-							window.getComputedStyle(element.$('.text')!)
-								.color, usedThemes[defaultTheme].color1,
+						expect(window.getComputedStyle(element.$('.text')!))
+							.to.have.property('color')
+							.to.be.equal(usedThemes[defaultTheme].color1,
 								'color1 is used');
-						assert.strictEqual(
-							window.getComputedStyle(element.$('.text2')!)
-								.color, usedThemes[defaultTheme].color2,
+						expect(window.getComputedStyle(element.$('.text2')!))
+							.to.have.property('color')
+							.to.be.equal(usedThemes[defaultTheme].color2,
 								'color2 is used');
 					}
 				});
@@ -174,13 +174,13 @@ context('Theme Manager', function() {
 
 				getDeepThemedElements().then((elements) => {
 					for (const element of elements) {
-						assert.strictEqual(
-							window.getComputedStyle(element.$('.text')!)
-								.color, usedThemes['second'].color1,
+						expect(window.getComputedStyle(element.$('.text')!))
+							.to.have.property('color')
+							.to.be.equal(usedThemes['second'].color1,
 								'color1 is used');
-						assert.strictEqual(
-							window.getComputedStyle(element.$('.text2')!)
-								.color, usedThemes['second'].color2,
+						expect(window.getComputedStyle(element.$('.text2')!))
+							.to.have.property('color')
+							.to.be.equal(usedThemes['second'].color2,
 								'color2 is used');
 					}
 				});
@@ -206,13 +206,13 @@ context('Theme Manager', function() {
 					getDeepThemedElements().then((elements) => {
 						cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
 							for (const element of [...elements, ...separate]) {
-								assert.strictEqual(
-									window.getComputedStyle(element.$('.text')!)
-										.color, usedThemes[defaultTheme].color1,
+								expect(window.getComputedStyle(element.$('.text')!))
+									.to.have.property('color')
+									.to.be.equal(usedThemes[defaultTheme].color1,
 										'color1 is used');
-								assert.strictEqual(
-									window.getComputedStyle(element.$('.text2')!)
-										.color, usedThemes[defaultTheme].color2,
+								expect(window.getComputedStyle(element.$('.text2')!))
+									.to.have.property('color')
+									.to.be.equal(usedThemes[defaultTheme].color2,
 										'color2 is used');
 							}
 						});
@@ -225,13 +225,13 @@ context('Theme Manager', function() {
 					getDeepThemedElements().then((elements) => {
 						cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
 							for (const element of [...elements, ...separate]) {
-								assert.strictEqual(
-									window.getComputedStyle(element.$('.text')!)
-										.color, usedThemes['second'].color1,
+								expect(window.getComputedStyle(element.$('.text')!))
+									.to.have.property('color')
+									.to.be.equal(usedThemes['second'].color1,
 										'color1 is used');
-								assert.strictEqual(
-									window.getComputedStyle(element.$('.text2')!)
-										.color, usedThemes['second'].color2,
+								expect(window.getComputedStyle(element.$('.text2')!))
+									.to.have.property('color')
+									.to.be.equal(usedThemes['second'].color2,
 										'color2 is used');
 							}
 						});

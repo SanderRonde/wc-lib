@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 
-import { assertMethodExists, assertPropertyExists, assertPromise } from "../../../lib/assertions";
+import { expectMethodExists, expectPropertyExists, expectPromise } from "../../../lib/assertions";
 import { TestWindow, TestElement } from "../elements/test-element";
 import { WebComponentI18NManager } from "../../../../../src/wclib";
 import { LangElement } from "./elements/test-lang-element";
@@ -22,44 +22,44 @@ context('I18n-Manager', function() {
 	context('Properties/Methods', () => {
 		it('exposes a #setLang method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'setLang');
+				expectMethodExists(el, 'setLang');
 			});
 		});
 		it('exposes a #getLang method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'getLang');
+				expectMethodExists(el, 'getLang');
 			});
 		});
 
 		it('exposes a #__prom method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, '__prom');
+				expectMethodExists(el, '__prom');
 			});
 		});
 		it('exposes a #__ method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, '__');
+				expectMethodExists(el, '__');
 			});
 		});
 
 		it('exposes a static #initTheme method', () => {
 			cy.window().then((window: TestWindow) => {
-				assertMethodExists(window.TestElement, 'initI18N');
+				expectMethodExists(window.TestElement, 'initI18N');
 			});
 		});
 		it('exposes a static #__prom method', () => {
 			cy.window().then((window: TestWindow) => {
-				assertMethodExists(window.TestElement, '__prom');
+				expectMethodExists(window.TestElement, '__prom');
 			});
 		});
 		it('exposes a static #__ method', () => {
 			cy.window().then((window: TestWindow) => {
-				assertMethodExists(window.TestElement, '__');
+				expectMethodExists(window.TestElement, '__');
 			});
 		});
 		it('exposes a static #langReady method', () => {
 			cy.window().then((window: TestWindow) => {
-				assertPropertyExists(window.TestElement, 'langReady');
+				expectPropertyExists(window.TestElement, 'langReady');
 			});
 		});
 	});
@@ -67,16 +67,16 @@ context('I18n-Manager', function() {
 	context('Setting/Getting', () => {
 		it('returns the currently active language on #getLang call', () => {
 			cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-				assert.strictEqual(el.getLang(), 'en',
+				expect(el.getLang()).to.be.equal('en',
 					'uses the default language');
 			});
 		});
 		it('changes the current language on #setLang call', () => {
 			cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-				assert.strictEqual(el.getLang(), 'en',
+				expect(el.getLang()).to.be.equal('en',
 					'uses the default language');
 				el.setLang('nl');
-				assert.strictEqual(el.getLang(), 'nl',
+				expect(el.getLang()).to.be.equal('nl',
 					'uses the new language');
 			});
 		});
@@ -124,10 +124,10 @@ context('I18n-Manager', function() {
 		});
 		it('can still change the language', () => {
 			cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-				assert.strictEqual(el.getLang(), 'en',
+				expect(el.getLang()).to.be.equal('en',
 					'uses the default language');
 				el.setLang('nl');
-				assert.strictEqual(el.getLang(), 'nl',
+				expect(el.getLang()).to.be.equal('nl',
 					'uses the new language');
 				cy.wait('@getLangNl');
 			});
@@ -212,9 +212,9 @@ context('I18n-Manager', function() {
 			it('returns a promise that resolves to the value when calling #__prom', () => {
 				cy.get('#lang').then(([el]: JQuery<LangElement>) => {
 					const prom = el.__prom('test');
-					assertPromise(prom);
+					expectPromise(prom);
 					prom.then((value) => {
-						assert.strictEqual(value, 'english',
+						expect(value).to.be.equal('english',
 							'promise resolves to message value');
 					});
 				});
@@ -225,19 +225,17 @@ context('I18n-Manager', function() {
 						___marker: boolean;
 					}>('test');
 					
-					assert.property(returned, '___marker',	
-						'marker exists');
-					assert.isTrue((returned as any).___marker,	
-						'marker is set to true');
+					expect(returned, 'marker exists')
+						.to.have.property('___marker', true, 'marker exists');
 				});
 			});
 			it('returns a promise that resolves to the value when calling ' +
 				'WebComponentI18NManager.__prom', () => {
 					cy.window().then((window: I18NTestWindow) => {
 						const prom = window.WebComponentI18NManager.__prom('test');
-						assertPromise(prom);
+						expectPromise(prom);
 						prom.then((value) => {
-							assert.strictEqual(value, 'english',
+							expect(value).to.be.equal('english',
 								'promise resolves to message value');
 						});
 					});
@@ -249,10 +247,8 @@ context('I18n-Manager', function() {
 							___marker: boolean;
 						}>('test');
 						
-						assert.property(returned, '___marker',	
-							'marker exists');
-						assert.isTrue((returned as any).___marker,	
-							'marker is set to true');
+						expect(returned, 'marker exists')
+							.to.have.property('___marker', true, 'marker exists');
 					});
 				});	
 		});

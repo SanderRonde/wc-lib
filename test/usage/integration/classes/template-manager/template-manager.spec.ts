@@ -2,7 +2,7 @@
 
 import { ComplexElement, EventTriggeringElement, BooleanElement, ComplexReceiverElement } from "./elements/complex-element";
 import { TestElement, TestWindow } from "../elements/test-element";
-import { assertMethodExists } from "../../../lib/assertions.js";
+import { expectMethodExists } from "../../../lib/assertions.js";
 
 context('Template Manager', function() {
 	before(() => {
@@ -12,22 +12,22 @@ context('Template Manager', function() {
 	context('Properties/Methods', () => {
 		it('exposes a #generateHTMLTemplate method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'generateHTMLTemplate');
+				expectMethodExists(el, 'generateHTMLTemplate');
 			});
 		});
 		it('exposes a #getRef method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'getRef');
+				expectMethodExists(el, 'getRef');
 			});
 		});
 		it('exposes a #getParentRef method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'getParentRef');
+				expectMethodExists(el, 'getParentRef');
 			});
 		});
 		it('exposes a static #initComplexTemplateProvider method', () => {
 			cy.window().then((window: TestWindow) => {
-				assertMethodExists(window.TestElement, 'initComplexTemplateProvider');
+				expectMethodExists(window.TestElement, 'initComplexTemplateProvider');
 			});
 		});
 	});	
@@ -60,33 +60,33 @@ context('Template Manager', function() {
 		it('sets boolean attribute if value is truthy', () => {
 			cy.get('#complex')
 				.shadowFind('#booleanTestTrue').then(([el]: JQuery<BooleanElement>) => {
-					assert.isTrue(el.props.bool, 'prop is true');
+					expect(el.props.bool).to.be.true;
 				});
 		});
 		it('does not set boolean attribute if value is falsey', () => {
 			cy.get('#complex')
 				.shadowFind('#booleanTestFalse').then(([el]: JQuery<BooleanElement>) => {
-					assert.isUndefined(el.props.bool, 'prop is unset');
+					expect(el.props.bool).to.be.undefined;
 				});
 		});
 		it('applies the class object correctly', () => {
 			cy.get('#complex')
 				.shadowFind('#classTestObj').then(([el]: JQuery<HTMLDivElement>) => {
-					assert.strictEqual(el.getAttribute('class'),
+					expect(el.getAttribute('class')).to.be.equal(
 						'a', 'applies class correctly');
 				});
 		});
 		it('applies the class string correctly', () => {
 			cy.get('#complex')
 				.shadowFind('#classTestString').then(([el]: JQuery<HTMLDivElement>) => {
-					assert.strictEqual(el.getAttribute('class'),
+					expect(el.getAttribute('class')).to.be.equal(
 						'a b c', 'applies class correctly');
 				});
 		});
 		it('applies the class array correctly', () => {
 			cy.get('#complex')
 				.shadowFind('#classTestArr').then(([el]: JQuery<HTMLDivElement>) => {
-					assert.strictEqual(el.getAttribute('class'),
+					expect(el.getAttribute('class')).to.be.equal(
 						'a c d e', 'applies class correctly');
 				});
 		});
@@ -94,7 +94,7 @@ context('Template Manager', function() {
 			cy.get('#complex').then(([complex]: JQuery<ComplexElement>) => {
 				cy.get('#complex')
 					.shadowFind('#refTest').then(([el]: JQuery<ComplexReceiverElement>) => {
-						assert.strictEqual(el.props.parent,
+						expect(el.props.parent).to.be.equal(
 							complex, 'complex attribute is set');
 					});
 			});
@@ -107,8 +107,9 @@ context('Template Manager', function() {
 					.shadowFind('#refTest2').then(([el]: JQuery<TestElement>) => {
 						const refName = el.getAttribute('parent')!;
 
-						assert.strictEqual(complex.getRef(refName),
-							complex, 'complex attribute resolves to the component');
+						expect(complex.getRef(refName))
+							.to.be.equal(complex, 
+								'complex attribute resolves to the component');
 					});
 			});
 		});
@@ -118,8 +119,9 @@ context('Template Manager', function() {
 					.shadowFind('#refTest2').then(([el]: JQuery<TestElement>) => {
 						const refName = el.getAttribute('parent')!;
 
-						assert.strictEqual(el.getParentRef(refName),
-							complex, 'complex attribute resolves to the component');
+						expect(el.getParentRef(refName))
+							.to.be.equal(complex, 
+								'complex attribute resolves to the component');
 					});
 			});
 		});

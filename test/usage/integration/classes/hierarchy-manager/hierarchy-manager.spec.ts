@@ -2,7 +2,7 @@
 
 import { ConfigurableWebComponent } from "../../../../../src/wclib";
 import { TestGlobalProperties } from "./hierarchy-manager.fixture";
-import { assertMethodExists } from "../../../lib/assertions";
+import { expectMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "./elements/parent-element";
 import { TestElement } from "../elements/test-element";
 import { RootElement } from "./elements/root-element";
@@ -33,15 +33,15 @@ function getAllElements() {
 
 function assertDefaultProps(element: RootElement|TestElement|ParentElement) {
 	const props = element.globalProps<TestGlobalProperties>();
-				
-	assert.deepEqual(props.all, {
+	
+	expect(props.all).to.be.deep.equal({
 		a: 'b',
 		c: 'd'
 	}, 'global properties are set');
 
-	assert.deepEqual(props.get('a'), 'b',
+	expect(props.get('a')).to.be.equal('b',
 		'prop is set');
-	assert.deepEqual(props.get('c'), 'd',
+	expect(props.get('c')).to.be.equal('d',
 		'prop is set');
 }
 
@@ -53,42 +53,41 @@ context('Hierarchy-Manager', function() {
 	context('Properties/Methods', () => {
 		it('exposes a #registerChild method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'registerChild');
+				expectMethodExists(el, 'registerChild');
 			});
 		});
 		it('exposes a #globalProps method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'globalProps');
+				expectMethodExists(el, 'globalProps');
 			});
 		});
 		it('exposes a #getRoot method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'getRoot');
+				expectMethodExists(el, 'getRoot');
 			});
 		});
 		it('exposes a #runGlobalFunction method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'runGlobalFunction');
+				expectMethodExists(el, 'runGlobalFunction');
 			});
 		});
 		it('exposes a #listenGP method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'listenGP');
+				expectMethodExists(el, 'listenGP');
 			});
 		});
 	});
 	context('Hierarchy', () => {
 		it('determines root-element as the root', () => {
 			cy.get('root-element').then(([el]: JQuery<RootElement>) => {
-				assert.strictEqual(el.getRoot(), el, 'root-element is the root');
+				expect(el.getRoot()).to.be.equal(el, 'root-element is the root');
 			});
 		});
 		it('returns root-element as the root of other elements', () => {
 			getAllElements().then((elements) => {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 					for (const el of elements) {
-						assert.strictEqual(el.getRoot(), root,
-							'root-element is the root');
+						expect(el.getRoot()).to.be.equal(root, 'root-element is the root');
 					}
 				});
 			})
@@ -121,11 +120,11 @@ context('Hierarchy-Manager', function() {
 				assertDefaultProps(root);
 
 				props.set('a', 'e');
-				assert.deepEqual(props.get('a'), 'e',
+				expect(props.get('a')).to.be.equal('e',
 					'prop was changed');
 
 				props.set('a', 'b');
-				assert.deepEqual(props.get('a'), 'b',
+				expect(props.get('a')).to.be.equal('b',
 					'prop was changed');
 			});
 		});
@@ -137,16 +136,14 @@ context('Hierarchy-Manager', function() {
 
 					props.set('a', 'e');
 					for (const element of elements) {
-						assert.deepEqual(
-							element.globalProps<TestGlobalProperties>().get('a'), 
-							'e', 'prop was changed');
+						expect(element.globalProps<TestGlobalProperties>().get('a'))
+							.to.be.equal('e', 'prop was changed');
 					}
 
 					props.set('a', 'b');
 					for (const element of elements) {
-						assert.deepEqual(
-							element.globalProps<TestGlobalProperties>().get('a'), 
-							'b', 'prop was changed');
+						expect(element.globalProps<TestGlobalProperties>().get('a'))
+							.to.be.equal('b', 'prop was changed');
 					}
 				});
 			});
@@ -162,17 +159,15 @@ context('Hierarchy-Manager', function() {
 						props.set('a', i + '');
 
 						for (const element of elements) {
-							assert.deepEqual(
-								element.globalProps<TestGlobalProperties>().get('a'), 
-								i + '', 'prop was changed');
+							expect(element.globalProps<TestGlobalProperties>().get('a'))
+								.to.be.equal(i + '', 'prop was changed');
 						}
 					}
 
 					props.set('a', 'b');
 					for (const element of elements) {
-						assert.deepEqual(
-							element.globalProps<TestGlobalProperties>().get('a'), 
-							'b', 'prop was changed back');
+						expect(element.globalProps<TestGlobalProperties>().get('a'))
+							.to.be.equal('b', 'prop was changed back');
 					}
 				});
 			});
@@ -180,48 +175,45 @@ context('Hierarchy-Manager', function() {
 		context('Listening', () => {
 			it('allows for listening for global property changes', () => {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
-					assert.doesNotThrow(() => {
+					expect(() => {
 						root.listenGP<TestGlobalProperties>('globalPropChange', () => {});
-					}, 'listening does not throw');
+					}, 'listening does not throw').to.not.throw;
 				});
 			});
 			it('fires the listener when a property is changed', () => {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
-					let fired: number = 0;
-					root.listenGP<TestGlobalProperties>('globalPropChange', () => {
-						fired++;
-					});
+					const listener = cy.spy() as any;
+					root.listenGP<TestGlobalProperties>('globalPropChange', listener);
 					root.globalProps<TestGlobalProperties>().set('a', 'e');
-					assert.strictEqual(fired, 1, 'listener was fired once');
+					expect(listener).to.be.calledOnce;
 					root.globalProps<TestGlobalProperties>().set('a', 'b');
-					assert.strictEqual(fired, 2, 'listener was fired twice');
+					expect(listener).to.be.calledTwice;
 				});
 			});
 			it('only fires the listener once if once is set to true', () => {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
-					let fired: number = 0;
-					root.listenGP<TestGlobalProperties>('globalPropChange', () => {
-						fired++;
-					}, true);
+					const listener = cy.spy() as any;
+					root.listenGP<TestGlobalProperties>('globalPropChange', listener, true);
 					root.globalProps<TestGlobalProperties>().set('a', 'e');
-					assert.strictEqual(fired, 1, 'listener was fired once');
+					expect(listener).to.be.calledOnce;
 					root.globalProps<TestGlobalProperties>().set('a', 'b');
-					assert.strictEqual(fired, 1, 'listener was not fired again');
+					expect(listener).to.be.calledOnce;
 				});
 			});
 			it('passes the changed key and its values', () => {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 					let fired: number = 0;
-					root.listenGP<TestGlobalProperties>('globalPropChange', (key, newVal, oldVal) => {
+					const listener = cy.spy((key, newVal, oldVal) => {
 						fired++;
 
 						if (fired > 1) return;
-						assert.strictEqual(key, 'a', 'key is a');
-						assert.strictEqual(newVal, 'e', 'value was changed to e');
-						assert.strictEqual(oldVal, 'b', 'old value was b');
+						expect(key).to.be.equal('a', 'key is a');
+						expect(newVal).to.be.equal('e', 'value was changed to e');
+						expect(oldVal).to.be.equal('b', 'old value was b');
 					});
+					root.listenGP<TestGlobalProperties>('globalPropChange', listener as any);
 					root.globalProps<TestGlobalProperties>().set('a', 'e');
-					assert.strictEqual(fired, 1, 'listener was fired once');
+					expect(listener).to.be.calledOnce;
 				});
 			});
 		});
@@ -237,8 +229,8 @@ context('Hierarchy-Manager', function() {
 					});
 					
 					for (const element of elements) {
-						assert.isTrue(callMap.has(element),
-							'function was called on element');
+						expect(callMap.has(element), 
+							'function was called on element').to.be.true;
 					}
 				});
 			});
@@ -255,11 +247,12 @@ context('Hierarchy-Manager', function() {
 					});
 
 					for (const element of elements) {
-						assert.isTrue(callMap.has(element),
-							'function was called on element');
+						expect(callMap.has(element), 
+							'function was called on element').to.be.true;
 					}
 					
-					assert.sameMembers(returnVal, [...callMap.values()],
+					expect(returnVal).to.have.same.members(
+						[...callMap.values()],
 						'return value contains all returned values');
 				});
 			});

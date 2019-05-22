@@ -1,6 +1,6 @@
 /// <reference types="Cypress" />
 
-import { assertMethodExists } from "../../../lib/assertions";
+import { expectMethodExists } from "../../../lib/assertions";
 import { TestElement } from "../elements/test-element";
 
 context('Listener', function() {
@@ -11,17 +11,17 @@ context('Listener', function() {
 	context('Properties/Methods', () => {
 		it('exposes a #listen method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'listen');
+				expectMethodExists(el, 'listen');
 			});
 		});
 		it('exposes a #fire method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'fire');
+				expectMethodExists(el, 'fire');
 			});
 		});
 		it('exposes a #clearListener method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'clearListener');
+				expectMethodExists(el, 'clearListener');
 			});
 		});
 	});
@@ -29,69 +29,59 @@ context('Listener', function() {
 	context('Listening', () => {
 		it('can be listened to', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assert.doesNotThrow(() => {
+				expect(() => {
 					el.listen('test', () => {});
-				}, 'listening does not throw');
+				}, 'listening does not throw').to.not.throw;
 			});
 		});
 		it('fires listeners when fired', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled: number = 0;
+				const listener = cy.spy() as any;
 				
-				el.listen('test', () => {
-					testCalled++;
-				});
+				el.listen('test', listener);
 
 				el.fire('test', 1, 2);
 
-				assert.strictEqual(testCalled, 1, 'listener was called once');
+				expect(listener).to.be.calledOnce;
 			});
 		});
 		it('fires all listeners', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled1: number = 0;
-				let testCalled2: number = 0;
+				const listener1 = cy.spy() as any;
+				const listener2 = cy.spy() as any;
 				
-				el.listen('test', () => {
-					testCalled1++;
-				});
-				el.listen('test', () => {
-					testCalled2++;
-				});
+				el.listen('test', listener1);
+				el.listen('test', listener2);
 
 
 				el.fire('test', 1, 2);
 
-				assert.strictEqual(testCalled1, 1, 'listener was called once');
-				assert.strictEqual(testCalled2, 1, 'listener was called once');
+				expect(listener1).to.be.calledOnce;
+				expect(listener2).to.be.calledOnce;
 			});
 		});
 		it('fires listeners multiple times when called multiple times', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled: number = 0;
+				const listener = cy.spy() as any;
 				
-				el.listen('test', () => {
-					testCalled++;
-				});
+				el.listen('test', listener);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled, 1, 'listener was called once');
+				expect(listener).to.be.calledOnce;
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled, 2, 'listener was again');
+				expect(listener).to.be.calledTwice;
 			});
 		});
 		it('only fires a listener once if once is set to true', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled: number = 0;
+				const listener = cy.spy() as any;
 				
-				el.listen('test', () => {
-					testCalled++;
-				}, true);
+				el.listen('test', listener, true);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled, 1, 'listener was called once');
+				expect(listener).to.be.calledOnce;
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled, 1, 'listener was not called again');
+				expect(listener).to.be.calledOnce;
 			});
 		});
 	});
@@ -105,107 +95,91 @@ context('Listener', function() {
 
 		it('clears a listener when passed that listener', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled: number = 0;
+				const listener = cy.spy() as any;
 				
-				const listenerFn = () => {
-					testCalled++;
-				};
-				el.listen('test', listenerFn);
+				el.listen('test', listener);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled, 1, 'listener was called once');
+				expect(listener).to.be.calledOnce;
 
-				el.clearListener('test', listenerFn);
+				el.clearListener('test', listener);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled, 1, 'listener was not called again');
+				expect(listener).to.be.calledOnce;
 			});
 		});
 		it('only clears the passed listener', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled1: number = 0;
-				let testCalled2: number = 0;
+				const listener1 = cy.spy() as any;
+				const listener2 = cy.spy() as any;
 				
-				const listenerFn = () => {
-					testCalled1++;
-				};
-				el.listen('test', listenerFn);
-				el.listen('test', () => {
-					testCalled2++;
-				})
+				el.listen('test', listener1);
+				el.listen('test', listener2);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled1, 1, 'listener was called once');
-				assert.strictEqual(testCalled2, 1, 'listener was called once');
+				expect(listener1).to.be.calledOnce;
+				expect(listener2).to.be.calledOnce;
 
-				el.clearListener('test', listenerFn);
+				el.clearListener('test', listener1);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled1, 1, 'listener was not called again');
-				assert.strictEqual(testCalled2, 2, 'listener was called again');
+				expect(listener1).to.be.calledOnce;
+				expect(listener2).to.be.calledTwice;
 			});
 		});
 		it('clears all listeners of the event type if no function is passed', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled1: number = 0;
-				let testCalled2: number = 0;
+				const listener1 = cy.spy() as any;
+				const listener2 = cy.spy() as any;
 				
-				el.listen('test', () => {
-					testCalled1++;
-				});
-				el.listen('test', () => {
-					testCalled2++;
-				})
+				el.listen('test', listener1);
+				el.listen('test', listener2);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled1, 1, 'listener was called once');
-				assert.strictEqual(testCalled2, 1, 'listener was called once');
+				expect(listener1).to.be.calledOnce;
+				expect(listener2).to.be.calledOnce;
 
 				el.clearListener('test');
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled1, 1, 'listener was not called again');
-				assert.strictEqual(testCalled2, 1, 'listener was not called again');
+				expect(listener1).to.be.calledOnce;
+				expect(listener2).to.be.calledOnce;
 			});
 		});
 		it('does not clear other events\' listeners', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled1: number = 0;
-				let testCalled2: number = 0;
-				let testCalled3: number = 0;
-				
-				el.listen('test', () => {
-					testCalled1++;
-				});
-				el.listen('test', () => {
-					testCalled2++;
-				})
-				el.listen('test2', () => {
-					testCalled3++;
+				const listener1 = cy.spy() as any;
+				const listener2 = cy.spy() as any;
+				const listener3 = cy.spy(() => {
 					return 0;
-				});
+				}) as any;
+				
+				el.listen('test', listener1);
+				el.listen('test', listener2);
+				el.listen('test2', listener3);
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled1, 1, 'listener was called once');
-				assert.strictEqual(testCalled2, 1, 'listener was called once');
-				assert.strictEqual(testCalled3, 0, 'listener was not called');
+				expect(listener1).to.be.calledOnce;
+				expect(listener2).to.be.calledOnce;
+				expect(listener3).to.not.be.called;
 				el.fire('test2');
-				assert.strictEqual(testCalled3, 1, 'listener was called once');
+				expect(listener3).to.be.calledOnce;
 
 				el.clearListener('test');
 
 				el.fire('test', 1, 2);
-				assert.strictEqual(testCalled1, 1, 'listener was not called again');
-				assert.strictEqual(testCalled2, 1, 'listener was not called again');
+				expect(listener1).to.be.calledOnce;
+				expect(listener2).to.be.calledOnce;
 				el.fire('test2');
-				assert.strictEqual(testCalled3, 2, 'listener was called again');
+				expect(listener3).to.be.calledTwice;
 			});
 		});
 		it('does not throw if no listeners are defined', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assert.doesNotThrow(() => {
+				expect(() => {
 					el.clearListener('test', () => {});
-				}, 'clearing a non-existent listener does not throw');
+				}, 'clearing a non-existent listener does not throw')
+					.to.not.throw;
 			});
 		});
 	});
@@ -219,18 +193,16 @@ context('Listener', function() {
 
 		it('passes the arguments to listeners', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				let testCalled: number = 0;
-				
 				const firstArg = Math.random();
 				const secondArg = Math.random();
-				el.listen('test', (arg1, arg2) => {
-					testCalled++;
-					assert.strictEqual(arg1, firstArg, 'arg matches');
-					assert.strictEqual(arg2, secondArg, 'arg matches');
-				});
+				const listener = cy.spy((arg1, arg2) => {
+					expect(arg1).to.be.equal(firstArg, 'arg matches');
+					expect(arg2).to.be.equal(secondArg, 'arg matches');
+				}) as any;
+				el.listen('test', listener);
 
 				el.fire('test', firstArg, secondArg);
-				assert.strictEqual(testCalled, 1, 'listener was called');
+				expect(listener).to.be.calledOnce;
 			});
 		});
 		it('returns the return values of the listeners', () => {
@@ -249,10 +221,10 @@ context('Listener', function() {
 				el.listen('test2', () => expectedValues[4]);
 
 				const retVals = el.fire('test2');
-				assert.lengthOf(retVals, expectedValues.length,
-					'retvals is the same length as the amount of listeners');
-				assert.deepEqual(retVals, expectedValues,
-					'return values match');
+				expect(retVals).to.have.length(expectedValues.length,
+					'retvals is the same length as the amount of listeners')
+						.to.be.deep.equal(expectedValues,
+							'return values match');
 			});
 		});
 	});

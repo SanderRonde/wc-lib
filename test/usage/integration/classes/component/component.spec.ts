@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
 import { LifecycleElement } from "./elements/lifecycle-element.js";
-import { assertMethodExists } from "../../../lib/assertions.js";
+import { expectMethodExists } from "../../../lib/assertions.js";
 import { TestElement } from "../elements/test-element";
 
 context('Component', function() {
@@ -12,46 +12,45 @@ context('Component', function() {
 	context('Properties/Methods', () => {
 		it('exposes a #$ property/method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assert.property(el, '$', `has a $ property`);
+				expect(el).to.have.property('$');
 
 				const value = el.$;
-				assert.strictEqual(typeof value, 'function',	
-					'property is a function');
+				expect(typeof value).to.be.equal('function');
 			});
 		});
 		it('exposes a #$$ method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, '$$');
+				expectMethodExists(el, '$$');
 			});
 		});
 		it('exposes a #connectedCallback method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'connectedCallback');
+				expectMethodExists(el, 'connectedCallback');
 			});
 		});
 		it('exposes a #disconnectedCallback method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'disconnectedCallback');
+				expectMethodExists(el, 'disconnectedCallback');
 			});
 		});
 		it('exposes a #layoutMounted method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'layoutMounted');
+				expectMethodExists(el, 'layoutMounted');
 			});
 		});
 		it('exposes a #mounted method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'mounted');
+				expectMethodExists(el, 'mounted');
 			});
 		});
 		it('exposes a #unmounted method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'unmounted');
+				expectMethodExists(el, 'unmounted');
 			});
 		});
 		it('exposes a #listenProp method', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assertMethodExists(el, 'listenProp');
+				expectMethodExists(el, 'listenProp');
 			});
 		});
 	});
@@ -65,8 +64,8 @@ context('Component', function() {
 			cy.document().then((document) => {
 				const el = document.createElement('test-element') as TestElement;
 				
-				assert.isFalse(el.isMounted, 
-					'isMounted is false when not yet mounted');
+				expect(el).to.have.property('isMounted')
+					.to.be.false;
 				
 				document.body.appendChild(el);
 
@@ -88,8 +87,9 @@ context('Component', function() {
 				const el = document.createElement('lifecycle-element') as LifecycleElement;
 				document.body.appendChild(el);
 
-				assert.strictEqual(el.lifeCycleCalls.connected, 1,
-					'connectedCallback was called once');
+				expect(el).to.have.property('lifeCycleCalls')
+					.to.have.property('connected')
+					.to.be.equal(1, 'connectedCallback was called once');
 			});
 		});
 		it('calls #disconnectedCallback when removed', () => {
@@ -97,13 +97,15 @@ context('Component', function() {
 				const el = document.createElement('lifecycle-element') as LifecycleElement;
 				document.body.appendChild(el);
 
-				assert.strictEqual(el.lifeCycleCalls.disconnected, 0,
-					'disconnectedCallback was not called yet');
+				expect(el).to.have.property('lifeCycleCalls')
+					.to.have.property('disconnected')
+					.to.be.equal(0, 'disconnectedCallback was not called yet');
 
 				el.remove();
 
-				assert.strictEqual(el.lifeCycleCalls.disconnected, 1,
-					'disconnectedCallback was called');
+				expect(el).to.have.property('lifeCycleCalls')
+					.to.have.property('disconnected')
+					.to.be.equal(1, 'disconnectedCallback was called');
 			});
 		});
 		it('calls #layoutMounted as a part of the constructor', () => {
@@ -111,8 +113,9 @@ context('Component', function() {
 				const el = document.createElement('lifecycle-element') as LifecycleElement;
 				document.body.appendChild(el);
 
-				assert.strictEqual(el.lifeCycleCalls.layoutMounted, 1,
-					'layoutMounted was called');
+				expect(el).to.have.property('lifeCycleCalls')
+					.to.have.property('layoutMounted')
+					.to.be.equal(1, 'layoutMounted was called');
 			});
 		});
 		it('calls #mounted after the component has been rendered', () => {
@@ -120,8 +123,9 @@ context('Component', function() {
 				const el = document.createElement('lifecycle-element') as LifecycleElement;
 				document.body.appendChild(el);
 
-				assert.strictEqual(el.lifeCycleCalls.mounted, 0,
-					'mounted was not called in the constructor');
+				expect(el).to.have.property('lifeCycleCalls')
+					.to.have.property('mounted')
+					.to.be.equal(0, 'mounted was not called in the constructor');
 
 				cy.wrap(el).should('have.property', 'lifeCycleCalls')
 					.and('have.property', 'mounted')
@@ -133,13 +137,15 @@ context('Component', function() {
 				const el = document.createElement('lifecycle-element') as LifecycleElement;
 				document.body.appendChild(el);
 
-				assert.strictEqual(el.lifeCycleCalls.unmounted, 0,
-					'unmounted was not called yet');
+				expect(el).to.have.property('lifeCycleCalls')
+					.to.have.property('unmounted')
+					.to.be.equal(0, 'unmounted was not called yet');
 
 				el.remove();
 
-				assert.strictEqual(el.lifeCycleCalls.unmounted, 1,
-					'unmounted was called');
+				expect(el).to.have.property('lifeCycleCalls')
+					.to.have.property('unmounted')
+					.to.be.equal(1, 'unmounted was called');
 			});
 		});
 	});
@@ -150,19 +156,20 @@ context('Component', function() {
 
 		it('allows listening for property change events', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
-				assert.doesNotThrow(() => {
+				expect(el.listenProp).to.not.throw;
+				expect(() => {
 					el.listenProp('propChange', () => {});
-				}, 'listener can be added');
+				}).to.not.throw;
 			});
 		});
 		it('calls the listener with the correct arguments', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				const listener = cy.spy((key, newValue, oldValue) => {
-					assert.strictEqual(key, 'x',
+					expect(key).to.be.equal('x',
 						'changed value is x');
-					assert.strictEqual(newValue, 2,	
+					expect(newValue).to.be.equal(2,	
 						'value was changed to 2');
-					assert.strictEqual(oldValue, 1,
+					expect(oldValue).to.be.equal(1,
 						'value was 1');
 				});
 
@@ -175,14 +182,15 @@ context('Component', function() {
 		it('fires the beforePropChange event before the change', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				const listener = cy.spy((key, newValue, oldValue) => {
-					assert.strictEqual(el.props.x,
-						1, 'prop is still set to old value');
+					expect(el).to.have.property('props')
+						.to.have.property('x')
+						.to.be.equal(1, 'prop is still set to old value');
 
-					assert.strictEqual(key, 'x',
+					expect(key).to.be.equal('x',
 						'changed value is x');
-					assert.strictEqual(newValue, 2,	
+					expect(newValue).to.be.equal(2,	
 						'value was changed to 2');
-					assert.strictEqual(oldValue, 1,
+					expect(oldValue).to.be.equal(1,
 						'value was 1');
 				});
 
@@ -195,14 +203,15 @@ context('Component', function() {
 		it('fires the propChange event after the change', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				const listener = cy.spy((key, newValue, oldValue) => {
-					assert.strictEqual(el.props.x,
-						2, 'prop is set to new value');
+					expect(el).to.have.property('props')
+						.to.have.property('x')
+						.to.be.equal(2, 'prop is set to new value');
 
-					assert.strictEqual(key, 'x',
+					expect(key).to.be.equal('x',
 						'changed value is x');
-					assert.strictEqual(newValue, 2,	
+					expect(newValue).to.be.equal(2,	
 						'value was changed to 2');
-					assert.strictEqual(oldValue, 1,
+					expect(oldValue).to.be.equal(1,
 						'value was 1');
 				});
 
@@ -215,14 +224,16 @@ context('Component', function() {
 		it('calls the listener multiple times if the value changes multiple times', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				const listener = cy.spy((key, newValue, oldValue) => {
-					assert.isAbove(el.props.x!, 1,	
-						'prop was set to higher value');
-					assert.notStrictEqual(newValue,
-						oldValue, 'new and old are not the same');
+					expect(el).to.have.property('props')
+						.to.have.property('x')
+						.to.be.above(1,	
+							'prop was set to higher value');
+					expect(newValue).to.not.be.equal(oldValue, 
+						'new and old are not the same');
 
-					assert.strictEqual(key, 'x',
+					expect(key).to.be.equal('x',
 						'changed value is x');
-					assert.isAbove(newValue, 1,	
+					expect(newValue).to.be.above(1,	
 						'value was changed to a higher value');
 				});
 
@@ -236,14 +247,15 @@ context('Component', function() {
 		it('only calls the listener once if once is set to true', () => {
 			cy.get('#test').then(([el]: JQuery<TestElement>) => {
 				const listener = cy.spy((key, newValue, oldValue) => {
-					assert.strictEqual(el.props.x,
-						2, 'prop is set to new value');
+					expect(el).to.have.property('props')
+						.to.have.property('x')
+						.to.be.equal(2, 'prop is set to new value');
 
-					assert.strictEqual(key, 'x',
+					expect(key).to.be.equal('x',
 						'changed value is x');
-					assert.strictEqual(newValue, 2,	
+					expect(newValue).to.be.equal(2,	
 						'value was changed to 2');
-					assert.strictEqual(oldValue, 1,
+					expect(oldValue).to.be.equal(1,
 						'value was 1');
 				});
 
@@ -290,9 +302,9 @@ context('Component', function() {
 					'nonexistent'
 				];
 				for (const selector of selectors) {
-					assert.sameMembers([...el.$$(selector)],
-						[...el.root.querySelectorAll(selector)],
-						'selectors return the same values');
+					expect([...el.$$(selector)]).to.have
+						.same.members([...el.root.querySelectorAll(selector)],
+							'selectors return the same values');
 				}
 			});
 		});
@@ -307,9 +319,9 @@ context('Component', function() {
 					'nonexistent'
 				];
 				for (const selector of selectors) {
-					assert.isTrue(
-						el.$(selector) === el.root.querySelector(selector),
-						'selectors return the same value');
+					expect(el.$(selector) === el.root.querySelector(selector),
+						'selectors return the same value')
+							.to.be.true;
 				}
 			});
 		});
@@ -318,15 +330,14 @@ context('Component', function() {
 				cy.get('#test').then(([el]: JQuery<TestElement>) => {
 					cy.get('#test')
 						.shadowFind('div').then(([div]: JQuery<HTMLDivElement>) => {
-							assert.isTrue(el.$.divId === div,
-								'found the correct element');
+							expect(el.$.divId === div, 'found the correct element')
+								.to.be.true;
 						});
 				});
 			});
 			it('returns undefined when the element does not exist', () => {
 				cy.get('#test').then(([el]: JQuery<TestElement>) => {
-					assert.isUndefined((el.$ as any).nonexistent,
-						'returns undefined');
+					expect((el.$ as any).nonexistent).to.be.undefined;
 				});
 			});
 		});
@@ -340,23 +351,22 @@ context('Component', function() {
 			});
 			it('no longer has access to window.Proxy', () => {
 				cy.window().then((window) => {
-					assert.typeOf((window as any).Proxy, 'undefined',
-						'proxy does not exist anymore');
+					expect((window as any).Proxy,
+						'proxy does not exist anymore').to.be.undefined
 				});
 			});
 			it('returns element with given ID when accessed', () => {
 				cy.get('#test').then(([el]: JQuery<TestElement>) => {
 					cy.get('#test')
 						.shadowFind('div').then(([div]: JQuery<HTMLDivElement>) => {
-							assert.isTrue(el.$.divId === div,
-								'found the correct element');
+							expect(el.$.divId === div, 'found the correct element')
+								.to.be.true;
 						});
 				});
 			});
 			it('returns undefined when the element does not exist', () => {
 				cy.get('#test').then(([el]: JQuery<TestElement>) => {
-					assert.isUndefined((el.$ as any).nonexistent,
-						'returns undefined');
+					expect((el.$ as any).nonexistent).to.be.undefined;
 				});
 			})
 		})

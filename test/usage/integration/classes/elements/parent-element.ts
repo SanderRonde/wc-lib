@@ -2,6 +2,11 @@ import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_
 import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
 import { TestElement } from './test-element.js';
 
+export interface TestParentWindow extends Window {
+	ParentElement: typeof ParentElement;
+}
+declare const window: TestParentWindow;
+
 const ParentElementHTML = new TemplateFn<ParentElement>(() => {
 	return html`
 		<test-element></test-element>
@@ -41,3 +46,5 @@ export class ParentElement extends ConfigurableWebComponent<{
 		}
 	});
 }
+
+window.ParentElement = ParentElement;

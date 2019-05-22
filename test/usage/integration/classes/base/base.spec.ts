@@ -32,23 +32,23 @@ context('Base', function() {
 	});
 	context('Properties/Methods', () => {
 		it('exposes an .html property that contains the template', () => {
-			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertPropertyExists(el, 'html');
-				
-				assertTemplate(el.html);
+			cy.window().then((window: RenderTestWindow) => {
+				assertPropertyExists(window.TestElement, 'html');
+
+				assertTemplate(window.TestElement.html);
 			});
 		});
-		it('exposes a .css property that contains the template(s)', () => {
-			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
-				assertPropertyExists(el, 'css');
-				
-				if (Array.isArray(el.css)) {
-					assert.isAtLeast(el.css.length, 1, 'has at least one css template');
-					for (const css of el.css) {
+		it('exposes an .css property that contains the template(s)', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				assertPropertyExists(window.TestElement, 'css');
+
+				if (Array.isArray(window.TestElement.css)) {
+					assert.isAtLeast(window.TestElement.css.length, 1, 'has at least one css template');
+					for (const css of window.TestElement.css) {
 						assertTemplate(css);	
 					}
 				} else {
-					assertTemplate(el.css);
+					assertTemplate(window.TestElement.css);
 				}
 			});
 		});

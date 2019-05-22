@@ -13,6 +13,7 @@ export interface RenderTestWindow extends Window {
 		'theme-lang': number;
 		all: number;
 	}
+	TestElement: typeof TestElement;
 }
 
 declare const window: RenderTestWindow;
@@ -139,6 +140,8 @@ window.renderCalled['all'] = 0;
 	}, CHANGE_TYPE.PROP | CHANGE_TYPE.THEME | CHANGE_TYPE.LANG, render)
 })
 class RenderTestElementAll extends TestElementBase { }
+
+window.TestElement = TestElement;
 
 TestElement.define();
 RenderTestElementNever.define();

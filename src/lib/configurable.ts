@@ -28,25 +28,13 @@ export class ConfigurableWebComponent<ELS extends {
 	 * 
 	 * @readonly
 	 */
-	public readonly html!: TemplateFn<any, any, any>;
-	/**
-	 * The config uses to configure this component
-	 * 
-	 * @readonly
-	 */
-	public static readonly config: WebComponentConfiguration;
-	/**
-	 * The config uses to configure this component
-	 * 
-	 * @readonly
-	 */
-	public readonly config!: WebComponentConfiguration;
+	public static readonly html: TemplateFn<any, any, any>;
 	/**
 	 * The templates(s) that will render this component's css
 	 * 
 	 * @readonly
 	 */
-	public readonly css!: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	public static readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
 	/**
 	 * The element's constructor
 	 * 
@@ -58,28 +46,7 @@ export class ConfigurableWebComponent<ELS extends {
 	 * 
 	 * @readonly
 	 */
-	public static mixins: (MixinFn<any, any>)[];
-}
-
-/**
- * The `component.is` property which defines the name
- * of the component and its constructor
- */
-export type ComponentIs = {
-	/**
-	 * The name of the component
-	 */
-	name: string;
-	/**
-	 * The constructor class of this component
-	 */
-	component: typeof WebComponentBase;
-};
-function genIs(name: string, component: typeof WebComponentBase): ComponentIs {
-	return {
-		name,
-		component
-	}
+	public static mixins?: (MixinFn<any, any>)[];
 }
 
 /**
@@ -131,34 +98,11 @@ export interface WebComponentConfiguration {
  */
 export class ConfiguredComponent extends WebComponentBase {
 	/**
-	 * The name of this component and its constructor
+	 * The name of this component
 	 * 
 	 * @readonly
 	 */
-	static is: ComponentIs;
-	/**
-	 * Dependencies of this component. If this
-	 * component uses other components in its
-	 * template, adding them to this array will
-	 * make sure they are defined before this
-	 * component is
-	 * 
-	 * @readonly
-	 */
-	static dependencies: (typeof WebComponentBase)[]
-	/**
-	 * The config uses to configure this component
-	 * 
-	 * @readonly
-	 */
-	static config: WebComponentConfiguration;
-	/**
-	 * Components from which this component should inherit.
-	 * You should also call
-	 * 
-	 * @readonly
-	 */
-	static mixins: (MixinFn<any, any>)[];
+	static is: string;
 	/**
 	 * The element's constructor
 	 * 
@@ -171,22 +115,35 @@ export class ConfiguredComponent extends WebComponentBase {
 	 * 
 	 * @readonly
 	 */
-	public readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
+	public static readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[] = 
 		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
 	/**
 	 * The render method that will render this component's HTML
 	 * 
 	 * @readonly
 	 */
-	public readonly html: TemplateFn<any, any, any> = new TemplateFn(() => {
-		throw new Error('No render method implemented');	
-	}, CHANGE_TYPE.ALWAYS, () => {});
+	public static readonly html: TemplateFn<any, any, any> = 
+		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
+	/**
+	 * Dependencies of this component. If this
+	 * component uses other components in its
+	 * template, adding them to this array will
+	 * make sure they are defined before this
+	 * component is
+	 * 
+	 * @readonly
+	 */
+	static dependencies?: (typeof WebComponentBase)[]
+	/**
+	 * Components from which this component should inherit.
+	 * You should also call
+	 * 
+	 * @readonly
+	 */
+	static mixins?: (MixinFn<any, any>)[];
 }
 
-export class Mixin extends ConfiguredComponent {
-	css = super.css || [] as TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
-	html = super.html || null as unknown as TemplateFn<any, any, any>
-}
+export class Mixin extends ConfiguredComponent { }
 
 export type MixinFn<M extends typeof Mixin, MM extends Mixin> = (<S extends typeof Mixin>(superclass: S) => M & {
 	new(...args: any[]): MM;
@@ -344,19 +301,17 @@ export function config(config: WebComponentConfiguration) {
 }, T, E extends EventListenerObj = {}>(target: T): T => {
 		const targetComponent = <any>target as typeof WebComponent;
 		class WebComponentConfig extends targetComponent<ELS, E> implements WebComponentBase {
-			static is = genIs(is, WebComponentConfig);
+			static is = is;
 			static dependencies = dependencies
-			static config = config;
 			static mixins = mixins;
-			config = config;
-			html = html;
-			css = css || [];
+			static html = html;
+			static css = css || [];
+
 			get self() {
 				return <any>WebComponentConfig as typeof ConfiguredComponent;
 			}
 		}
 
-		(<typeof ConfiguredComponent><any>target).config = config;
 		(<typeof ConfiguredComponent><any>target).mixins = mixins;
 		(<typeof ConfiguredComponent><any>target).dependencies = dependencies;
 

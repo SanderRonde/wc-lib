@@ -1,4 +1,3 @@
-import { ComponentIs } from './configurable.js';
 import { WebComponent } from './component.js';
 import { WebComponentBase } from './base.js';
 
@@ -152,13 +151,13 @@ export abstract class WebComponentDefiner extends elementBase {
 	 * 
 	 * @readonly
 	 */
-	public static dependencies: (typeof WebComponentBase|null)[] = [];
+	public static dependencies?: (typeof WebComponentBase|null)[] = [];
 	/**
-	 * The name of this component and its constructor
+	 * The name of this component
 	 * 
 	 * @readonly
 	 */
-	public static is: ComponentIs;
+	public static is: string;
 	
 
 	constructor() {
@@ -188,20 +187,17 @@ export abstract class WebComponentDefiner extends elementBase {
 			this.___definerClass.listeners = [];
 		}
 
-		for (const dependency of this.dependencies) {
+		for (const dependency of this.dependencies || []) {
 			dependency && dependency.define(false);
 		}
 		if (!this.is) {
 			throw new Error('No component definition given (name and class)')
 		}
-		if (!this.is.name) {
+		if (!this.is) {
 			throw new Error('No name given for component');
 		}
-		if (!this.is.component) {
-			throw new Error('No class given for component');
-		}
-		define(this.is.name, this.is.component);
-		this.___definerClass.defined.push(this.is.name);
+		define(this.is, this);
+		this.___definerClass.defined.push(this.is);
 		DefineMetadata.increment();
 
 		this.___definerClass.finishLoad();

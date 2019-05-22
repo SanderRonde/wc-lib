@@ -407,18 +407,18 @@ class BaseClass {
 	private __firstRender: boolean = true;
 
 	public get instance() {
-		if (baseClassInstances.has(this._self.self.config.is)) {
-			return baseClassInstances.get(this._self.self.config.is)!;
+		if (baseClassInstances.has(this._self.self.is)) {
+			return baseClassInstances.get(this._self.self.is)!;
 		}
 		const classInstance = new BaseClassElementInstance();
-		baseClassInstances.set(this._self.self.config.is, classInstance);
+		baseClassInstances.set(this._self.self.is, classInstance);
 		return classInstance;
 	}
 	
 	private get __cssArr(): TemplateFn<any, any, any>[] {
 		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
 		return (this.instance.___cssArr = 
-			makeArray(this._self.self.config.css || []));
+			makeArray(this._self.self.css || []));
 	};
 	public get __privateCSS(): TemplateFn<any, any, any>[] {
 		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;
@@ -571,7 +571,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public abstract readonly html: TemplateFn<any, any, any>;
+	public static readonly html: TemplateFn<any, any, any>;
 
 	/**
 	 * The element's constructor
@@ -585,7 +585,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * 
 	 * @readonly
 	 */
-	public abstract readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
+	public static readonly css: TemplateFn<any, any, any>|TemplateFn<any, any, any>[];
 
 	/**
 	 * A function signaling whether this component has custom CSS applied to it
@@ -681,8 +681,8 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 					this.___baseClass.renderContainers.customCSS[index]);
 			});
 		}
-		this.html[renderType](
-			this.html.renderTemplate(change, this as any), 
+		this.self.html[renderType](
+			this.self.html.renderTemplate(change, this as any), 
 			this.___baseClass.renderContainers.html);
 		this.___baseClass.doPostRenderLifecycle();
 	}

@@ -594,6 +594,8 @@ namespace PropsDefiner {
 
 				const prevVal = el.propValues[casingKey];
 				const newVal = getterWithVal(el.component, val, strict, mapType);
+
+				if (prevVal === newVal) return;
 				
 				el.component.fire('beforePropChange', casingKey, prevVal, newVal);
 				el.propValues[casingKey] = newVal as any;
@@ -622,6 +624,8 @@ namespace PropsDefiner {
 
 					const prevVal = el.propValues[casingKey];
 					const newVal = coerce ? getCoerced(undefined, mapType) : undefined;
+
+					if (prevVal === newVal) return;
 
 					el.component.fire('beforePropChange', casingKey, prevVal, newVal);
 					el.propValues[casingKey] = newVal;
@@ -702,6 +706,9 @@ namespace PropsDefiner {
 					set(value) {
 						const prevVal = _this._props[mapKey];
 						_this._rep.component.fire('beforePropChange', key, prevVal, value);
+
+						if (_this._props[mapKey] === value) return;
+
 						_this._props[mapKey] = value;
 						_this._rep.component.fire('propChange', key, prevVal, value);
 					}
@@ -735,6 +742,7 @@ namespace PropsDefiner {
 						value = watchValue(createQueueRenderFn(_this._rep.component), 
 							value, watch, watchProperties);
 
+						if (_this._props[mapKey] === value) return;
 						const prevVal = _this._rep.propValues[mapKey];
 						_this._rep.component.fire('beforePropChange', key, prevVal, value);
 						_this._rep.propValues[mapKey] = value;

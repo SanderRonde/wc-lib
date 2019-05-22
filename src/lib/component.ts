@@ -9,9 +9,9 @@ type IDMapFn<IDS> = {
 	/**
 	 * Query this component's root for given selector
 	 */
-	<K extends keyof HTMLElementTagNameMap>(selector: K): HTMLElementTagNameMap[K] | null;
-    <K extends keyof SVGElementTagNameMap>(selector: K): SVGElementTagNameMap[K] | null;
-    <E extends HTMLElement = HTMLElement>(selector: string): E | null;
+	<K extends keyof HTMLElementTagNameMap>(selector: K): HTMLElementTagNameMap[K] | undefined;
+    <K extends keyof SVGElementTagNameMap>(selector: K): SVGElementTagNameMap[K] | undefined;
+    <E extends HTMLElement = HTMLElement>(selector: string): E | undefined;
 } & IDS;
 
 /**
@@ -56,17 +56,17 @@ class ComponentClass<ELS extends {
 		}, {
 			get(_, id) {
 				if (typeof id !== 'string') {
-					return null;
+					return undefined;
 				}
 				const cached = __this.idMap.get(id);
 				if (cached && self.shadowRoot!.contains(cached)) {
-					return cached;
+					return cached || undefined;
 				}
 				const el = self.root.getElementById(id);
 				if (el) {
 					__this.idMap.set(id, el as ELS["IDS"][keyof ELS["IDS"]]);
 				}
-				return el;
+				return el || undefined;
 			}
 		}) as IDMapFn<ELS["IDS"]>;
 	}
@@ -141,7 +141,11 @@ export abstract class WebComponent<ELS extends {
 	 * of this element mapped by their ID. 
 	 * This object can also be called with a
 	 * query, which is just a proxy call to 
-	 * `this.root.querySelector`
+	 * `this.root.querySelector`.
+	 * 
+	 * **Note:** This function returns `undefined`
+	 * 	when no element can be found instead of 
+	 * 	null.
 	 * 
 	 * @readonly
 	 */

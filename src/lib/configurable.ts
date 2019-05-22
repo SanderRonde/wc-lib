@@ -83,7 +83,10 @@ export interface WebComponentConfiguration {
 	 */
 	readonly html: TemplateFn<any, any, any>;
 	/**
-	 * Components from which this component should inherit
+	 * Components from which this component should inherit.
+	 * These are not applied by setting this value. You need
+	 * to inherit from `mixin(yourMixins)`. Setting this
+	 * property only adds some error checking.
 	 * 
 	 * @readonly
 	 */

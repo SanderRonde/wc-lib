@@ -11,12 +11,15 @@ const httpServer = createServer({
 });
 httpServer.listen(USAGE_TEST_PORT, async () => {
 	console.log('Started http-server, running cypress');
-	cypress.run({
-		...JSON.parse(await fs.readFile(path.join(__dirname, '../../',
+	const configFile = JSON.parse(await fs.readFile(path.join(__dirname, '../../',
 		'cypress.json'), {
 			encoding: 'utf8'
-		})),
-		record: process.argv.indexOf('--no-record') ? false : true,
+		}));
+	cypress.run({
+		...configFile,
+		record: process.argv.indexOf('--no-record') ? false : configFile.record,
+		videoRecording: process.argv.indexOf('--no-record') ? false : configFile.videoRecording,
+		video: process.argv.indexOf('--no-record') ? false : configFile.video,
 		key: process.env.key
 	}).then((results) => {
 		console.log('Done');

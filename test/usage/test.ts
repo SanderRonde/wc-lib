@@ -17,9 +17,9 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 		}));
 	cypress.run({
 		...configFile,
-		record: process.argv.indexOf('--no-record') ? false : configFile.record,
-		videoRecording: process.argv.indexOf('--no-record') ? false : configFile.videoRecording,
-		video: process.argv.indexOf('--no-record') ? false : configFile.video,
+		record: process.argv.indexOf('--no-record') > -1 ? false : configFile.record,
+		videoRecording: process.argv.indexOf('--no-record') > -1 ? false : configFile.videoRecording,
+		video: process.argv.indexOf('--no-record') > -1 ? false : configFile.video,
 		key: process.env.key
 	}).then((results) => {
 		console.log('Done');

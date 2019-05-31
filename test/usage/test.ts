@@ -5,11 +5,6 @@ import * as path from 'path';
 
 export const USAGE_TEST_PORT = 1251;
 
-function optionalObj<O extends Object>(obj: O, condition: boolean): O|{} {
-	if (condition) return obj;
-	return {};
-}
-
 console.log('Starting http-server');
 const httpServer = createServer({
 	root: path.join(__dirname, '../../')
@@ -22,10 +17,6 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 		}));
 	cypress.run({
 		...configFile,
-		...optionalObj({
-			video: false,
-			record: false
-		}, process.argv.indexOf('--no-record') > -1),
 		key: process.env.key
 	}).then((results) => {
 		console.log('Done');

@@ -23,10 +23,8 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 	cypress.run({
 		...configFile,
 		...optionalObj({
-			record: false,
-			videosFolder: false,
-			videoRecording: false,
-			video: false
+			video: false,
+			record: false
 		}, process.argv.indexOf('--no-record') > -1),
 		key: process.env.key
 	}).then((results) => {

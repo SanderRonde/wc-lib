@@ -37,8 +37,9 @@
 		"compile:all": "npm run compile && npm run compile:test",
 		"install": "npm run compile",
 		"cypress": "node test/usage/test.js",
+		"cypress:no-record": "node test/usage/test.js --no-record",
 		"test": "npm run compile:all && npm run cypress",
 		"coverage:prep": "npm run compile:all && gulp addIstanbulIgnore && nyc instrument src/ instrumented/ && gulp replaceTestImports",
-		"coverage": "npm run coverage:prep && nyc --reporter=html npm run cypress --no-record && echo \"Coverage can be found in coverage/index.html\""
+		"coverage": "npm run coverage:prep && nyc --reporter=html npm run cypress:no-record && echo \"Coverage can be found in coverage/index.html\""
 	}
 }

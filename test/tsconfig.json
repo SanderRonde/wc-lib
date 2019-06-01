@@ -26,6 +26,6 @@
 		"../typings/"
     ],
     "exclude": [
-        "test.ts"
+        "usage/test.ts",
     ]
 }

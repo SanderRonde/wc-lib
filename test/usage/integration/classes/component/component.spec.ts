@@ -354,7 +354,7 @@ context('Component', function() {
 			});
 			it('returns undefined if the selector is not a string', () => {
 				cy.get('#test').then(([el]: JQuery<TestElement>) => {
-					expect((el.$ as any)[1]).to.be.undefined;
+					expect((el.$ as any)[Symbol()]).to.be.undefined;
 				});
 			});
 		});
@@ -396,6 +396,11 @@ context('Component', function() {
 							expect(el.$.divId === div, 'found the correct element')
 								.to.be.true;
 						});
+				});
+			});
+			it('returns undefined if the selector is not a string', () => {
+				cy.get('#test').then(([el]: JQuery<TestElement>) => {
+					expect((el.$ as any)[Symbol()]).to.be.undefined;
 				});
 			});
 			it('returns undefined when the element does not exist', () => {

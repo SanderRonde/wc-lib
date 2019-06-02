@@ -41,6 +41,7 @@ export class ConfigurableWebComponent<ELS extends {
 	 * 
 	 * @readonly
 	 */
+	/* istanbul ignore next */
 	public get self(): (typeof ConfiguredComponent|typeof WebComponentBase) { return null as any}
 	/**
 	 * Components from which this component should inherit
@@ -177,6 +178,7 @@ export const ConfigurableMixin = (_superFn: any) => ConfigurableWebComponent;
  * `mixin(ExtendableMixin, ...mixins)`
  */
 export class NonAbstractWebComponent extends WebComponent {
+	/* istanbul ignore next */
 	get self() { return null as any };
 }
 /**

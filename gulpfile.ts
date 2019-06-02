@@ -2,6 +2,7 @@ import * as replace from 'gulp-replace';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as gulp from 'gulp';
+import * as path from 'path';
 
 const ISTANBUL_IGNORE_NEXT = '/* istanbul ignore next */';
 const typescriptInsertedData = [[
@@ -121,4 +122,17 @@ gulp.task('addIstanbulIgnore', async () => {
 			encoding: 'utf8'
 		})
 	}));
+});
+
+gulp.task('patchCypressIstanbul', async () => {
+	const filePath = path.join(__dirname,
+		'node_modules/cypress-istanbul/task.js');
+	const file = await fs.readFile(filePath, {
+			encoding: 'utf8'
+		});
+	await fs.writeFile(filePath, file.replace(
+		/console.log\('wrote coverage file %s', nycFilename\)/g,
+		''), {
+			encoding: 'utf8'
+		});
 });

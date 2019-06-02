@@ -131,7 +131,7 @@ class DefinerClass {
 				'Component is missing static html property (set to null to suppress)');
 		}
 		if (component.html === null) {
-			component.html = new TemplateFn<any>(null, CHANGE_TYPE.NEVER, () => {});
+			component.html = new TemplateFn<any>(null, CHANGE_TYPE.NEVER, null);
 		} else if (!this.__isTemplate(component.html)) {
 			throw new WCLibError(component, 
 				'Component\'s html template should be an instance of the TemplateFn class');

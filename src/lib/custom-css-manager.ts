@@ -5,7 +5,7 @@ import { EventListenerObj } from './listener.js';
 class CustomCSSClass {
 	public hasCustomCSS: boolean|null = null;
 	private __noCustomCSS: TemplateFnLike = 
-		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
+		new TemplateFn(null, CHANGE_TYPE.NEVER, null);
 
 	constructor(private _self: WebComponentCustomCSSManager<any>) { }
 

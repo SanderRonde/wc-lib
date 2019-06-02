@@ -87,7 +87,7 @@ class ComplexValuePart implements Part {
 		}
 		if (this.name === CUSTOM_CSS_PROP_NAME && !(this._pendingValue instanceof TemplateFn)) {
 			console.warn('Attempting to use non TemplateFn value for custom-css property');
-			this._pendingValue = new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
+			this._pendingValue = new TemplateFn(null, CHANGE_TYPE.NEVER, null);
 		}
 		
 		this.element.setAttribute(this.name, this.genRef(this._pendingValue));

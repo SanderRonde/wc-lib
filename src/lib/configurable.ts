@@ -120,14 +120,14 @@ export class ConfiguredComponent extends WebComponentBase {
 	 * @readonly
 	 */
 	public static css: TemplateFnLike|TemplateFnLike[] = 
-		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
+		new TemplateFn(null, CHANGE_TYPE.NEVER, null);
 	/**
 	 * The render method that will render this component's HTML
 	 * 
 	 * @readonly
 	 */
 	public static html: TemplateFnLike = 
-		new TemplateFn(null, CHANGE_TYPE.NEVER, () => {});
+		new TemplateFn(null, CHANGE_TYPE.NEVER, null);
 	/**
 	 * Dependencies of this component. If this
 	 * component uses other components in its

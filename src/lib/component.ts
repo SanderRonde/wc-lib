@@ -61,7 +61,7 @@ class ComponentClass<ELS extends {
 				}
 				const cached = __this.idMap.get(id);
 				if (cached && self.shadowRoot!.contains(cached)) {
-					return cached || undefined;
+					return cached;
 				}
 				const el = self.root.getElementById(id);
 				if (el) {

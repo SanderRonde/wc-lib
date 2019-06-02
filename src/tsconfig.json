@@ -2,7 +2,7 @@
     "compilerOptions": {
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
-        "module": "commonjs",
+        "module": "esnext",
         "moduleResolution": "node",
         "noImplicitAny": true,
         "noImplicitThis": true,
@@ -21,12 +21,12 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-        "outDir": "build/cjs/"
+		"outDir": "../build/es/"
 	},
     "compileOnSave": true,
     "allowJs": true,
     "include": [
-        "src/",
-        "typings/"
+        "./",
+        "../typings/"
     ]
 }

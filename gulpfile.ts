@@ -1,21 +1,18 @@
-const replace = require('gulp-replace');
-const fs = require('fs-extra');
-const glob = require('glob');
-const gulp = require('gulp');
+import * as replace from 'gulp-replace';
+import * as fs from 'fs-extra';
+import * as glob from 'glob';
+import * as gulp from 'gulp';
 
 const ISTANBUL_IGNORE_NEXT = '/* istanbul ignore next */';
+const typescriptInsertedData = [[
+	'var __decorate = (this && this.__decorate)',
+	'};'
+], [
+	'var __awaiter = (this && this.__awaiter)',
+	'};'
+]];
 
-const typescriptInsertedData = [
-	[
-		'var __decorate = (this && this.__decorate)',
-		'};'
-	], [
-		'var __awaiter = (this && this.__awaiter)',
-		'};'
-	]
-];
-
-function istanbulIgnoreTypescript(file) {
+function istanbulIgnoreTypescript(file: string) {
 	let found = false;
 	for (const [ start ] of typescriptInsertedData) {
 		if (file.indexOf(start) > -1) {
@@ -50,8 +47,17 @@ function istanbulIgnoreTypescript(file) {
 	}
 
 	// Find contiguous blocks
-	const blocks = [];
-	let currentBlock = null;
+	const blocks: {
+		start: number;
+		end: number;
+	}[] = [];
+	let currentBlock: {
+		start: number;
+		end: number;
+	}|null = {
+		start: 0,
+		end: Infinity
+	};
 	for (let i = 1; i < ignoredLines.length; i++) {
 		if (ignoredLines[i] === ignoredLines[i -1] + 1) {
 			// Contiguous
@@ -63,8 +69,8 @@ function istanbulIgnoreTypescript(file) {
 			}
 		} else {
 			// End of contiguous block
-			currentBlock.end = ignoredLines[i - 1];
-			blocks.push(currentBlock);
+			currentBlock!.end = ignoredLines[i - 1];
+			blocks.push(currentBlock!);
 			currentBlock = null;
 		}
 	}
@@ -94,9 +100,9 @@ gulp.task('replaceTestImports', () => {
 		.pipe(gulp.dest('test'));
 });
 
-function globProm(pattern, options) {
+function globProm(pattern: string, options?: any): Promise<string[]> {
 	return new Promise((resolve, reject) => [
-		glob(pattern, options || {}, (err, matches) => {
+		glob(pattern, options || {}, (err: any|void, matches: string[]) => {
 			if (err) {
 				reject(err);
 			} else {

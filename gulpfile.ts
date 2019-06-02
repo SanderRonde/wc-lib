@@ -136,3 +136,15 @@ gulp.task('patchCypressIstanbul', async () => {
 			encoding: 'utf8'
 		});
 });
+
+gulp.task('removeIstanbulIgnores', () => {
+	return gulp.src([
+			'**/*.js',
+			'**/*.d.ts'
+	 	], {
+			cwd: 'build/',
+			base: 'build/'
+		})
+		.pipe(replace(/(\n\s+)?\/\*(\s*)istanbul(.*?)\*\//g, ''))
+		.pipe(gulp.dest('build/'));
+});

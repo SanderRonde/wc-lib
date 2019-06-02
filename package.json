@@ -38,7 +38,7 @@
 		"compile": "tsc -p src/tsconfig.json && tsc -p src/tsconfig.cjs.json",
 		"compile:test": "tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json",
 		"compile:all": "npm run compile && npm run compile:test",
-		"install": "npm run compile",
+		"install": "npm run compile && gulp removeIstanbulIgnores",
 		"cypress": "node test/usage/test.js",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -p 1251 .",

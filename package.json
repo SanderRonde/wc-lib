@@ -35,7 +35,7 @@
 		"ts-node": "^8.2.0"
 	},
 	"scripts": {
-		"compile": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
+		"compile": "tsc -p src/tsconfig.json && tsc -p src/tsconfig.cjs.json",
 		"compile:test": "tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json",
 		"compile:all": "npm run compile && npm run compile:test",
 		"install": "npm run compile",

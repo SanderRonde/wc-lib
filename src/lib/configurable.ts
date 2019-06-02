@@ -1,6 +1,7 @@
 import { TemplateFn, WebComponentBase, CHANGE_TYPE, TemplateFnLike } from './base.js';
 import { EventListenerObj } from './listener.js';
 import { WebComponent } from './component.js';
+import { WCLibError } from './shared.js';
 
 /**
  * A configurable web component. This is the basic
@@ -95,12 +96,24 @@ export interface WebComponentConfiguration {
 }
 
 /**
- * A component that has been configured. This will
- * be the type of a configured component extended
+ * A component that has been configured. 
+ * **Note:** This should only be used as a type and
+ * should not be directly extended from.
+ * 
+ * This will be the type of a configured component extended
  * from `ConfigurableWebComponent` and decorated
- * with `@configure`
+ * with `@configure`.
  */
 export class ConfiguredComponent extends WebComponentBase {
+	constructor() {
+		super();
+		throw new WCLibError(this, 
+			'This class should not be extended directly ' +
+			'and should only be used as a type in TypeScript ' +
+			'Please extend ConfigurableWebComponent instead and ' +
+			'decorate it with @configure');
+	}
+
 	/**
 	 * The name of this component
 	 * 
@@ -112,7 +125,10 @@ export class ConfiguredComponent extends WebComponentBase {
 	 * 
 	 * @readonly
 	 */
-	public get self(): (typeof ConfiguredComponent|typeof WebComponentBase) { return {} as any}
+	/* istanbul ignore next */
+	public get self() {
+		return {} as (typeof ConfiguredComponent|typeof WebComponentBase);
+	}
 
 	/**
 	 * The template(s) that will render this component's css

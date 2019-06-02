@@ -3,6 +3,7 @@
 import { TestConfiguredWindow, ConfiguredElement } from "./elements/configured-element.js";
 import { TestExtendedWindow, ExtendedElement } from "./elements/extended-element.js";
 import { expectPropertyExists } from "../../../lib/assertions.js";
+import { TestMixinsWindow } from "./elements/mixins.js";
 
 context('Configurable Component', function() {
 	before(() => {
@@ -208,6 +209,28 @@ context('Configurable Component', function() {
 					}).to.not.throw;
 				});
 			});
+			it('throws an error when ConfiguredComponent is extended directly', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					cy.document().then((document) => {
+						const spy = cy.spy((err): boolean|void => {
+							const errMsg = 'This class should not be extended directly ' +
+								'and should only be used as a type in TypeScript ' +
+								'Please extend ConfigurableWebComponent instead and ' +
+								'decorate it with @configure';
+							if (err.message.includes(errMsg)) {
+								expect(err.message).to.include(errMsg,
+									'uses correct error message');
+								return false;
+							}
+						});
+						cy.on('uncaught:exception', spy as any);
+
+						window.configured.wrongClasses.WronglyConfiguredComponent.define();
+						document.createElement('wrong-component');
+						cy.wrap(spy).should('be.calledOnce');
+					});
+				});
+			});
 		});
 		context('Extended WebComponent', () => {
 			it('throws an error when .is is missing', () => {
@@ -407,6 +430,20 @@ context('Configurable Component', function() {
 					'mixin is used');
 				expect(el).to.have.property('e', 1,
 					'mixin is used');
+			});
+		});
+		it('throws an error if @config is not called on a mixin', () => {
+			cy.window().then((window: TestMixinsWindow) => {
+				expect(() => {
+					window.mixins.UnConfiguredMixin.define();
+				}).to.throw('Component is missing static is property');
+			});
+		});
+		it('throws an error if an extendable component is missing properties', () => {
+			cy.window().then((window: TestMixinsWindow) => {
+				expect(() => {
+					window.mixins.UnextendedMixin.define();
+				}).to.throw('Component is missing static is property');
 			});
 		});
 	});

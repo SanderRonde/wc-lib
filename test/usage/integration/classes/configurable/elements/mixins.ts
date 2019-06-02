@@ -1,12 +1,12 @@
 import { mixin, ConfigurableMixin, config, ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, ExtendableMixin, NonAbstractWebComponent } from "../../../../../../src/wclib.js";
 
-@config({
-	is: 'basic-mixin',
-	html: null
-})
-export class BasicMixin extends mixin(ConfigurableMixin) {
-	z = 1
+export interface TestMixinsWindow extends Window {
+	mixins: {
+		UnConfiguredMixin: typeof UnConfiguredMixin;
+		UnextendedMixin: typeof UnextendedMixin;
+	}
 }
+declare const window: TestMixinsWindow;
 
 type MixinReturn<F> = F extends (...args: any[]) => infer R ? R : void;
 const MixinA = (superFn: typeof ConfigurableWebComponent & {
@@ -32,6 +32,14 @@ const MixinZ = (superFn: typeof NonAbstractWebComponent) => class MixinZ extends
 	z = 1;
 }
 
+@config({
+	is: 'basic-mixin',
+	html: null
+})
+export class BasicMixin extends mixin(ConfigurableMixin) {
+	z = 1
+}
+
 const splitMixin = 
 	mixin(
 		() => mixin(ConfigurableMixin, MixinA),
@@ -46,6 +54,10 @@ const splitMixin =
 	html: null
 })
 export class SingleMixin extends mixin(ConfigurableMixin, MixinA) {
+	z = 1
+}
+
+export class UnConfiguredMixin extends mixin(ConfigurableMixin, MixinA) {
 	z = 1
 }
 
@@ -73,6 +85,10 @@ export class SplitMixin extends splitMixin {
 	z = 1
 }
 
+export class UnextendedMixin extends mixin(ExtendableMixin, MixinZ) {
+	t = 1;
+}
+
 export class ManualMixin extends mixin(ExtendableMixin, MixinZ) {
 	static is = 'manual-mixin';
 	static html = new TemplateFn<ManualMixin>(null, CHANGE_TYPE.NEVER, null);
@@ -85,4 +101,9 @@ export class ManualMixin extends mixin(ExtendableMixin, MixinZ) {
 	}
 
 	t = 1;
+}
+
+window.mixins = {
+	UnConfiguredMixin,
+	UnextendedMixin
 }

@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, WebComponentBase, MixinFn, TemplateFnLike } from '../../../../../../src/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, WebComponentBase, MixinFn, TemplateFnLike, ConfiguredComponent } from '../../../../../../src/wclib.js';
 
 export interface TestConfiguredWindow extends Window {
 	configured: {
@@ -21,6 +21,7 @@ export interface TestConfiguredWindow extends Window {
 			NonTemplateCSS: typeof NonTemplateCSS;
 			WrongArrayCSS: typeof WrongArrayCSS;
 			ArrayCSS: typeof ArrayCSS;
+			WronglyConfiguredComponent: typeof WronglyConfiguredComponent;
 		}
 	}
 }
@@ -172,6 +173,14 @@ class WrongArrayCSS extends ConfigurableWebComponent { }
 } as any)
 class ArrayCSS extends ConfigurableWebComponent { }
 
+@config({
+	is: 'wrong-component',
+	html: null
+})
+class WronglyConfiguredComponent extends ConfiguredComponent {
+	
+}
+
 window.configured = {
 	HTMLTemplate,
 	CSSTemplate,
@@ -191,6 +200,7 @@ window.configured = {
 		MissingCSS,
 		NonTemplateCSS,
 		WrongArrayCSS,
-		ArrayCSS
+		ArrayCSS,
+		WronglyConfiguredComponent
 	}
 };

@@ -14,6 +14,7 @@ function define(name: string, component: any) {
 }
 
 const elementBase: typeof HTMLElement = typeof HTMLElement !== 'undefined' ? 
+	/* istanbul ignore next */
 	HTMLElement : (<ExtendedProcess>process).HTMLElement;
 
 class DefinerClass {

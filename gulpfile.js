@@ -3,8 +3,7 @@ const fs = require('fs-extra');
 const glob = require('glob');
 const gulp = require('gulp');
 
-const ISTANBUL_IGNORE_START = '/* istanbul ignore start */';
-const ISTANBUL_IGNORE_END = '/* istanbul ignore end */';
+const ISTANBUL_IGNORE_NEXT = '/* istanbul ignore next */';
 
 const typescriptInsertedData = [
 	[
@@ -23,8 +22,7 @@ function istanbulIgnoreTypescript(file) {
 			found = true;
 		}
 	}
-	if (!found || file.indexOf(ISTANBUL_IGNORE_START) > -1 || 
-		file.indexOf(ISTANBUL_IGNORE_END) > -1) {
+	if (!found || file.indexOf(ISTANBUL_IGNORE_NEXT) > -1) {
 			return file;
 		}
 
@@ -78,9 +76,8 @@ function istanbulIgnoreTypescript(file) {
 	// Insert comments before/after those blocks
 	const newLines = [...lines];
 	for (let i = blocks.length - 1; i >= 0; i--) {
-		const { start, end } = blocks[i];
-		newLines.splice(end + 1, 0, ISTANBUL_IGNORE_END);
-		newLines.splice(start, 0, ISTANBUL_IGNORE_START);
+		const { start } = blocks[i];
+		newLines.splice(start, 0, ISTANBUL_IGNORE_NEXT);
 	}
 
 	return newLines.join('\n');

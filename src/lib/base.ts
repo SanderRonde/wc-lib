@@ -2,6 +2,7 @@ import { WebComponentThemeManger } from './theme-manager.js';
 import { ConfiguredComponent } from './configurable.js';
 import { WebComponentDefiner } from './definer.js';
 import { WebComponent } from './component.js';
+import { WCLibError } from './shared.js';
 
 function repeat(size: number) {
 	return new Array(size).fill(0);
@@ -222,19 +223,19 @@ export class TemplateFn<C extends {
 		 * @param {CHANGE_TYPE} changeOn - The type of change that should re-render
 		 * 	a template. Can be combined to cover multiple change types. For example
 		 * 	`CHANGE_TYPE.PROP | CHANGE_TYPE.THEME` will re-render on both changes
-		 * @param {Renderer<R>} renderer - The renderer that gets called with
+		 * @param {Renderer<R>|null} renderer - The renderer that gets called with
 		 * 	the value returned by the template as the first argument and
 		 * 	with the container element as the second element and is
 		 * 	tasked with rendering it to the DOM
 		 */
 		constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
-			changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R>);
+			changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R>|null);
 		constructor(_template: (TemplateRenderFunction<C, T, R>),
 			changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.PROP|CHANGE_TYPE.THEME|CHANGE_TYPE.LANG, 
-			renderer: Renderer<R>);
+			renderer: Renderer<R>|null);
 		constructor(private _template: (TemplateRenderFunction<C, T, R>)|null,
 			public changeOn: CHANGE_TYPE, 
-			private _renderer: Renderer<R>) { }
+			private _renderer: Renderer<R>|null) { }
 
 		private _renderWithTemplater<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
 			templater: Templater<TR>): {
@@ -384,7 +385,11 @@ export class TemplateFn<C extends {
 		 */
 		public render(template: R|null, target: HTMLElement) {
 			if (template === null) return;
-			this._renderer(template, target);
+			if (this._renderer) {
+				this._renderer(template, target);
+			} else {
+				throw new Error('Missing renderer');
+			}
 		}
 
 		/**
@@ -399,7 +404,11 @@ export class TemplateFn<C extends {
 		public renderIfNew(template: R|null, target: HTMLElement) {
 			if (template === null) return;
 			if (!this._lastRenderChanged) return;
-			this._renderer(template, target);
+			if (this._renderer) {
+				this._renderer(template, target);
+			} else {
+				throw new Error('Missing renderer');
+			}
 		}
 	}
 
@@ -688,22 +697,26 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 			this.___baseClass.renderConstructedCSS(change);
 		}
 		const renderType: 'render'|'renderIfNew' = change === CHANGE_TYPE.FORCE ? 'render' : 'renderIfNew';
-		this.___baseClass.__privateCSS.forEach((sheet, index) => {
-			sheet[renderType](
-				sheet.renderTemplate(change, this as any), 
-				this.___baseClass.renderContainers.css[index]);	
-		});
-		if (this.__hasCustomCSS()) {
-			makeArray(this.customCSS()).forEach((sheet, index) => {
+		try {
+			this.___baseClass.__privateCSS.forEach((sheet, index) => {
 				sheet[renderType](
-					sheet.renderTemplate(change, this as any),
-					this.___baseClass.renderContainers.customCSS[index]);
+					sheet.renderTemplate(change, this as any), 
+					this.___baseClass.renderContainers.css[index]);	
 			});
-		}
-		if (this.self.html) {
-			this.self.html[renderType](
-				this.self.html.renderTemplate(change, this as any), 
-				this.___baseClass.renderContainers.html);
+			if (this.__hasCustomCSS()) {
+				makeArray(this.customCSS()).forEach((sheet, index) => {
+					sheet[renderType](
+						sheet.renderTemplate(change, this as any),
+						this.___baseClass.renderContainers.customCSS[index]);
+				});
+			}
+			if (this.self.html) {
+				this.self.html[renderType](
+					this.self.html.renderTemplate(change, this as any), 
+					this.___baseClass.renderContainers.html);
+			}
+		} catch(e) {
+			throw new WCLibError(this, e.message);
 		}
 		this.___baseClass.doPostRenderLifecycle();
 	}

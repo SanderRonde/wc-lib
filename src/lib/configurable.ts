@@ -157,10 +157,10 @@ class NonAbstractWebComponent extends WebComponent {
 	get self() { return null as any };
 }
 /**
- * A mixin base for use with the manual adding of
+ * A mixin base for use with the manual adding/extending of
  * the `.css`, `.html`, `.is` and `.self` properties
  */
-export const Mixin = (_superFn: any) => NonAbstractWebComponent;
+export const ExtendableMixin = (_superFn: any) => NonAbstractWebComponent;
 
 /**
  * A function that, when passed a super-class

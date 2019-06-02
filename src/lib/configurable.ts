@@ -278,24 +278,26 @@ interface DefaultClass {
 	new(...args: any[]): {};
 }
 
+export type ClassToObj<C> = Pick<C, keyof C>;
+
 export function mixin(): DefaultClass;
 export function mixin<M1, MM1>(mixin1: MixinFn<DefaultClass, M1, MM1>): M1 & {
-	new(...args: any[]): MM1 & any;
+	new(...args: any[]): MM1;
 };
 export function mixin<M1, MM1, M2, MM2 >(
-	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+	mixin1: MixinFn<DefaultClass, M1, MM1 >, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
-	}, M2, MM2>): M1 & M2 & {
-		new(...args: any[]): MM1 & MM2 & any;
+	}, M2, MM2>): ClassToObj<M1> & ClassToObj<M2> & {
+		new(...args: any[]): MM1 & MM2;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3,>(
-	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
+	mixin1: MixinFn<DefaultClass, M1, MM1 >, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
 	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
 		new(...args: any[]): MM1 & MM2;
 	}, M3, MM3>
-	): M1 & M2 & M3 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & any;
+	): ClassToObj<M1> & ClassToObj<M2> & ClassToObj<M3> & {
+		new(...args: any[]): MM1 & MM2 & MM3;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4>(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
@@ -305,8 +307,8 @@ export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4>(
 	}, M3, MM3>, 
 	mixin4: MixinFn<M1 & M2 & M3 & {
 		new(...args: any[]): MM1 & MM2 & MM3;
-	}, M4, MM4>): M1 & M2 & M3 & M4 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & any;
+	}, M4, MM4>): ClassToObj<M1> & ClassToObj<M2> & ClassToObj<M3> & ClassToObj<M4> & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3 ,M4, MM4, M5 ,MM5 >(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
@@ -318,8 +320,8 @@ export function mixin<M1, MM1, M2, MM2, M3, MM3 ,M4, MM4, M5 ,MM5 >(
 		new(...args: any[]): MM1 & MM2 & MM3;
 	}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
 		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
-	}, M5, MM5>): M1 & M2 & M3 & M4 & M5 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & any;
+	}, M5, MM5>): ClassToObj<M1> & ClassToObj<M2> & ClassToObj<M3> & ClassToObj<M4> & ClassToObj<M5> & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6 >(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
@@ -332,8 +334,8 @@ export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6 >(
 		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
 	}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
 		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
-	}, M6, MM6>): M1 & M2 & M3 & M4 & M5 & M6 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & any;
+	}, M6, MM6>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5 ,MM5, M6, MM6, M7, MM7 >(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
@@ -348,8 +350,8 @@ export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5 ,MM5, M6, MM6, M7, 
 		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
 	}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
 		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
-	}, M7, MM7>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & any;
+	}, M7, MM7>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
+		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 	M7, MM7, M8, MM8>(
@@ -367,8 +369,8 @@ export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
 		}, M7, MM7>, mixin8: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
-		}, M8, MM8>, ): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & any;
+		}, M8, MM8>, ): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
 		};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 	M7, MM7, M8, MM8, M9, MM9 >(
@@ -388,8 +390,8 @@ export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
 		}, M8, MM8>, mixin9: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
-		}, M9, MM9>, ): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & any;
+		}, M9, MM9>, ): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
 		};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 	M7, MM7, M8, MM8, M9, MM9, M10, MM10 >(
@@ -411,8 +413,8 @@ export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
 		}, M9, MM9>, mixin10: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
-		}, M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10 & any;
+		}, M10, MM10>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M10> & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
 		};
 export function mixin<
 	M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6, M7, MM7, M8,
@@ -435,8 +437,8 @@ export function mixin<
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
 		}, M9, MM9>, mixin10?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
 			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
-		}, M10, MM10>): M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10 & any;
+		}, M10, MM10>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M10> & {
+			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
 		} {
 			let current = class {};
 			const mixins = [

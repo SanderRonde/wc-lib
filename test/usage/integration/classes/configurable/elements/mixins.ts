@@ -9,8 +9,12 @@ export class BasicMixin extends mixin(ConfigurableMixin) {
 }
 
 type MixinReturn<F> = F extends (...args: any[]) => infer R ? R : void;
-const MixinA = (superFn: typeof ConfigurableWebComponent) => class MixinA extends superFn {
+const MixinA = (superFn: typeof ConfigurableWebComponent & {
+	new(...args: any[]): ConfigurableWebComponent;
+}) => class MixinA extends superFn {
 	a = 1;
+
+	static c = 3;
 }
 const MixinB = (superFn: MixinReturn<typeof MixinA>) => class MixinB extends superFn {
 	b = 1;
@@ -28,9 +32,9 @@ const MixinE = (superFn: MixinReturn<typeof MixinD>) => class MixinE extends sup
 const splitMixin = 
 	mixin(
 		() => mixin(ConfigurableMixin, MixinA),
-		MixinB,
-		(superClass) => mixin(() => superClass, MixinC, MixinD),
-		MixinE
+		MixinB as any,
+		(superClass: any) => mixin(() => superClass, MixinC, MixinD),
+		MixinE as any
 	)
 
 

@@ -1,4 +1,4 @@
-import { mixin, ConfigurableMixin, config, ConfigurableWebComponent } from "../../../../../../src/wclib.js";
+import { mixin, ConfigurableMixin, config, ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, ExtendableMixin, NonAbstractWebComponent } from "../../../../../../src/wclib.js";
 
 @config({
 	is: 'basic-mixin',
@@ -28,6 +28,9 @@ const MixinD = (superFn: MixinReturn<typeof MixinC>) => class MixinD extends sup
 const MixinE = (superFn: MixinReturn<typeof MixinD>) => class MixinE extends superFn {
 	e = 1;
 }
+const MixinZ = (superFn: typeof NonAbstractWebComponent) => class MixinZ extends superFn {
+	z = 1;
+}
 
 const splitMixin = 
 	mixin(
@@ -35,7 +38,7 @@ const splitMixin =
 		MixinB as any,
 		(superClass: any) => mixin(() => superClass, MixinC, MixinD),
 		MixinE as any
-	)
+	) as unknown as typeof ConfigurableWebComponent;
 
 
 @config({
@@ -68,4 +71,18 @@ export class MultiMixin extends mixin(ConfigurableMixin, MixinA, MixinB, MixinC,
 })
 export class SplitMixin extends splitMixin {
 	z = 1
+}
+
+export class ManualMixin extends mixin(ExtendableMixin, MixinZ) {
+	static is = 'manual-mixin';
+	static html = new TemplateFn<ManualMixin>(null, CHANGE_TYPE.NEVER, null);
+	static css = new TemplateFn<ManualMixin>(null, CHANGE_TYPE.NEVER, null);
+	static dependencies = [];
+	static mixins = [];
+
+	get self() {
+		return ManualMixin;
+	}
+
+	t = 1;
 }

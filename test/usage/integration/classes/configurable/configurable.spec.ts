@@ -327,6 +327,17 @@ context('Configurable Component', function() {
 		});
 	});
 	context('Mixins', () => {
+		it('can extend the extendable mixin base', () => {
+			cy.get('#manualMixin').then(([el]: JQuery<HTMLElement>) => {
+				cy.wrap(el)
+					.should('have.property', 'isMounted')
+					.and('be.equal', true);
+				expect(el).to.have.property('t', 1,
+					'outer class is used');
+				expect(el).to.have.property('z', 1,
+					'mixin is used');
+			});
+		});
 		it('can create a basic component when not passing any mixins', () => {
 			cy.get('#basicMixin').then(([el]: JQuery<HTMLElement>) => {
 				cy.wrap(el)

@@ -153,7 +153,14 @@ export class ConfiguredComponent extends WebComponentBase {
  */
 export const ConfigurableMixin = (_superFn: any) => ConfigurableWebComponent;
 
-class NonAbstractWebComponent extends WebComponent {
+/**
+ * A class that is used as the base for the `ExtendableMixin`
+ * mixin. Do not use this class directly. If you want to use
+ * an extendable webcomponent, extend `WebComponent` instead.
+ * If you want to use an extendable mixin call
+ * `mixin(ExtendableMixin, ...mixins)`
+ */
+export class NonAbstractWebComponent extends WebComponent {
 	get self() { return null as any };
 }
 /**

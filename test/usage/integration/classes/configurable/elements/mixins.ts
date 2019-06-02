@@ -12,16 +12,16 @@ type MixinReturn<F> = F extends (...args: any[]) => infer R ? R : void;
 const MixinA = (superFn: typeof ConfigurableWebComponent) => class MixinA extends superFn {
 	a = 1;
 }
-const MixinB = (superFn: MixinReturn<typeof MixinA>) => class MixinA extends superFn {
+const MixinB = (superFn: MixinReturn<typeof MixinA>) => class MixinB extends superFn {
 	b = 1;
 }
-const MixinC = (superFn: MixinReturn<typeof MixinB>) => class MixinA extends superFn {
+const MixinC = (superFn: MixinReturn<typeof MixinB>) => class MixinC extends superFn {
 	c = 1;
 }
-const MixinD = (superFn: MixinReturn<typeof MixinC>) => class MixinA extends superFn {
+const MixinD = (superFn: MixinReturn<typeof MixinC>) => class MixinD extends superFn {
 	d = 1;
 }
-const MixinE = (superFn: MixinReturn<typeof MixinD>) => class MixinA extends superFn {
+const MixinE = (superFn: MixinReturn<typeof MixinD>) => class MixinE extends superFn {
 	e = 1;
 }
 

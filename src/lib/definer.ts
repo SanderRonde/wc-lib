@@ -13,9 +13,14 @@ function define(name: string, component: any) {
 	window.customElements.define(name, component);
 }
 
-const elementBase: typeof HTMLElement = typeof HTMLElement !== 'undefined' ? 
-	/* istanbul ignore next */
-	HTMLElement : (<ExtendedProcess>process).HTMLElement;
+const elementBase: typeof HTMLElement = (() => {
+	/* istanbul ignore else */
+	if (typeof HTMLElement !== 'undefined') {
+		return HTMLElement;
+	} else {
+		return (<ExtendedProcess>process).HTMLElement;
+	}
+})();
 
 class DefinerClass {
 	/**
@@ -64,7 +69,9 @@ class DefinerClass {
 
 	private static __doSingleMount(component: WebComponent<any, any>) {
 		return new Promise((resolve) => {
-			(window.requestAnimationFrame || window.webkitRequestAnimationFrame)(() => {
+			/* istanbul ignore next */
+			const animationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+			animationFrame(() => {
 				if (component.isMounted) {
 					resolve();
 					return;
@@ -84,6 +91,7 @@ class DefinerClass {
 				await this.__doSingleMount(component);
 			}
 		} else {
+			/* istanbul ignore next */
 			this.listeners.forEach(async ({ constructed, component }) => {
 				await constructed;
 				if (component.isMounted) {
@@ -246,8 +254,10 @@ export abstract class WebComponentDefiner extends elementBase {
 		}
 
 		this.___definerClass.checkProps(this as typeof WebComponent);
-		for (const dependency of this.dependencies || []) {
-			dependency && dependency.define(false);
+		if (this.dependencies && this.dependencies.length) {
+			for (const dependency of this.dependencies) {
+				dependency && dependency.define(false);
+			}
 		}
 		define(this.is, this);
 		this.___definerClass.defined.push(this.is);

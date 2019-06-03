@@ -88,10 +88,10 @@ class ListenableClass<E extends EventListenerObj> {
 	 * @param {EV} event - The event's name
 	 * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
 	 * 	listener called when the event is fired
-	 * @param {boolean} [once] - Whether to only
+	 * @param {boolean} once - Whether to only
 	 * 	call this listener once (false by default)
 	 */
-	public listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) {
+	public listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean) {
 		this.__assertKeyExists(event, this.listenerMap);
 		if (once) {
 			this.__insertOnce(this.listenerMap[event], listener);

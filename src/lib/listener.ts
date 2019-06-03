@@ -99,20 +99,6 @@ class ListenableClass<E extends EventListenerObj> {
 			this.listenerMap[event].add(listener);
 		}
 	}
-
-	/**
-	 * Clears all listeners on this component for
-	 * given event
-	 * 
-	 * @template EV - The name of the event
-	 * 
-	 * @param {EV} event - The name of the event to clear
-	 */
-	public __clearListeners<EV extends keyof E>(event: EV) {
-		if (event in this.listenerMap) {
-			this.listenerMap[event].clear();
-		}
-	}
 }
 
 /**

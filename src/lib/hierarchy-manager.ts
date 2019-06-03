@@ -54,10 +54,6 @@ class HierarchyClass {
 	public getGlobalProperties<G extends {
 		[key: string]: string;
 	}>() {
-		if (!this.isRoot) {
-			return {};
-		}
-
 		const props: Partial<G> = {};
 		for (let i = 0; i < this._self.attributes.length; i++) {
 			const attr = this._self.attributes[i];

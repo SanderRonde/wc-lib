@@ -57,6 +57,71 @@ context('Definer', function() {
 					.to.be.equal(window.TestElement);
 			});
 		});
+		it('sets isMounted when the component is mounted', () => {
+			cy.window().then((window: TestParentWindow) => {
+				expect(window.customElements.get('parent-element'))
+					.to.be.undefined;
+				window.ParentElement.define();
+				expect(window.customElements.get('parent-element'))
+					.to.be.equal(window.ParentElement);
+				
+				cy.document().then((document) => {
+					const parent = document.createElement('parent-element');
+
+					document.body.appendChild(parent);
+
+					cy.wrap(parent).should('have.property',
+						'isMounted').should('be.equal', true);
+				});
+			});
+		});
+		it('falls back to webkitRequestAnimationFrame if requestAnimationFrame is not available', () => {
+			cy.visit('http://localhost:1251/test/usage/integration/classes/definer/definer.fixture.html', {
+				onBeforeLoad(win) {
+					delete win.requestAnimationFrame;
+				}
+			});
+			cy.window().then((window: TestParentWindow) => {
+				expect(window.customElements.get('parent-element'))
+					.to.be.undefined;
+				window.ParentElement.define();
+				expect(window.customElements.get('parent-element'))
+					.to.be.equal(window.ParentElement);
+				
+				cy.document().then((document) => {
+					const parent = document.createElement('parent-element');
+
+					document.body.appendChild(parent);
+
+					cy.wrap(parent).should('have.property',
+						'isMounted').should('be.equal', true);
+				});
+			});
+		});
+		it('falls back to sync implementation if requestAnimationFrame is not available', () => {
+			cy.visit('http://localhost:1251/test/usage/integration/classes/definer/definer.fixture.html', {
+				onBeforeLoad(win) {
+					delete win.requestAnimationFrame;
+					delete win.webkitRequestAnimationFrame;
+				}
+			});
+			cy.window().then((window: TestParentWindow) => {
+				expect(window.customElements.get('parent-element'))
+					.to.be.undefined;
+				window.ParentElement.define();
+				expect(window.customElements.get('parent-element'))
+					.to.be.equal(window.ParentElement);
+				
+				cy.document().then((document) => {
+					const parent = document.createElement('parent-element');
+
+					document.body.appendChild(parent);
+
+					cy.wrap(parent).should('have.property',
+						'isMounted').should('be.equal', true);
+				});
+			});
+		});
 	});
 	context('Metadata', () => {
 		beforeEach(() => {

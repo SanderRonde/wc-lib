@@ -11,7 +11,10 @@ export interface TestConfiguredWindow extends Window {
 		wrongClasses: {
 			MissingIs: typeof MissingIs;
 			NonStringIs: typeof NonStringIs;
-			InvalidIs: typeof InvalidIs;
+			NoDashIs: typeof NoDashIs;
+			UppercaseIs: typeof UppercaseIs;
+			NumberIs: typeof NumberIs;
+			DashIs: typeof DashIs;
 			MissingHTML: typeof MissingHTML;
 			UnsetHTML: typeof UnsetHTML;
 			UnsetHTML2: typeof UnsetHTML2;
@@ -66,7 +69,34 @@ class NonStringIs extends ConfigurableWebComponent { }
 	dependencies: [],
 	mixins: []
 } as any)
-class InvalidIs extends ConfigurableWebComponent { }
+class NoDashIs extends ConfigurableWebComponent { }
+
+@config({
+	is: 'Uppercase-Name',
+	html: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	css: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	dependencies: [],
+	mixins: []
+} as any)
+class UppercaseIs extends ConfigurableWebComponent { }
+
+@config({
+	is: '0number-name',
+	html: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	css: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	dependencies: [],
+	mixins: []
+} as any)
+class NumberIs extends ConfigurableWebComponent { }
+
+@config({
+	is: '-dashname',
+	html: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	css: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	dependencies: [],
+	mixins: []
+} as any)
+class DashIs extends ConfigurableWebComponent { }
 
 @config({
 	is: 'missing-html',
@@ -191,7 +221,10 @@ window.configured = {
 	wrongClasses: {
 		MissingIs,
 		NonStringIs,
-		InvalidIs,
+		NoDashIs,
+		UppercaseIs,
+		NumberIs,
+		DashIs,
 		MissingHTML,
 		UnsetHTML,
 		UnsetHTML2,

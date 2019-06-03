@@ -11,7 +11,10 @@ export interface TestExtendedWindow extends Window {
 		wrongClasses: {
 			MissingIs: typeof MissingIs;
 			NonStringIs: typeof NonStringIs;
-			InvalidIs: typeof InvalidIs;
+			NoDashIs: typeof NoDashIs;
+			UppercaseIs: typeof UppercaseIs;
+			NumberIs: typeof NumberIs;
+			DashIs: typeof DashIs;
 			MissingHTML: typeof MissingHTML;
 			UnsetHTML: typeof UnsetHTML;
 			UnsetHTML2: typeof UnsetHTML2;
@@ -67,7 +70,7 @@ class NonStringIs extends WebComponent {
 	}
 }
 
-class InvalidIs extends WebComponent { 
+class NoDashIs extends WebComponent { 
 	static is = 'invalid';
 	static html = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
 	static css = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
@@ -75,7 +78,43 @@ class InvalidIs extends WebComponent {
 	static mixins = [];
 
 	get self() {
-		return InvalidIs;
+		return NoDashIs;
+	}
+}
+
+class UppercaseIs extends WebComponent { 
+	static is = 'Uppercase-Name';
+	static html = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static css = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static dependencies = [];
+	static mixins = [];
+
+	get self() {
+		return UppercaseIs;
+	}
+}
+
+class NumberIs extends WebComponent { 
+	static is = '0number-name';
+	static html = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static css = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static dependencies = [];
+	static mixins = [];
+
+	get self() {
+		return NumberIs;
+	}
+}
+
+class DashIs extends WebComponent { 
+	static is = '-dashname';
+	static html = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static css = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static dependencies = [];
+	static mixins = [];
+
+	get self() {
+		return DashIs;
 	}
 }
 
@@ -242,7 +281,10 @@ window.extended = {
 	wrongClasses: {
 		MissingIs,
 		NonStringIs,
-		InvalidIs,
+		NoDashIs,
+		UppercaseIs,
+		NumberIs,
+		DashIs,
 		MissingHTML,
 		UnsetHTML,
 		UnsetHTML2,

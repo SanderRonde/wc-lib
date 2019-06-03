@@ -134,11 +134,32 @@ context('Configurable Component', function() {
 					}).to.throw('Component name is not a string');
 				});
 			});
-			it('throws an error when .is is not valid', () => {
+			it('throws an error when .is contains no dash', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.InvalidIs.define();
+						window.configured.wrongClasses.NoDashIs.define();
 					}).to.throw('Webcomponent names need to contain a dash "-"');
+				});
+			});
+			it('throws an error when .is contains an uppercase letter', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					expect(() => {
+						window.configured.wrongClasses.UppercaseIs.define();
+					}).to.throw('Webcomponent names can not contain uppercase ASCII characters.');
+				});
+			});
+			it('throws an error when .is starts with a number', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					expect(() => {
+						window.configured.wrongClasses.NumberIs.define();
+					}).to.throw('Webcomponent names can not start with a digit.');
+				});
+			});
+			it('throws an error when .is starts with a dash/hyphen', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					expect(() => {
+						window.configured.wrongClasses.DashIs.define();
+					}).to.throw('Webcomponent names can not start with a hyphen.');
 				});
 			});
 			it('throws an error when .html is missing', () => {
@@ -247,11 +268,32 @@ context('Configurable Component', function() {
 					}).to.throw('Component name is not a string');
 				});
 			});
-			it('throws an error when .is is not valid', () => {
+			it('throws an error when .is contains no dash', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.InvalidIs.define();
+						window.extended.wrongClasses.NoDashIs.define();
 					}).to.throw('Webcomponent names need to contain a dash "-"');
+				});
+			});
+			it('throws an error when .is contains an uppercase letter', () => {
+				cy.window().then((window: TestExtendedWindow) => {
+					expect(() => {
+						window.extended.wrongClasses.UppercaseIs.define();
+					}).to.throw('Webcomponent names can not contain uppercase ASCII characters.');
+				});
+			});
+			it('throws an error when .is starts with a number', () => {
+				cy.window().then((window: TestExtendedWindow) => {
+					expect(() => {
+						window.extended.wrongClasses.NumberIs.define();
+					}).to.throw('Webcomponent names can not start with a digit.');
+				});
+			});
+			it('throws an error when .is starts with a dash/hyphen', () => {
+				cy.window().then((window: TestExtendedWindow) => {
+					expect(() => {
+						window.extended.wrongClasses.DashIs.define();
+					}).to.throw('Webcomponent names can not start with a hyphen.');
 				});
 			});
 			it('throws an error when .html is missing', () => {

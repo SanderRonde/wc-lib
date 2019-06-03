@@ -84,7 +84,9 @@ function istanbulIgnoreTypescript(file: string) {
 	const newLines = [...lines];
 	for (let i = blocks.length - 1; i >= 0; i--) {
 		const { start } = blocks[i];
-		newLines.splice(start, 0, ISTANBUL_IGNORE_NEXT);
+		if (!newLines[Math.max(start - 1, 0)].includes(ISTANBUL_IGNORE_NEXT)) {
+			newLines.splice(start, 0, ISTANBUL_IGNORE_NEXT);
+		}
 	}
 
 	return newLines.join('\n');

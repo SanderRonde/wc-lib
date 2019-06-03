@@ -74,15 +74,23 @@ class HierarchyClass {
 				element = element.parentNode as HTMLElement|null;
 			}
 
+		/* istanbul ignore if */
 		if (!element) {
 			return null;
 		}
 		if (<any>element === document) {
 			return this._self;
 		}
-		const host = element instanceof WebComponentHierarchyManager ?
-			element : (<ShadowRoot><any>element).host;
+		const host = (() => {
+			/* istanbul ignore if */
+			if (element instanceof WebComponentHierarchyManager) {
+				return element;
+			} else {
+				return (<ShadowRoot><any>element).host;
+			}
+		})();
 
+		/* istanbul ignore if */
 		if (!(host instanceof WebComponentHierarchyManager)) {
 			return null;
 		}
@@ -97,21 +105,25 @@ class HierarchyClass {
 				element = element.parentNode as HTMLElement|null;
 			}
 
+		/* istanbul ignore if */
 		if (!element) {
 			//Ignore this
 			return null;
 		}
+
+		/* istanbul ignore else */
 		if (<any>element === document) {
 			//This is in the light DOM, ignore it since it's the root
 			return this._self;
-		}
-		const host = element instanceof WebComponentHierarchyManager ?
-			element : (<ShadowRoot><any>element).host;
+		} else {
+			const host = element instanceof WebComponentHierarchyManager ?
+				element : (<ShadowRoot><any>element).host;
 
-		if (!(host instanceof WebComponentHierarchyManager)) {
-			return null;
+			if (!(host instanceof WebComponentHierarchyManager)) {
+				return null;
+			}
+			return host;
 		}
-		return host;
 	}
 
 	private __getRoot(): null|WebComponentHierarchyManager<any> {
@@ -126,6 +138,7 @@ class HierarchyClass {
 	@bindToClass
 	public registerToParent() {
 		const root = this.__getRoot();
+		/* istanbul ignore next */
 		if (root === this._self) {
 			this.isRoot = true;
 			return;
@@ -144,6 +157,7 @@ class HierarchyClass {
 	public clearNonExistentChildren() {
 		const nodeChildren = Array.prototype.slice.apply(this._self.children) as HTMLElement[];
 		for (const child of this.children.values()) {
+			/* istanbul ignore next */
 			if (!this._self.shadowRoot!.contains(child) && 
 				!nodeChildren.filter(nodeChild => nodeChild.contains(child)).length) {
 					this.children.delete(child);
@@ -163,14 +177,16 @@ class HierarchyClass {
 		}
 
 	public propagateThroughTree<R>(fn: (element: WebComponentHierarchyManager<any>) => R): R[] {
+		/* istanbul ignore else */
 		if (this.isRoot) {
 			const results: R[] = [];
 			this.__propagateDown(fn, results);
 			return results;
 		} else if (this.parent) {
 			return this.parent.___hierarchyClass.propagateThroughTree(fn);
+		} else {
+			return [];
 		}
-		return [];
 	}
 
 	private __propagateDown<R>(fn: (element: WebComponentHierarchyManager<any>) => R, results: R[]) {
@@ -263,6 +279,7 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 				return __this.___definerClass.internals.globalProperties[key] as any;
 			},
 			set<K extends keyof G, V extends G[K]>(key: Extract<K, string>, value: V): void {
+				/* istanbul ignore if */
 				if (!__this.___hierarchyClass.parent && !__this.___hierarchyClass.isRoot) {
 					console.warn(`Failed to propagate global property "${key}" since this element has no registered parent`);
 					return;

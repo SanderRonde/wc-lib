@@ -20,9 +20,9 @@ function istanbulIgnoreTypescript(file: string) {
 			found = true;
 		}
 	}
-	if (!found || file.indexOf(ISTANBUL_IGNORE_NEXT) > -1) {
-			return file;
-		}
+	if (!found) {
+		return file;
+	}
 
 	const ignoredLines = [];
 	let ignoring = false;

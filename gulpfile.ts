@@ -113,7 +113,7 @@ function globProm(pattern: string, options?: any): Promise<string[]> {
 	]);
 }
 
-gulp.task('addIstanbulIgnore', async () => {
+gulp.task('istanbulIgnoreTypescript', async () => {
 	return Promise.all((await globProm('src/**/*.js')).map(async (filePath) => {
 		const content = await fs.readFile(filePath, {
 			encoding: 'utf8'

@@ -230,28 +230,6 @@ context('Configurable Component', function() {
 					}).to.not.throw;
 				});
 			});
-			it('throws an error when ConfiguredComponent is extended directly', () => {
-				cy.window().then((window: TestConfiguredWindow) => {
-					cy.document().then((document) => {
-						const spy = cy.spy((err): boolean|void => {
-							const errMsg = 'This class should not be extended directly ' +
-								'and should only be used as a type in TypeScript ' +
-								'Please extend ConfigurableWebComponent instead and ' +
-								'decorate it with @configure';
-							if (err.message.includes(errMsg)) {
-								expect(err.message).to.include(errMsg,
-									'uses correct error message');
-								return false;
-							}
-						});
-						cy.on('uncaught:exception', spy as any);
-
-						window.configured.wrongClasses.WronglyConfiguredComponent.define();
-						document.createElement('wrong-component');
-						cy.wrap(spy).should('be.calledOnce');
-					});
-				});
-			});
 		});
 		context('Extended WebComponent', () => {
 			it('throws an error when .is is missing', () => {

@@ -273,6 +273,7 @@ export abstract class WebComponentHierarchyManager<E extends EventListenerObj> e
 				return __this.___definerClass.internals.globalProperties;
 			},
 			get<K extends keyof G>(key: Extract<K, string>): G[K] {
+				/* istanbul ignore next */
 				if (!__this.___definerClass.internals.globalProperties) {
 					return undefined as any;
 				}

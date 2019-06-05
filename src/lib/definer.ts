@@ -104,6 +104,7 @@ class DefinerClass {
 	}
 
 	private static __isTemplate(value: any): value is TemplateFn {
+		if (!value) return false;
 		if (typeof value.changeOn !== 'number' ||
 			typeof value.renderAsText !== 'function' ||
 			typeof value.renderTemplate !== 'function' ||

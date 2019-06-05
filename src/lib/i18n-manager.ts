@@ -122,14 +122,6 @@ class I18NClass {
 		return this.getMessage(
 			this.langFiles[this.lang], key, values);
 	}
-
-	public static preprocess(prom: Promise<string>, process?: (str: string) => string): Promise<string> {
-		if (!process) return prom;
-
-		return new Promise<string>(async (resolve) => {
-			resolve(process(await prom));
-		});
-	}
 }
 
 /**

@@ -79,6 +79,18 @@ class ComplexValuePart implements Part {
 		}
 	}
 
+	private static __isTemplate(value: any): value is TemplateFn {
+		if (typeof value.changeOn !== 'number' ||
+			typeof value.renderAsText !== 'function' ||
+			typeof value.renderTemplate !== 'function' ||
+			typeof value.renderSame !== 'function' ||
+			typeof value.render !== 'function' ||
+			typeof value.renderIfNew !== 'function') {
+				return false;
+			}
+		return true;
+	}
+
 	commit() {
 		//TODO: test directive as complex value
 		while (this._config.isDirective(this._pendingValue)) {
@@ -90,7 +102,7 @@ class ComplexValuePart implements Part {
 		if (this._pendingValue === this._config.noChange) {
 			return;
 		}
-		if (this.name === CUSTOM_CSS_PROP_NAME && !(this._pendingValue instanceof TemplateFn)) {
+		if (this.name === CUSTOM_CSS_PROP_NAME && !ComplexValuePart.__isTemplate(this._pendingValue)) {
 			//TODO: test using non-templateFn for custom-css prop
 			console.warn('Attempting to use non TemplateFn value for custom-css property');
 			this._pendingValue = new TemplateFn(null, CHANGE_TYPE.NEVER, null);

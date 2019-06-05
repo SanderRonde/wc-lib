@@ -76,7 +76,6 @@ class I18NClass {
 	}
 
 	private static async __loadLang(lang: string) {
-		//TODO: switch languages back and forth
 		if (lang in this.__langPromises) return;
 		const prom = new Promise<{
 			[key: string]: string;

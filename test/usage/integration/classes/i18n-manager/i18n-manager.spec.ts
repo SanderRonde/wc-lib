@@ -95,6 +95,23 @@ context('I18n-Manager', function() {
 		});
 	});
 
+	function setupServerStub() {
+		cy.fixture('i18n/en.json').as('i18n-en');
+		cy.fixture('i18n/nl.json').as('i18n-nl');
+
+		cy.server({
+			delay: 250
+		});
+		cy.route('test/usage/fixtures/i18n/en.json', '@i18n-en').as('getLangEn');
+		cy.route('test/usage/fixtures/i18n/nl.json', '@i18n-nl').as('getLangNl');
+
+		cy.visit(fixture('standard'), {
+			onBeforeLoad(win) {
+				delete win.fetch;
+			}
+		});
+	}
+
 	context('Setting/Getting', () => {
 		it('returns the currently active language on #getLang call', () => {
 			cy.get('#lang').then(([el]: JQuery<LangElement>) => {
@@ -136,6 +153,60 @@ context('I18n-Manager', function() {
 						expect(el.getLang()).to.be.equal('test',
 							'uses the globally set language');
 					});
+			});
+		});
+		context('Switching', () => {
+			beforeEach(() => {
+				setupServerStub();
+			});
+			it('can change the language while still loading the new one', () => {
+				cy.get('#lang').then(([el]: JQuery<LangElement>) => {
+					cy.wait('@getLangEn');
+
+					expect(el.getLang()).to.be.equal('en',
+						'uses the default language');
+					el.setLang('nl');
+					expect(el.getLang()).to.be.equal('nl',
+						'uses the new language');
+	
+					// It should still be loading the new language now
+					el.setLang('en');
+					expect(el.getLang()).to.be.equal('en',
+						'uses the old language');
+
+					cy.wait(1000);
+
+					cy.get('#lang')
+						.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
+						.shadowContains('english');
+					cy.get('#lang')
+						.shadowFind('#nonexistent')
+						.shadowContains('not found');
+					cy.get('#lang')
+						.shadowFind('#returnerValues, #placeholderValues')
+						.shadowContains('test 1 2 3 value');
+				});
+			});
+			it('can change the language while the initial one is still loading', () => {
+				cy.get('#lang').then(([el]: JQuery<LangElement>) => {
+					expect(el.getLang()).to.be.equal('en',
+						'uses the default language');
+					el.setLang('nl');
+					expect(el.getLang()).to.be.equal('nl',
+						'uses the new language');
+	
+					cy.wait('@getLangNl');
+
+					cy.get('#lang')
+						.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
+						.shadowContains('dutch');
+					cy.get('#lang')
+						.shadowFind('#nonexistent')
+						.shadowContains('not found');
+					cy.get('#lang')
+						.shadowFind('#returnerValues, #placeholderValues')
+						.shadowContains('test 1 2 3 waarde');
+				});
 			});
 		});
 		after(() => {
@@ -190,23 +261,6 @@ context('I18n-Manager', function() {
 			});
 		});
 	});
-
-	function setupServerStub() {
-		cy.fixture('i18n/en.json').as('i18n-en');
-		cy.fixture('i18n/nl.json').as('i18n-nl');
-
-		cy.server({
-			delay: 250
-		});
-		cy.route('test/usage/fixtures/i18n/en.json', '@i18n-en').as('getLangEn');
-		cy.route('test/usage/fixtures/i18n/nl.json', '@i18n-nl').as('getLangNl');
-
-		cy.visit(fixture('standard'), {
-			onBeforeLoad(win) {
-				delete win.fetch;
-			}
-		});
-	}
 
 	context('Server Online', () => {
 		context('From Template', () => {

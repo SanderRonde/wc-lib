@@ -35,7 +35,7 @@ function getRootChildren() {
 		});
 }
 
-const URL_PREFIX = 'http://localhost:1251/test/usage/integration/classes/i18n-manager/fixtures/';
+const URL_PREFIX = 'http://localhost:1251/test/usage/integration/classes/i18n-manager/fixtures';
 
 function fixture(name: string) {
 	return `${URL_PREFIX}/${name}/i18n-manager.fixture.html`;
@@ -308,6 +308,28 @@ context('I18n-Manager', function() {
 							.to.have.property('___marker', true, 'marker exists');
 					});
 				});	
+		});
+	});
+
+	context('Default init values', () => {
+		beforeEach(() => {
+			cy.fixture('i18n/en.flat.json').as('i18n-en');
+	
+			cy.server();
+			cy.route('test/usage/fixtures/i18n/en.json', '@i18n-en').as('i18n-flat');
+	
+			cy.visit(fixture('defaults'), {
+				onBeforeLoad(win) {
+					delete win.fetch;
+				}
+			});
+		});
+		it('uses the default getMessage function', () => {
+			cy.wait('@i18n-flat');
+
+			cy.get('#lang')
+				.shadowFind('#placeholdertest')
+				.shadowContains('english');
 		});
 	});
 });

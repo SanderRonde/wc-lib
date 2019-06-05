@@ -30,12 +30,7 @@ class I18NClass {
 	constructor(private _self: WebComponentI18NManager<any>) { }
 
 	public setInitialLang() {
-		const lang = this._self.globalProps<{
-			lang: string;
-		}>().get('lang');
-		if (lang === undefined) {
-			this.setLang(I18NClass.__loadingLang!, true);
-		}
+		this.setLang(I18NClass.__loadingLang!, true);
 	}
 
 	public async setLang(lang: string, delayRender: boolean = false) {

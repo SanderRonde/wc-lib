@@ -120,6 +120,19 @@ context('I18n-Manager', function() {
 				}
 			});
 		});
+		it('will adapt to the global language when placed in a root', () => {
+			cy.visit('http://localhost:1251/test/usage/integration/classes/i18n-manager/i18n-manager.fixture.2.html');
+			cy.document().then((document) => {
+				const el = document.createElement('test-element') as TestElement;
+				cy.get('root-element')	
+					.then(([rootNode]: JQuery<RootElement>) => {
+						rootNode.root.appendChild(el);
+
+						expect(el.getLang()).to.be.equal('test',
+							'uses the globally set language');
+					});
+			});
+		});
 		after(() => {
 			cy.visit('http://localhost:1251/test/usage/integration/classes/i18n-manager/i18n-manager.fixture.html', {
 				onBeforeLoad(win) {

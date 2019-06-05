@@ -28,6 +28,7 @@ class ClassAttributePart implements Part {
 	}
 
 	setValue(value: any): void {
+		/* istanbul ignore else */
 		if (value !== this._config.noChange && (!this._isPrimitive(value) || value !== this.value)) {
 			this._pendingValue = value;
 		}
@@ -42,11 +43,13 @@ class ClassAttributePart implements Part {
 	}
 
 	commit() {
+		//TODO: test directive as class
 		while (this._config.isDirective(this._pendingValue)) {
 			const directive = this._pendingValue;
 			this._pendingValue = this._config.noChange;
 			directive(this);
 		}
+		/* istanbul ignore if */
 		if (this._pendingValue === this._config.noChange) {
 			return;
 		}
@@ -77,15 +80,18 @@ class ComplexValuePart implements Part {
 	}
 
 	commit() {
+		//TODO: test directive as complex value
 		while (this._config.isDirective(this._pendingValue)) {
 			const directive = this._pendingValue;
 			this._pendingValue = this._config.noChange;
 			directive(this);
 		}
+		/* istanbul ignore if */
 		if (this._pendingValue === this._config.noChange) {
 			return;
 		}
 		if (this.name === CUSTOM_CSS_PROP_NAME && !(this._pendingValue instanceof TemplateFn)) {
+			//TODO: test using non-templateFn for custom-css prop
 			console.warn('Attempting to use non TemplateFn value for custom-css property');
 			this._pendingValue = new TemplateFn(null, CHANGE_TYPE.NEVER, null);
 		}
@@ -109,17 +115,20 @@ function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfi
 			}
 	
 		commit() {
+			//TODO: test directive for event
 			while (config.isDirective(this._pendingValue)) {
 				const directive = this._pendingValue;
 				this._pendingValue = config.noChange as any;
 				(directive as any)(this);
 			}
+			/* istanbul ignore if */
 			if (this._pendingValue === config.noChange) {
 				return;
 			}
 		  
 			const newListener = this._pendingValue;
 			const oldListener = this.value;
+			//TODO: test changing listener
 			const shouldRemoveListener = newListener == null ||
 				oldListener != null &&
 					(newListener.capture !== oldListener.capture ||
@@ -129,6 +138,7 @@ function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfi
 				newListener != null && (oldListener == null || shouldRemoveListener);
 		  
 			if (!(this.element instanceof WebComponentThemeManger)) {
+				//TODO: test using webcomponent listener on non-webcomponent element
 				console.warn('Attempting to listen using webcomponent listener on non-webcomponent element',
 					`Name: ${this.eventName}, element:`, this.element);
 			}
@@ -151,6 +161,7 @@ class ComplexTemplateProcessor implements TemplateProcessor {
 		public genRef: (value: ComplexValue) => string,
 		private _config: LitHTMLConfig) { }
 	
+	//TODO: test multiple of a single type
 	private __componentEventPart: RetVal<typeof getComponentEventPart>|null = null;
 	private get _componentEventPart() {
 		if (this.__componentEventPart !== null) {
@@ -184,10 +195,12 @@ class ComplexTemplateProcessor implements TemplateProcessor {
 				return [new ComplexValuePart(element, name, strings, this.genRef,
 					this._config)];
 			}
+			//TODO: test non-special first char
 			const committer = new this._config.AttributeCommitter(element, name, strings);
 			return committer.parts;
 		}
 
+	/* istanbul ignore next */
 	handleTextExpression(options: RenderOptions) {
 		return new this._config.NodePart(options) as NodePart;
 	}
@@ -398,6 +411,7 @@ WebComponentTemplateManager.initComplexTemplateProvider({
 	 * 	to the renderer, renders the template to DOM
 	 */
 	public generateHTMLTemplate(strings: TemplateStringsArray, ...values: any[]): TemplateResultLike {
+		//TODO: test calling this multiple times for coverage
 		return new TemplateClass.templateResult(strings, values, 'html', this.___templateClass.templateProcessor);
 	}
 
@@ -435,6 +449,8 @@ WebComponentTemplateManager.initComplexTemplateProvider({
 	 */
 	public getRef(ref: string): ComplexValue {
 		if (typeof ref !== 'string') {
+			//TODO: test invalid ref
+			console.warn('Invalid ref', ref, 'on', this);
 			return undefined as unknown as ComplexValue;
 		}
 		const refNumber = ~~ref.split(refPrefix)[1];
@@ -454,6 +470,7 @@ WebComponentTemplateManager.initComplexTemplateProvider({
 	public getParentRef(ref: string): ComplexValue {
 		const parent = this.___hierarchyClass.__getParent<WebComponentTemplateManager<any>>();
 		if (!parent) {
+			//TODO: test not having a parent
 			console.warn('Could not find parent of', this, 
 				'and because of that could not find ref with id', ref);
 			return undefined as unknown as ComplexValue;

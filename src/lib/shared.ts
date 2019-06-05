@@ -11,6 +11,7 @@ import { WebComponentBase } from "./base.js";
  * 	resolves when the time has passed
  */
 export function wait(time: number): Promise<void> {
+	//TODO: test
 	return new Promise((resolve) => {
 		setTimeout(() => {
 			resolve();
@@ -40,6 +41,7 @@ export type ClassNamesArg = string|number|{
  * @returns {string} The class string
  */
 export function classNames(...args: ClassNamesArg[]): string {
+	//TODO: test
 	var classes = [];
 
 	for (const arg of args) {

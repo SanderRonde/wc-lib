@@ -4,6 +4,7 @@ import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
 	public static urlFormat: string = '/i18n/';
+	//TODO: use default getMessage
 	public static getMessage: (langFile: any, key: string, values: any[]) => string|Promise<string> = 
 		(file: {
 			[key: string]: string;
@@ -23,6 +24,7 @@ class I18NClass {
 	private static __loadingLang: string|null = null;
 	public static currentLang: string|null = null;
 	public static defaultLang: string|null = null;
+	//TODO: use default returner
 	public static returner: (promise: Promise<string>, content: string) => any =
 		(_, c) => c
 	private _elementLang: string|null = null;
@@ -52,6 +54,7 @@ class I18NClass {
 	}
 
 	private static async __fetch(url: string) {
+		/* istanbul ignore next */
 		if ('fetch' in window && typeof window.fetch !== undefined) {
 			return window.fetch(url).then(r => r.text());
 		}
@@ -73,6 +76,7 @@ class I18NClass {
 	}
 
 	private static async __loadLang(lang: string) {
+		//TODO: switch languages back and forth
 		if (lang in this.__langPromises) return;
 		const prom = new Promise<{
 			[key: string]: string;
@@ -202,9 +206,11 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		returner?: (messagePromise: Promise<string>, placeHolder: string) => any;
 	}) {
 		I18NClass.urlFormat = urlFormat;
+		//TODO: use default getMessage
 		if (getMessage) {
 			I18NClass.getMessage = getMessage;
 		}
+		//TODO: use default returner
 		if (returner) {
 			I18NClass.returner = returner;
 		}
@@ -290,6 +296,7 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	 */
 	public static __<R>(key: string, ...values: any[]): string|R {
 		const value = this.__prom(key, ...values);
+		//TODO: call .__ when still loading
 		if (typeof value === 'string') return value;
 
 		return I18NClass.returner(value, `{{${key}}}`);

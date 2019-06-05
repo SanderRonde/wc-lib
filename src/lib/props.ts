@@ -26,6 +26,8 @@ function getterWithVal<R>(component: {
 function getterWithVal<R>(component: {
 	getParentRef(ref: string): any;
 }, value: string|null, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R {
+	//TODO: test boolean property
+	//TODO: test boolean property with strict mode enabled
 	if (type === 'bool') {
 		if (strict) {
 			return (value + '') === 'true';
@@ -34,14 +36,17 @@ function getterWithVal<R>(component: {
 	} else {
 		if (value !== undefined && value !== null && value !== 'false') {
 			if (type === 'number') {
+				//TODO: test number props
 				return ~~value;
 			} else if (type === complex) {
 				if (value.startsWith(refPrefix)) {
 					return component.getParentRef(value);
 				} else {
+					//TODO: pass complex values as JSON
 					return JSON.parse(decodeURIComponent(value));
 				}
 			}
+			//TODO: test string props
 			return value;
 		}
 		return undefined;
@@ -118,6 +123,7 @@ export function setter(setAttrFn: (key: string, val: string) => void,
 export function setter(setAttrFn: (key: string, val: string) => void, 
 	removeAttrFn: (key: string) => void, name: string, 
 	value: string|boolean|number, type: 'string'|'number'|'bool'|typeof complex): void {
+		//TODO: test setting boolean props as well as other types
 		if (type === 'bool') {
 			const boolVal = value as boolean;
 			if (boolVal) {
@@ -232,6 +238,7 @@ function getDefinePropConfig(value: DefinePropTypes|DefinePropTypeConfig): Defin
 	}
 }
 
+//TODO: test deep proxy
 function createDeepProxy(obj: any, callback: () => void) {
 	const proxy = new Proxy(obj, {
 		set(_obj, prop, value) {
@@ -287,6 +294,7 @@ function createProxyLevel(obj: any, path: string|'*', nextLevels: (string|'*')[]
 	return proxy;
 }
 
+//TODO: test watching of object
 function watchObject(obj: any, path: (string|'*')[], callback: () => void) {
 	if (typeof obj !== 'object' || obj === undefined || obj === null) {
 		return obj;
@@ -306,6 +314,7 @@ function watchObject(obj: any, path: (string|'*')[], callback: () => void) {
 	}
 }
 
+//TODO: test watching of array
 function watchArray<T>(arr: T[], path: (string|'*')[], callback: () => void): T[] {
 	if (!Array.isArray(arr) || arr === undefined || arr === null) {
 		return arr;
@@ -388,6 +397,7 @@ function dashesToCasing(name: string) {
 	return newStr;
 }
 
+//TODO: test upper to lowercase conversion
 function casingToDashes(name: string) {
 	let newStr = '';
 	for (const char of name) {
@@ -401,6 +411,7 @@ function casingToDashes(name: string) {
 	return newStr;
 }
 
+//TODO: test props with coercion enabled
 function getCoerced(initial: any, mapType: DefinePropTypes) {
 	switch (mapType) {
 		case PROP_TYPE.STRING:
@@ -432,6 +443,7 @@ const connectMap = new WeakMap<HTMLElement, any>();
 const connectedElements = new WeakSet<HTMLElement>();
 
 export async function awaitConnected(el: WebComponent): Promise<void> {
+	//TODO: call awaitConnected on an already connected element
     if (connectedElements.has(el)) return;
     await new Promise(async (resolve) => {
         const arr = connectMap.get(el) || [];
@@ -446,6 +458,7 @@ export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<
         return;
     }
     await new Promise(async (resolve) => {
+		/* istanbul ignore next */
         const arr = connectMap.get(el) || [];
         arr.push(() => {
             fn();
@@ -569,6 +582,7 @@ namespace PropsDefiner {
 		reflect?: R;
 		priv?: P;
 	}): Keys<R, P> {
+		//TODO: enable/disable private and reflect properties (not just reflect)
 		return [...Object.getOwnPropertyNames(reflect).map((key) => {
 			return {
 				key: key as Extract<keyof R, string>,
@@ -601,9 +615,11 @@ namespace PropsDefiner {
 				el.propValues[casingKey] = newVal as any;
 				el.component.fire('propChange', casingKey, newVal, prevVal);
 
+				//TODO: test disabling watch
 				if (watch) {
 					queueRender(el.component, CHANGE_TYPE.PROP);
 				}
+				//TODO: test private attributes
 				if (isPrivate) {
 					el.setAttr(casingKey, '_');
 					return;
@@ -625,6 +641,7 @@ namespace PropsDefiner {
 					const prevVal = el.propValues[casingKey];
 					const newVal = coerce ? getCoerced(undefined, mapType) : undefined;
 
+					//TODO: test removeAttribute
 					if (prevVal === newVal) return;
 
 					el.component.fire('beforePropChange', casingKey, newVal, prevVal);
@@ -653,6 +670,7 @@ namespace PropsDefiner {
 				const mapKey = key as Extract<keyof R|P, string>;
 
 				const propName = casingToDashes(mapKey);
+				//TODO: test "defaultValue" instead of "value"
 				const { 
 					watch = true,
 					coerce = false,
@@ -696,6 +714,8 @@ namespace PropsDefiner {
 			private _setReflect() {
 				const _this = this;
 				const { mapKey, isPrivate, strict, type, key, propName } = this._getConfig();
+
+				//TODO: read properties from component itself instead of .props object
 				Object.defineProperty(this._rep.component, mapKey, {
 					get() {
 						if (isPrivate) {
@@ -827,6 +847,7 @@ namespace PropsDefiner {
 
 			element.overrideAttributeFunctions();
 			awaitConnected(component as any).then(() => {
+				//TODO: set mixins but don't merge
 				if (component.self.mixins && 
 					Array.isArray(component.self.mixins) && 
 					component.self.mixins.length &&
@@ -850,6 +871,7 @@ namespace PropsDefiner {
 			});
 		}
 
+	//TODO: test joinProps
 	export function joinProps<R extends PropTypeConfig, P extends PropTypeConfig, PP extends PropReturn<any, any>>(
 		previousProps: PP, config: {
 			reflect?: R;
@@ -952,6 +974,7 @@ export class Props {
 			reflect?: PUB;
 			priv?: PRIV;
 		} = {}, parentProps?: PP): Props & R & PP {
+			//TODO: test passing non-props as third arg
 			if (parentProps && !(parentProps instanceof Props)) {
 				throw new Error('parent props should be a Props object');
 			}

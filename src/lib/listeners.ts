@@ -1,5 +1,7 @@
 import { WebComponent } from './component.js';
 
+//TODO: test
+
 let _supportsPassive: boolean | null = null;
 /**
  * Returns true if this browser supports

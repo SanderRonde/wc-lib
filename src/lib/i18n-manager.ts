@@ -292,8 +292,6 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 	 */
 	public static __<R>(key: string, ...values: any[]): string|R {
 		const value = this.__prom(key, ...values);
-		//TODO: call .__ when still loading
-		if (typeof value === 'string') return value;
 
 		return I18NClass.returner(value, `{{${key}}}`);
 	}

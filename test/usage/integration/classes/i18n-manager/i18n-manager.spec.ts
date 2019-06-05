@@ -1,12 +1,38 @@
 /// <reference types="Cypress" />
 
 import { expectMethodExists, expectPropertyExists, expectPromise } from "../../../lib/assertions";
+import { RootElement } from "../hierarchy-manager/elements/root-element";
 import { TestWindow, TestElement } from "../elements/test-element";
 import { WebComponentI18NManager } from "../../../../../src/wclib";
 import { LangElement } from "./elements/test-lang-element";
+import { ParentElement } from "../elements/parent-element";
 
 interface I18NTestWindow extends Window {
 	WebComponentI18NManager: typeof WebComponentI18NManager;
+}
+
+function getRootChildren() {
+	return cy.get('root-element')
+		.shadowFind('parent-element').then((parents: JQuery<ParentElement>) => {
+			return cy.get('root-element')
+				.shadowFind('test-element')
+				.then((shallowTests: JQuery<TestElement>) => {
+					return cy.get('root-element')
+						.shadowFind('parent-element')
+						.shadowFind('test-element').then((deepTests: JQuery<TestElement>) => {
+							return cy.get('root-element').then(([root]: JQuery<RootElement>) => {
+								const elements = [
+									root,
+									...parents,
+									...shallowTests,
+									...deepTests
+								];
+
+								return elements;
+							});
+						});
+				});
+		});
 }
 
 context('I18n-Manager', function() {
@@ -80,7 +106,20 @@ context('I18n-Manager', function() {
 					'uses the new language');
 			});
 		});
-
+		it('can set the language by setting prop_lang on the root', () => {
+			cy.visit('http://localhost:1251/test/usage/integration/classes/i18n-manager/i18n-manager.fixture.2.html');
+			cy.get('root-element')
+				.then(([el]: JQuery<RootElement>) => {
+					expect(el.getLang()).to.be.equal('test',
+						'uses the globally set language');
+				});
+			getRootChildren().then((children) => {
+				for (const child of children) {
+					expect(child.getLang()).to.be.equal('test',
+						'uses the globally set language');
+				}
+			});
+		});
 		after(() => {
 			cy.visit('http://localhost:1251/test/usage/integration/classes/i18n-manager/i18n-manager.fixture.html', {
 				onBeforeLoad(win) {

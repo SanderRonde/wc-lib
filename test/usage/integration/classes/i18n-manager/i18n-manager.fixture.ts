@@ -1,4 +1,5 @@
 import { directive, Part } from '../../../../../node_modules/lit-html/lit-html.js';
+import { RootElement } from '../hierarchy-manager/elements/root-element.js';
 import { WebComponentI18NManager } from '../../../../../src/wclib.js';
 import { LangElement } from './elements/test-lang-element.js';
 import { TestElement } from "../elements/test-element.js";
@@ -48,3 +49,4 @@ WebComponentI18NManager.initI18N({
 (window as any).WebComponentI18NManager = WebComponentI18NManager;
 TestElement.define();
 LangElement.define();
+RootElement.define();

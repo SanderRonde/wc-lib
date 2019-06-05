@@ -822,7 +822,7 @@ namespace PropsDefiner {
 		props: Props & Partial<Z>, component: PropComponent, config: {
 			reflect?: R;
 			priv?: P;
-		} = {}) {
+		}) {
 			const element = new ElementRepresentation(component);
 
 			element.overrideAttributeFunctions();

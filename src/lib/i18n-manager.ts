@@ -4,7 +4,6 @@ import { CHANGE_TYPE } from './base.js';
 
 class I18NClass {
 	public static urlFormat: string = '/i18n/';
-	//TODO: use default getMessage
 	public static getMessage: (langFile: any, key: string, values: any[]) => string|Promise<string> = 
 		(file: {
 			[key: string]: string;
@@ -24,7 +23,6 @@ class I18NClass {
 	private static __loadingLang: string|null = null;
 	public static currentLang: string|null = null;
 	public static defaultLang: string|null = null;
-	//TODO: use default returner
 	public static returner: (promise: Promise<string>, content: string) => any =
 		(_, c) => c
 	private _elementLang: string|null = null;
@@ -206,11 +204,9 @@ export abstract class WebComponentI18NManager<E extends EventListenerObj> extend
 		returner?: (messagePromise: Promise<string>, placeHolder: string) => any;
 	}) {
 		I18NClass.urlFormat = urlFormat;
-		//TODO: use default getMessage
 		if (getMessage) {
 			I18NClass.getMessage = getMessage;
 		}
-		//TODO: use default returner
 		if (returner) {
 			I18NClass.returner = returner;
 		}

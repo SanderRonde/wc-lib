@@ -37,7 +37,9 @@ class I18NClass {
 		if (I18NClass.__loadingLang !== lang) {
 			I18NClass.__loadingLang = lang;
 			await I18NClass.__loadLang(lang);
-			I18NClass.currentLang = lang;
+			if (I18NClass.__loadingLang === lang) {
+				I18NClass.currentLang = lang;
+			}
 		}
 		if (this._elementLang !== lang) {
 			this._elementLang = lang;

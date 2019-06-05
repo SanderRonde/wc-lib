@@ -116,7 +116,6 @@ class I18NClass {
 		return this.lang in this.langFiles;
 	}
 
-
 	public static async waitForKey(key: string, values: any[]) {
 		await this.loadCurrentLang();
 		return this.getMessage(

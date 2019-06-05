@@ -595,9 +595,9 @@ class BaseClass {
 
 	public getRenderFn(template: TemplateFnLike, change: CHANGE_TYPE) {
 		if (change === CHANGE_TYPE.FORCE) {
-			return template.render;	
+			return template.render.bind(template);	
 		} else {
-			return template.renderIfNew;
+			return template.renderIfNew.bind(template);
 		}
 	}
 }

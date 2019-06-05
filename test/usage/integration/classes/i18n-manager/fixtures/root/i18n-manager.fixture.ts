@@ -1,4 +1,5 @@
 import { WebComponentI18NManager } from '../../../../../../../src/wclib.js';
+import { RootElement } from '../../../hierarchy-manager/elements/root-element.js';
 import { directive, Part } from 'lit-html';
 
 interface LangFile {
@@ -44,3 +45,4 @@ WebComponentI18NManager.initI18N({
 });
 
 (window as any).WebComponentI18NManager = WebComponentI18NManager;
+RootElement.define();

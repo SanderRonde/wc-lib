@@ -72,7 +72,7 @@ export class WCLibError extends Error {
 		public component: (WebComponentDefiner|
 			typeof WebComponentDefiner|
 			WebComponentBase|
-			typeof WebComponentBase), message?: string) {
-				super(`${message || 'error'} (see error.component)`);
+			typeof WebComponentBase), message: string) {
+				super(`${message} (see error.component)`);
 			}
 }

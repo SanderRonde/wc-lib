@@ -578,6 +578,14 @@ class BaseClass {
 			}
 		})());
 	}
+
+	public getRenderFn(template: TemplateFnLike, change: CHANGE_TYPE) {
+		if (change === CHANGE_TYPE.FORCE) {
+			return template.render;	
+		} else {
+			return template.renderIfNew;
+		}
+	}
 }
 
 /**
@@ -696,22 +704,21 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 		if (this.___baseClass.canUseConstructedCSS) {
 			this.___baseClass.renderConstructedCSS(change);
 		}
-		const renderType: 'render'|'renderIfNew' = change === CHANGE_TYPE.FORCE ? 'render' : 'renderIfNew';
 		try {
 			this.___baseClass.__privateCSS.forEach((sheet, index) => {
-				sheet[renderType](
+				this.___baseClass.getRenderFn(sheet, change)(
 					sheet.renderTemplate(change, this as any), 
 					this.___baseClass.renderContainers.css[index]);	
 			});
 			if (this.__hasCustomCSS()) {
 				makeArray(this.customCSS()).forEach((sheet, index) => {
-					sheet[renderType](
+					this.___baseClass.getRenderFn(sheet, change)(
 						sheet.renderTemplate(change, this as any),
 						this.___baseClass.renderContainers.customCSS[index]);
 				});
 			}
 			if (this.self.html) {
-				this.self.html[renderType](
+				this.___baseClass.getRenderFn(this.self.html, change)(
 					this.self.html.renderTemplate(change, this as any), 
 					this.___baseClass.renderContainers.html);
 			}

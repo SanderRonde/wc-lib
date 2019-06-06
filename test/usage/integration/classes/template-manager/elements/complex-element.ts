@@ -19,7 +19,7 @@ export class EventTriggeringElement extends ConfigurableWebComponent<{
 
 @config({
 	is: 'complex-receiver-element',
-	html: new TemplateFn<EventTriggeringElement>(() => {
+	html: new TemplateFn<ComplexReceiverElement>(() => {
 		return html``;
 	}, CHANGE_TYPE.NEVER, render)
 })

@@ -34,4 +34,19 @@ context('Custom CSS Manager', function() {
 				});
 		});
 	});
+
+	context('custom-css property', () => {
+		it('displays a warning when a non-TemplateFnLike is used', () => {
+			cy.document().then((document) => {
+				cy.window().then((window) => {
+					const stub = cy.stub(window.console, 'warn', (...args: any[]) => {
+						expect(args[0]).to.be.equal(
+							'Attempting to use non TemplateFn value for custom-css property');
+					});
+					document.body.appendChild(document.createElement('wrong-custom-css-element'));
+					cy.wrap(stub).should('be.calledOnce');
+				});
+			});
+		});
+	});
 });

@@ -104,7 +104,6 @@ class ComplexValuePart implements Part {
 			return;
 		}
 		if (this.name === CUSTOM_CSS_PROP_NAME && !ComplexValuePart.__isTemplate(this._pendingValue)) {
-			//TODO: test using non-templateFn for custom-css prop
 			console.warn('Attempting to use non TemplateFn value for custom-css property');
 			this._pendingValue = new TemplateFn(null, CHANGE_TYPE.NEVER, null);
 		}

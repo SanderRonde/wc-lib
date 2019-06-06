@@ -20,3 +20,18 @@ import { TestElement } from "../../elements/test-element.js";
 export class CustomCSSElement extends ConfigurableWebComponent {
 
 }
+
+@config({
+	is: 'wrong-custom-css-element',
+	html: new TemplateFn<WrongCustomCSSElement>((html) => {
+		return html`
+			<test-element custom-css="${{}}"></test-element>
+		`;
+	}, CHANGE_TYPE.NEVER, render),
+	dependencies: [
+		TestElement
+	]
+})
+export class WrongCustomCSSElement extends ConfigurableWebComponent {
+
+}

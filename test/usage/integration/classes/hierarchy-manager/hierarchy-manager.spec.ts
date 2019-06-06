@@ -1,11 +1,12 @@
 /// <reference types="Cypress" />
 
 import { ConfigurableWebComponent } from "../../../../../src/wclib";
-import { TestGlobalProperties } from "./hierarchy-manager.fixture";
+import { TestGlobalProperties } from "./fixtures/standard/hierarchy-manager.fixture";
 import { expectMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "../elements/parent-element";
 import { TestElement } from "../elements/test-element";
 import { RootElement } from "./elements/root-element";
+import { getFixture } from "../../../lib/testing";
 
 function getAllElements() {
 	return cy.get('root-element')
@@ -47,7 +48,7 @@ function assertDefaultProps(element: RootElement|TestElement|ParentElement) {
 
 context('Hierarchy-Manager', function() {
 	before(() => {
-		cy.visit('http://localhost:1251/test/usage/integration/classes/hierarchy-manager/hierarchy-manager.fixture.html');
+		cy.visit(getFixture('hierarchy-manager'));
 	});
 
 	context('Properties/Methods', () => {

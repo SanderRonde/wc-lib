@@ -6,6 +6,7 @@ import { TestWindow, TestElement } from "../elements/test-element";
 import { WebComponentI18NManager } from "../../../../../src/wclib";
 import { LangElement } from "./elements/test-lang-element";
 import { ParentElement } from "../elements/parent-element";
+import { getFixture } from "../../../lib/testing";
 
 interface I18NTestWindow extends Window {
 	WebComponentI18NManager: typeof WebComponentI18NManager;
@@ -35,15 +36,9 @@ function getRootChildren() {
 		});
 }
 
-const URL_PREFIX = 'http://localhost:1251/test/usage/integration/classes/i18n-manager/fixtures';
-
-function fixture(name: string) {
-	return `${URL_PREFIX}/${name}/i18n-manager.fixture.html`;
-}
-
 context('I18n-Manager', function() {
 	before(() => {
-		cy.visit(fixture('standard'), {
+		cy.visit(getFixture('i18n-manager'), {
 				onBeforeLoad(win) {
 					delete win.fetch;
 				}
@@ -105,7 +100,7 @@ context('I18n-Manager', function() {
 		cy.route('test/usage/fixtures/i18n/en.json', '@i18n-en').as('getLangEn');
 		cy.route('test/usage/fixtures/i18n/nl.json', '@i18n-nl').as('getLangNl');
 
-		cy.visit(fixture('standard'), {
+		cy.visit(getFixture('i18n-manager'), {
 			onBeforeLoad(win) {
 				delete win.fetch;
 			}
@@ -129,7 +124,7 @@ context('I18n-Manager', function() {
 			});
 		});
 		it('can set the language by setting prop_lang on the root', () => {
-			cy.visit(fixture('root'));
+			cy.visit(getFixture('i18n-manager', 'root'));
 			cy.get('root-element')
 				.then(([el]: JQuery<RootElement>) => {
 					expect(el.getLang()).to.be.equal('test',
@@ -143,7 +138,7 @@ context('I18n-Manager', function() {
 			});
 		});
 		it('will adapt to the global language when placed in a root', () => {
-			cy.visit(fixture('root'));
+			cy.visit(getFixture('i18n-manager', 'root'));
 			cy.document().then((document) => {
 				const el = document.createElement('test-element') as TestElement;
 				cy.get('root-element')	
@@ -210,7 +205,7 @@ context('I18n-Manager', function() {
 			});
 		});
 		after(() => {
-			cy.visit(fixture('standard'), {
+			cy.visit(getFixture('i18n-manager'), {
 				onBeforeLoad(win) {
 					delete win.fetch;
 				}
@@ -229,7 +224,7 @@ context('I18n-Manager', function() {
 			cy.route('test/usage/fixtures/i18n/en.json', '@i18n-en').as('getLangEn');
 			cy.route('test/usage/fixtures/i18n/nl.json', '@i18n-nl').as('getLangNl');
 
-			cy.visit(fixture('standard'), {
+			cy.visit(getFixture('i18n-manager'), {
 				onBeforeLoad(win) {
 					delete win.fetch;
 				}
@@ -372,7 +367,7 @@ context('I18n-Manager', function() {
 			cy.server();
 			cy.route('test/usage/fixtures/i18n/en.json', '@i18n-en').as('i18n-flat');
 	
-			cy.visit(fixture('defaults'), {
+			cy.visit(getFixture('i18n-manager', 'defaults'), {
 				onBeforeLoad(win) {
 					delete win.fetch;
 				}

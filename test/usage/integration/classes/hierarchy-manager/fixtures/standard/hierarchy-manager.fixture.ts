@@ -1,4 +1,4 @@
-import { RootElement } from "./elements/root-element.js";
+import { RootElement } from "../../elements/root-element.js";
 
 RootElement.define();
 

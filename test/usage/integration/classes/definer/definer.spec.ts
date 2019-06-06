@@ -4,6 +4,7 @@ import { expectMethodExists, expectPropertyExists } from "../../../lib/assertion
 import { TestParentWindow } from "../elements/parent-element";
 import { DefineMetadata } from "../../../../../src/wclib";
 import { TestWindow } from "../elements/test-element";
+import { getFixture } from "../../../lib/testing";
 
 interface DefineMetaDataWindow extends Window {
 	DefineMetadata: typeof DefineMetadata;
@@ -11,7 +12,7 @@ interface DefineMetaDataWindow extends Window {
 
 context('Definer', function() {
 	before(() => {
-		cy.visit('http://localhost:1251/test/usage/integration/classes/definer/definer.fixture.html');
+		cy.visit(getFixture('definer'));
 	});
 
 	context('Properties/Methods', () => {
@@ -33,7 +34,7 @@ context('Definer', function() {
 	});
 	context('Defining', () => {
 		beforeEach(() => {
-			cy.visit('http://localhost:1251/test/usage/integration/classes/definer/definer.fixture.html');
+			cy.visit(getFixture('definer'));
 		});
 		it('defines the component when calling #define', () => {
 			cy.window().then((window: TestParentWindow) => {
@@ -76,7 +77,7 @@ context('Definer', function() {
 			});
 		});
 		it('falls back to webkitRequestAnimationFrame if requestAnimationFrame is not available', () => {
-			cy.visit('http://localhost:1251/test/usage/integration/classes/definer/definer.fixture.html', {
+			cy.visit(getFixture('definer'), {
 				onBeforeLoad(win) {
 					delete win.requestAnimationFrame;
 				}
@@ -99,7 +100,7 @@ context('Definer', function() {
 			});
 		});
 		it('falls back to sync implementation if requestAnimationFrame is not available', () => {
-			cy.visit('http://localhost:1251/test/usage/integration/classes/definer/definer.fixture.html', {
+			cy.visit(getFixture('definer'), {
 				onBeforeLoad(win) {
 					delete win.requestAnimationFrame;
 					delete win.webkitRequestAnimationFrame;
@@ -125,7 +126,7 @@ context('Definer', function() {
 	});
 	context('Metadata', () => {
 		beforeEach(() => {
-			cy.visit('http://localhost:1251/test/usage/integration/classes/definer/definer.fixture.html');
+			cy.visit(getFixture('definer'));
 		});
 		it('has defined 0 elements initially', () => {
 			cy.window().then((window: DefineMetaDataWindow) => {

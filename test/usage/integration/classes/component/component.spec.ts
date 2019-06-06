@@ -3,10 +3,11 @@
 import { LifecycleElement } from "./elements/lifecycle-element.js";
 import { expectMethodExists } from "../../../lib/assertions.js";
 import { TestElement } from "../elements/test-element";
+import { getFixture } from "../../../lib/testing.js";
 
 context('Component', function() {
 	before(() => {
-		cy.visit('http://localhost:1251/test/usage/integration/classes/component/component.fixture.html');
+		cy.visit(getFixture('component'));
 	});
 
 	context('Properties/Methods', () => {
@@ -57,7 +58,7 @@ context('Component', function() {
 
 	context('Lifecycle Events', () => {
 		beforeEach(() => {
-			cy.visit('http://localhost:1251/test/usage/integration/classes/component/component.fixture.html');
+			cy.visit(getFixture('component'));
 		});
 
 		it('sets isMounted to true when the component is mounted', () => {
@@ -151,7 +152,7 @@ context('Component', function() {
 	});
 	context('ListenProp', () => {
 		beforeEach(() => {
-			cy.visit('http://localhost:1251/test/usage/integration/classes/component/component.fixture.html');
+			cy.visit(getFixture('component'));
 		});
 
 		it('allows listening for property change events', () => {
@@ -360,7 +361,7 @@ context('Component', function() {
 		});
 		context('No-Proxy', () => {
 			beforeEach(() => {
-				cy.visit('http://localhost:1251/test/usage/integration/classes/component/component.fixture.html', {
+				cy.visit(getFixture('component'), {
 					onBeforeLoad(win) {
 						delete (win as any).Proxy;
 					}

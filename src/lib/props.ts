@@ -210,7 +210,7 @@ type DefinePropTypes = PROP_TYPE|ComplexType<any>;
 interface DefineTypeConfig {
 	type: DefinePropTypes;
 }
-interface DefinePropTypeConfig extends DefineTypeConfig {
+export interface DefinePropTypeConfig extends DefineTypeConfig {
 	watch?: boolean;
 	defaultValue?: GetTSType<this['type']>;
 	value?: GetTSType<this['type']>;

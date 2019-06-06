@@ -790,13 +790,15 @@ namespace PropsDefiner {
 				} = this._getConfig();
 				if (type !== complex) {
 					this._rep.propValues[mapKey] = watchValue(createQueueRenderFn(this._rep.component), 
-						getter(this._rep.component, propName, strict, type) as any, 
+						this._rep.component.hasAttribute(propName) ?
+							getter(this._rep.component, propName, strict, type) as any : undefined,
 						watch, watchProperties);
 				} else {
 					await hookIntoConnect(this._rep.component as any, () => {
 						if (!isPrivate || this._rep.component.getAttribute(propName) !== '_') {
 							this._rep.propValues[mapKey] = watchValue(createQueueRenderFn(this._rep.component), 
-								getter(this._rep.component, propName, strict, type) as any, 
+								this._rep.component.hasAttribute(propName) ?
+									getter(this._rep.component, propName, strict, type) as any : undefined,
 								watch, watchProperties);
 						}
 					});

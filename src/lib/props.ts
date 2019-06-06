@@ -720,6 +720,7 @@ namespace PropsDefiner {
 				const { mapKey, isPrivate, strict, type, key, propName } = this._getConfig();
 
 				//TODO: read properties from component itself instead of .props object
+				if (mapKey in this._rep.component) return;
 				Object.defineProperty(this._rep.component, mapKey, {
 					get() {
 						if (isPrivate) {

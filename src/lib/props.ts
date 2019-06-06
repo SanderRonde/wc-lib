@@ -384,6 +384,8 @@ function dashesToCasing(name: string) {
 		return cached;
 	}
 
+	if (name.indexOf('-') === -1) return name;
+
 	let newStr = '';
 	for (let i = 0; i < name.length; i++) {
 		if (name[i] === '-') {

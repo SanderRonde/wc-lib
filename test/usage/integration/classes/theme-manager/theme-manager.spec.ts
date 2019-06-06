@@ -3,7 +3,7 @@
 import { ThemedElement, ThemedElementParent } from "./elements/themed-element.js";
 import { TestElement, TestWindow } from "../elements/test-element";
 import { expectMethodExists } from "../../../lib/assertions.js";
-import { getFixture } from "../../../lib/testing.js";
+import { getClassFixture } from "../../../lib/testing.js";
 
 export interface TestTheme {
 	color1: string;
@@ -51,7 +51,7 @@ function getDeepThemedElements() {
 
 context('Theme Manager', function() {
 	before(() => {
-		cy.visit(getFixture('theme-manager'));
+		cy.visit(getClassFixture('theme-manager'));
 	});
 
 	context('Properties/Methods', () => {

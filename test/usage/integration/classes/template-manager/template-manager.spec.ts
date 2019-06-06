@@ -4,16 +4,16 @@ import { ComplexElement, EventTriggeringElement, BooleanElement, ComplexReceiver
 import { TestElement, TestWindow } from "../elements/test-element";
 import { expectMethodExists } from "../../../lib/assertions.js";
 import { CHANGE_TYPE } from "../../../../../src/wclib";
-import { getFixture } from "../../../lib/testing";
+import { getClassFixture } from "../../../lib/testing";
 
 context('Template Manager', function() {
 	before(() => {
-		cy.visit(getFixture('template-manager'));
+		cy.visit(getClassFixture('template-manager'));
 	});
 
 	context('Init', () => {
 		before(() => {
-			cy.visit(getFixture('template-manager', 'wrong'));
+			cy.visit(getClassFixture('template-manager', 'wrong'));
 		});
 		it('gives a warning if the templater is not initialized', () => {
 			cy.document().then((document) => {
@@ -29,7 +29,7 @@ context('Template Manager', function() {
 		});
 
 		after(() => {
-			cy.visit(getFixture('template-manager'));
+			cy.visit(getClassFixture('template-manager'));
 		});
 	});
 
@@ -59,7 +59,7 @@ context('Template Manager', function() {
 	context('Attributes', () => {
 		context('Event handler', () => {
 			beforeEach(() => {
-				cy.visit(getFixture('template-manager'));
+				cy.visit(getClassFixture('template-manager'));
 			});
 
 			it('fires the handler when a listened-to event is fired', () => {
@@ -87,7 +87,7 @@ context('Template Manager', function() {
 		});
 		context('Custom Event Handler', () => {
 			beforeEach(() => {
-				cy.visit(getFixture('template-manager'));
+				cy.visit(getClassFixture('template-manager'));
 			});
 
 			it('fires the handler when a custom event is fired', () => {

@@ -2,11 +2,11 @@
 
 import { expectMethodExists } from "../../../lib/assertions.js";
 import { TestElement } from "../elements/test-element";
-import { getFixture } from "../../../lib/testing.js";
+import { getClassFixture } from "../../../lib/testing.js";
 
 context('Custom CSS Manager', function() {
 	before(() => {
-		cy.visit(getFixture('custom-css-manager'));
+		cy.visit(getClassFixture('custom-css-manager'));
 	});
 
 	context('Properties/Methods', () => {

@@ -2,11 +2,11 @@
 
 import { expectMethodExists } from "../../../lib/assertions";
 import { TestElement } from "../elements/test-element";
-import { getFixture } from "../../../lib/testing";
+import { getClassFixture } from "../../../lib/testing";
 
 context('Listener', function() {
 	before(() => {
-		cy.visit(getFixture('listener'));
+		cy.visit(getClassFixture('listener'));
 	});
 
 	context('Properties/Methods', () => {

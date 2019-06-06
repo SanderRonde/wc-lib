@@ -3,7 +3,7 @@
 import { expectPropertyExists, expectPrivatePropertyExists, expectMethodExists } from "../../../lib/assertions";
 import { TestElement, TestElementBase, RenderTestWindow } from "./elements/test-element";
 import { CHANGE_TYPE, TemplateFnLike } from "../../../../../src/wclib";
-import { getFixture } from "../../../lib/testing";
+import { getClassFixture } from "../../../lib/testing";
 
 function assertTemplate(template: TemplateFnLike) {
 	expectPrivatePropertyExists(template, '_template');
@@ -21,7 +21,7 @@ function assertTemplate(template: TemplateFnLike) {
 
 context('Base', function() {
 	before(() => {
-		cy.visit(getFixture('base'));
+		cy.visit(getClassFixture('base'));
 	});
 
 	context('Mounting', () => {
@@ -112,7 +112,7 @@ context('Base', function() {
 
 	context('Rendering', () => {
 		beforeEach(() => {
-			cy.visit(getFixture('base'));
+			cy.visit(getClassFixture('base'));
 		});
 
 		it('re-renders the element when a property is changed', () => {

@@ -3,11 +3,11 @@
 import { LifecycleElement } from "./elements/lifecycle-element.js";
 import { expectMethodExists } from "../../../lib/assertions.js";
 import { TestElement } from "../elements/test-element";
-import { getFixture } from "../../../lib/testing.js";
+import { getClassFixture } from "../../../lib/testing.js";
 
 context('Component', function() {
 	before(() => {
-		cy.visit(getFixture('component'));
+		cy.visit(getClassFixture('component'));
 	});
 
 	context('Properties/Methods', () => {
@@ -58,7 +58,7 @@ context('Component', function() {
 
 	context('Lifecycle Events', () => {
 		beforeEach(() => {
-			cy.visit(getFixture('component'));
+			cy.visit(getClassFixture('component'));
 		});
 
 		it('sets isMounted to true when the component is mounted', () => {
@@ -152,7 +152,7 @@ context('Component', function() {
 	});
 	context('ListenProp', () => {
 		beforeEach(() => {
-			cy.visit(getFixture('component'));
+			cy.visit(getClassFixture('component'));
 		});
 
 		it('allows listening for property change events', () => {
@@ -361,7 +361,7 @@ context('Component', function() {
 		});
 		context('No-Proxy', () => {
 			beforeEach(() => {
-				cy.visit(getFixture('component'), {
+				cy.visit(getClassFixture('component'), {
 					onBeforeLoad(win) {
 						delete (win as any).Proxy;
 					}

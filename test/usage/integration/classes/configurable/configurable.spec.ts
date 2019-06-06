@@ -4,11 +4,11 @@ import { TestConfiguredWindow, ConfiguredElement } from "./elements/configured-e
 import { TestExtendedWindow, ExtendedElement } from "./elements/extended-element.js";
 import { expectPropertyExists } from "../../../lib/assertions.js";
 import { TestMixinsWindow } from "./elements/mixins.js";
-import { getFixture } from "../../../lib/testing.js";
+import { getClassFixture } from "../../../lib/testing.js";
 
 context('Configurable Component', function() {
 	before(() => {
-		cy.visit(getFixture('configurable'));
+		cy.visit(getClassFixture('configurable'));
 	});
 
 	context('Correct Configuration', () => {

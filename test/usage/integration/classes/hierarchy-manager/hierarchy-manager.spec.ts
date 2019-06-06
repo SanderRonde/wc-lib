@@ -6,7 +6,7 @@ import { expectMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "../elements/parent-element";
 import { TestElement } from "../elements/test-element";
 import { RootElement } from "./elements/root-element";
-import { getFixture } from "../../../lib/testing";
+import { getClassFixture } from "../../../lib/testing";
 
 function getAllElements() {
 	return cy.get('root-element')
@@ -48,7 +48,7 @@ function assertDefaultProps(element: RootElement|TestElement|ParentElement) {
 
 context('Hierarchy-Manager', function() {
 	before(() => {
-		cy.visit(getFixture('hierarchy-manager'));
+		cy.visit(getClassFixture('hierarchy-manager'));
 	});
 
 	context('Properties/Methods', () => {

@@ -684,7 +684,7 @@ namespace PropsDefiner {
 					strict = false,
 					isPrivate = false,
 					watchProperties = [],
-					reflectToSelf = false
+					reflectToSelf = true
 				} = getDefinePropConfig(value);
 				return {
 					watch, coerce, type, strict, 

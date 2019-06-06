@@ -19,10 +19,12 @@ export interface TestConfiguredWindow extends Window {
 			UnsetHTML: typeof UnsetHTML;
 			UnsetHTML2: typeof UnsetHTML2;
 			NonTemplateHTML: typeof NonTemplateHTML;
+			FalsyTemplateHTML: typeof FalsyTemplateHTML;
 			TemplateLikeHTML: typeof TemplateLikeHTML;
 			MissingCSS: typeof MissingCSS;
 			NonTemplateCSS: typeof NonTemplateCSS;
 			WrongArrayCSS: typeof WrongArrayCSS;
+			FalsyArrayCSS: typeof FalsyArrayCSS;
 			ArrayCSS: typeof ArrayCSS;
 		}
 	}
@@ -132,6 +134,15 @@ class UnsetHTML2 extends ConfigurableWebComponent { }
 } as any)
 class NonTemplateHTML extends ConfigurableWebComponent { }
 
+@config({
+	is: 'falsy-template-html',
+	html: false,
+	css: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	dependencies: [],
+	mixins: []
+} as any)
+class FalsyTemplateHTML extends ConfigurableWebComponent { }
+
 class TemplateLike implements TemplateFnLike {
 	constructor(public changeOn: number) {}
 
@@ -190,6 +201,15 @@ class NonTemplateCSS extends ConfigurableWebComponent { }
 class WrongArrayCSS extends ConfigurableWebComponent { }
 
 @config({
+	is: 'falsy-array-css',
+	html: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
+	css: [false, false],
+	dependencies: [],
+	mixins: []
+} as any)
+class FalsyArrayCSS extends ConfigurableWebComponent { }
+
+@config({
 	is: 'array-css',
 	html: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
 	css: [
@@ -221,9 +241,11 @@ window.configured = {
 		UnsetHTML2,
 		NonTemplateHTML,
 		TemplateLikeHTML,
+		FalsyTemplateHTML,
 		MissingCSS,
 		NonTemplateCSS,
 		WrongArrayCSS,
+		FalsyArrayCSS,
 		ArrayCSS
 	}
 };

@@ -191,6 +191,14 @@ context('Configurable Component', function() {
 						'instance of the TemplateFn class');
 				});
 			});
+			it('throws an error when .html is falsy', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					expect(() => {
+						window.configured.wrongClasses.FalsyTemplateHTML.define();
+					}).to.throw('Component\'s html template should be an ' +
+						'instance of the TemplateFn class');
+				});
+			});
 			it('does not throw an error if template is a templateFn-like', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
@@ -218,6 +226,15 @@ context('Configurable Component', function() {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
 						window.configured.wrongClasses.WrongArrayCSS.define();
+					}).to.throw(
+						'Component\'s css template should be an instance of ' +
+						'the TemplateFn class or an array of them');
+				});
+			});
+			it('throws an error when .css is an array falsy values', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					expect(() => {
+						window.configured.wrongClasses.FalsyArrayCSS.define();
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');
@@ -303,6 +320,14 @@ context('Configurable Component', function() {
 						'instance of the TemplateFn class');
 				});
 			});
+			it('throws an error when .html is falsy', () => {
+				cy.window().then((window: TestExtendedWindow) => {
+					expect(() => {
+						window.extended.wrongClasses.FalsyTemplateHTML.define();
+					}).to.throw('Component\'s html template should be an ' +
+						'instance of the TemplateFn class');
+				});
+			});
 			it('does not throw an error if template is a templateFn-like', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
@@ -342,10 +367,10 @@ context('Configurable Component', function() {
 					}).to.not.throw;
 				});
 			});
-			it('throws an error when .css is an array of non-templates', () => {
+			it('throws an error when .css is an array falsy values', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.WrongArrayCSS.define();
+						window.extended.wrongClasses.FalsyArrayCSS.define();
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');

@@ -19,10 +19,12 @@ export interface TestExtendedWindow extends Window {
 			UnsetHTML: typeof UnsetHTML;
 			UnsetHTML2: typeof UnsetHTML2;
 			NonTemplateHTML: typeof NonTemplateHTML;
+			FalsyTemplateHTML: typeof FalsyTemplateHTML;
 			TemplateLikeHTML: typeof TemplateLikeHTML;
 			MissingCSS: typeof MissingCSS;
 			NonTemplateCSS: typeof NonTemplateCSS;
 			WrongArrayCSS: typeof WrongArrayCSS;
+			FalsyArrayCSS: typeof FalsyArrayCSS;
 			ArrayCSS: typeof ArrayCSS;
 			MissingSelf: typeof MissingSelf;
 		}
@@ -165,6 +167,18 @@ class NonTemplateHTML extends WebComponent {
 	}
 }
 
+class FalsyTemplateHTML extends WebComponent { 
+	static is = 'falsy-template-html';
+	static html = false as any;
+	static css = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static dependencies = [];
+	static mixins = [];
+
+	get self() {
+		return FalsyTemplateHTML;
+	}
+}
+
 class TemplateLike implements TemplateFnLike {
 	constructor(public changeOn: number) {}
 
@@ -234,6 +248,18 @@ class WrongArrayCSS extends WebComponent {
 	}
 }
 
+class FalsyArrayCSS extends WebComponent { 
+	static is = 'falsy-array-css';
+	static html = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
+	static css = [false, false, false] as any;
+	static dependencies = [];
+	static mixins = [];
+
+	get self() {
+		return FalsyArrayCSS;
+	}
+}
+
 class ArrayCSS extends WebComponent { 
 	static is = 'array-css';
 	static html = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
@@ -289,10 +315,12 @@ window.extended = {
 		UnsetHTML,
 		UnsetHTML2,
 		NonTemplateHTML,
+		FalsyTemplateHTML,
 		TemplateLikeHTML,
 		MissingCSS,
 		NonTemplateCSS,
 		WrongArrayCSS,
+		FalsyArrayCSS,
 		ArrayCSS,
 		MissingSelf
 	}

@@ -44,7 +44,7 @@ context('Custom CSS Manager', function() {
 							'Attempting to use non TemplateFn value for custom-css property');
 					});
 					document.body.appendChild(document.createElement('wrong-custom-css-element'));
-					cy.wrap(stub).should('be.calledOnce');
+					cy.wrap(stub).should('be.calledTwice');
 				});
 			});
 		});

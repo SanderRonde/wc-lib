@@ -26,6 +26,7 @@ export class CustomCSSElement extends ConfigurableWebComponent {
 	html: new TemplateFn<WrongCustomCSSElement>((html) => {
 		return html`
 			<test-element custom-css="${{}}"></test-element>
+			<test-element custom-css="${false}"></test-element>
 		`;
 	}, CHANGE_TYPE.NEVER, render),
 	dependencies: [

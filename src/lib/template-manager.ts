@@ -154,11 +154,11 @@ function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfi
 				console.warn('Attempting to listen using webcomponent listener on non-webcomponent element',
 					`Name: ${this.eventName}, element:`, this.element);
 			}
-			if (shouldRemoveListener) {
+			if (shouldRemoveListener && 'clearListener' in this.element) {
 				(<WebComponentThemeManger<any>>this.element)
 					.clearListener(this.eventName);
 			}
-			if (shouldAddListener) {
+			if (shouldAddListener && 'listen' in this.element) {
 				(<WebComponentThemeManger<any>>this.element)
 					.listen(this.eventName, this.handleEvent.bind(this));
 			}

@@ -3,14 +3,16 @@
 import { expectMethodExists, expectPropertyExists } from "../../../lib/assertions";
 import { TestParentWindow } from "../elements/parent-element";
 import { DefineMetadata } from "../../../../../src/wclib";
-import { TestWindow } from "../elements/test-element";
 import { getClassFixture } from "../../../lib/testing";
+import { TestWindow } from "../elements/test-element";
+import { SLOW } from "../../../lib/timing.js";
 
 interface DefineMetaDataWindow extends Window {
 	DefineMetadata: typeof DefineMetadata;
 }
 
 context('Definer', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('definer'));
 	});

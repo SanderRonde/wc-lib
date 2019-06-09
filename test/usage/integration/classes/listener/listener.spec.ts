@@ -3,8 +3,10 @@
 import { expectMethodExists } from "../../../lib/assertions";
 import { TestElement } from "../elements/test-element";
 import { getClassFixture } from "../../../lib/testing";
+import { SLOW } from "../../../lib/timing.js";
 
 context('Listener', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('listener'));
 	});

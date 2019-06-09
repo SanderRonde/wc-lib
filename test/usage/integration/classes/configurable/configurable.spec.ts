@@ -3,10 +3,12 @@
 import { TestConfiguredWindow, ConfiguredElement } from "./elements/configured-element.js";
 import { TestExtendedWindow, ExtendedElement } from "./elements/extended-element.js";
 import { expectPropertyExists } from "../../../lib/assertions.js";
-import { TestMixinsWindow } from "./elements/mixins.js";
 import { getClassFixture } from "../../../lib/testing.js";
+import { TestMixinsWindow } from "./elements/mixins.js";
+import { SLOW } from "../../../lib/timing.js";
 
 context('Configurable Component', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('configurable'));
 	});

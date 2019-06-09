@@ -1,10 +1,12 @@
 /// <reference types="Cypress" />
 
 import { expectMethodExists } from "../../../lib/assertions.js";
-import { TestElement } from "../elements/test-element";
 import { getClassFixture } from "../../../lib/testing.js";
+import { TestElement } from "../elements/test-element";
+import { SLOW } from "../../../lib/timing.js";
 
 context('Custom CSS Manager', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('custom-css-manager'));
 	});

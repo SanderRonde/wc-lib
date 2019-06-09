@@ -7,6 +7,7 @@ import { WebComponentI18NManager } from "../../../../../src/wclib";
 import { LangElement } from "./elements/test-lang-element";
 import { ParentElement } from "../elements/parent-element";
 import { getClassFixture } from "../../../lib/testing";
+import { SLOW } from "../../../lib/timing.js";
 
 interface I18NTestWindow extends Window {
 	WebComponentI18NManager: typeof WebComponentI18NManager;
@@ -37,6 +38,7 @@ function getRootChildren() {
 }
 
 context('I18n-Manager', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('i18n-manager'), {
 				onBeforeLoad(win) {

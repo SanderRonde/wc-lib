@@ -5,8 +5,10 @@ import { TestElement, TestWindow } from "../elements/test-element";
 import { expectMethodExists } from "../../../lib/assertions.js";
 import { CHANGE_TYPE } from "../../../../../src/wclib";
 import { getClassFixture } from "../../../lib/testing";
+import { SLOW } from "../../../lib/timing.js";
 
 context('Template Manager', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('template-manager'));
 	});

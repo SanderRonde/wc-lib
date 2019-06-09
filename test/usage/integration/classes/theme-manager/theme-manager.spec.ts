@@ -4,6 +4,7 @@ import { ThemedElement, ThemedElementParent } from "./elements/themed-element.js
 import { TestElement, TestWindow } from "../elements/test-element";
 import { expectMethodExists } from "../../../lib/assertions.js";
 import { getClassFixture } from "../../../lib/testing.js";
+import { SLOW } from "../../../lib/timing.js";
 
 export interface TestTheme {
 	color1: string;
@@ -50,6 +51,7 @@ function getDeepThemedElements() {
 }
 
 context('Theme Manager', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('theme-manager'));
 	});

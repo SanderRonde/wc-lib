@@ -4,6 +4,7 @@ import { expectPropertyExists, expectPrivatePropertyExists, expectMethodExists }
 import { TestElement, TestElementBase, RenderTestWindow } from "./elements/test-element";
 import { CHANGE_TYPE, TemplateFnLike } from "../../../../../src/wclib";
 import { getClassFixture } from "../../../lib/testing";
+import { SLOW } from "../../../lib/timing.js";
 
 function assertTemplate(template: TemplateFnLike) {
 	expectPrivatePropertyExists(template, '_template');
@@ -20,6 +21,7 @@ function assertTemplate(template: TemplateFnLike) {
 }
 
 context('Base', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('base'));
 	});

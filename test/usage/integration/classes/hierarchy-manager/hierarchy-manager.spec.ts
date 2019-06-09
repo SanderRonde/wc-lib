@@ -4,9 +4,10 @@ import { ConfigurableWebComponent } from "../../../../../src/wclib";
 import { TestGlobalProperties } from "./fixtures/standard/hierarchy-manager.fixture";
 import { expectMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "../elements/parent-element";
+import { getClassFixture } from "../../../lib/testing";
 import { TestElement } from "../elements/test-element";
 import { RootElement } from "./elements/root-element";
-import { getClassFixture } from "../../../lib/testing";
+import { SLOW } from "../../../lib/timing.js";
 
 function getAllElements() {
 	return cy.get('root-element')
@@ -47,6 +48,7 @@ function assertDefaultProps(element: RootElement|TestElement|ParentElement) {
 }
 
 context('Hierarchy-Manager', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('hierarchy-manager'));
 	});

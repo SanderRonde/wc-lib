@@ -2,10 +2,12 @@
 
 import { LifecycleElement } from "./elements/lifecycle-element.js";
 import { expectMethodExists } from "../../../lib/assertions.js";
-import { TestElement } from "../elements/test-element";
 import { getClassFixture } from "../../../lib/testing.js";
+import { TestElement } from "../elements/test-element";
+import { SLOW } from "../../../lib/timing.js";
 
 context('Component', function() {
+	this.slow(SLOW);
 	before(() => {
 		cy.visit(getClassFixture('component'));
 	});

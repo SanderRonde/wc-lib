@@ -58,9 +58,9 @@ class HierarchyClass {
 		for (let i = 0; i < this._self.attributes.length; i++) {
 			const attr = this._self.attributes[i];
 			if (attr.name.startsWith('prop_')) {
-				props[attr.name.slice('prop_'.length)] = 
+				(props as G)[attr.name.slice('prop_'.length) as keyof G] = 
 					decodeURIComponent(
-						attr.value as string);
+						attr.value as string) as G[keyof G];
 			}
 		}
 

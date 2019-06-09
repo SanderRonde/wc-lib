@@ -694,11 +694,11 @@ namespace PropsDefiner {
 			}>) {
 				const { key } = this._propertyConfig;
 				const { 
-					watch = true,
-					coerce = false,
+					watch,
+					coerce,
 					type: mapType,
-					strict = false,
-					isPrivate = false,
+					strict,
+					isPrivate,
 				} = this._getConfig();
 
 				keyMap.set(key, {

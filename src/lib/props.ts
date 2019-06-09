@@ -503,19 +503,10 @@ namespace PropsDefiner {
 	const renderMap: WeakMap<PropComponent, CHANGE_TYPE> = new WeakMap();
 
 	function queueRender(element: PropComponent, changeType: CHANGE_TYPE) {
-		if (renderMap.has(element)) {
-			const mapped = renderMap.get(element);
-			//Check if this change type has higher priority
-			if (mapped && mapped & CHANGE_TYPE.ALWAYS) return;
-			if (mapped !== changeType) {
-				//It's either theme & prop or prop & theme,
-				// change it to always render
-				renderMap.set(element, CHANGE_TYPE.ALWAYS);
-			}
-			return;
+		if (!renderMap.has(element)) {
+			renderMap.set(element, changeType);
 		}
 
-		renderMap.set(element, changeType);
 		setTimeout(() => {
 			element.renderToDOM(renderMap.get(element)!);
 			renderMap.delete(element);

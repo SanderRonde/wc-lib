@@ -401,7 +401,7 @@ function dashesToCasing(name: string) {
 
 //TODO: test upper to lowercase conversion
 function casingToDashes(name: string) {
-	if (!/A-Z/.test(name)) return name;
+	if (!/[A-Z]/.test(name)) return name;
 
 	let newStr = '';
 	for (const char of name) {

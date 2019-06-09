@@ -9,5 +9,7 @@
   "videosFolder": "temp/videos",
   "ignoreTestFiles": "*.{ts,map,html,json,bundled.js}",
   "chromeWebSecurity": false,
-  "testFiles": "**/*.spec.js"
+  "testFiles": "**/*.spec.js",
+  "video": true,
+  "watchForFileChanges": true
 }

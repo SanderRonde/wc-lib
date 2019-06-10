@@ -1,4 +1,12 @@
+export function getFixture(dir: string, suiteName: string, fixtureName: string = 'standard') {
+	return `http://localhost:1251/test/usage/integration/${dir}/${
+		suiteName}/fixtures/${fixtureName}/${suiteName}.fixture.html`;
+}
+
 export function getClassFixture(className: string, fixtureName: string = 'standard') {
-	return `http://localhost:1251/test/usage/integration/classes/${
-		className}/fixtures/${fixtureName}/${className}.fixture.html`
+	return getFixture('classes', className, fixtureName);
+}
+
+export function getPropertyFixture(suiteName: string, fixtureName: string = 'standard') {
+	return getFixture('properties', suiteName, fixtureName);
 }

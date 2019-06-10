@@ -212,7 +212,7 @@ context('Template Manager', function() {
 			it('does not set boolean attribute if value is falsy', () => {
 				cy.get('#complex')
 					.shadowFind('#booleanTestFalse').then(([el]: JQuery<BooleanElement>) => {
-						expect(el.props.bool).to.be.undefined;
+						expect(el.props.bool).to.be.false;
 					});
 			});
 		});

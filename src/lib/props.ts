@@ -26,29 +26,26 @@ function getterWithVal<R>(component: {
 function getterWithVal<R>(component: {
 	getParentRef(ref: string): any;
 }, value: string|null, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R {
-	//TODO: test boolean property
-	//TODO: test boolean property with strict mode enabled
 	if (type === 'bool') {
 		if (strict) {
 			return (value + '') === 'true';
 		}
 		return value !== undefined && value !== null && value !== 'false';
 	} else {
+		/* istanbul ignore else */
 		if (value !== undefined && value !== null && value !== 'false') {
 			if (type === 'number') {
-				//TODO: test number props
 				return ~~value;
 			} else if (type === complex) {
 				if (value.startsWith(refPrefix)) {
 					return component.getParentRef(value);
 				} else {
-					//TODO: pass complex values as JSON
 					return JSON.parse(decodeURIComponent(value));
 				}
 			}
-			//TODO: test string props
 			return value;
 		}
+		/* istanbul ignore next */
 		return undefined;
 	}
 }
@@ -92,7 +89,7 @@ export function getter<R>(element: HTMLElement & {
 }
 
 /**
- * Sets the property with name `name`
+ * Sets the attribute with name `name`
  * to `value`
  * 
  * @param {(key: string, val: string) => void} setAttrFn - The
@@ -123,7 +120,6 @@ export function setter(setAttrFn: (key: string, val: string) => void,
 export function setter(setAttrFn: (key: string, val: string) => void, 
 	removeAttrFn: (key: string) => void, name: string, 
 	value: string|boolean|number, type: 'string'|'number'|'bool'|typeof complex): void {
-		//TODO: test setting boolean props as well as other types
 		if (type === 'bool') {
 			const boolVal = value as boolean;
 			if (boolVal) {
@@ -218,7 +214,6 @@ export interface DefinePropTypeConfig extends DefineTypeConfig {
 	exactType?: any;
 	coerce?: boolean;
 	strict?: boolean;
-	isPrivate?: boolean;
 	reflectToSelf?: boolean;
 }
 
@@ -231,150 +226,256 @@ function getDefinePropConfig(value: DefinePropTypes|DefinePropTypeConfig): Defin
 			coerce: false,
 			watch: true,
 			strict: false,
-			isPrivate: false,
 			reflectToSelf: true,
 			type: value as DefinePropTypes
 		}
 	}
 }
 
-//TODO: test deep proxy
-function createDeepProxy(obj: any, callback: () => void) {
-	const proxy = new Proxy(obj, {
-		set(_obj, prop, value) {
-			if (typeof value === 'object') {
-				value = createDeepProxy(value, callback);
-			}
-			obj[prop] = value;
-			callback();
-			return true;
-		},
-		deleteProperty(_obj, prop) {
-			if (Reflect.has(obj, prop)) {
-				const deleted = Reflect.deleteProperty(obj, prop);
-				callback();
-				return deleted;
-			}
-			return false;
-		}
-	});
-	for (const key of Object.keys(obj)) {
-		createDeepProxy(obj[key], callback);
-	}
-	return proxy;
-}
+namespace Watching {
+	type PathLevel = Map<string|'*'|'**', {
+		name: string|'*'|'**';
+		relevantPaths: string[][];
+		map: PathLevel;
+		watchCurrent: boolean;
+	}>;
 
-function createProxyLevel(obj: any, path: string|'*', nextLevels: (string|'*')[], callback: () => void) {
-	const proxy = new Proxy(obj, {
-		set(_obj, prop, value) {
-			if (path === '*' || prop === path) {
-				if (nextLevels.length && typeof value === 'object') {
-					value = createProxyLevel(value, 
-						nextLevels[0], nextLevels.slice(1), callback);
-				}
-				obj[prop] = value;
-				callback();
-			} else {
-				obj[prop] = value;
+	function genProxyStructureLevel(pathParts: string[][]): PathLevel {
+		const currentLevel: PathLevel = new Map();
+		for (const path of pathParts) {
+			if (!currentLevel.has(path[0])) {
+				currentLevel.set(path[0], {
+					name: path[0],
+					relevantPaths: [],
+					watchCurrent: path.length === 1,
+					map: new Map()
+				});
 			}
-			return true;
-		},
-		deleteProperty(_obj, prop) {
-			if (Reflect.has(obj, prop)) {
-				Reflect.deleteProperty(obj, prop);
-				callback();
+			currentLevel.get(path[0])!.relevantPaths.push(...pathParts);
+		}
+
+		/**
+		 * With inputs x.y and *.y and *.x.y and z.z
+		 * this now gives
+		 * Map{
+		 * 	x: { name: 'x', relevantPaths: ['x.y'], map: Map() }		
+		 *  *: { name: '*', relevantPaths: ['*.y', '*.x.y'], map: Map() }
+		 *  z: { name: 'z', relevantPaths: ['z.z'], map: Map() }
+		 * }
+		 */
+
+		// Now merge the * relevantPaths into others
+		for (const [ name, level ] of currentLevel) {
+			if (name === '*') {
+				// Merge this level's paths into others' paths
+				for (const otherLevel of currentLevel.values()) {
+					if (otherLevel.map === level.map) continue;
+
+					otherLevel.relevantPaths.push(...level.relevantPaths);
+				}
+			}
+		}
+
+		// Dedupe the relevant paths
+		for (const [ , level ] of currentLevel) {
+			level.relevantPaths = level.relevantPaths.filter((val, index) => {
+				return level.relevantPaths.indexOf(val) === index
+			});
+		}
+
+		/**
+		 * With inputs x.y and *.y and *.x.y and z.z
+		 * this now gives
+		 * Map{
+		 *	x: { name: 'x', relevantPaths: ['x.y', '*.y', '*.x.y'], map: Map() }		
+		 *  *: { name: '*', relevantPaths: ['*.y', '*.x.y'], map: Map() }
+		 *  z: { name: 'z', relevantPaths: ['z.z', '*.y', '*.x.y'], map: Map() }
+		 * }
+		 */
+
+		for (const [ , level ] of currentLevel) {
+			level.map = genProxyStructureLevel(
+				level.relevantPaths.map(p => p.slice(1))
+					.filter(p => p.length));
+		}
+
+		return currentLevel;
+	}
+
+	function getProxyStructure(paths: string[]): PathLevel {
+		const pathParts = paths.map(p => p.split('.'));
+
+		for (const path of pathParts) {
+			for (const pathPart of path) {
+				if (pathPart === '**') {
+					const retMap = new Map();
+					retMap.set('**', {
+						name: '**',
+						map: new Map()
+					});
+					return retMap;
+				}
+			}
+		}
+
+		return genProxyStructureLevel(pathParts);
+	}
+
+	function createDeepProxy(obj: any, onAccessed: () => void) {
+		const isArr = Array.isArray(obj);
+
+		const proxy = new Proxy(obj, {
+			set(_obj, prop, value) {
+				const isPropChange = (() => {
+					if (isArr) {
+						if (typeof prop === 'symbol') return true;
+						if (typeof prop === 'number' || !Number.isNaN(parseInt(prop))) {
+							return true;
+						}
+						return false;
+					} else {
+						return true;
+					}
+				})();
+
+				if (isPropChange) {
+					if (typeof value === 'object' && value !== null) {
+						value = createDeepProxy(value, onAccessed);
+					}
+					const oldValue = obj[prop];
+					obj[prop] = value;
+					if (oldValue !== value) {
+						onAccessed();
+					}
+				} else {
+					obj[prop] = value;
+				}
+				return true;
+			},
+			deleteProperty(_obj, prop) {
+				if (Reflect.has(obj, prop)) {
+					const deleted = Reflect.deleteProperty(obj, prop);
+					onAccessed();
+					return deleted;
+				}
 				return true;
 			}
-			return true;
+		});
+		for (const key of Object.keys(obj)) {
+			if (typeof obj[key] === 'object') {
+				obj[key] = createDeepProxy(obj[key], onAccessed);
+			}
 		}
-	});
-	if (nextLevels.length && Reflect.has(obj, path)) {
-		createProxyLevel(obj[path], nextLevels[0], nextLevels.slice(1), callback);
-	}
-	return proxy;
-}
-
-//TODO: test watching of object
-function watchObject(obj: any, path: (string|'*')[], callback: () => void) {
-	if (typeof obj !== 'object' || obj === undefined || obj === null) {
-		return obj;
-	}
-	if (path.indexOf('**') !== -1 && path.length > 1) {
-		throw new Error('Attempting to watch object through ** and more path operators')
-	}
-	if (typeof Proxy === 'undefined') {
-		console.warn('Attempted to watch object while proxy method is not supported');
-		return obj;
+		return proxy;
 	}
 
-	if (path[0] === '**') {
-		return createDeepProxy(obj, callback);
-	} else {
-		return createProxyLevel(obj, path[0], path.slice(1), callback);
-	}
-}
+	function watchObjectLevel(obj: any, level: PathLevel, onAccessed: () => void) {
+		if (!obj) return obj;
 
-//TODO: test watching of array
-function watchArray<T>(arr: T[], path: (string|'*')[], callback: () => void): T[] {
-	if (!Array.isArray(arr) || arr === undefined || arr === null) {
-		return arr;
-	}
-	if (path.indexOf('**') !== -1 && path.length > 1) {
-		throw new Error('Attempting to watch object through ** and more path operators')
-	}
-	if (typeof Proxy === 'undefined') {
-		console.warn('Attempted to watch array while proxy method is not supported');
-		return arr;
-	}
+		const isArr = Array.isArray(obj);
 
-	return new Proxy(arr, {
-		set(arr, property, value) {
-			if (typeof property === 'symbol' ||
-				(typeof property !== 'number' &&
-				!/^\d+$/.test(property))) {
-					arr[property as keyof typeof arr] = value;
-					if (property === 'length') {
-						callback();
+		const proxy = new Proxy(obj, {
+			set(_obj, prop, value) {
+				const isPropChange = (() => {
+					if (isArr) {
+						if (level.has('*')) {
+							if (typeof prop === 'symbol') return true;
+							return typeof prop === 'number' || !Number.isNaN(parseInt(prop));
+						}
+						if (typeof prop !== 'symbol' && level.has(prop + '') && 
+							level.get(prop + '')!.watchCurrent) {
+								return true;
+							}
+						return false;
+					} else {
+						if (typeof prop !== 'symbol') {
+							return ((level.get(prop + '') && level.get(prop + '')!.watchCurrent) ||
+								(level.get('*') && level.get('*')!.watchCurrent));
+						} 
+						return level.has('*') && level.get('*')!.watchCurrent;
 					}
-					return true;
+				})();
+				if (isPropChange) {
+					const nextLevel = (typeof prop !== 'symbol' && level.get(prop + '')) ||
+						level.get('*')!;
+
+					if (nextLevel.map.size && typeof value === 'object') {
+						// Watch this as well
+						value = watchObjectLevel(value, nextLevel.map, onAccessed);
+					}
+
+					const accessProp = (() => {
+						if (isArr) {
+							if (typeof prop === 'symbol') return prop;
+							return parseInt(prop + '');
+						} else {
+							return prop;
+						}
+					})();
+
+					const oldValue = obj[accessProp];
+					obj[accessProp] = value;
+					if (oldValue !== value) {
+						onAccessed();
+					}
+				} else {
+					obj[prop] = value;
 				}
-			const index = ~~property;
-
-			//An item is replaced
-			const isChange = index < arr.length;
-
-			if (path.length === 0) {
-				//Only watch the setting of values
-				arr[index] = value;
-				if (isChange) {
-					callback();
+				return true;
+			},
+			deleteProperty(_obj, prop) {
+				if (Reflect.has(obj, prop)) {
+					const deleted = Reflect.deleteProperty(obj, prop);
+					if (deleted && ((typeof prop !== 'symbol' && (level.has(prop + '')) || level.has('*')))) {
+						onAccessed();
+					}
+					return deleted;
 				}
 				return true;
 			}
-
-			//Watch the values themselves as well
-			arr[index] = watchObject(value, path, callback);
-			if (isChange) {
-				callback();
+		});
+		for (const name of Object.keys(obj)) {
+			if ((level.has(name) || level.has('*')) && typeof obj[name] === 'object') {
+				obj[name] = watchObjectLevel(obj[name], 
+					(level.get(name) || level.get('*')!).map, onAccessed);
 			}
-			return true;
-		},
-		deleteProperty(arr, property) {
-			if (typeof property === 'symbol' ||
-				(typeof property !== 'number' &&
-				!/^\d+$/.test(property))) {
-					if (Reflect.has(arr, property)) {
-						Reflect.deleteProperty(arr, property);
-					}
-					return true;
-				}
-
-			if (Reflect.has(arr, property)) {
-				Reflect.deleteProperty(arr, property);
-			}
-			return true;
 		}
-	});
+		return proxy;
+	}
+
+	function watchObject(obj: any, properties: PathLevel, callback: () => void) {
+		if (typeof obj !== 'object' || obj === undefined || obj === null) {
+			return obj;
+		}
+		if (typeof Proxy === 'undefined') {
+			console.warn('Attempted to watch object while proxy method is not supported');
+			return obj;
+		}
+
+		if (properties.has('**')) {
+			return createDeepProxy(obj, callback);
+		} else {
+			return watchObjectLevel(obj, properties, callback);
+		}
+	}
+
+
+	type QueueRenderFn = (changeType: CHANGE_TYPE) => void;
+
+	export function watchValue(render: QueueRenderFn, value: any, watch: boolean, watchProperties: string[]) {
+		if (typeof value === 'object' && (watch || watchProperties.length > 0)) {
+			value = watchObject(value, watchProperties.length ? 
+					getProxyStructure(watchProperties) : new Map([['*', {
+						name: '*',
+						relevantPaths: [],
+						watchCurrent: true,
+						map: new Map()
+					}]]), () => {
+				render(CHANGE_TYPE.PROP)
+			});
+		}
+		return value;
+	}
 }
 
 const cachedCasing = new Map<string, string>();
@@ -399,7 +500,6 @@ function dashesToCasing(name: string) {
 	return newStr;
 }
 
-//TODO: test upper to lowercase conversion
 function casingToDashes(name: string) {
 	if (!/[A-Z]/.test(name)) return name;
 
@@ -415,7 +515,6 @@ function casingToDashes(name: string) {
 	return newStr;
 }
 
-//TODO: test props with coercion enabled
 function getCoerced(initial: any, mapType: DefinePropTypes) {
 	switch (mapType) {
 		case PROP_TYPE.STRING:
@@ -428,26 +527,11 @@ function getCoerced(initial: any, mapType: DefinePropTypes) {
 	return initial;
 }
 
-type QueueRenderFn = (changeType: CHANGE_TYPE) => void;
-
-function watchValue(render: QueueRenderFn, value: any, watch: boolean, watchProperties: string[]) {
-	if (typeof value === 'object' && !Array.isArray(value) && watchProperties.length > 0) {
-		value = watchObject(value, watchProperties, () => {
-			render(CHANGE_TYPE.PROP)
-		});
-	} else if (watch && Array.isArray(value)) {
-		value = watchArray(value, [], () => {
-			render(CHANGE_TYPE.PROP)
-		});
-	}
-	return value;
-}
-
 const connectMap = new WeakMap<HTMLElement, any>();
 const connectedElements = new WeakSet<HTMLElement>();
 
 export async function awaitConnected(el: WebComponent): Promise<void> {
-	//TODO: call awaitConnected on an already connected element
+	/* istanbul ignore next */
     if (connectedElements.has(el)) return;
     await new Promise(async (resolve) => {
         const arr = connectMap.get(el) || [];
@@ -526,7 +610,7 @@ namespace PropsDefiner {
 			watch: boolean;
 			coerce: boolean;
 			mapType: DefinePropTypes;
-			isPrivate: boolean;
+			reflectToAttr: boolean;
 			strict: boolean;
 		}> = new Map();
 		public propValues: Partial<ReturnType<R, P>> = {};
@@ -577,7 +661,6 @@ namespace PropsDefiner {
 		reflect?: R;
 		priv?: P;
 	}): Keys<R, P> {
-		//TODO: enable/disable private and reflect properties (not just reflect)
 		return [...Object.getOwnPropertyNames(reflect).map((key) => {
 			return {
 				key: key as Extract<keyof R, string>,
@@ -598,7 +681,7 @@ namespace PropsDefiner {
 			const casingKey = dashesToCasing(key) as Extract<keyof R|keyof P, string>;
 			if (el.keyMap.has(casingKey)) {
 				const { 
-					watch, isPrivate, mapType, strict 
+					watch, mapType, strict
 				} = el.keyMap.get(casingKey)!;
 
 				const prevVal = el.propValues[casingKey];
@@ -610,14 +693,8 @@ namespace PropsDefiner {
 				el.propValues[casingKey] = newVal as any;
 				el.component.fire('propChange', casingKey, newVal, prevVal);
 
-				//TODO: test disabling watch
 				if (watch) {
 					queueRender(el.component, CHANGE_TYPE.PROP);
-				}
-				//TODO: test private attributes
-				if (isPrivate) {
-					el.setAttr(casingKey, '_');
-					return;
 				}
 			} else {
 				el.propValues[casingKey] = val as any;
@@ -634,17 +711,24 @@ namespace PropsDefiner {
 					} = el.keyMap.get(casingKey)!;
 
 					const prevVal = el.propValues[casingKey];
-					const newVal = coerce ? getCoerced(undefined, mapType) : undefined;
+					const newVal = (() => {
+						if (coerce) {
+							return getCoerced(undefined, mapType)
+						}
+						if (mapType === PROP_TYPE.BOOL) {
+							return false;
+						}
+						return undefined;
+					})();
 
-					//TODO: test removeAttribute
-					if (prevVal === newVal) return;
+					if (prevVal !== newVal) {
+						el.component.fire('beforePropChange', casingKey, newVal, prevVal);
+						el.propValues[casingKey] = newVal;
+						el.component.fire('propChange', casingKey, newVal, prevVal);
 
-					el.component.fire('beforePropChange', casingKey, newVal, prevVal);
-					el.propValues[casingKey] = newVal;
-					el.component.fire('propChange', casingKey, newVal, prevVal);
-
-					if (watch) {
-						queueRender(el.component, CHANGE_TYPE.PROP);
+						if (watch) {
+							queueRender(el.component, CHANGE_TYPE.PROP);
+						}
 					}
 				}
 				el.removeAttr(key);
@@ -655,17 +739,23 @@ namespace PropsDefiner {
 		composite: boolean;
 	}> = new WeakMap();
 
+	interface PropConfig<R,P> extends Omit<Required<DefinePropTypeConfig>, 'value'|'exactType'> {
+		mapKey: Extract<keyof R|P, string>;
+		key: string;
+		reflectToAttr: boolean;
+		propName: string;
+	}
+
 	class Property<R extends PropTypeConfig, P extends PropTypeConfig, K extends KeyPart<R, true>|KeyPart<P, false>,
 		Z extends ReturnType<R, P>> {
 			constructor(private _propertyConfig: K, private _rep: ElementRepresentation<R, P>,
 				private _props: Props & Partial<Z>) { }
 
-			private _getConfig() {
+			private __getConfig(): PropConfig<P, R> {
 				const { key, value, reflectToAttr } = this._propertyConfig;
-				const mapKey = key as Extract<keyof R|P, string>;
+				const mapKey = key;
 
 				const propName = casingToDashes(mapKey);
-				//TODO: test "defaultValue" instead of "value"
 				const { 
 					watch = true,
 					coerce = false,
@@ -673,24 +763,31 @@ namespace PropsDefiner {
 					value: defaultValue2,
 					type: type,
 					strict = false,
-					isPrivate = false,
 					watchProperties = [],
 					reflectToSelf = true
 				} = getDefinePropConfig(value);
 				return {
 					watch, coerce, type, strict, 
-					isPrivate, watchProperties, reflectToSelf,
-					mapKey, key, reflectToAttr, propName,
+					watchProperties, reflectToSelf,
+					mapKey: mapKey as any, key, reflectToAttr, propName,
 					defaultValue: defaultValue !== undefined ? defaultValue : defaultValue2
 				}
+			}
+
+			private __config: PropConfig<P,R>|null = null;
+			private get _config() {
+				if (this.__config) {
+					return this.__config;
+				}
+				return (this.__config = this.__getConfig());
 			}
 
 			public setKeyMap(keyMap: Map<Extract<keyof R|keyof P, string>, {
 				watch: boolean;
 				coerce: boolean;
 				mapType: DefinePropTypes;
-				isPrivate: boolean;
 				strict: boolean;
+				reflectToAttr: boolean;
 			}>) {
 				const { key } = this._propertyConfig;
 				const { 
@@ -698,26 +795,22 @@ namespace PropsDefiner {
 					coerce,
 					type: mapType,
 					strict,
-					isPrivate,
-				} = this._getConfig();
+					reflectToAttr
+				} = this._config;
 
 				keyMap.set(key, {
-					watch, coerce, mapType, isPrivate, strict
+					watch, coerce, mapType, strict, reflectToAttr
 				});
 			}
 
 			private _setReflect() {
 				const _this = this;
-				const { mapKey, isPrivate, strict, type, key, propName } = this._getConfig();
+				const { mapKey, key } = this._config;
 
-				//TODO: read properties from component itself instead of .props object
 				if (mapKey in this._rep.component) return;
 				Object.defineProperty(this._rep.component, mapKey, {
 					get() {
-						if (isPrivate) {
-							return _this._rep.propValues[mapKey];
-						}
-						return getter(_this._rep.component, propName, strict, type);
+						return _this._rep.propValues[mapKey];
 					},
 					set(value) {
 						const prevVal = _this._props[mapKey];
@@ -732,8 +825,8 @@ namespace PropsDefiner {
 			}
 
 			public setReflect() {
-				const { reflectToAttr, reflectToSelf } = this._getConfig();
-				if (reflectToSelf && reflectToAttr) {
+				const { reflectToSelf } = this._config;
+				if (reflectToSelf) {
 					this._setReflect();
 				}
 			}
@@ -741,9 +834,9 @@ namespace PropsDefiner {
 			public setPropAccessors() {
 				const _this = this;
 				const { 
-					mapKey, isPrivate, coerce, type, key,
+					mapKey, coerce, type, key,
 					watch, watchProperties, propName
-				} = this._getConfig();
+				} = this._config;
 				Object.defineProperty(this._props, mapKey, {
 					get() {
 						const value = _this._rep.propValues[mapKey];
@@ -755,7 +848,7 @@ namespace PropsDefiner {
 					},
 					set(value) {
 						const original = value;
-						value = watchValue(createQueueRenderFn(_this._rep.component), 
+						value = Watching.watchValue(createQueueRenderFn(_this._rep.component), 
 							value, watch, watchProperties);
 
 						if (_this._props[mapKey] === value) return;
@@ -765,7 +858,7 @@ namespace PropsDefiner {
 						_this._rep.component.fire('propChange', key, value, prevVal);
 						if (_this._propertyConfig.reflectToAttr) {
 							setter(_this._rep.setAttr, _this._rep.removeAttr, propName, 
-								isPrivate ? '_' : original, type);
+								original, type);
 						}
 
 						if (watch) {
@@ -778,21 +871,19 @@ namespace PropsDefiner {
 			public async doInitialAssign() {
 				const { 
 					type, mapKey, propName, strict, watch,
-					watchProperties, isPrivate
-				} = this._getConfig();
+					watchProperties
+				} = this._config;
 				if (type !== complex) {
-					this._rep.propValues[mapKey] = watchValue(createQueueRenderFn(this._rep.component), 
+					this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), 
 						this._rep.component.hasAttribute(propName) || (strict && type === 'bool') ?
 							getter(this._rep.component, propName, strict, type) as any : undefined,
 						watch, watchProperties);
 				} else {
 					await hookIntoConnect(this._rep.component as any, () => {
-						if (!isPrivate || this._rep.component.getAttribute(propName) !== '_') {
-							this._rep.propValues[mapKey] = watchValue(createQueueRenderFn(this._rep.component), 
-								this._rep.component.hasAttribute(propName) ?
-									getter(this._rep.component, propName, strict, type) as any : undefined,
-								watch, watchProperties);
-						}
+						this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), 
+							this._rep.component.hasAttribute(propName) ?
+								getter(this._rep.component, propName, strict, type) as any : undefined,
+							watch, watchProperties);
 					});
 				}
 			}
@@ -800,20 +891,22 @@ namespace PropsDefiner {
 			public async doDefaultAssign() {
 				const { 
 					defaultValue, mapKey, watch, watchProperties,
-					propName, isPrivate, type
-				} = this._getConfig();
+					propName, type, reflectToAttr
+				} = this._config;
 				if (defaultValue !== undefined && this._rep.propValues[mapKey] === undefined) {
-					this._rep.propValues[mapKey] = watchValue(
+					this._rep.propValues[mapKey] = Watching.watchValue(
 						createQueueRenderFn(this._rep.component), 
 						defaultValue as any, watch, watchProperties);
-					await hookIntoConnect(this._rep.component as any, () => {
-						setter(this._rep.setAttr, this._rep.removeAttr, propName, 
-							isPrivate ? '_' : defaultValue, type);
-					});
-				} else if (isPrivate || type === complex) {
+					if (reflectToAttr) {
+						await hookIntoConnect(this._rep.component as any, () => {
+							setter(this._rep.setAttr, this._rep.removeAttr, propName, 
+								defaultValue, type);
+						});
+					}
+				} else if (type === complex && reflectToAttr) {
 					await hookIntoConnect(this._rep.component as any, () => {
 						setter(this._rep.setAttr, this._rep.removeAttr, propName,
-							isPrivate ? '_' : this._rep.propValues[mapKey] as any, type);
+							this._rep.propValues[mapKey] as any, type);
 					});
 				}
 			}
@@ -845,19 +938,6 @@ namespace PropsDefiner {
 
 			element.overrideAttributeFunctions();
 			awaitConnected(component as any).then(() => {
-				//TODO: set mixins but don't merge
-				if (component.self.mixins && 
-					Array.isArray(component.self.mixins) && 
-					component.self.mixins.length &&
-					propConfigs.has(props)) {
-						const { composite, element } = propConfigs.get(props)!;
-						if (!composite) {
-							console.warn('Properties of mixins are not being merged. ' +
-								'Please call "Props.defineProps" with "super.props" as ' +
-								'the third parameter', element);
-						}
-					}
-
 				element.runQueued();
 			});
 
@@ -869,12 +949,12 @@ namespace PropsDefiner {
 			});
 		}
 
-	//TODO: test joinProps
 	export function joinProps<R extends PropTypeConfig, P extends PropTypeConfig, PP extends PropReturn<any, any>>(
 		previousProps: PP, config: {
 			reflect?: R;
 			priv?: P;
 		}) {
+			/* istanbul ignore next */
 			if (!propConfigs.has(previousProps)) {
 				throw new Error('Previous props not defined');
 			}
@@ -922,7 +1002,7 @@ export class Props {
 	 * 	this component
 	 */
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props: {
+		element: PropComponent, props?: {
 			reflect: PUB;
 			priv: PRIV;
 		}): Props & {
@@ -931,19 +1011,19 @@ export class Props {
 			[K in keyof PRIV]: GetTSType<PRIV[K]>;
 		};
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props: {
+		element: PropComponent, props?: {
 			priv: PRIV;
 		}): Props & {
 			[K in keyof PRIV]: GetTSType<PRIV[K]>;
 		};
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props: {
+		element: PropComponent, props?: {
 			reflect: PUB;
 		}): Props & {
 			[K in keyof PUB]: GetTSType<PUB[K]>;
 		};
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props: { }): Props;
+		element: PropComponent, props?: { }): Props;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
 		element: PropComponent, props: {
 			reflect: PUB;
@@ -971,12 +1051,14 @@ export class Props {
 		element: PropComponent, config: {
 			reflect?: PUB;
 			priv?: PRIV;
-		} = {}, parentProps?: PP): Props & R & PP {
-			//TODO: test passing non-props as third arg
-			if (parentProps && !(parentProps instanceof Props)) {
-				throw new Error('parent props should be a Props object');
-			}
-			if (parentProps) {
+		} = {}, parentProps: PP = (element as any).props): Props & R & PP {
+			// if parentProps = {}, that is the default value created in base.ts
+			// ignore that as it's neither a Props object or something the user passed
+			if (parentProps && !(typeof parentProps === 'object' && Object.keys(parentProps).length === 0 && !(parentProps instanceof Props))) {
+				if (typeof parentProps !== 'object' || !(parentProps instanceof Props)) {
+					throw new Error('Parent props should be a Props object');
+				}
+
 				PropsDefiner.joinProps(parentProps, config);
 				return parentProps as Props & R & PP;
 			}

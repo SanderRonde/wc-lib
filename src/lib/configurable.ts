@@ -277,7 +277,6 @@ export function config(config: WebComponentConfiguration) {
 	}
 }
 
-
 interface DefaultClass {
 	new(...args: any[]): {};
 }
@@ -292,133 +291,277 @@ export function mixin<M1, MM1, M2, MM2 >(
 	mixin1: MixinFn<DefaultClass, M1, MM1 >, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
 	}, M2, MM2>): ClassToObj<M1> & ClassToObj<M2> & {
-		new(...args: any[]): MM1 & MM2;
+		new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3,>(
 	mixin1: MixinFn<DefaultClass, M1, MM1 >, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
 	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-		new(...args: any[]): MM1 & MM2;
+		new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 	}, M3, MM3>
 	): ClassToObj<M1> & ClassToObj<M2> & ClassToObj<M3> & {
-		new(...args: any[]): MM1 & MM2 & MM3;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+			Omit<MM2, keyof MM3> & MM3;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4>(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
 	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-		new(...args: any[]): MM1 & MM2;
+		new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 	}, M3, MM3>, 
 	mixin4: MixinFn<M1 & M2 & M3 & {
-		new(...args: any[]): MM1 & MM2 & MM3;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+			Omit<MM2, keyof MM3> & MM3;
 	}, M4, MM4>): ClassToObj<M1> & ClassToObj<M2> & ClassToObj<M3> & ClassToObj<M4> & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+			Omit<MM2, keyof MM3 | keyof MM4> & 
+			Omit<MM3, keyof MM4> & MM4;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3 ,M4, MM4, M5 ,MM5 >(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
 	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-		new(...args: any[]): MM1 & MM2;
+		new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 	}, M3, MM3>, 
 	mixin4: MixinFn<M1 & M2 & M3 & {
-		new(...args: any[]): MM1 & MM2 & MM3;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+			Omit<MM2, keyof MM3> & MM3;
 	}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+			Omit<MM2, keyof MM3 | keyof MM4> & 
+			Omit<MM3, keyof MM4> & MM4;
 	}, M5, MM5>): ClassToObj<M1> & ClassToObj<M2> & ClassToObj<M3> & ClassToObj<M4> & ClassToObj<M5> & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5> & 
+			Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5> & 
+			Omit<MM3, keyof MM4 | keyof MM5> & 
+			Omit<MM4, keyof MM5>;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6 >(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
 	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-		new(...args: any[]): MM1 & MM2;
+		new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 	}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
-		new(...args: any[]): MM1 & MM2 & MM3;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+			Omit<MM2, keyof MM3> & MM3;
 	}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+			Omit<MM2, keyof MM3 | keyof MM4> & 
+			Omit<MM3, keyof MM4> & MM4;
 	}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5> & 
+			Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5> & 
+			Omit<MM3, keyof MM4 | keyof MM5> & 
+			Omit<MM4, keyof MM5> & MM5;
 	}, M6, MM6>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+		new(...args: any[]): 
+			Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+			Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+			Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6> & 
+			Omit<MM4, keyof MM5 | keyof MM6> & 
+			Omit<MM5, keyof MM6> & MM6;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5 ,MM5, M6, MM6, M7, MM7 >(
 	mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
 		new(...args: any[]): MM1;
 	}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-		new(...args: any[]): MM1 & MM2;
+		new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 	}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
-		new(...args: any[]): MM1 & MM2 & MM3;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+			Omit<MM2, keyof MM3> & MM3;
 	}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+			Omit<MM2, keyof MM3 | keyof MM4> & 
+			Omit<MM3, keyof MM4> & MM4;
 	}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+		new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5> & 
+			Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5> & 
+			Omit<MM3, keyof MM4 | keyof MM5> & 
+			Omit<MM4, keyof MM5> & MM5;
 	}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+		new(...args: any[]): 
+			Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+			Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+			Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6> & 
+			Omit<MM4, keyof MM5 | keyof MM6> & 
+			Omit<MM5, keyof MM6> & MM6;
 	}, M7, MM7>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
-		new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+		new(...args: any[]): 
+			Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+			Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+			Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+			Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7> & 
+			Omit<MM5, keyof MM6 | keyof MM7> & 
+			Omit<MM6, keyof MM7> & MM7;
 	};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 	M7, MM7, M8, MM8>(
 		mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
 			new(...args: any[]): MM1;
 		}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-			new(...args: any[]): MM1 & MM2;
+			new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 		}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
-			new(...args: any[]): MM1 & MM2 & MM3;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+				Omit<MM2, keyof MM3> & MM3;
 		}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+				Omit<MM2, keyof MM3 | keyof MM4> & 
+				Omit<MM3, keyof MM4> & MM4;
 		}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM3, keyof MM4 | keyof MM5> & 
+				Omit<MM4, keyof MM5> & MM5;
 		}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM4, keyof MM5 | keyof MM6> & 
+				Omit<MM5, keyof MM6> & MM6;
 		}, M7, MM7>, mixin8: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM5, keyof MM6 | keyof MM7> & 
+				Omit<MM6, keyof MM7> & MM7;
 		}, M8, MM8>, ): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM6, keyof MM7 | keyof MM8> & 
+				Omit<MM7, keyof MM8> & MM8;
 		};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 	M7, MM7, M8, MM8, M9, MM9 >(
 		mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
 			new(...args: any[]): MM1;
 		}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-			new(...args: any[]): MM1 & MM2;
+			new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 		}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
-			new(...args: any[]): MM1 & MM2 & MM3;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+				Omit<MM2, keyof MM3> & MM3;
 		}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+				Omit<MM2, keyof MM3 | keyof MM4> & 
+				Omit<MM3, keyof MM4> & MM4;
 		}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM3, keyof MM4 | keyof MM5> & 
+				Omit<MM4, keyof MM5> & MM5;
 		}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM4, keyof MM5 | keyof MM6> & 
+				Omit<MM5, keyof MM6> & MM6;
 		}, M7, MM7>, mixin8: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM5, keyof MM6 | keyof MM7> & 
+				Omit<MM6, keyof MM7> & MM7;
 		}, M8, MM8>, mixin9: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM6, keyof MM7 | keyof MM8> & 
+				Omit<MM7, keyof MM8> & MM8;
 		}, M9, MM9>, ): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8 | keyof MM9> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | 
+					keyof MM9> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM6, keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM7, keyof MM8 | keyof MM9> & 
+				Omit<MM8, keyof MM9> & MM9;
 		};
 export function mixin<M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6,
 	M7, MM7, M8, MM8, M9, MM9, M10, MM10 >(
 		mixin1: MixinFn<DefaultClass, M1, MM1>, mixin2: MixinFn<M1 & {
 			new(...args: any[]): MM1;
 		}, M2, MM2>, mixin3: MixinFn<M1 & M2 & {
-			new(...args: any[]): MM1 & MM2;
+			new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 		}, M3, MM3>, mixin4: MixinFn<M1 & M2 & M3 & {
-			new(...args: any[]): MM1 & MM2 & MM3;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+				Omit<MM2, keyof MM3> & MM3;
 		}, M4, MM4>, mixin5: MixinFn<M1 & M2 & M3 & M4 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+				Omit<MM2, keyof MM3 | keyof MM4> & 
+				Omit<MM3, keyof MM4> & MM4;
 		}, M5, MM5>, mixin6: MixinFn<M1 & M2 & M3 & M4 & M5 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM3, keyof MM4 | keyof MM5> & 
+				Omit<MM4, keyof MM5> & MM5;
 		}, M6, MM6>, mixin7: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM4, keyof MM5 | keyof MM6> & 
+				Omit<MM5, keyof MM6> & MM6;
 		}, M7, MM7>, mixin8: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM5, keyof MM6 | keyof MM7> & 
+				Omit<MM6, keyof MM7> & MM7;
 		}, M8, MM8>, mixin9: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM6, keyof MM7 | keyof MM8> & 
+				Omit<MM7, keyof MM8> & MM8;
 		}, M9, MM9>, mixin10: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8 | keyof MM9> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | 
+					keyof MM9> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM6, keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM7, keyof MM8 | keyof MM9> & 
+				Omit<MM8, keyof MM9> & MM9;
 		}, M10, MM10>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M10> & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | 
+					keyof MM9 | keyof MM10> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9 | 
+					keyof MM10> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM6, keyof MM7 | keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM7, keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM8, keyof MM9 | keyof MM10> & 
+				Omit<MM9, keyof MM10> & MM10;
 		};
 export function mixin<
 	M1, MM1, M2, MM2, M3, MM3, M4, MM4, M5, MM5, M6, MM6, M7, MM7, M8,
@@ -426,23 +569,69 @@ export function mixin<
 		mixin1?: MixinFn<DefaultClass, M1, MM1>, mixin2?: MixinFn<M1 & {
 			new(...args: any[]): MM1;
 		}, M2, MM2>, mixin3?: MixinFn<M1 & M2 & {
-			new(...args: any[]): MM1 & MM2;
+			new(...args: any[]): Omit<MM1, keyof MM2> & MM2;
 		}, M3, MM3>, mixin4?: MixinFn<M1 & M2 & M3 & {
-			new(...args: any[]): MM1 & MM2 & MM3;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3> & 
+				Omit<MM2, keyof MM3> & MM3;
 		}, M4, MM4>, mixin5?: MixinFn<M1 & M2 & M3 & M4 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4> & 
+				Omit<MM2, keyof MM3 | keyof MM4> & 
+				Omit<MM3, keyof MM4> & MM4;
 		}, M5, MM5>, mixin6?: MixinFn<M1 & M2 & M3 & M4 & M5 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5> & 
+				Omit<MM3, keyof MM4 | keyof MM5> & 
+				Omit<MM4, keyof MM5> & MM5;
 		}, M6, MM6>, mixin7?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6;
+			new(...args: any[]): Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6> & 
+				Omit<MM4, keyof MM5 | keyof MM6> & 
+				Omit<MM5, keyof MM6> & MM6;
 		}, M7, MM7>, mixin8?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7> & 
+				Omit<MM5, keyof MM6 | keyof MM7> & 
+				Omit<MM6, keyof MM7> & MM7;
 		}, M8, MM8>, mixin9?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 |
+					keyof MM8> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8> & 
+				Omit<MM6, keyof MM7 | keyof MM8> & 
+				Omit<MM7, keyof MM8> & MM8;
 		}, M9, MM9>, mixin10?: MixinFn<M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8 | keyof MM9> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | 
+					keyof MM9> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM6, keyof MM7 | keyof MM8 | keyof MM9> & 
+				Omit<MM7, keyof MM8 | keyof MM9> & 
+				Omit<MM8, keyof MM9> & MM9;
 		}, M10, MM10>): ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M1> & ClassToObj<M10> & {
-			new(...args: any[]): MM1 & MM2 & MM3 & MM4 & MM5 & MM6 & MM7 & MM8 & MM9 & MM10;
+			new(...args: any[]): 
+				Omit<MM1, keyof MM2 | keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | 
+					keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM2, keyof MM3 | keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | 
+					keyof MM9 | keyof MM10> & 
+				Omit<MM3, keyof MM4 | keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9 | 
+					keyof MM10> & 
+				Omit<MM4, keyof MM5 | keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM5, keyof MM6 | keyof MM7 | keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM6, keyof MM7 | keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM7, keyof MM8 | keyof MM9 | keyof MM10> & 
+				Omit<MM8, keyof MM9 | keyof MM10> & 
+				Omit<MM9, keyof MM10> & MM10;
 		} {
 			let current = class {};
 			const mixins = [

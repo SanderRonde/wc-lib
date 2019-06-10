@@ -41,7 +41,7 @@
 		"install": "npm run compile && gulp removeIstanbulIgnores",
 		"cypress": "node test/usage/test.js",
 		"test": "npm run compile:all && npm run cypress",
-		"serve": "http-server -p 1251 .",
+		"serve": "http-server -c-1 -p 1251 .",
 		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument src/ instrumented/ && gulp replaceTestImports",
 		"coverage": "npm run coverage:prep && nyc --reporter=html npm run cypress && echo \"Coverage can be found in coverage/index.html\""
 	}

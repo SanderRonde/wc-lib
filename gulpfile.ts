@@ -139,7 +139,8 @@ gulp.task('patchCypressIstanbul', async () => {
 		});
 });
 
-gulp.task('removeIstanbulIgnores', () => {
+// Removes istanbul ignores from the compiled JS
+gulp.task('removeIstanbulIgnoresCompiled', () => {
 	return gulp.src([
 			'**/*.js',
 			'**/*.d.ts'
@@ -149,4 +150,16 @@ gulp.task('removeIstanbulIgnores', () => {
 		})
 		.pipe(replace(/(\n\s+)?\/\*(\s*)istanbul(.*?)\*\//g, ''))
 		.pipe(gulp.dest('build/'));
+});
+
+// Removes istanbul ignores from the uncompiled TS. Should only be done before packaging
+gulp.task('removeIstanbulIgnoresSource', () => {
+	return gulp.src([
+			'**/*.ts'
+		], {
+			cwd: 'src/',
+			base: 'src/'
+		})
+		.pipe(replace(/(\n\s+)?\/\*(\s*)istanbul(.*?)\*\//g, ''))
+		.pipe(gulp.dest('src/'));
 });

@@ -38,11 +38,12 @@
 		"compile": "tsc -p src/tsconfig.json && tsc -p src/tsconfig.cjs.json",
 		"compile:test": "tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json",
 		"compile:all": "npm run compile && npm run compile:test",
-		"install": "npm run compile && gulp removeIstanbulIgnores",
+		"install": "npm run compile && gulp removeIstanbulIgnoresCompiled",
 		"cypress": "node test/usage/test.js",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",
 		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument src/ instrumented/ && gulp replaceTestImports",
-		"coverage": "npm run coverage:prep && nyc --reporter=html npm run cypress && echo \"Coverage can be found in coverage/index.html\""
+		"coverage": "npm run coverage:prep && nyc --reporter=html npm run cypress && echo \"Coverage can be found in coverage/index.html\"",
+		"prepublishOnly": "gulp removeIstanbulIgnoresSource"
 	}
 }

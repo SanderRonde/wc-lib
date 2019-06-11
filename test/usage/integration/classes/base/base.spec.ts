@@ -1,7 +1,7 @@
 /// <reference types="Cypress" />
 
 import { expectPropertyExists, expectPrivatePropertyExists, expectMethodExists } from "../../../lib/assertions";
-import { TestElement, TestElementBase, RenderTestWindow } from "./elements/test-element";
+import { TestElement, TestElementBase, RenderTestWindow, BindTest, ChangeNever } from "./elements/test-element";
 import { CHANGE_TYPE, TemplateFnLike } from "../../../../../src/wclib";
 import { getClassFixture } from "../../../lib/testing";
 import { SLOW } from "../../../lib/timing.js";
@@ -34,6 +34,9 @@ context('Base', function() {
 		});
 	});
 	context('Properties/Methods', () => {
+		before(() => {
+			cy.visit(getClassFixture('base'));
+		});
 		it('exposes an .html property that contains the template', () => {
 			cy.window().then((window: RenderTestWindow) => {
 				expectPropertyExists(window.TestElement, 'html');
@@ -101,6 +104,9 @@ context('Base', function() {
 	});
 
 	context('Creation', () => {
+		before(() => {
+			cy.visit(getClassFixture('base'));
+		});
 		it('can be dynamically created', () => {
 			cy.document().then((document) => {
 				const el = document.createElement('test-element');
@@ -109,6 +115,21 @@ context('Base', function() {
 
 				cy.get('#test2');
 			});
+		});
+		it('still renders when CSS is set to null/undefined', () => {
+			cy.document().then((document) => {
+				const el = document.createElement('no-css');
+				el.id = 'test3';
+				document.body.appendChild(el);
+
+				cy.wait(50)
+					.get('#test3')
+					.shadowFind('#content')
+					.shadowContains('test');
+			});
+		});
+		after(() => {
+			cy.visit(getClassFixture('base'));
 		});
 	});
 
@@ -175,6 +196,83 @@ context('Base', function() {
 	
 					expect(el.firstRender).to.be.calledOnce;
 				});
+			});
+		});
+		it('renders well using prop change if getTheme is not present in the component', () => {
+			cy.document().then((document) => {
+				const el = document.createElement('test-element') as TestElement;
+				delete el.getTheme;
+				el.id = 'test2';
+				document.body.appendChild(el);
+	
+				cy.wait(50)
+					.get('#test2')
+					.shadowFind('h1')
+					.shadowContains('1').then(() => {
+						el.props.x = 2;
+
+						cy.wait(50)
+							.get('#test2')
+							.shadowFind('h1')
+							.shadowContains('2');
+					});
+			});
+		});
+		it('renders well using CHANGE_TYPE.ALWAYS if getTheme is not present in the component', () => {
+			cy.document().then((document) => {
+				const el = document.createElement('test-element') as TestElement;
+				delete el.getTheme;
+
+				Object.defineProperty(el, 'getTheme', {
+					get() {
+						return undefined;
+					}
+				});
+
+				el.id = 'test2';
+				document.body.appendChild(el);
+	
+				cy.wait(50)
+					.get('#test2')
+					.shadowFind('h1')
+					.shadowContains('1').then(() => {
+						el.renderToDOM();
+					});
+			});
+		});
+		it('renders well using CHANGE_TYPE.NEVER if getTheme is not present in the component', () => {
+			cy.document().then((document) => {
+				const el = document.createElement('change-never') as ChangeNever;
+				delete el.getTheme;
+				
+				Object.defineProperty(el, 'getTheme', {
+					get() {
+						return undefined;
+					}
+				});
+
+				el.id = 'test4';
+				document.body.appendChild(el);
+	
+				cy.wait(50)
+					.get('#test4')
+					.shadowFind('h1')
+					.shadowContains('test');
+			});
+		});
+		it('does not call renderToDOM twice when calling renderToDOM in the prerender', () => {
+			cy.get('#test').then(([ el ]: JQuery<TestElement>) => {
+				const renderToDOM = cy.spy(el, 'renderToDOM');
+				const postRender = cy.spy(el, 'postRender');
+
+				el.preRender = () => {
+					el.renderToDOM();
+				}
+
+				el.renderToDOM();
+
+				cy.wrap(renderToDOM).should('be.calledTwice');
+				cy.wrap(postRender).should('be.calledOnce');
 			});
 		});
 	});
@@ -291,6 +389,230 @@ context('Base', function() {
 				"prop-lang": true,
 				"theme-lang": true,
 				all: true
+			});
+		});
+	});
+	context('Template', () => {
+		let lastId = 0;
+		function genId() {
+			return (lastId++) + '';
+		}
+		it('can render HTML to a template', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				cy.document().then((document) => {
+					const container = document.createElement('div');
+					container.id = `container${genId()}`;
+					document.body.appendChild(container);
+
+					const val = Math.random() + '';
+					const template = window.templates.regular(() => val);
+					template.render(template.renderTemplate(11, {props: {}} as any),
+						container);
+
+					cy.get(`#${container.id}`)
+						.find('div')
+						.contains(val);
+				});
+			});
+		});
+		it('re-renders if the template changed', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				cy.document().then((document) => {
+					const container = document.createElement('div');
+					container.id = `container${genId()}`;
+					document.body.appendChild(container);
+
+					const val = Math.random() + '';
+					let currentVal: string = val;
+					const template = window.templates.regular(() => currentVal);
+
+					const spy = cy.spy(template, '_renderer' as any);
+
+					template.render(template.renderTemplate(11, {props: {}} as any),
+						container);
+
+					cy.get(`#${container.id}`)
+						.find('div')
+						.contains(val).then(() => {
+							cy.wrap(spy).should('be.calledOnce').then(() => {
+								const newVal = Math.random() + '';
+								currentVal = newVal;
+								template.renderIfNew(template.renderTemplate(11, {props: {}} as any),
+									container);
+
+								cy.get(`#${container.id}`)
+									.find('div')
+									.contains(currentVal);
+
+								cy.wrap(spy).should('be.calledTwice');
+							});
+						});
+				});
+			});
+		});
+		it('can #renderAsText', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				const val = Math.random() + '';
+				const template = window.templates.regular(() => val);
+
+				const text = template.renderAsText(11, {props: {}} as any);
+				expect(text).to.be.equal(`<div>${val}</div>`)
+			});
+		});
+		it('can use #renderSame when using #renderTemplate', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				cy.document().then((document) => {
+					const container = document.createElement('div');
+					container.id = `container${genId()}`;
+					document.body.appendChild(container);
+
+					window.templates.nested.render(
+						window.templates.nested.renderTemplate(11, {
+							props: {},
+							generateHTMLTemplate: window.html
+					} as any), container);
+
+					cy.get(`#${container.id}`)
+						.find('#outer')
+						.contains('testOuter');
+
+					cy.get(`#${container.id}`)
+						.find('#inner')
+						.contains('testInner');
+				});
+			});
+		});
+		it('can use #renderSame when using #renderAsText', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				const string = window.templates.nested.renderAsText(11, {
+					props: {},
+					generateHTMLTemplate: window.html
+				} as any);
+				expect(string).to.have.string('testOuter');
+				expect(string).to.have.string('testInner');
+			});
+		});
+		it('can use a custom templater and renderer', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				cy.document().then((document) => {
+					const container = document.createElement('div');
+					container.id = `container${genId()}`;
+					document.body.appendChild(container);
+
+					window.templates.customToText.render(
+						window.templates.customToText.renderTemplate(11, {props: {}} as any),
+						container);
+
+					cy.get(`#${container.id}`)
+						.find('#content')
+						.contains('test');
+				});
+			});
+		});
+		it('uses the string for string conversion if the custom template is a string', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				expect(window.templates.customString.renderAsText(11, {props: {}} as any))
+					.to.be.equal('<div>test</div>');
+			});
+		});
+		it('transforms "null" into the empty string when rendering text', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				expect(window.templates.customNull.renderAsText(11, {props: {}} as any))
+					.to.be.equal('');
+			});
+		});
+		it('uses the custom template\'s #toText function', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				expect(window.templates.customToText.renderAsText(11, {props: {}} as any))
+					.to.be.equal('<div id="content">test</div>');
+			});
+		});
+		it('uses the custom template\'s .strings and .values properties', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				expect(window.templates.customProps.renderAsText(11, {props: {}} as any))
+					.to.be.equal('<div>test</div>');
+			});
+		});
+		it('throws an error if a custom template can\'t be converted to text', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				expect(() => {
+					window.templates.customNoText.renderAsText(11, {props: {}} as any)
+				}).to.throw('Failed to convert template to text because there');
+			});
+		});
+		it('throws an error if no renderer is provided when rendering to HTML', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				cy.document().then((document) => {
+					const container = document.createElement('div');
+					container.id = `container${genId()}`;
+					document.body.appendChild(container);
+
+					expect(() => {
+						window.templates.customNoRenderer.render(
+							window.templates.customNoRenderer.renderTemplate(11, {props: {}} as any),
+							container);
+					}).to.throw('Missing renderer');
+
+					expect(() => {
+						window.templates.customNoRenderer.renderIfNew(
+							window.templates.customNoRenderer.renderTemplate(11, {props: {}} as any),
+							container);
+					}).to.throw('Missing renderer');
+				});
+			});
+		});
+		it('throws no error if no renderer is provided when rendering to text', () => {
+			cy.window().then((window: RenderTestWindow) => {
+				expect(() => {
+					expect(window.templates.customNoRenderer.renderAsText(11, {props: {}} as any))
+						.to.be.equal('<div id="content">test</div>');
+				}).to.not.throw();
+			});
+		});
+	});
+	context('Exports', () => {
+		context('bindToClass', () => {
+			it('preserves "this" when called normally', () => {
+				cy.document().then((document) => {
+					const el = document.createElement('bind-test') as BindTest;
+
+					expect(el).to.have.property('fn')
+						.to.be.a('function');
+					expect(el.fn()).to.be.equal(el);
+				});
+			});
+			it('preserves "this" when called with .apply', () => {
+				cy.document().then((document) => {
+					const el = document.createElement('bind-test') as BindTest;
+
+					expect(el).to.have.property('fn')
+						.to.be.a('function');
+					expect(el.fn.apply({})).to.be.equal(el);
+				});
+			});
+			it('preserves "this" when called with .call', () => {
+				cy.document().then((document) => {
+					const el = document.createElement('bind-test') as BindTest;
+
+					expect(el).to.have.property('fn')
+						.to.be.a('function');
+					expect(el.fn.call({})).to.be.equal(el);
+				});
+			});
+			it('preserves "this" when called with .bind', () => {
+				cy.document().then((document) => {
+					const el = document.createElement('bind-test') as BindTest;
+
+					expect(el).to.have.property('fn')
+						.to.be.a('function');
+					expect(el.fn.bind({})()).to.be.equal(el);
+				});
+			});
+			it('throws an error when bound to a non-function property', () => {
+				cy.window().then((window: RenderTestWindow) => {
+					expect(window.WrongBindTest).to.throw(
+						'Only methods can be decorated with @bind. <fn> is not a method!');
+				});
 			});
 		});
 	});

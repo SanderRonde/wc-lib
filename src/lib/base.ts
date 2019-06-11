@@ -33,7 +33,6 @@ function makeArray<T>(value: T|T[]): T[] {
 export function bindToClass<T extends Function>(_target: object, propertyKey: string, 
 	descriptor: TypedPropertyDescriptor<T>): TypedPropertyDescriptor<T> | void {
 		if(!descriptor || (typeof descriptor.value !== 'function')) {
-			//TODO: trigger this error
 			throw new TypeError(`Only methods can be decorated with @bind. <${propertyKey}> is not a method!`);
 		}
 		
@@ -239,14 +238,20 @@ export class TemplateFn<C extends {
 			private _renderer: Renderer<R>|null) { }
 
 		private _renderWithTemplater<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
-			templater: Templater<TR>): {
+			templater: Templater<TR>|undefined): {
 				changed: boolean;
 				rendered: TR|null;
 			 } {
-				if (!templaterMap.has(templater)) {
-					templaterMap.set(templater, new WeakMap());
+				// If no object-like or function-like templater exists, use a random object
+				// to prevent an invalid key error from being thrown and to prevent
+				// sharing cache that should not be used
+				if (!templater || (typeof templater !== 'object' && typeof templater !== 'function')) {
+					templater = component as any;
 				}
-				const componentTemplateMap = templaterMap.get(templater)!;
+				if (!templaterMap.has(templater!)) {
+					templaterMap.set(templater!, new WeakMap());
+				}
+				const componentTemplateMap = templaterMap.get(templater!)!;
 				if (!componentTemplateMap.has(component)) {
 					componentTemplateMap.set(component, new WeakMap());
 				}
@@ -260,11 +265,10 @@ export class TemplateFn<C extends {
 							rendered: cached
 						}
 					}
-					//TODO: remove getTheme()
 					const rendered = this._template === null ?
 						null : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-								component, templater, component.props, 
-								'getTheme' in component ? 
+								component, templater!, component.props, 
+								('getTheme' in component && (component as any).getTheme) ? 
 									(component as unknown as WebComponentThemeManger<any>)
 										.getTheme<T>() : null as any, changeType);
 					templateMap.set(this, rendered);
@@ -277,8 +281,8 @@ export class TemplateFn<C extends {
 					!templateMap.has(this)) {
 						//Change, rerender
 						const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-							component, templater, component.props, 
-							'getTheme' in component ? 
+							component, templater!, component.props, 
+							('getTheme' in component && (component as any).getTheme) ? 
 								(component as unknown as WebComponentThemeManger<any>)
 									.getTheme<T>() : null as any, changeType);
 						templateMap.set(this, rendered);
@@ -296,7 +300,6 @@ export class TemplateFn<C extends {
 			}
 
 		private static _textRenderer(strings: TemplateStringsArray|string[], ...values: any[]): string {
-			//TODO: test this
 			const result: string[] = [strings[0]];
 			for (let i = 0; i < values.length; i++) {
 				result.push(values[i], strings[i + 1]);
@@ -304,10 +307,8 @@ export class TemplateFn<C extends {
 			return result.join('');
 		}
 
-		private static _templateResultToText(result: TemplateRenderResult|null) {
-			//TODO: test this
-			if (typeof result === 'string') return result;
-			if (result === null) return '';
+		private static _templateResultToText(result: Exclude<TemplateRenderResult|null, string>) {
+			if (result === null || result === undefined) return '';
 
 			if ('toText' in result && typeof result.toText === 'function') {
 				return result.toText();
@@ -329,7 +330,6 @@ export class TemplateFn<C extends {
 		 * @returns {string} The rendered template as text
 		 */
 		public renderAsText(changeType: CHANGE_TYPE, component: C): string {
-			//TODO: test this
 			const { changed, rendered } = this._renderWithTemplater(changeType, component,
 				TemplateFn._textRenderer);
 
@@ -374,7 +374,6 @@ export class TemplateFn<C extends {
 		 */
 		public renderSame<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
 			templater: Templater<TR|string>): TR|null|string {
-				//TODO: test this
 				const { changed, rendered } = this._renderWithTemplater(changeType, component,
 					templater);
 				this._lastRenderChanged = changed;
@@ -390,12 +389,10 @@ export class TemplateFn<C extends {
 		 * 	it to
 		 */
 		public render(template: R|null, target: HTMLElement) {
-			//TODO: attempt to render null template
 			if (template === null) return;
 			if (this._renderer) {
 				this._renderer(template, target);
 			} else {
-				//TODO: attempt to render without renderer
 				throw new Error('Missing renderer');
 			}
 		}
@@ -415,7 +412,6 @@ export class TemplateFn<C extends {
 			if (this._renderer) {
 				this._renderer(template, target);
 			} else {
-				//TODO: attempt to render without renderer
 				throw new Error('Missing renderer');
 			}
 		}
@@ -454,7 +450,6 @@ class BaseClass {
 	
 	private get __cssArr(): TemplateFnLike[] {
 		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
-		//TODO: unset this._self.self.css
 		return (this.instance.___cssArr = 
 			makeArray(this._self.self.css || []));
 	};
@@ -653,7 +648,7 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * @returns {TemplateFnLike|TemplateFnLike[]} The
 	 * 	custom CSS templates
 	 */
-	//TODO: run without custom-css-manager
+	/* istanbul ignore next */
 	public customCSS(): TemplateFnLike|TemplateFnLike[] {
 		return [];
 	}
@@ -712,7 +707,6 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 	 * @param {CHANGE_TYPE} [change] The change type. This
 	 * 	is set to always render if not supplied
 	 */
-	//TODO: call renderDOM in preRender
 	public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.FORCE) {
 		if (this.___baseClass.disableRender) return;
 		if (this.___baseClass.doPreRenderLifecycle() === false) {
@@ -736,12 +730,14 @@ export abstract class WebComponentBase extends WebComponentDefiner {
 						this.___baseClass.renderContainers.customCSS[index]);
 				});
 			}
+			/* istanbul ignore next */
 			if (this.self.html) {
 				this.___baseClass.getRenderFn(this.self.html, change)(
 					this.self.html.renderTemplate(change, this as any), 
 					this.___baseClass.renderContainers.html);
 			}
 		} catch(e) {
+			/* istanbul ignore next */
 			throw new WCLibError(this, e.message);
 		}
 		this.___baseClass.doPostRenderLifecycle();

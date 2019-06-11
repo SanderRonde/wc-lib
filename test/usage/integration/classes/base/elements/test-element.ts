@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../src/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, WebComponent, bindToClass, Renderer } from '../../../../../../src/wclib.js';
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
 
 export interface RenderTestWindow extends Window {
@@ -14,6 +14,18 @@ export interface RenderTestWindow extends Window {
 		all: number;
 	}
 	TestElement: typeof TestElement;
+	WrongBindTest: () => any;
+	templates: {
+		regular: (valGetter: () => string) => TemplateFn;
+		nested: TemplateFn;
+		customToText: TemplateFn;
+		customProps: TemplateFn;
+		customString: TemplateFn;
+		customNull: TemplateFn;
+		customNoText: TemplateFn;
+		customNoRenderer: TemplateFn;
+	}
+	html: typeof html;
 }
 
 declare const window: RenderTestWindow;
@@ -141,9 +153,146 @@ window.renderCalled['all'] = 0;
 })
 class RenderTestElementAll extends TestElementBase { }
 
+
+class NoCSS extends WebComponent {
+	static is = 'no-css';
+	static html = new TemplateFn<NoCSS>(() => {
+		return html`<div id="content">test</div>`;
+	}, CHANGE_TYPE.PROP, render);
+	static dependencies = [];
+	static mixins = [];
+
+	get self() {
+		return NoCSS;
+	}	
+}
+
+@config({
+	is: 'bind-test',
+	html: null
+})
+export class BindTest extends ConfigurableWebComponent {
+	@bindToClass
+	fn() {
+		return this;
+	}
+}
+
 window.TestElement = TestElement;
+window.WrongBindTest = (() => {
+	@config({
+		is: 'wrong-bind-test',
+		html: null
+	})
+	class WrongBindTest extends ConfigurableWebComponent {
+		@(bindToClass as any)
+		fn: boolean = true;
+	}
+	return WrongBindTest;
+});
+
+const renderRegularTemplate = (valGetter: () => string) => {
+	return new TemplateFn<any>(() => {
+		return html`<div>${valGetter()}</div>`;
+	}, CHANGE_TYPE.ALWAYS, render);
+}
+const nestedHTMLTemplate = new TemplateFn<any>(function (html, _props, _theme, change) {
+	return html`
+		${
+			new TemplateFn<any>((html) => {
+				return html`<div id="inner">testInner</div>`;
+			}, CHANGE_TYPE.ALWAYS, render).renderSame(change, this, html)
+		}
+		<div id="outer">testOuter</div>
+	`;
+}, CHANGE_TYPE.ALWAYS, render);
+
+interface CustomTemplaterData {
+	__data: {
+		strings: TemplateStringsArray;
+		values: any[];
+	}
+	toText(): string;
+	strings: TemplateStringsArray;
+	values: any[];
+}
+const customTemplaterData = (strings: TemplateStringsArray, ...values: any[]) => {
+	return {
+		strings, values
+	}
+}
+const customRender: Renderer<CustomTemplaterData> = (template: CustomTemplaterData, container: HTMLElement) => {
+	const result = template.__data.strings.join(template.__data.values[0]);
+	container.innerHTML = result;
+}
+const customTemplateToText = new TemplateFn<any>(() => {
+	const renderFn = (strings: TemplateStringsArray, ...values: any[]): CustomTemplaterData & {
+		toText(): string;
+	} => {
+		return {
+			__data: customTemplaterData(strings, values),
+			toText: () => {
+				return strings.join(values[0]);
+			}
+		} as any
+	};
+	return renderFn`<div id="content">${'test'}</div>`;
+}, CHANGE_TYPE.ALWAYS, customRender);
+const customTemplateProps = new TemplateFn<any>(() => {
+	const renderFn = (strings: TemplateStringsArray, ...values: any[]): CustomTemplaterData & {
+		strings: TemplateStringsArray;
+		values: any[];
+	} => {
+		return {
+			__data: customTemplaterData(strings, values),
+			strings,
+			values
+		} as any
+	};
+	return renderFn`<div>${'test'}</div>`;
+}, CHANGE_TYPE.ALWAYS, customRender);
+const customTemplateString = new TemplateFn<any>(() => {
+	const renderFn = (strings: TemplateStringsArray, ...values: any[]): string => {
+		return strings.join(values[0]);
+	};
+	return renderFn`<div>${'test'}</div>`;
+}, CHANGE_TYPE.ALWAYS, customRender);
+const customTemplateNull = new TemplateFn<any>(() => {
+	return null as any;
+}, CHANGE_TYPE.ALWAYS, customRender);
+const customTemplateNoText = new TemplateFn<any>(() => {
+	const renderFn = (strings: TemplateStringsArray, ...values: any[]): CustomTemplaterData => {
+		return {
+			__data: customTemplaterData(strings, values)
+		} as any
+	};
+	return renderFn`<div>${'test'}</div>` as any;
+}, CHANGE_TYPE.ALWAYS, customRender);
+const customTemplateNoRenderer = new TemplateFn<any>(() => {
+	const renderFn = (strings: TemplateStringsArray, ...values: any[]): CustomTemplaterData & {
+		toText(): string;
+	} => {
+		return {
+			__data: customTemplaterData(strings, values),
+			toText: () => {
+				return strings.join(values[0]);
+			}
+		} as any
+	};
+	return renderFn`<div id="content">${'test'}</div>`;
+}, CHANGE_TYPE.ALWAYS, null as any);
+
+@config({
+	is: 'change-never',
+	html: new TemplateFn<any>(() => {
+		return html`<h1>${'test'}</h1>`;
+	}, CHANGE_TYPE.NEVER, render)
+})
+export class ChangeNever extends ConfigurableWebComponent {
+}
 
 TestElement.define();
+ChangeNever.define();
 RenderTestElementNever.define();
 RenderTestElementProp.define();
 RenderTestElementTheme.define();
@@ -153,3 +302,18 @@ RenderTestElementPropTheme.define();
 RenderTestElementPropLang.define();
 RenderTestElementThemeLang.define();
 RenderTestElementAll.define();
+
+NoCSS.define();
+BindTest.define();
+
+window.html = html;
+window.templates = {
+	regular: renderRegularTemplate,
+	nested: nestedHTMLTemplate,
+	customToText: customTemplateToText,
+	customProps: customTemplateProps,
+	customString: customTemplateString,
+	customNull: customTemplateNull,
+	customNoText: customTemplateNoText,
+	customNoRenderer: customTemplateNoRenderer
+}

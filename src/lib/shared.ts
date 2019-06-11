@@ -45,7 +45,7 @@ export function classNames(...args: ClassNamesArg[]): string {
 	var classes = [];
 
 	for (const arg of args) {
-		if (!arg) continue;
+		if (!arg && typeof arg !== 'number') continue;
 
 		if (typeof arg === 'string' || typeof arg === 'number') {
 			classes.push(arg);

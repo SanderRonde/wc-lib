@@ -1,7 +1,5 @@
 import { WebComponent } from './component.js';
 
-//TODO: test
-
 let _supportsPassive: boolean | null = null;
 /**
  * Returns true if this browser supports
@@ -21,6 +19,7 @@ function supportsPassive(): boolean {
 				_supportsPassive = true;
 			}
 		});
+		/* istanbul ignore next */
 		const tempFn = () => { };
 		window.addEventListener("testPassive", tempFn, opts);
 		window.removeEventListener("testPassive", tempFn, opts);
@@ -30,9 +29,11 @@ function supportsPassive(): boolean {
 }
 
 export namespace Listeners {
-	type IDMap = Map<string, (this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any>;
+	type IDMap = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)>;
+	type IDMapArr = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)[]>;
 	const listenedToElements: WeakMap<WebComponent, {
-		self: IDMap;
+		self: IDMapArr;
+		selfUnique: IDMap;
 		identifiers: Map<string, {
 			element: HTMLElement;
 			map: IDMap;
@@ -57,6 +58,7 @@ export namespace Listeners {
 				listenedToElements.set(base as any, {
 					identifiers: new Map(),
 					elements: new Map(),
+					selfUnique: new Map(),
 					self: new Map()
 				});
 			}
@@ -86,10 +88,18 @@ export namespace Listeners {
 				usedMap.get(id)!.element = element;
 			}
 
-			if (options !== undefined && options !== null && supportsPassive) {
+			if (options !== undefined && options !== null && supportsPassive()) {
 				element.addEventListener(event, boundListener, options);
 			} else {
 				element.addEventListener(event, boundListener);
+			}
+
+			return () => {
+				/* istanbul ignore next */
+				if (eventIDMap.has(event) && eventIDMap.get(event)! === boundListener) {
+					listenedToElement.removeEventListener(event, boundListener);
+					eventIDMap.delete(event);
+				}
 			}
 		}
 
@@ -98,8 +108,9 @@ export namespace Listeners {
 	 * triggers `listener` when the event is fired.
 	 * Call this function whenever the component is rendered
 	 * to make sure it always refers to the current
-	 * instance of the element as it will not listen
-	 * to the element twice
+	 * instance of the element as it will clear its listener
+	 * from the old element. Only allows a single listener
+	 * per event-base-id combination
 	 * 
 	 * @template I - An object that maps an event name
 	 * 	to the event listener's arguments
@@ -115,6 +126,9 @@ export namespace Listeners {
 	 * 	listener that gets called when the event is fired
 	 * @param {boolean | AddEventListenerOptions} [options] Optional
 	 * 	options that are passed to addEventListener
+	 * 
+	 * @returns {() => void} A function that, when called, removes
+	 * 	this listener
 	 */
 	export function listen<I extends {
 		IDS: {
@@ -125,20 +139,23 @@ export namespace Listeners {
 		}
 	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
 		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
-		options?: boolean | AddEventListenerOptions): void {
+		options?: boolean | AddEventListenerOptions): () => void {
 			const element: HTMLElement = (base.$ as any)[id];
-			doListen(base as any, 'element', element, id as string, event, listener, options);
+			return doListen(base as any, 'element', element, id as string, event, listener, options);
 		}
 
 	/**
-	 * Listens for `event` on `base` and
+	 * Listens for `event` on `element` and
 	 * triggers `listener` when the event is fired.
 	 * Call this function whenever the component is rendered
 	 * to make sure it always refers to the current
-	 * instance of the element as it will not listen
-	 * to the element twice. Uses `identifier` to 
-	 * identify this call and to make sure the event
-	 * is not listened to twice
+	 * instance of the element as it will remove the
+	 * old listener when a new one is registered. 
+	 * Uses `identifier` to 
+	 * identify this event-identifier-listener combination
+	 * and to make sure the event
+	 * is not listened to twice. Only allows a single listener
+	 * per event-base-identifier combination
 	 * 
 	 * @template I - An object that maps an event name
 	 * 	to the event listener's arguments
@@ -147,6 +164,7 @@ export namespace Listeners {
 	 * @template K - The event's name
 	 * 
 	 * @param {T} base - The base component
+	 * @param {HTMLElement} element - The element to listen to
 	 * @param {string} identifier - A unique identifier for
 	 * 	this base component that is mapped to this 
 	 * 	listener call
@@ -155,6 +173,9 @@ export namespace Listeners {
 	 * 	listener that gets called when the event is fired
 	 * @param {boolean | AddEventListenerOptions} [options] Optional
 	 * 	options that are passed to addEventListener
+	 * 
+	 * @returns {() => void} A function that, when called, removes
+	 * 	this listener
 	 */
 	export function listenWithIdentifier<I extends {
 		IDS: {
@@ -165,14 +186,14 @@ export namespace Listeners {
 		}
 	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
 		element: HTMLElement, identifier: string, event: K, 
-		listener: (this: T, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions) {
-			doListen(base as any, 'identifier', element, identifier, event, listener, options);
+		listener: (this: T, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): () => void {
+			return doListen(base as any, 'identifier', element, identifier, event, listener, options);
 		}
 	const defaultContext = {};
 	const usedElements: WeakMap<any, WeakSet<HTMLElement>> = new WeakMap();
 
 	/**
-	 * Whether this element is new, meaning it's the first time
+	 * Checks whether this element is new, meaning it's the first time
 	 * it's seen on the page by this function
 	 * 
 	 * @param {HTMLElement} element - The element to check
@@ -182,11 +203,6 @@ export namespace Listeners {
 	 * 	you want to check whether the element is new on this
 	 * 	component pass the component. The context has to be
 	 * 	an object-like value that can be the key of a WeakSet/WeakMap
-	 * 
-	 * @param {HTMLElement} element - The element to check
-	 * @param {Object} [context] - The context in which to check
-	 * 	for this element's newness. Uses the default context if 
-	 * 	no other context is supplied
 	 * 
 	 * @returns {boolean} Whether this element is new in the
 	 * 	given context
@@ -204,6 +220,8 @@ export namespace Listeners {
 		}
 		return !has;
 	}
+
+	const newMap: WeakMap<any, any> = new WeakMap();
 
 	/**
 	 * Listens for `event` on `base.$.id` if `base.$.id` is a "new"
@@ -231,6 +249,9 @@ export namespace Listeners {
 	 * 	type is passed), `isNewelement` is called
 	 * @param {boolean | AddEventListenerOptions} [options] Optional
 	 * 	options that are passed to addEventListener
+	 * 
+	 * @returns {() => void} A function that, when called, removes
+	 * 	this listener
 	 */
 	export function listenIfNew<I extends {
 		IDS: {
@@ -239,14 +260,77 @@ export namespace Listeners {
 		CLASSES: {
 			[key: string]: HTMLElement|SVGElement;
 		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, isNew?: boolean, options?: boolean | AddEventListenerOptions) {
-		const element: HTMLElement = (base.$ as any)[id];
-		const isElementNew = typeof isNew === 'boolean' ? isNew : isNewElement(element);
-		if (!isElementNew) {
-			return;
+	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
+		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
+		isNew?: boolean, options?: boolean | AddEventListenerOptions): () => void {
+			const element: HTMLElement = (base.$ as any)[id];
+			const isElementNew = (() => {
+				if (typeof isNew === 'boolean') {
+					return isNew;
+				}
+				if (!newMap.has(base)) {
+					// Create a link to some object to make sure
+					// the context is not the base itself 
+					// (as the user may want to use that)
+					// but is instead an object that is still
+					// linked to that base
+					newMap.set(base, {});
+				}
+				return isNewElement(element, newMap.get(base)!);
+			})();
+			if (!isElementNew) {
+				return () => {};
+			}
+			return listen(base as any, id as string, event, listener, options);
 		}
-		listen(base as any, id as string, event, listener, options);
-	}
+
+	/**
+	 * Listens for `event` on `base` and
+	 * calls `listener` when it's fired.
+	 * Will only allow one listener for 
+	 * every event, removing the old
+	 * listener when a new one is registered
+	 * 
+	 * @template T - The base component
+	 * @template K - The event name
+	 * 
+	 * @param {T} base - The base component
+	 * @param {K} event - The event to listen for
+	 * @param {(this: T, ev: HTMLElementEventMap[K]) => any} listener - The
+	 * 	listener that is fired when the 
+	 * 	event is fired
+	 * 
+	 * @returns {() => void} A function that, when called, removes
+	 * 	this listener
+	 */
+	export function listenToComponentUnique<T extends WebComponent<any>, K extends keyof HTMLElementEventMap>(
+		base: T, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any): () => void {
+			const boundListener = listener.bind(base);
+			if (!listenedToElements.has(base)) {
+				listenedToElements.set(base, {
+					identifiers: new Map(),
+					elements: new Map(),
+					selfUnique: new Map(),
+					self: new Map()
+				});
+			}
+			const { selfUnique: selfEventMap } = listenedToElements.get(base)!;
+			if (!selfEventMap.has(event)) {
+				selfEventMap.set(event, boundListener);
+			}
+			else {
+				base.removeEventListener(event, selfEventMap.get(event)!);
+			}
+			base.addEventListener(event, boundListener);
+
+			return () => {
+				/* istanbul ignore next */
+				if (selfEventMap.has(event) && selfEventMap.get(event)! === boundListener) {
+					base.removeEventListener(event, selfEventMap.get(event)!);
+					selfEventMap.delete(event);
+				}
+			}
+		}
 
 	/**
 	 * Listens for `event` on `base` and
@@ -261,27 +345,45 @@ export namespace Listeners {
 	 * 	listener that is fired when the 
 	 * 	event is fired
 	 */
-	export function listenToComponent<T extends WebComponent<any>, K extends keyof HTMLElementEventMap>(base: T, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any) {
-		if (!listenedToElements.has(base)) {
-			listenedToElements.set(base, {
-				identifiers: new Map(),
-				elements: new Map(),
-				self: new Map()
-			});
+	export function listenToComponent<T extends WebComponent<any>, K extends keyof HTMLElementEventMap>(
+		base: T, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any) {
+			const boundListener = listener.bind(base);
+			if (!listenedToElements.has(base)) {
+				listenedToElements.set(base, {
+					identifiers: new Map(),
+					elements: new Map(),
+					selfUnique: new Map(),
+					self: new Map()
+				});
+			}
+			const { self: selfEventMap } = listenedToElements.get(base)!;
+			if (!selfEventMap.has(event)) {
+				selfEventMap.set(event, [boundListener]);
+			} else {
+				selfEventMap.get(event)!.push(boundListener);
+			}
+			base.addEventListener(event, boundListener);
+
+			return () => {
+				/* istanbul ignore next */
+				if (!selfEventMap.has(event)) return;
+				const listeners = selfEventMap.get(event)!;
+				/* istanbul ignore next */
+				if (listeners.indexOf(boundListener) > -1) {
+					base.removeEventListener(event, boundListener);
+				}
+
+				listeners.splice(listeners.indexOf(boundListener), 1);
+				selfEventMap.set(event, listeners);
+			}
 		}
-		const { self: selfEventMap } = listenedToElements.get(base)!;
-		if (!selfEventMap.has(event)) {
-			selfEventMap.set(event, listener);
+	function removeListeners(element: HTMLElement, map: IDMap|IDMapArr) {
+		for (const [ event, listeners ] of map.entries()) {
+			for (const listener of Array.isArray(listeners) ? listeners : [listeners]) {
+				element.removeEventListener(event, listener);
+			}
 		}
-		else {
-			base.removeEventListener(event, selfEventMap.get(event)!);
-		}
-		base.addEventListener(event, listener);
-	}
-	function removeListeners(element: HTMLElement, map: IDMap) {
-		for (const [event, listener] of map.entries()) {
-			element.removeEventListener(event, listener);
-		}
+		map.clear();
 	}
 
 	/**
@@ -294,10 +396,16 @@ export namespace Listeners {
 		if (!listenedToElements.has(base)) {
 			return;
 		}
-		const { elements: elementIDMap, self: selfEventMap } = listenedToElements.get(base)!;
-		for (const { map, element } of elementIDMap.values()) {
+		const { elements, identifiers, self, selfUnique } = listenedToElements.get(base)!;
+		for (const { map, element } of elements.values()) {
 			removeListeners(element, map);
 		}
-		removeListeners(base, selfEventMap);
+		elements.clear();
+		for (const { map, element } of identifiers.values()) {
+			removeListeners(element, map);
+		}
+		identifiers.clear();
+		removeListeners(base, self);
+		removeListeners(base, selfUnique);
 	}
 }

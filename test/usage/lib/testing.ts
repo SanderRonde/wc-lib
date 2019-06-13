@@ -10,3 +10,7 @@ export function getClassFixture(className: string, fixtureName: string = 'standa
 export function getPropertyFixture(suiteName: string, fixtureName: string = 'standard') {
 	return getFixture('properties', suiteName, fixtureName);
 }
+ 
+export function getLibFixture(suiteName: string, fixtureName: string = 'standard') {
+	return getFixture('lib', suiteName, fixtureName);
+}

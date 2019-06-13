@@ -20,22 +20,12 @@ type IDMapFn<IDS> = {
  */
 export type PropChangeEvents = 'beforePropChange'|'propChange';
 
-class ComponentClass<ELS extends {
-	IDS: {
-		[key: string]: HTMLElement|SVGElement;
-	};
-	CLASSES: {
-		[key: string]: HTMLElement|SVGElement;
-	}
-} = {
-	IDS: {};
-	CLASSES: {}
-}> {
+class ComponentClass {
 	/**
 	 * An ID map containing maps between queried IDs and elements,
 	 * 	cleared upon render
 	 */
-	public idMap: Map<keyof ELS["IDS"], ELS["IDS"][keyof ELS["IDS"]]> = new Map();
+	public idMap: Map<string, HTMLElement|SVGElement|any> = new Map();
 
 	constructor() { }
 
@@ -47,10 +37,12 @@ class ComponentClass<ELS extends {
 		this.idMap.clear();
 	}
 
-	public idMapProxy: IDMapFn<ELS["IDS"]>| null = null;
+	public idMapProxy: IDMapFn<any>| null = null;
 	public supportsProxy: boolean = typeof Proxy !== 'undefined';
 
-	public genIdMapProxy(self: WebComponent<any, any>): IDMapFn<ELS["IDS"]> {
+	public genIdMapProxy<ELS extends {
+		IDS: any;
+	}>(self: WebComponent<any, any>): IDMapFn<ELS["IDS"]> {
 		const __this = this;
 		return new Proxy((selector: string) => {
 			return self.root.querySelector(selector) as HTMLElement;
@@ -72,7 +64,9 @@ class ComponentClass<ELS extends {
 		}) as IDMapFn<ELS["IDS"]>;
 	}
 
-	public getIdMapSnapshot(self: WebComponent<any, any>) {
+	public getIdMapSnapshot<ELS extends {
+		IDS: any;
+	}>(self: WebComponent<any, any>) {
 		const snapshot: Partial<IDMapFn<ELS["IDS"]>> = ((selector: string) => {
 			return self.root.querySelector(selector) as HTMLElement;
 		}) as IDMapFn<ELS["IDS"]>
@@ -117,7 +111,7 @@ export abstract class WebComponent<ELS extends {
 	 * @private
 	 * @readonly
 	 */
-	private ___componentClass: ComponentClass<ELS> = new ComponentClass<ELS>();
+	private ___componentClass: ComponentClass = new ComponentClass();
 
 	/**
 	 * An array of functions that get called when this
@@ -153,7 +147,7 @@ export abstract class WebComponent<ELS extends {
 	get $(): IDMapFn<ELS["IDS"]> {
 		if (this.___componentClass.supportsProxy) {
 			return this.___componentClass.idMapProxy ||
-				(this.___componentClass.idMapProxy = this.___componentClass.genIdMapProxy(this))
+				(this.___componentClass.idMapProxy = this.___componentClass.genIdMapProxy<ELS>(this))
 		}
 
 		// Re-generate the ID map every time

@@ -1461,5 +1461,3 @@ context('Listeners', function() {
 		});
 	});
 });
-
-//TODO:? Object.freeze(props)

@@ -6,3 +6,4 @@
 - [ ] Add tests for partial classes
 - [ ] Add more type checks
 - [ ] Remove type checks in production version
+- [ ] More documentation and examples

@@ -64,6 +64,10 @@ context('Shared', function() {
 			]
 			expect(classNames(...strings)).to.be.equal(strings.join(' '));
 		});
+		it('ignores invalid types (has to be either string, number, array or object)', () => {
+			expect(classNames('a', Symbol('x') as any), 'b').to.be.equal('a b');
+			expect(classNames('a', (() => {}) as any), 'b').to.be.equal('a b');
+		});
 		it('joins numbers when passed just numbers', () => {
 			const nums = [
 				Math.floor(Math.random() * 500),
@@ -132,6 +136,26 @@ context('Shared', function() {
 			]
 			expect(classNames(...stringArray)).to.be.equal(
 				flatten(stringArray).join(' '));
+		});
+		it('ignores falsy array elements', () => {
+			const strings = [
+				genString(),
+				false,
+				genString(),
+				false,
+				genString()
+			];
+			const stringArray = [
+				genString(),
+				strings,
+				genString(),
+				genString(),
+				strings,
+				genString(),
+				genString()
+			]
+			expect(classNames(...stringArray)).to.be.equal(
+				flatten(stringArray).filter(el => !!el).join(' '));
 		});
 		it('joins nested arrays', () => {
 			const strings = [

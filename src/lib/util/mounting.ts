@@ -1,16 +1,19 @@
 import { WebComponent } from '../component.js';
 import { WebComponentBase } from '../base.js';
-import { wait } from '../shared.js';
 
 export function waitForMountedCallback(el: WebComponentBase): Promise<() => void> {
 	const realEl = el as WebComponent;
 	return new Promise<() => void>(async (resolve) => {
+		/* istanbul ignore next */
 		if (realEl.mounted) {
 			resolve(realEl.mounted);
 		} else {
-			await wait(50);
-			await waitForMountedCallback(el);
-			resolve(realEl.mounted);
+			const interval = window.setInterval(() => {
+				if (realEl.mounted) {
+					window.clearInterval(interval);
+					resolve(realEl.mounted);
+				}
+			}, 50);
 		}
 	});
 }
@@ -34,7 +37,8 @@ export namespace Mounting {
 		}
 		await new Promise(async (resolve) => {
 			const originalMounted = realEl.mounted ?
-				realEl.mounted.bind(realEl) : await waitForMountedCallback(realEl);
+				realEl.mounted.bind(realEl) : 
+				(await waitForMountedCallback(realEl)).bind(realEl);
 			realEl.mounted = () => {
 				originalMounted && originalMounted();
 				resolve();
@@ -63,7 +67,8 @@ export namespace Mounting {
 		}
 		await new Promise(async (resolve) => {
 			const originalMounted = realEl.mounted ?
-				realEl.mounted.bind(realEl) : await waitForMountedCallback(realEl);
+				realEl.mounted.bind(realEl) : 
+				(await waitForMountedCallback(realEl)).bind(realEl);
 			realEl.mounted = () => {
 				fn();
 				originalMounted && originalMounted();

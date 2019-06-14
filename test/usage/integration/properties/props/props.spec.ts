@@ -1745,7 +1745,6 @@ context('Props', function() {
 							.then(([el]: JQuery<PropsElement>) => {
 								const stub = cy.stub(el, 'renderToDOM');
 
-								//TODO: check if this actually works cause it's not code covered
 								el.props.deepWatchArr[0] = el.props.deepWatchArr[0];
 
 								cy.wrap(stub).should('not.be.called');
@@ -2134,5 +2133,3 @@ context('Props', function() {
 		});
 	});
 });
-
-//TODO: reflect to self same value

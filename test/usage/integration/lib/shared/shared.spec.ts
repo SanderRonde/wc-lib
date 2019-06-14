@@ -65,8 +65,41 @@ context('Shared', function() {
 			expect(classNames(...strings)).to.be.equal(strings.join(' '));
 		});
 		it('ignores invalid types (has to be either string, number, array or object)', () => {
-			expect(classNames('a', Symbol('x') as any), 'b').to.be.equal('a b');
-			expect(classNames('a', (() => {}) as any), 'b').to.be.equal('a b');
+			expect(classNames('a', Symbol('x') as any, 'b'), 'ignores symbols').to.be.equal('a b');
+			expect(classNames('a', (() => {}) as any, 'b'), 'ignores object').to.be.equal('a b');
+		});
+		it('ignores empty sub-arrays', () => {
+			const strings = [
+				genString(),
+				[],
+				genString(),
+				[],
+				genString(),
+				[],
+				genString(),
+				genString()
+			]
+			expect(classNames(...strings)).to.be.equal(strings.
+				filter(i => i.length).join(' '));
+		});
+		it('ignores falsy sub-arrays', () => {
+			const strings = [
+				genString(),
+				[false],
+				genString(),
+				[false],
+				genString(),
+				['x'],
+				genString(),
+				genString()
+			]
+			expect(classNames(...strings)).to.be.equal(strings.
+				filter((i) => {
+					if (Array.isArray(i)) {
+						return (i as any[]).filter(item => !!item).length;
+					}
+					return true;
+				}).join(' '));
 		});
 		it('joins numbers when passed just numbers', () => {
 			const nums = [
@@ -94,28 +127,6 @@ context('Shared', function() {
 			]
 			expect(classNames(...nums)).to.be.equal(
 				nums.map(n => n + '').join(' '));
-		});
-		it('ignores falsy values', () => {
-			const nums = [
-				genString(),
-				false,
-				Math.floor(Math.random() * 500),
-				false,
-				genString(),
-				Math.floor(Math.random() * 500),
-				false,
-				genString(),
-				Math.floor(Math.random() * 500),
-				false,
-				genString(),
-				Math.floor(Math.random() * 500),
-				false,
-				genString(),
-				Math.floor(Math.random() * 500),
-				false
-			]
-			expect(classNames(...nums as any)).to.be.equal(
-				nums.filter(v => !!v).map(n => n + '').join(' '));
 		});
 		it('joins passed arrays', () => {
 			const strings = [

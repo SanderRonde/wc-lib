@@ -4,7 +4,7 @@ export namespace Color {
 	 * containing its `r`, `g`, `b` and
 	 * `a` properties
 	 */
-	interface RGBAColorRepresentation {
+	export interface RGBAColorRepresentation {
 		r: number;
 		g: number;
 		b: number;
@@ -34,17 +34,16 @@ export namespace Color {
 		a: 100
 	};
 
-	function getColorRepresentation(color: string): RGBAColorRepresentation {
+	export function getColorRepresentation(color: string): RGBAColorRepresentation {
 		if (color.startsWith('#') && HEX_ALPHA_REGEX.exec(color)) {
 			const match = HEX_ALPHA_REGEX.exec(color);
-			if (!match) return BLACK;
 
-			const [ , a, r, g, b ] = match;
+			const [ , a, r, g, b ] = match!;
 			return {
 				r: parseInt(r, 16),
 				g: parseInt(g, 16),
 				b: parseInt(b, 16),
-				a: parseInt(a, 16) / 256
+				a: parseInt(a, 16) / 2.56
 			}
 		} else if (color.startsWith('#')) {
 			const match = HEX_REGEX.exec(color);
@@ -87,10 +86,20 @@ export namespace Color {
 		return BLACK;
 	}
 
-	function toStringColor(color: RGBAColorRepresentation) {
+	export function toStringColor(color: RGBAColorRepresentation|RGBColorRepresentation) {
 		return `rgba(${color.r}, ${color.g}, ${color.b}, ${
-			color.a === 100 ? '1' : 
-				color.a < 10 ? `0.0${color.a}` : `0.${color.a}`	
+			(() => {
+				if (typeof color.a === 'number') {
+					if (color.a === 100) {
+						return '1';
+					} else if (color.a < 10) {
+						return `0.0${color.a}`;
+					} else {
+						return `0.${color.a}`;
+					}
+				}
+				return '1';
+			})()
 		})`;
 	}
 
@@ -253,25 +262,27 @@ export namespace Color {
 
 	/**
 	 * Changes the opacity of a given color to the specified number (between 0 and 100).
-	 * Overrides the opacity. So if the passed color has opacity 50 and 25 is passed,
+	 * Overrides the opacity instead of multiplying them. 
+	 * So if the passed color has opacity 50 and 25 is passed,
 	 * the new opacity is 0.25 instead of 0.25*0.50
 	 * 
 	 * @param {string} color - The color to change
-	 * @param {number} opacity - The new opacity. A number between 0 and 100
+	 * @param {number} alpha - The new alpha value. A number between 0 and 100
+	 * 	where 0 means fully opaque and 100 means fully shown
 	 * 
 	 * @returns {string} The new color
 	 */
-	export function changeOpacity(color: string, opacity: number): string {
+	export function changeOpacity(color: string, alpha: number): string {
 		const colorRepr = getColorRepresentation(color);
-		return toStringColor({...colorRepr, a: opacity});
+		return toStringColor({...colorRepr, a: alpha});
 	}
 
 	/**
 	 * Returns true if the color is dark, where a dark color has
 	 * r, g and b values lower than 100 after multiplying them with 
-	 * the opacity. Exact formula:
+	 * the alpha value. Exact formula:
 	 * 
-	 * `r * a < 100 && g * a < 100 && b * a < 100`
+	 * `r * (a/100) < 100 && g * (a/100) < 100 && b * (a/100) < 100`
 	 * 
 	 * @param {string} color - The color to check
 	 * 
@@ -279,7 +290,8 @@ export namespace Color {
 	 */
 	export function isDark(color: string): boolean {
 		const { r, g, b, a } = getColorRepresentation(color);
-		return r * a < 100 && g * a < 100 && b * a < 100;
+		const normalizedAlpha = a / 100;
+		return r * normalizedAlpha < 100 && g * normalizedAlpha < 100 && b * normalizedAlpha < 100;
 	}
 
 	/**
@@ -313,13 +325,13 @@ export namespace Color {
 		color2: string|RGBColorRepresentation|RGBAColorRepresentation, subtract: boolean = false): string {
 			if (typeof color1 === 'string') {
 				color1 = getColorRepresentation(color1);
-			} else {
+			} else if (typeof color1.a !== 'number') {
 				color1 = RGBToRGBA(color1);
 			}
 			if (typeof color2 === 'string') {
 				color2 = getColorRepresentation(color2);
-			} else {
-				color2 = RGBToRGBA(color2, 0);
+			} else if (typeof color2.a !== 'number') {
+				color2 = RGBToRGBA(color2);
 			}
 
 			if (subtract) {
@@ -330,10 +342,10 @@ export namespace Color {
 			}
 
 			return toStringColor({
-				r: color1.r + color2.r,
-				g: color1.g + color2.g,
-				b: color1.b + color2.b,
-				a: (color1 as RGBAColorRepresentation).a + (color2 as RGBAColorRepresentation).a
+				r: Math.max(Math.min(color1.r + color2.r, 255), 0),
+				g: Math.max(Math.min(color1.g + color2.g, 255), 0),
+				b: Math.max(Math.min(color1.b + color2.b, 255), 0),
+				a: Math.max(Math.min((color1 as RGBAColorRepresentation).a + (color2 as RGBAColorRepresentation).a, 100), 0)
 			});
 		}
 }

@@ -1,6 +1,7 @@
 /// <reference types="Cypress" />
 
 import { ThemedElement, ThemedElementParent } from "./elements/themed-element.js";
+import { ThemeManagerWindow } from "./fixtures/invalid/theme-manager.fixture.js";
 import { TestElement, TestWindow } from "../elements/test-element";
 import { expectMethodExists } from "../../../lib/assertions.js";
 import { getClassFixture } from "../../../lib/testing.js";
@@ -97,7 +98,32 @@ context('Theme Manager', function() {
 					}
 				});
 			});
+			it('uses the default theme when set separately', () => {
+				cy.visit(getClassFixture('theme-manager', 'separate'));
+
+				getDefaultThemedElements().then((elements) => {
+					for (const element of elements) {
+						expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme],
+							'default theme is set');
+					}
+				});
+			});
+			it('returns noTheme if no valid theme was passed', () => {
+				cy.visit(getClassFixture('theme-manager', 'invalid'));
+
+				cy.window().then((window: ThemeManagerWindow) => {
+					getDefaultThemedElements().then((elements) => {
+						for (const element of elements) {
+							expect(element.getTheme()).to.be.deep.equal(
+								window.noTheme,
+								'returns noTheme when invalid theme is set');
+						}
+					});
+				});
+			});
 			it('uses the different theme name when a global theme prop is set', () => {
+				cy.visit(getClassFixture('theme-manager'));
+
 				cy.get('themed-element[id=different]').then(([el]: JQuery<ThemedElement>) => {
 					expect(el.getThemeName()).to.be.equal('second',
 						'uses different theme name');

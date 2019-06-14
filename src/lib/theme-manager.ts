@@ -68,7 +68,6 @@ export abstract class WebComponentThemeManger<E extends EventListenerObj> extend
 	public getTheme<T>(): T {
 		if (WebComponentThemeManger.__theme) {
 			const themeName = this.getThemeName();
-			//TODO: test non-existent theme
 			if (themeName && themeName in WebComponentThemeManger.__theme) {
 				return WebComponentThemeManger.__theme[themeName] as T;
 			}
@@ -106,7 +105,6 @@ export abstract class WebComponentThemeManger<E extends EventListenerObj> extend
 		defaultTheme?: Extract<keyof T, string>
 	}) {
 		this.__theme = theme;
-		//TODO: test not passing default theme
 		if (defaultTheme) {
 			this.setDefaultTheme(defaultTheme);
 		}

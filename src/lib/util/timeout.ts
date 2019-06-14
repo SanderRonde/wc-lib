@@ -18,7 +18,7 @@ export namespace Timeout {
 	 * 	when the time expires (this is not cancelled)
 	 * 	when the timer is refreshed
 	 */
-	export function createCancellableTimeout(el: any, name: string, callback: () => void, waitTime: number): Promise<void> {
+	export async function createCancellableTimeout(el: any, name: string, callback: () => void, waitTime: number): Promise<void> {
 		if (!timeouts.has(el)) {
 			timeouts.set(el, new Map());
 		}
@@ -27,7 +27,8 @@ export namespace Timeout {
 			cancelTimeout(el, name);
 		}
 		elMap.set(name, setTimeout(callback, waitTime));
-		return wait(waitTime);
+		await wait(waitTime);
+		elMap.delete(name);
 	}
 
 	/**

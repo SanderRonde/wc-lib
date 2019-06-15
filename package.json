@@ -21,7 +21,6 @@
 		"chai": "^4.2.0",
 		"chai-jquery": "^2.1.0",
 		"cypress": "^3.3.1",
-		"cypress-istanbul": "^1.2.0",
 		"fs-extra": "^8.0.1",
 		"glob": "^7.1.4",
 		"gulp": "^4.0.2",

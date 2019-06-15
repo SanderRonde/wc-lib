@@ -6,5 +6,5 @@ module.exports = (on, config) => {
 			return args
 		  }
 	});
-	on('task', require('cypress-istanbul/task'));
+	on('task', require('../support/cypress-istanbul/task.js'));
 }

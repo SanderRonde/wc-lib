@@ -23,11 +23,9 @@ export namespace Templates {
 				return prev | template.changeOn;
 			}, 0) || CHANGE_TYPE.NEVER;
 			return new TemplateFn<T, any, any>(function (html) {
-				return html`
-					${templates.map((template) => {
-						return template.renderSame(changeType, this, html);
-					})}
-				`;
+				return html`${templates.map((template) => {
+					return template.renderSame(changeType, this, html);
+				})}`;
 			}, changeType as any, renderer);
 		}
 }

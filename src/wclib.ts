@@ -1,14 +1,34 @@
-export * from './lib/base.js';
-export * from './lib/component.js';
-export * from './lib/configurable.js';
-export * from './lib/custom-css-manager.js';
-export * from './lib/definer.js';
-export * from './lib/hierarchy-manager.js';
-export * from './lib/i18n-manager.js';
-export * from './lib/listener.js';
-export * from './lib/listeners.js';
+export {
+	CHANGE_TYPE, Renderer, TemplateFn,
+	TemplateFnLike, TemplateRenderFunction, 
+	TemplateRenderResult, Templater, 
+	bindToClass
+} from './lib/base.js';
+export {
+	PropChangeEvents, WebComponent
+} from './lib/component.js';
+export {
+	ClassToObj, ConfigurableMixin,
+	ConfigurableWebComponent, ConfiguredComponent,
+	ExtendableMixin, MixinFn, WebComponentConfiguration,
+	config, mixin
+} from './lib/configurable.js';
+export {
+	DefineMetadata
+} from './lib/definer.js';
+export {
+	EventListenerObj
+} from './lib/listener.js';
+export {
+	Listeners
+} from './lib/listeners.js';
 export * from './lib/props.js';
 export * from './lib/shared.js';
-export * from './lib/template-manager.js';
+export {
+	CUSTOM_CSS_PROP_NAME, LitHTMLConfig, 
+	TemplateResultLike
+} from './lib/template-manager.js';
 export * from './lib/util.js';
-export * from './lib/theme-manager.js';
+export {
+	noTheme
+} from './lib/theme-manager.js';

@@ -31,7 +31,7 @@ function supportsPassive(): boolean {
 export namespace Listeners {
 	type IDMap = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)>;
 	type IDMapArr = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)[]>;
-	const listenedToElements: WeakMap<WebComponent, {
+	const listenedToElements: WeakMap<Object, {
 		self: IDMapArr;
 		selfUnique: IDMap;
 		identifiers: Map<string, {

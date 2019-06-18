@@ -1,7 +1,6 @@
-import { WebComponent } from '../component.js';
-import { WebComponentBase } from '../base.js';
+import { WebComponent } from "../component";
 
-export function waitForMountedCallback(el: WebComponentBase): Promise<() => void> {
+export function waitForMountedCallback(el: WebComponent): Promise<() => void> {
 	const realEl = el as WebComponent;
 	return new Promise<() => void>(async (resolve) => {
 		/* istanbul ignore next */
@@ -25,12 +24,12 @@ export namespace Mounting {
 	 * (for example through `document.createElement`) but it 
 	 * has not yet finished mounting to the dom
 	 * 
-	 * @param {WebComponentBase} el - The element to watch
+	 * @param {WebComponent} el - The element to watch
 	 * 
 	 * @returns {Promise<void>} A promise that resolves when
 	 * the component has been mounted
 	 */
-	export async function awaitMounted(el: WebComponentBase): Promise<void> {
+	export async function awaitMounted(el: WebComponent): Promise<void> {
 		const realEl = el as WebComponent;
 		if (realEl.isMounted) {
 			return;
@@ -59,7 +58,7 @@ export namespace Mounting {
 	 * 	the element has been mounted (and as such your function)
 	 * 	was ran
 	 */
-	export async function hookIntoMount(el: WebComponentBase, fn: () => void): Promise<void> {
+	export async function hookIntoMount(el: WebComponent, fn: () => void): Promise<void> {
 		const realEl = el as WebComponent;
 		if (realEl.isMounted) {
 			fn();

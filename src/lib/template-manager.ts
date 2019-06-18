@@ -1,10 +1,10 @@
+import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { bindToClass, TemplateFn, CHANGE_TYPE, TemplateFnLike } from './base.js';
+import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { TemplateProcessor, EventPart, Part, NodePart } from 'lit-html';
+import { WebComponentListenableMixinInstance } from './listener.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
-import { WebComponentThemeManger } from './theme-manager.js';
-import { WebComponentI18NManager } from './i18n-manager.js';
 import { classNames, ClassNamesArg } from './shared.js';
-import { EventListenerObj } from './listener.js';
 import { refPrefix } from './props.js';
 
 /**
@@ -114,9 +114,9 @@ class ComplexValuePart implements Part {
 
 function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfig) {
 	return class ComponentEventPart extends eventPart {
-		element: WebComponentThemeManger<any>|Element;
+		element: WebComponentTemplateManagerMixinInstance|Element;
 	
-		constructor(element: WebComponentThemeManger<any>|Element, eventName: string, 
+		constructor(element: WebComponentTemplateManagerMixinInstance|Element, eventName: string, 
 			eventContext?: EventTarget) {
 				super(element, eventName, eventContext);
 				this.element = element;
@@ -145,18 +145,18 @@ function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfi
 			const shouldAddListener =
 				newListener != null && (oldListener == null || shouldRemoveListener);
 		  
-			if (!(this.element instanceof WebComponentThemeManger)) {
+			if (!('listen' in this.element) || !('clearListener' in this.element)) {
 				console.warn('Attempting to listen using webcomponent listener on non-webcomponent element',
 					`Name: ${this.eventName}, element:`, this.element);
 			}
-			if (shouldRemoveListener && 'clearListener' in this.element) {
-				(<WebComponentThemeManger<any>>this.element)
-					.clearListener(this.eventName);
-			}
-			if (shouldAddListener && 'listen' in this.element) {
-				(<WebComponentThemeManger<any>>this.element)
-					.listen(this.eventName, this.handleEvent.bind(this));
-			}
+			if (shouldRemoveListener && 'clearListener' in this.element &&
+				this.element.clearListener) {
+					this.element.clearListener(this.eventName);
+				}
+			if (shouldAddListener && 'listen' in this.element &&
+				this.element.listen) {
+					this.element.listen(this.eventName, this.handleEvent.bind(this));
+				}
 			this.value = newListener;
 			this._pendingValue = config.noChange as any;
 		}
@@ -164,7 +164,7 @@ function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfi
 }
 
 class ComplexTemplateProcessor implements TemplateProcessor {
-	constructor(public component: WebComponentTemplateManager<any>,
+	constructor(public component: WebComponentTemplateManagerMixinInstance,
 		public genRef: (value: ComplexValue) => string,
 		private _config: LitHTMLConfig) { }
 	
@@ -226,7 +226,7 @@ declare class CommiterLike {
 	commit(): void;
 }
 
-declare class TemplateResultLike {
+export declare class TemplateResultLike {
 	constructor(...args: any[]);
 
 	getHTML(): string
@@ -329,7 +329,7 @@ class TemplateClass {
 		return this._templateSettings.TemplateResult;
 	}
 
-	constructor(private _self: WebComponentTemplateManager<any>) { }
+	constructor(private _self: WebComponentTemplateManagerMixinInstance) { }
 
 	@bindToClass
 	public genRef(value: ComplexValue) {
@@ -346,137 +346,146 @@ class TemplateClass {
 
 type ComplexValue = TemplateFnLike|Function|Object;
 
+export type WebComponentTemplateManagerMixinInstance = InferInstance<WebComponentTemplateManagerMixinClass> & {
+	self: WebComponentTemplateManagerMixinClass;
+};
+export type WebComponentTemplateManagerMixinClass = InferReturn<typeof WebComponentTemplateManagerMixin>;
+
+export type WebComponentTemplateManagerMixinSuper = Constructor<HTMLElement &
+	Pick<WebComponentHierarchyManagerMixinInstance, 'getParent'> & 
+	Partial<Pick<WebComponentListenableMixinInstance, 'listen'|'clearListener'>>>;
+
 /**
- * The class that is responsible for providing the
- * `html` property of the `TemplateFn's` function call.
- * This allows for complex values to be passed and for
- * event listeners, objects/arrays and more to be bound
- * to the component. See below for examples
- * 
- * **Examples:**
- * 
- * * `<div @click="${this.someFunc}">` Will call
- * 	`this.someFunc` when the `click` event is fired
- * * `<my-element @@customevent="${this.someFunc}">` will call
- * 	`this.someFunc` when the `my-element's` component's
- * 	special `customevent` event is fired
- * * `<my-element ?prop="${someValue}">` only sets `prop`
- * 	if `someValue` is truthy. If it's not, the attribute
- * 	is not set at all
- * * `<my-element class="${{a: true, b: false}}">` sets 
- * 	the class property to 'a'. Any value that can be passed
- * 	to `lib/util/shared#classNames` can be passed to this
- * 	property and it will produce the same result
- * * `<my-element #prop="${this}">` will create a reference
- * 	to the value of `this` and retrieve it whenever 
- * 	`my-element.prop` is accessed. This basically means
- * 	that the value of `my-element.prop` is equal to `this`,
- * 	making sure non-string values can also be passed to
- * 	properties
- * * `<my-element custom-css="${someCSS}">` applies the
- * 	`someCSS` template to this element, allowing you to
- * 	change the CSS of individual instances of an element,
- * 	while still using the element itself's shared CSS
- * 
- * @template E - An object map of events to its args and return value. See
- * 	`WebComponentListenable` for more info
+ * A mixin that, when applied, adds the `generateHTMLTemplate`
+ * method that can generate complex template literal HTML
  */
-export abstract class WebComponentTemplateManager<E extends EventListenerObj> extends WebComponentI18NManager<E> {
+export const WebComponentTemplateManagerMixin = <P extends WebComponentTemplateManagerMixinSuper>(superFn: P) => {
+	const privateMap: WeakMap<WebComponentTemplateManager, TemplateClass> = new WeakMap();
+	function templateClass(self: WebComponentTemplateManager): TemplateClass {
+		if (privateMap.has(self)) return privateMap.get(self)!;
+		return privateMap.set(self, new TemplateClass(self as any)).get(self)!;
+	}
+
 	/**
-	 * The class associated with this one that
-	 * contains some functions required for 
-	 * it to function
+	 * The class that is responsible for providing the
+	 * `html` property of the `TemplateFn's` function call.
+	 * This allows for complex values to be passed and for
+	 * event listeners, objects/arrays and more to be bound
+	 * to the component. See below for examples
 	 * 
-	 * @private
-	 * @readonly
+	 * **Examples:**
+	 * 
+	 * * `<div @click="${this.someFunc}">` Will call
+	 * 	`this.someFunc` when the `click` event is fired
+	 * * `<my-element @@customevent="${this.someFunc}">` will call
+	 * 	`this.someFunc` when the `my-element's` component's
+	 * 	special `customevent` event is fired
+	 * * `<my-element ?prop="${someValue}">` only sets `prop`
+	 * 	if `someValue` is truthy. If it's not, the attribute
+	 * 	is not set at all
+	 * * `<my-element class="${{a: true, b: false}}">` sets 
+	 * 	the class property to 'a'. Any value that can be passed
+	 * 	to `lib/util/shared#classNames` can be passed to this
+	 * 	property and it will produce the same result
+	 * * `<my-element #prop="${this}">` will create a reference
+	 * 	to the value of `this` and retrieve it whenever 
+	 * 	`my-element.prop` is accessed. This basically means
+	 * 	that the value of `my-element.prop` is equal to `this`,
+	 * 	making sure non-string values can also be passed to
+	 * 	properties
+	 * * `<my-element custom-css="${someCSS}">` applies the
+	 * 	`someCSS` template to this element, allowing you to
+	 * 	change the CSS of individual instances of an element,
+	 * 	while still using the element itself's shared CSS
 	 */
-	private ___templateClass: TemplateClass = new TemplateClass(this);
-	
-	@bindToClass
-	/**
-	 * Generate an HTML template based on the passed template literal.
-	 * This will throw an error if 
-	 * `WebComponentTemplateManager.initComplexTemplateProvider` has
-	 * not been called. If you do not wish to use the passed complex
-	 * template provider, ignore the first argument to the 
-	 * `TemplateFn's` render function and use a custom templater.
-	 * 
-	 * Can be called with 
-```js
-WebComponentTemplateManager.initComplexTemplateProvider({
+	class WebComponentTemplateManager extends superFn {
+		/**
+		 * Generate an HTML template based on the passed template literal.
+		 * This will throw an error if 
+		 * `WebComponentTemplateManager.initComplexTemplateProvider` has
+		 * not been called. If you do not wish to use the passed complex
+		 * template provider, ignore the first argument to the 
+		 * `TemplateFn's` render function and use a custom templater.
+		 * 
+		 * Can be called with 
+	```js
+	WebComponentTemplateManager.initComplexTemplateProvider({
 	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange
-});
-```
-	 * 
-	 * @param {TemplateStringsArray} strings - The strings of the 
-	 * 	template literal
-	 * @param {any[]} values - The values of the template literal
-	 * 
-	 * @returns {TemplateResultLike} A result that, when passed
-	 * 	to the renderer, renders the template to DOM
-	 */
-	public generateHTMLTemplate(strings: TemplateStringsArray, ...values: any[]): TemplateResultLike {
-		return new TemplateClass.templateResult(strings, values, 'html', this.___templateClass.templateProcessor);
-	}
-
-	/**
-	 * Initializes a complex template provider. This allows
-	 * for the special properties seen in `WebComponentTemplateManager's`
-	 * documentation. If this is not configured, the first
-	 * parameter to the `TemplateFn` render function will 
-	 * throw an error instead. When not configuring this,
-	 * you should ignore the first argument to the
-	 * `TemplateFn's` render function and instead use a 
-	 * custom templater
-	 * 
-	 * @param {LitHTMLConfig} config - A config object containing
-	 * 	the required lit-html constructs
-	 */
-	public static initComplexTemplateProvider(config: LitHTMLConfig) {
-		TemplateClass._templateSettings = config;
-	}
-
-	/**
-	 * Gets the value of a reference to a value.
-	 * 
-	 * When a complex value is passed, a "global"
-	 * reference is stored and indexed. Instead 
-	 * a string containing that index is passed.
-	 * This function "decodes" that string and 
-	 * retrieves the globally stored value
-	 * 
-	 * @param {string} ref - The reference's index
-	 * 	along with the ref prefix (`___complex_ref`)
-	 * 
-	 * @returns {ComplexValue} The complex value
-	 * 	that is being referenced to by `ref`
-	 */
-	public getRef(ref: string): ComplexValue {
-		if (typeof ref !== 'string') {
-			console.warn('Invalid ref', ref, 'on', this);
-			return undefined as unknown as ComplexValue;
+	});
+	```
+		* 
+		* @param {TemplateStringsArray} strings - The strings of the 
+		* 	template literal
+		* @param {any[]} values - The values of the template literal
+		* 
+		* @returns {TemplateResultLike} A result that, when passed
+		* 	to the renderer, renders the template to DOM
+		*/
+		@bindToClass
+		public generateHTMLTemplate(strings: TemplateStringsArray, ...values: any[]): TemplateResultLike {
+			return new TemplateClass.templateResult(strings, values, 'html', templateClass(this).templateProcessor);
 		}
-		const refNumber = ~~ref.split(refPrefix)[1];
-		return this.___templateClass.reffed[refNumber];
-	}
 
-	/**
-	 * Gets the parent of this component and attempts
-	 * to resolve the reference
-	 * 
-	 * @param {string} ref - The reference's index
-	 * 	along with the ref prefix (`___complex_ref`)
-	 * 
-	 * @returns {ComplexValue} The complex value
-	 * 	that is being referenced to by `ref`
-	 */
-	public getParentRef(ref: string): ComplexValue {
-		const parent = this.___hierarchyClass.__getParent<WebComponentTemplateManager<any>>();
-		if (!parent) {
-			console.warn('Could not find parent of', this, 
-				'and because of that could not find ref with id', ref);
-			return undefined as unknown as ComplexValue;
+		/**
+		 * Initializes a complex template provider. This allows
+		 * for the special properties seen in `WebComponentTemplateManager's`
+		 * documentation. If this is not configured, the first
+		 * parameter to the `TemplateFn` render function will 
+		 * throw an error instead. When not configuring this,
+		 * you should ignore the first argument to the
+		 * `TemplateFn's` render function and instead use a 
+		 * custom templater
+		 * 
+		 * @param {LitHTMLConfig} config - A config object containing
+		 * 	the required lit-html constructs
+		 */
+		public static initComplexTemplateProvider(config: LitHTMLConfig) {
+			TemplateClass._templateSettings = config;
 		}
-		return parent.getRef(ref);
+
+		/**
+		 * Gets the value of a reference to a value.
+		 * 
+		 * When a complex value is passed, a "global"
+		 * reference is stored and indexed. Instead 
+		 * a string containing that index is passed.
+		 * This function "decodes" that string and 
+		 * retrieves the globally stored value
+		 * 
+		 * @param {string} ref - The reference's index
+		 * 	along with the ref prefix (`___complex_ref`)
+		 * 
+		 * @returns {ComplexValue} The complex value
+		 * 	that is being referenced to by `ref`
+		 */
+		public getRef(ref: string): ComplexValue {
+			if (typeof ref !== 'string') {
+				console.warn('Invalid ref', ref, 'on', this);
+				return undefined as unknown as ComplexValue;
+			}
+			const refNumber = ~~ref.split(refPrefix)[1];
+			return templateClass(this).reffed[refNumber];
+		}
+
+		/**
+		 * Gets the parent of this component and attempts
+		 * to resolve the reference
+		 * 
+		 * @param {string} ref - The reference's index
+		 * 	along with the ref prefix (`___complex_ref`)
+		 * 
+		 * @returns {ComplexValue} The complex value
+		 * 	that is being referenced to by `ref`
+		 */
+		public getParentRef(ref: string): ComplexValue {
+			const parent = this.getParent<WebComponentTemplateManager>();
+			if (!parent) {
+				console.warn('Could not find parent of', this, 
+					'and because of that could not find ref with id', ref);
+				return undefined as unknown as ComplexValue;
+			}
+			return parent.getRef(ref);
+		}
 	}
+	return WebComponentTemplateManager;
 }

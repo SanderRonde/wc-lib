@@ -1,5 +1,4 @@
 import { TemplateFn, CHANGE_TYPE, Renderer } from '../base.js';
-import { WebComponent } from '../component.js';
 
 export namespace Templates {
 	/**
@@ -17,7 +16,7 @@ export namespace Templates {
 	 * 
 	 * @returns {TemplateFn<T, any, any>} The merged template
 	 */
-	export function joinTemplates<T extends WebComponent<any>>(
+	export function joinTemplates<T extends { props: any; }>(
 		renderer: Renderer<T>, ...templates: TemplateFn<T, any, any>[]): TemplateFn<T, any, any> {
 			const changeType = templates.reduce((prev, template) => {
 				return prev | template.changeOn;

@@ -1,5 +1,5 @@
-import { EventListenerObj, WebComponentListenable } from './listener.js';
-import { ConfigurableWebComponent } from './configurable.js';
+import { Constructor, InferReturn, InferInstance } from '../classes/types.js';
+import { WebComponentListenableMixinInstance } from './listener.js';
 import { bindToClass } from './base.js';
 
 /**
@@ -41,14 +41,21 @@ type GlobalPropsFunctions<G extends {
 }
 
 class HierarchyClass {
-	public children: Set<WebComponentHierarchyManager<any>> = new Set();
-	public parent: WebComponentHierarchyManager<any>|null = null;
+	public children: Set<WebComponentHierarchyManagerMixinInstance> = new Set();
+	public parent: any|null = null;
 	public isRoot!: boolean;
+	public globalProperties: any = {};
+	public static hierarchyClasses: WeakSet<WebComponentHierarchyManagerMixinInstance> = new WeakSet();
 
-	constructor(private _self: WebComponentHierarchyManager<any>) { }
+	constructor(private _self: WebComponentHierarchyManagerMixinInstance,
+		private _getGetPrivate: () => (element: WebComponentHierarchyManagerMixinInstance) => HierarchyClass) { }
 
-	public __getParent<T extends WebComponentHierarchyManager<any>>(): T|null {
+	public __getParent<T>(): T|null {
 		return this.parent as T;
+	}
+
+	private __isHierarchyManagerInstance(element: unknown): element is WebComponentHierarchyManagerMixinInstance {
+		return HierarchyClass.hierarchyClasses.has(element as any);
 	}
 
 	public getGlobalProperties<G extends {
@@ -67,7 +74,7 @@ class HierarchyClass {
 		return props;
 	}
 
-	private __findLocalRoot(): null|WebComponentHierarchyManager<any> {
+	private __findLocalRoot(): null|WebComponentHierarchyManagerMixinInstance {
 		let element: Node|null = this._self.parentNode;
 		while (element && !(element instanceof (window as any).ShadowRoot) && 
 			(element as any) !== document && !(element instanceof DocumentFragment)) {
@@ -83,7 +90,7 @@ class HierarchyClass {
 		}
 		const host = (() => {
 			/* istanbul ignore if */
-			if (element instanceof WebComponentHierarchyManager) {
+			if (this.__isHierarchyManagerInstance(element)) {
 				return element;
 			} else {
 				return (<ShadowRoot><any>element).host;
@@ -91,17 +98,17 @@ class HierarchyClass {
 		})();
 
 		/* istanbul ignore if */
-		if (!(host instanceof WebComponentHierarchyManager)) {
+		if (!this.__isHierarchyManagerInstance(host)) {
 			return null;
 		}
-		return host;
+		return host as WebComponentHierarchyManagerMixinInstance;
 	}
 
-	private __findDirectParents(): null|WebComponentHierarchyManager<any> {
+	private __findDirectParents(): null|WebComponentHierarchyManagerMixinInstance {
 		let element: Node|null = this._self.parentNode;
 		while (element && !(element instanceof (window as any).ShadowRoot) && 
 			(element as any) !== document && !(element instanceof DocumentFragment) &&
-			!(element instanceof WebComponentHierarchyManager)) {
+			!this.__isHierarchyManagerInstance(element)) {
 				element = element.parentNode as HTMLElement|null;
 			}
 
@@ -116,17 +123,17 @@ class HierarchyClass {
 			//This is in the light DOM, ignore it since it's the root
 			return this._self;
 		} else {
-			const host = element instanceof WebComponentHierarchyManager ?
+			const host = this.__isHierarchyManagerInstance(element) ?
 				element : (<ShadowRoot><any>element).host;
 
-			if (!(host instanceof WebComponentHierarchyManager)) {
+			if (!this.__isHierarchyManagerInstance(host)) {
 				return null;
 			}
-			return host;
+			return host as WebComponentHierarchyManagerMixinInstance;
 		}
 	}
 
-	private __getRoot(): null|WebComponentHierarchyManager<any> {
+	private __getRoot(): null|WebComponentHierarchyManagerMixinInstance {
 		const localRoot = this.__findLocalRoot();
 		if (localRoot !== null && localRoot !== this._self) {
 			//Found an actual root, use that
@@ -169,187 +176,215 @@ class HierarchyClass {
 		[key: string]: any;
 	}, P extends keyof G = keyof G, V extends G[P] = G[P]>(key: Extract<P, string>,
 		value: V) {
-			if (this._self.___definerClass.internals.globalProperties[key] !== value) {
-				const oldVal = this._self.___definerClass.internals.globalProperties[key];
-				this._self.___definerClass.internals.globalProperties[key] = value;
+			if (this.globalProperties[key] !== value) {
+				const oldVal = this.globalProperties[key];
+				this.globalProperties[key] = value;
 				this._self.fire('globalPropChange', key, value, oldVal);
 			}
 		}
 
-	public propagateThroughTree<R>(fn: (element: WebComponentHierarchyManager<any>) => R): R[] {
+	public propagateThroughTree<R>(fn: (element: WebComponentHierarchyManagerMixinInstance) => R): R[] {
 		/* istanbul ignore else */
 		if (this.isRoot) {
 			const results: R[] = [];
 			this.__propagateDown(fn, results);
 			return results;
 		} else if (this.parent) {
-			return this.parent.___hierarchyClass.propagateThroughTree(fn);
+			return this.parent.propagateThroughTree(fn);
 		} else {
 			return [];
 		}
 	}
 
-	private __propagateDown<R>(fn: (element: WebComponentHierarchyManager<any>) => R, results: R[]) {
+	private __propagateDown<R>(fn: (element: WebComponentHierarchyManagerMixinInstance) => R, results: R[]) {
 		results.push(fn(this._self));
 
 		for (const child of this.children) {
-			child.___hierarchyClass.__propagateDown(fn, results);
+			this._getGetPrivate()(child).__propagateDown(fn, results);
 		}
 	}
 
 	public globalPropsFns: GlobalPropsFunctions<any>|null = null;
 }
 
+export type WebComponentHierarchyManagerMixinInstance = InferInstance<WebComponentHierarchyManagerMixinClass> & {
+	self: WebComponentHierarchyManagerMixinClass;
+};
+export type WebComponentHierarchyManagerMixinClass = InferReturn<typeof WebComponentHierarchyManagerMixin>;
+
+export type WebComponentHierarchyManagerMixinSuper = Constructor<
+	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'> & HTMLElement>;
+
+
 /**
- * The class that is responsible for managing 
- * the hierarchy of the page, establishing a
- * root node and allowing for global properties
- * to flow from children to the root and back to
- * children
- * 
- * @template E - An object map of events to its args and return value. See
- * 	`WebComponentListenable` for more info
+ * A mixin that, when applied, allows for finding out
+ * the hierarchy of all component on the page,
+ * finding out the parents and children of components
+ * as well as finding out the root. It also adds
+ * global properties support
  */
-export abstract class WebComponentHierarchyManager<E extends EventListenerObj> extends WebComponentListenable<E> {
-	/**
-	 * The class associated with this one that
-	 * contains some functions required for 
-	 * it to function
-	 * 
-	 * @private
-	 * @readonly
-	 */
-	public ___hierarchyClass: HierarchyClass = new HierarchyClass(this);
-
-	/**
-	 * Called when the component is mounted to the dom
-	 */
-	connectedCallback() {
-		this.___hierarchyClass.isRoot = this.hasAttribute('_root');
-		this.___definerClass.internals.globalProperties = {};
-		this.___hierarchyClass.registerToParent();
-		if (this.___hierarchyClass.isRoot) {
-			this.___definerClass.internals.globalProperties = {
-				...this.___hierarchyClass.getGlobalProperties()
-			};	
-		}
+export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarchyManagerMixinSuper>(superFn: P) => {
+	const privateMap: WeakMap<WebComponentHierarchyManager, HierarchyClass> = new WeakMap();
+	function hierarchyClass(self: WebComponentHierarchyManager): HierarchyClass {
+		if (privateMap.has(self)) return privateMap.get(self)!;
+		return privateMap.set(self, new HierarchyClass(self as any, () => hierarchyClass)).get(self)!;
 	}
 
 	/**
-	 * Registers `element` as the child of this
-	 * component
-	 * 
-	 * @template G - Global properties
-	 * @param {WebComponentHierarchyManager<any>} element - The
-	 * 	component that is registered as the child of this one
-	 * 
-	 * @returns {G} The global properties
+	 * The class that is responsible for managing 
+	 * the hierarchy of the page, establishing a
+	 * root node and allowing for global properties
+	 * to flow from children to the root and back to
+	 * children
 	 */
-	public registerChild<G extends {
-		[key: string]: any;
-	}>(element: WebComponentHierarchyManager<any>): G {
-		this.___hierarchyClass.clearNonExistentChildren();
-		this.___hierarchyClass.children.add(element);
-		return this.___definerClass.internals.globalProperties as G;
-	}
-
-	/**
-	 * Gets the global properties functions
-	 * 
-	 * @template G - The global properties
-	 * @returns {GlobalPropsFunctions<G>} Functions
-	 * 	that get and set global properties
-	 */
-	public globalProps<G extends {
-		[key: string]: any;
-	}>(): GlobalPropsFunctions<G> {
-		if (this.___hierarchyClass.globalPropsFns) {
-			return this.___hierarchyClass.globalPropsFns;
+	class WebComponentHierarchyManager extends superFn {
+		constructor(...args: any[]) {
+			super(...args);
+			HierarchyClass.hierarchyClasses.add(this as any);
 		}
 
-		const __this = this;
-		const fns: GlobalPropsFunctions<G> = {
-			get all() {
-				return __this.___definerClass.internals.globalProperties;
-			},
-			get<K extends keyof G>(key: Extract<K, string>): G[K] {
-				/* istanbul ignore next */
-				if (!__this.___definerClass.internals.globalProperties) {
-					return undefined as any;
-				}
-				return __this.___definerClass.internals.globalProperties[key] as any;
-			},
-			set<K extends keyof G, V extends G[K]>(key: Extract<K, string>, value: V): void {
-				/* istanbul ignore if */
-				if (!__this.___hierarchyClass.parent && !__this.___hierarchyClass.isRoot) {
-					console.warn(`Failed to propagate global property "${key}" since this element has no registered parent`);
-					return;
-				}
-				__this.___hierarchyClass.propagateThroughTree((element) => {
-					element.___hierarchyClass.setGlobalProperty<G>(key, value);
-				});
+		/**
+		 * Called when the component is mounted to the dom
+		 */
+		connectedCallback() {
+			hierarchyClass(this).isRoot = this.hasAttribute('_root');
+			hierarchyClass(this).globalProperties = {};
+			hierarchyClass(this).registerToParent();
+			if (hierarchyClass(this).isRoot) {
+				hierarchyClass(this).globalProperties = {
+					...hierarchyClass(this).getGlobalProperties()
+				};	
 			}
-		};
-		return (this.___hierarchyClass.globalPropsFns = fns);
-	}
-
-	/**
-	 * Gets the root node of the global hierarchy
-	 * 
-	 * @template T - The type of the root
-	 * 
-	 * @returns {T} The root
-	 */
-	public getRoot<T>(): T {
-		if (this.___hierarchyClass.isRoot) {
-			return <T><any>this;
 		}
-		return this.___hierarchyClass.parent!.getRoot();
-	}
 
-	/**
-	 * Runs a function for every component in this
-	 * global hierarchy
-	 * 
-	 * @template R - The return type of given function
-	 * 
-	 * @param {(element: ConfigurableWebComponent<any>) => R} fn - The
-	 * 	function that is ran on every component
-	 * 
-	 * @returns {R[]} All return values in an array
-	 */
-	public runGlobalFunction<R>(fn: (element: ConfigurableWebComponent<any>) => R): R[] {
-		return this.___hierarchyClass.propagateThroughTree(fn);
-	}
+		/**
+		 * Registers `element` as the child of this
+		 * component
+		 * 
+		 * @template G - Global properties
+		 * @param {WebComponentHierarchyManager} element - The
+		 * 	component that is registered as the child of this one
+		 * 
+		 * @returns {G} The global properties
+		 */
+		public registerChild<G extends {
+			[key: string]: any;
+		}>(element: WebComponentHierarchyManager): G {
+			hierarchyClass(this).clearNonExistentChildren();
+			hierarchyClass(this).children.add(element as any);
+			return hierarchyClass(this).globalProperties as G;
+		}
 
-	/**
-	 * Listeners for global property changes
-	 * 
-	 * @template GP - The global properties
-	 * 
-	 * @param {'globalPropChange'} event - The
-	 * 	event to listen for
-	 * @param {(prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void} listener - 
-	 * 	The listener that is called when the
-	 * 	event is fired
-	 * @param {boolean} [once] - Whether to 
-	 * 	only fire this event once
-	 */
-	public listenGP<GP extends {
-		[key: string]: any;
-	}>(event: 'globalPropChange', 
-		listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
-		once?: boolean): void;
-	public listenGP<GP extends {
-		[key: string]: any;
-	}, K extends keyof GP>(event: 'globalPropChange', 
-		listener: (prop: K, newValue: GP[K], oldValue: GP[K]) => void,
-		once?: boolean): void;
-	public listenGP<GP extends {
-		[key: string]: any;
-	}>(event: 'globalPropChange', 
-		listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
-		once: boolean = false) {
-			this.___listenableClass.listen(event, listener, once);
+		/**
+		 * Gets the global properties functions
+		 * 
+		 * @template G - The global properties
+		 * @returns {GlobalPropsFunctions<G>} Functions
+		 * 	that get and set global properties
+		 */
+		public globalProps<G extends {
+			[key: string]: any;
+		}>(): GlobalPropsFunctions<G> {
+			if (hierarchyClass(this).globalPropsFns) {
+				return hierarchyClass(this).globalPropsFns!;
+			}
+
+			const __this = this;
+			const fns: GlobalPropsFunctions<G> = {
+				get all() {
+					return hierarchyClass(__this).globalProperties;
+				},
+				get<K extends keyof G>(key: Extract<K, string>): G[K] {
+					/* istanbul ignore next */
+					if (!hierarchyClass(__this).globalProperties) {
+						return undefined as any;
+					}
+					return hierarchyClass(__this).globalProperties[key] as any;
+				},
+				set<K extends keyof G, V extends G[K]>(key: Extract<K, string>, value: V): void {
+					/* istanbul ignore if */
+					if (!hierarchyClass(__this).parent && !hierarchyClass(__this).isRoot) {
+						console.warn(`Failed to propagate global property "${key}" since this element has no registered parent`);
+						return;
+					}
+					hierarchyClass(__this).propagateThroughTree((element) => {
+						hierarchyClass(element).setGlobalProperty<G>(key, value);
+					});
+				}
+			};
+			return (hierarchyClass(this).globalPropsFns = fns);
+		}
+
+		/**
+		 * Gets the root node of the global hierarchy
+		 * 
+		 * @template T - The type of the root
+		 * 
+		 * @returns {T} The root
+		 */
+		public getRoot<T>(): T {
+			if (hierarchyClass(this).isRoot) {
+				return <T><any>this;
+			}
+			return hierarchyClass(this).parent!.getRoot();
+		}
+
+		/**
+		 * Runs a function for every component in this
+		 * global hierarchy
+		 * 
+		 * @template R - The return type of given function
+		 * 
+		 * @param {(element: WebComponentHierarchyManager) => R} fn - The
+		 * 	function that is ran on every component
+		 * 
+		 * @returns {R[]} All return values in an array
+		 */
+		public runGlobalFunction<R>(fn: (element: WebComponentHierarchyManager) => R): R[] {
+			return hierarchyClass(this).propagateThroughTree(fn);
+		}
+
+		/**
+		 * Returns the parent of this component
+		 * 
+		 * @template T - The parent's type
+		 * @returns {T|null} - The component's parent or 
+		 * 	null if it has none
+		 */
+		public getParent<T>(): T|null {
+			return hierarchyClass(this).__getParent() as T;
+		}
+
+		/**
+		 * Listeners for global property changes
+		 * 
+		 * @template GP - The global properties
+		 * 
+		 * @param {'globalPropChange'} event - The
+		 * 	event to listen for
+		 * @param {(prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void} listener - 
+		 * 	The listener that is called when the
+		 * 	event is fired
+		 * @param {boolean} [once] - Whether to 
+		 * 	only fire this event once
+		 */
+		public listenGP<GP extends {
+			[key: string]: any;
+		}>(event: 'globalPropChange', 
+			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+			once?: boolean): void;
+		public listenGP<GP extends {
+			[key: string]: any;
+		}, K extends keyof GP>(event: 'globalPropChange', 
+			listener: (prop: K, newValue: GP[K], oldValue: GP[K]) => void,
+			once?: boolean): void;
+		public listenGP<GP extends {
+			[key: string]: any;
+		}>(event: 'globalPropChange', 
+			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+			once: boolean = false) {
+				this.listen(event, listener, once);
+		}
 	}
+	return WebComponentHierarchyManager;
 }

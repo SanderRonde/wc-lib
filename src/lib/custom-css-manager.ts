@@ -1,13 +1,13 @@
-import { WebComponentTemplateManager, CUSTOM_CSS_PROP_NAME } from './template-manager.js';
-import { CHANGE_TYPE, TemplateFn, TemplateFnLike } from './base.js';
-import { EventListenerObj } from './listener.js';
+import { CUSTOM_CSS_PROP_NAME, WebComponentTemplateManagerMixinInstance } from './template-manager.js';
+import { CHANGE_TYPE, TemplateFn, TemplateFnLike, WebComponentBaseMixinInstance } from './base.js';
+import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 
 class CustomCSSClass {
 	public hasCustomCSS: boolean|null = null;
 	private __noCustomCSS: TemplateFnLike = 
 		new TemplateFn(null, CHANGE_TYPE.NEVER, null);
 
-	constructor(private _self: WebComponentCustomCSSManager<any>) { }
+	constructor(private _self: WebComponentCustomCSSManagerMixinInstance) { }
 
 	public getCustomCSS() {
 		if (!this._self.__hasCustomCSS()) {
@@ -19,70 +19,81 @@ class CustomCSSClass {
 	}
 }
 
+export type WebComponentCustomCSSManagerMixinInstance = InferInstance<WebComponentCustomCSSManagerMixinClass> & {
+	self: WebComponentCustomCSSManagerMixinClass;
+};
+export type WebComponentCustomCSSManagerMixinClass = InferReturn<typeof WebComponentCustomCSSManagerMixin>;
+
+export type WebComponentCustomCSSManagerMixinSuper = Constructor<
+	Pick<HTMLElement, 'setAttribute'|'hasAttribute'|'getAttribute'> &
+	Pick<WebComponentBaseMixinInstance, 'renderToDOM'> & 
+	Pick<WebComponentTemplateManagerMixinInstance, 'getParentRef'>>;
+
 /**
- * The class that manages custom CSS
- * 
- * @template E - An object map of events to its args and return value. See
- * 	`WebComponentListenable` for more info
+ * A mixin that, when applied, allows
+ * for custom css to be passed to a component
+ * after which it will be rendered
  */
-export abstract class WebComponentCustomCSSManager<E extends EventListenerObj> extends WebComponentTemplateManager<E> {
-	/**
-	 * The class associated with this one that
-	 * contains some functions required for 
-	 * it to function
-	 * 
-	 * @private
-	 * @readonly
-	 */
-	private ___customCSSClass: CustomCSSClass = new CustomCSSClass(this);
-
-	/**
-	 * Whether this component has been mounted
-	 * 
-	 * @readonly
-	 */
-	public abstract isMounted: boolean;
-
-	constructor() {
-		super();
-
-		const originalSetAttr = this.setAttribute;
-		this.setAttribute = (key: string, val: string) => {
-			originalSetAttr.bind(this)(key, val);
-			if (key === CUSTOM_CSS_PROP_NAME && this.isMounted) {
-				this.renderToDOM(CHANGE_TYPE.ALWAYS);
-			}
-		}
+export const WebComponentCustomCSSManagerMixin = <P extends WebComponentCustomCSSManagerMixinSuper>(superFn: P) => {
+	const privateMap: WeakMap<WebComponentCustomCSSManager, CustomCSSClass> = new WeakMap();
+	function customCSSClass(self: WebComponentCustomCSSManager): CustomCSSClass {
+		if (privateMap.has(self)) return privateMap.get(self)!;
+		return privateMap.set(self, new CustomCSSClass(self as any)).get(self)!;
 	}
 
 	/**
-	 * A function signaling whether this component has custom CSS applied to it
-	 * 
-	 * @returns {boolean} Whether this component uses custom CSS
+	 * The class that manages custom CSS
 	 */
-	public __hasCustomCSS(): boolean {
-		if (this.___customCSSClass.hasCustomCSS !== null) {
-			return this.___customCSSClass.hasCustomCSS;
-		}
-		if (!this.hasAttribute(CUSTOM_CSS_PROP_NAME) ||
-			!this.getParentRef(this.getAttribute(CUSTOM_CSS_PROP_NAME)!)) {
-				//No custom CSS applies
-				if (this.isMounted) {
-					this.___customCSSClass.hasCustomCSS = false;
+	class WebComponentCustomCSSManager extends superFn {
+		/**
+		 * Whether this component has been mounted
+		 * 
+		 * @readonly
+		 */
+		public isMounted: boolean = false;
+
+		constructor(...args: any[]) {
+			super(...args);
+
+			const originalSetAttr = this.setAttribute;
+			this.setAttribute = (key: string, val: string) => {
+				originalSetAttr.bind(this)(key, val);
+				if (key === CUSTOM_CSS_PROP_NAME && this.isMounted) {
+					this.renderToDOM(CHANGE_TYPE.ALWAYS);
 				}
-				return false;
 			}
+		}
 
-		return (this.___customCSSClass.hasCustomCSS = true);
-	}
+		/**
+		 * A function signaling whether this component has custom CSS applied to it
+		 * 
+		 * @returns {boolean} Whether this component uses custom CSS
+		 */
+		public __hasCustomCSS(): boolean {
+			if (customCSSClass(this).hasCustomCSS !== null) {
+				return customCSSClass(this).hasCustomCSS!;
+			}
+			if (!this.hasAttribute(CUSTOM_CSS_PROP_NAME) ||
+				!this.getParentRef(this.getAttribute(CUSTOM_CSS_PROP_NAME)!)) {
+					//No custom CSS applies
+					if (this.isMounted) {
+						customCSSClass(this).hasCustomCSS = false;
+					}
+					return false;
+				}
 
-	/**
-	 * Gets this component's custom CSS templates
-	 * 
-	 * @returns {TemplateFnLike|TemplateFnLike[]} The
-	 * 	custom CSS templates
-	 */
-	public customCSS(): TemplateFnLike|TemplateFnLike[] {
-		return this.___customCSSClass.getCustomCSS();
+			return (customCSSClass(this).hasCustomCSS = true);
+		}
+
+		/**
+		 * Gets this component's custom CSS templates
+		 * 
+		 * @returns {TemplateFnLike|TemplateFnLike[]} The
+		 * 	custom CSS templates
+		 */
+		public customCSS(): TemplateFnLike|TemplateFnLike[] {
+			return customCSSClass(this).getCustomCSS();
+		}
 	}
+	return WebComponentCustomCSSManager;
 }

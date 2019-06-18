@@ -1,6 +1,7 @@
-import { WebComponentThemeManger } from './theme-manager.js';
-import { ConfiguredComponent } from './configurable.js';
-import { WebComponentDefiner } from './definer.js';
+import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
+import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
+import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { WebComponentThemeManagerMixinInstance } from './theme-manager.js';
 import { WebComponent } from './component.js';
 import { WCLibError } from './shared.js';
 
@@ -211,211 +212,210 @@ export interface TemplateFnLike {
  */
 export class TemplateFn<C extends {
 	props: any;
-} = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> implements TemplateFnLike {
-		private _lastRenderChanged: boolean = true;
+} & Partial<Pick<WebComponentThemeManagerMixinInstance, 'getTheme'>> = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> implements TemplateFnLike {
+	private _lastRenderChanged: boolean = true;
 
-		/**
-		 * Creates a template class that renders given template
-		 * when given change occurs using given renderer
-		 * 
-		 * @param {TemplateRenderFunction<C, T, R>)|null} _template - The
-		 * 	template function that gets called on change
-		 * @param {CHANGE_TYPE} changeOn - The type of change that should re-render
-		 * 	a template. Can be combined to cover multiple change types. For example
-		 * 	`CHANGE_TYPE.PROP | CHANGE_TYPE.THEME` will re-render on both changes
-		 * @param {Renderer<R>|null} renderer - The renderer that gets called with
-		 * 	the value returned by the template as the first argument and
-		 * 	with the container element as the second element and is
-		 * 	tasked with rendering it to the DOM
-		 */
-		constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
-			changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R>|null);
-		constructor(_template: (TemplateRenderFunction<C, T, R>),
-			changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.PROP|CHANGE_TYPE.THEME|CHANGE_TYPE.LANG, 
-			renderer: Renderer<R>|null);
-		constructor(private _template: (TemplateRenderFunction<C, T, R>)|null,
-			public changeOn: CHANGE_TYPE, 
-			private _renderer: Renderer<R>|null) { }
+	/**
+	 * Creates a template class that renders given template
+	 * when given change occurs using given renderer
+	 * 
+	 * @param {TemplateRenderFunction<C, T, R>)|null} _template - The
+	 * 	template function that gets called on change
+	 * @param {CHANGE_TYPE} changeOn - The type of change that should re-render
+	 * 	a template. Can be combined to cover multiple change types. For example
+	 * 	`CHANGE_TYPE.PROP | CHANGE_TYPE.THEME` will re-render on both changes
+	 * @param {Renderer<R>|null} renderer - The renderer that gets called with
+	 * 	the value returned by the template as the first argument and
+	 * 	with the container element as the second element and is
+	 * 	tasked with rendering it to the DOM
+	 */
+	constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
+		changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R>|null);
+	constructor(_template: (TemplateRenderFunction<C, T, R>),
+		changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.PROP|CHANGE_TYPE.THEME|CHANGE_TYPE.LANG, 
+		renderer: Renderer<R>|null);
+	constructor(private _template: (TemplateRenderFunction<C, T, R>)|null,
+		public changeOn: CHANGE_TYPE, 
+		private _renderer: Renderer<R>|null) { }
 
-		private _renderWithTemplater<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
-			templater: Templater<TR>|undefined): {
-				changed: boolean;
-				rendered: TR|null;
-			 } {
-				// If no object-like or function-like templater exists, use a random object
-				// to prevent an invalid key error from being thrown and to prevent
-				// sharing cache that should not be used
-				if (!templater || (typeof templater !== 'object' && typeof templater !== 'function')) {
-					templater = component as any;
-				}
-				if (!templaterMap.has(templater!)) {
-					templaterMap.set(templater!, new WeakMap());
-				}
-				const componentTemplateMap = templaterMap.get(templater!)!;
-				if (!componentTemplateMap.has(component)) {
-					componentTemplateMap.set(component, new WeakMap());
-				}
-				const templateMap = componentTemplateMap.get(component)!;
-				if (this.changeOn & CHANGE_TYPE.NEVER) {
-					//Never change, return the only render
-					const cached = templateMap.get(this);
-					if (cached) {
-						return {
-							changed: false,
-							rendered: cached
-						}
+	private _renderWithTemplater<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
+		templater: Templater<TR>|undefined): {
+			changed: boolean;
+			rendered: TR|null;
+			} {
+			// If no object-like or function-like templater exists, use a random object
+			// to prevent an invalid key error from being thrown and to prevent
+			// sharing cache that should not be used
+			if (!templater || (typeof templater !== 'object' && typeof templater !== 'function')) {
+				templater = component as any;
+			}
+			if (!templaterMap.has(templater!)) {
+				templaterMap.set(templater!, new WeakMap());
+			}
+			const componentTemplateMap = templaterMap.get(templater!)!;
+			if (!componentTemplateMap.has(component)) {
+				componentTemplateMap.set(component, new WeakMap());
+			}
+			const templateMap = componentTemplateMap.get(component)!;
+			if (this.changeOn & CHANGE_TYPE.NEVER) {
+				//Never change, return the only render
+				const cached = templateMap.get(this);
+				if (cached) {
+					return {
+						changed: false,
+						rendered: cached
 					}
-					const rendered = this._template === null ?
-						null : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-								component, templater!, component.props, 
-								('getTheme' in component && (component as any).getTheme) ? 
-									(component as unknown as WebComponentThemeManger<any>)
-										.getTheme<T>() : null as any, changeType);
+				}
+				const rendered = this._template === null ?
+					null : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
+							component, templater!, component.props, 
+							('getTheme' in component && component.getTheme) ? 
+								component.getTheme<T>() : null as any, changeType);
+				templateMap.set(this, rendered);
+				return {
+					changed: true,
+					rendered: rendered as TR
+				}
+			}
+			if (this.changeOn & changeType ||
+				!templateMap.has(this)) {
+					//Change, rerender
+					const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
+						component, templater!, component.props, 
+						('getTheme' in component && component.getTheme) ? 
+							component.getTheme<T>() : null as any, changeType);
 					templateMap.set(this, rendered);
 					return {
 						changed: true,
 						rendered: rendered as TR
 					}
 				}
-				if (this.changeOn & changeType ||
-					!templateMap.has(this)) {
-						//Change, rerender
-						const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-							component, templater!, component.props, 
-							('getTheme' in component && (component as any).getTheme) ? 
-								(component as unknown as WebComponentThemeManger<any>)
-									.getTheme<T>() : null as any, changeType);
-						templateMap.set(this, rendered);
-						return {
-							changed: true,
-							rendered: rendered as TR
-						}
-					}
-				
-				//No change, return what was last rendered
-				return {
-					changed: false,
-					rendered: templateMap.get(this)!
-				};
-			}
-
-		private static _textRenderer(strings: TemplateStringsArray|string[], ...values: any[]): string {
-			const result: string[] = [strings[0]];
-			for (let i = 0; i < values.length; i++) {
-				result.push(values[i], strings[i + 1]);
-			}
-			return result.join('');
+			
+			//No change, return what was last rendered
+			return {
+				changed: false,
+				rendered: templateMap.get(this)!
+			};
 		}
 
-		private static _templateResultToText(result: Exclude<TemplateRenderResult|null, string>) {
-			if (result === null || result === undefined) return '';
-
-			if ('toText' in result && typeof result.toText === 'function') {
-				return result.toText();
-			}
-			if ('strings' in result && 'values' in result) {
-				return this._textRenderer(result.strings, ...result.values);
-			}
-			throw new Error('Failed to convert template to text because there ' +
-				'is no .toText() and no .strings and .values properties either ' +
-				'(see TemplateRenderResult)');
+	private static _textRenderer(strings: TemplateStringsArray|string[], ...values: any[]): string {
+		const result: string[] = [strings[0]];
+		for (let i = 0; i < values.length; i++) {
+			result.push(values[i], strings[i + 1]);
 		}
+		return result.join('');
+	}
 
-		/**
-		 * Renders this template to text and returns the text
-		 * 
-		 * @param {CHANGE_TYPE} changeType - The type of change that occurred
-		 * @param {C} component - The base component
-		 * 
-		 * @returns {string} The rendered template as text
-		 */
-		public renderAsText(changeType: CHANGE_TYPE, component: C): string {
+	private static _templateResultToText(result: Exclude<TemplateRenderResult|null, string>) {
+		if (result === null || result === undefined) return '';
+
+		if ('toText' in result && typeof result.toText === 'function') {
+			return result.toText();
+		}
+		if ('strings' in result && 'values' in result) {
+			return this._textRenderer(result.strings, ...result.values);
+		}
+		throw new Error('Failed to convert template to text because there ' +
+			'is no .toText() and no .strings and .values properties either ' +
+			'(see TemplateRenderResult)');
+	}
+
+	/**
+	 * Renders this template to text and returns the text
+	 * 
+	 * @param {CHANGE_TYPE} changeType - The type of change that occurred
+	 * @param {C} component - The base component
+	 * 
+	 * @returns {string} The rendered template as text
+	 */
+	public renderAsText(changeType: CHANGE_TYPE, component: C): string {
+		const { changed, rendered } = this._renderWithTemplater(changeType, component,
+			TemplateFn._textRenderer);
+
+		this._lastRenderChanged = changed;
+		if (typeof rendered !== 'string') {
+			// Not text yet
+			return TemplateFn._templateResultToText(rendered);
+		}
+		return rendered;
+	}
+
+	/**
+	 * Renders this template to an intermediate value that
+	 * 	can then be passed to the renderer
+	 * 
+	 * @param {CHANGE_TYPE} changeType - The type of change that occurred
+	 * @param {C} component - The base component
+	 * 
+	 * @returns {R|null} The intermediate value that
+	 * 	can be passed to the renderer
+	 */
+	public renderTemplate(changeType: CHANGE_TYPE, component: C): R|null {
+		const { changed, rendered } = this._renderWithTemplater(changeType, component,
+			(component as Partial<Pick<WebComponentTemplateManagerMixinInstance, 'generateHTMLTemplate'>>)
+				.generateHTMLTemplate as unknown as Templater<R>);
+		this._lastRenderChanged = changed;
+		return rendered;
+	}
+
+	/**
+	 * Renders this template the same way as some other
+	 * template. This can be handy when integrating templates
+	 * into other templates in order to inherit CSS or HTML
+	 * 
+	 * @template TR - The return value. This depends on the
+	 * 	return value of the passed templater
+	 * @param {CHANGE_TYPE} changeType - The type of change that occurred
+	 * @param {C} component - The base component
+	 * @param {templater<TR>} templater - The templater (
+	 * 	generally of the parent)
+	 * 
+	 * @returns {TR|null|string} The return value of the templater
+	 */
+	public renderSame<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
+		templater: Templater<TR|string>): TR|null|string {
 			const { changed, rendered } = this._renderWithTemplater(changeType, component,
-				TemplateFn._textRenderer);
-
+				templater);
 			this._lastRenderChanged = changed;
-			if (typeof rendered !== 'string') {
-				// Not text yet
-				return TemplateFn._templateResultToText(rendered);
-			}
 			return rendered;
 		}
 
-		/**
-		 * Renders this template to an intermediate value that
-		 * 	can then be passed to the renderer
-		 * 
-		 * @param {CHANGE_TYPE} changeType - The type of change that occurred
-		 * @param {C} component - The base component
-		 * 
-		 * @returns {R|null} The intermediate value that
-		 * 	can be passed to the renderer
-		 */
-		public renderTemplate(changeType: CHANGE_TYPE, component: C): R|null {
-			const { changed, rendered } = this._renderWithTemplater(changeType, component,
-				(component as unknown as WebComponent<any, any>).generateHTMLTemplate as unknown as Templater<R>);
-			this._lastRenderChanged = changed;
-			return rendered;
-		}
-
-		/**
-		 * Renders this template the same way as some other
-		 * template. This can be handy when integrating templates
-		 * into other templates in order to inherit CSS or HTML
-		 * 
-		 * @template TR - The return value. This depends on the
-		 * 	return value of the passed templater
-		 * @param {CHANGE_TYPE} changeType - The type of change that occurred
-		 * @param {C} component - The base component
-		 * @param {templater<TR>} templater - The templater (
-		 * 	generally of the parent)
-		 * 
-		 * @returns {TR|null|string} The return value of the templater
-		 */
-		public renderSame<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
-			templater: Templater<TR|string>): TR|null|string {
-				const { changed, rendered } = this._renderWithTemplater(changeType, component,
-					templater);
-				this._lastRenderChanged = changed;
-				return rendered;
-			}
-
-		/**
-		 * Renders a template to given HTML element
-		 * 
-		 * @param {R|null} template - The template to render in its
-		 * 	intermediate form
-		 * @param {HTMLElement} target - The element to render
-		 * 	it to
-		 */
-		public render(template: R|null, target: HTMLElement) {
-			if (template === null) return;
-			if (this._renderer) {
-				this._renderer(template, target);
-			} else {
-				throw new Error('Missing renderer');
-			}
-		}
-
-		/**
-		 * Renders this template to DOM if it has changed as of
-		 * the last call to the template function
-		 * 
-		 * @param {R|null} template - The template to render in its
-		 * 	intermediate form
-		 * @param {HTMLElement} target - The element to render
-		 * 	it to
-		 */
-		public renderIfNew(template: R|null, target: HTMLElement) {
-			if (template === null) return;
-			if (!this._lastRenderChanged) return;
-			if (this._renderer) {
-				this._renderer(template, target);
-			} else {
-				throw new Error('Missing renderer');
-			}
+	/**
+	 * Renders a template to given HTML element
+	 * 
+	 * @param {R|null} template - The template to render in its
+	 * 	intermediate form
+	 * @param {HTMLElement} target - The element to render
+	 * 	it to
+	 */
+	public render(template: R|null, target: HTMLElement) {
+		if (template === null) return;
+		if (this._renderer) {
+			this._renderer(template, target);
+		} else {
+			throw new Error('Missing renderer');
 		}
 	}
+
+	/**
+	 * Renders this template to DOM if it has changed as of
+	 * the last call to the template function
+	 * 
+	 * @param {R|null} template - The template to render in its
+	 * 	intermediate form
+	 * @param {HTMLElement} target - The element to render
+	 * 	it to
+	 */
+	public renderIfNew(template: R|null, target: HTMLElement) {
+		if (template === null) return;
+		if (!this._lastRenderChanged) return;
+		if (this._renderer) {
+			this._renderer(template, target);
+		} else {
+			throw new Error('Missing renderer');
+		}
+	}
+}
 
 class BaseClassElementInstance {
 	public ___cssArr: TemplateFnLike[]|null = null;
@@ -463,7 +463,7 @@ class BaseClass {
 			}) : this.__cssArr);
 	};
 
-	constructor(private _self: WebComponentBase) { }
+	constructor(private _self: WebComponentBaseMixinInstance) { }
 
 	public doPreRenderLifecycle() {
 		this.disableRender = true;
@@ -595,167 +595,185 @@ class BaseClass {
 			return template.renderIfNew.bind(template);
 		}
 	}
+
+	public static __constructedCSSRendered: boolean = false;
 }
 
+export type WebComponentBaseMixinInstance = InferInstance<WebComponentBaseMixinClass> & {
+	self: WebComponentBaseMixinClass;
+};
+export type WebComponentBaseMixinClass = InferReturn<typeof WebComponentBaseMixin>;
+
+export type WebComponentBaseMixinSuper = Constructor<
+		Pick<WebComponentDefinerMixinInstance, '___definerClass'> & HTMLElement
+	> & Pick<InferReturn<typeof WebComponentDefinerMixin>, 'define'|'is'>;
+
 /**
- * The class that handles basic rendering of a component
+ * A mixin that will add the ability to do
+ * basic rendering of a component
  */
-export abstract class WebComponentBase extends WebComponentDefiner {
-	/**
-	 * The class associated with this one that
-	 * contains some functions required for 
-	 * it to function
-	 * 
-	 * @private
-	 * @readonly
-	 */
-	private ___baseClass: BaseClass = new BaseClass(this);
-
-	/**
-	 * The render method that will render this component's HTML
-	 * 
-	 * @readonly
-	 */
-	public static html: TemplateFnLike|null;
-
-	/**
-	 * The element's constructor
-	 * 
-	 * @readonly
-	 */
-	public abstract get self(): (typeof ConfiguredComponent|typeof WebComponentBase);
-
-	/**
-	 * The template(s) that will render this component's css
-	 * 
-	 * @readonly
-	 */
-	public static css: TemplateFnLike|TemplateFnLike[]|null;
-
-	/**
-	 * A function signaling whether this component has custom CSS applied to it
-	 * 
-	 * @returns {boolean} Whether this component uses custom CSS
-	 */
-	/* istanbul ignore next */
-	public __hasCustomCSS(): boolean {
-		return false;
+export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(superFn: P) => {
+	const privateMap: WeakMap<WebComponentBase, BaseClass> = new WeakMap();
+	function baseClass(self: WebComponentBase) {
+		if (privateMap.has(self)) return privateMap.get(self)!;
+		return privateMap.set(self, new BaseClass(self as any)).get(self)!;
 	}
 
 	/**
-	 * Gets this component's custom CSS templates
-	 * 
-	 * @returns {TemplateFnLike|TemplateFnLike[]} The
-	 * 	custom CSS templates
+	 * The class that handles basic rendering of a component
 	 */
-	/* istanbul ignore next */
-	public customCSS(): TemplateFnLike|TemplateFnLike[] {
-		return [];
-	}
+	class WebComponentBase extends superFn {
+		/**
+		 * The render method that will render this component's HTML
+		 * 
+		 * @readonly
+		 */
+		public static html: TemplateFnLike|null;
 
-	/**
-	 * Whether the constructed CSS has been
-	 * rendered
-	 * 
-	 * @private
-	 * @readonly
-	 */
-	private static __constructedCSSRendered: boolean = false;
+		/**
+		 * The element's constructor
+		 * 
+		 * @readonly
+		 */
+		/* istanbul ignore next */
+		public get self(): (typeof WebComponentBase) {
+			return null as any;
+		}
 
-	/**
-	 * Checks whether the constructed CSS should be changed. This function can be
-	 * overridden to allow for a custom checker. Since constructed CSS
-	 * is shared with all other instances of this specific component,
-	 * this should only return true if the CSS for all of these components
-	 * has changed. For example it might change when the theme has changed
-	 * 
-	 * @param {WebComponentBase} _element - The element for which to
-	 * 	check it
-	 * 
-	 * @returns {boolean} Whether the constructed CSS has changed
-	 */
-	/* istanbul ignore next */
-	public static __constructedCSSChanged(_element: WebComponentBase): boolean {
-		// Assume nothing can be changed then, only do first render
-		if (this.__constructedCSSRendered) {
+		/**
+		 * The template(s) that will render this component's css
+		 * 
+		 * @readonly
+		 */
+		public static css: TemplateFnLike|TemplateFnLike[]|null;
+
+		/**
+		 * A function signaling whether this component has custom CSS applied to it
+		 * 
+		 * @returns {boolean} Whether this component uses custom CSS
+		 */
+		/* istanbul ignore next */
+		public __hasCustomCSS(): boolean {
 			return false;
 		}
-		this.__constructedCSSRendered = true;
-		return true;
-	}
 
-	/**
-	 * The root of this component's DOM
-	 * 
-	 * @readonly
-	 */
-	public readonly root = this.attachShadow({
-		mode: 'open'
-	});
-	
-	/**
-	 * The properties of this component
-	 * 
-	 * @readonly
-	 */
-	props: any = {};
-
-	@bindToClass
-	/**
-	 * The method that starts the rendering cycle
-	 * 
-	 * @param {CHANGE_TYPE} [change] The change type. This
-	 * 	is set to always render if not supplied
-	 */
-	public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.FORCE) {
-		if (this.___baseClass.disableRender) return;
-		if (this.___baseClass.doPreRenderLifecycle() === false) {
-			return;
+		/**
+		 * Gets this component's custom CSS templates
+		 * 
+		 * @returns {TemplateFnLike|TemplateFnLike[]} The
+		 * 	custom CSS templates
+		 */
+		/* istanbul ignore next */
+		public customCSS(): TemplateFnLike|TemplateFnLike[] {
+			return [];
 		}
 
-		/* istanbul ignore if */
-		if (this.___baseClass.canUseConstructedCSS) {
-			this.___baseClass.renderConstructedCSS(change);
+		/**
+		 * Checks whether the constructed CSS should be changed. This function can be
+		 * overridden to allow for a custom checker. Since constructed CSS
+		 * is shared with all other instances of this specific component,
+		 * this should only return true if the CSS for all of these components
+		 * has changed. For example it might change when the theme has changed
+		 * 
+		 * @param {WebComponentBase} _element - The element for which to
+		 * 	check it
+		 * 
+		 * @returns {boolean} Whether the constructed CSS has changed
+		 */
+		/* istanbul ignore next */
+		public static __constructedCSSChanged(_element: WebComponentBase): boolean {
+			// Assume nothing can be changed then, only do first render
+			if (BaseClass.__constructedCSSRendered) {
+				return false;
+			}
+			BaseClass.__constructedCSSRendered = true;
+			return true;
 		}
-		try {
-			this.___baseClass.__privateCSS.forEach((sheet, index) => {
-				this.___baseClass.getRenderFn(sheet, change)(
-					sheet.renderTemplate(change, this as any), 
-					this.___baseClass.renderContainers.css[index]);	
-			});
-			if (this.__hasCustomCSS()) {
-				makeArray(this.customCSS()).forEach((sheet, index) => {
-					this.___baseClass.getRenderFn(sheet, change)(
-						sheet.renderTemplate(change, this as any),
-						this.___baseClass.renderContainers.customCSS[index]);
+
+		/**
+		 * The root of this component's DOM
+		 * 
+		 * @readonly
+		 */
+		public readonly root = this.attachShadow({
+			mode: 'open'
+		});
+		
+		/**
+		 * The properties of this component
+		 * 
+		 * @readonly
+		 */
+		props: any = {};
+
+		/**
+		 * The method that starts the rendering cycle
+		 * 
+		 * @param {CHANGE_TYPE} [change] The change type. This
+		 * 	is set to always render if not supplied
+		 */
+		@bindToClass
+		public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.FORCE) {
+			if (baseClass(this).disableRender) return;
+			if (baseClass(this).doPreRenderLifecycle() === false) {
+				return;
+			}
+
+			/* istanbul ignore if */
+			if (baseClass(this).canUseConstructedCSS) {
+				baseClass(this).renderConstructedCSS(change);
+			}
+			try {
+				baseClass(this).__privateCSS.forEach((sheet, index) => {
+					baseClass(this).getRenderFn(sheet, change)(
+						sheet.renderTemplate(change, this as any), 
+						baseClass(this).renderContainers.css[index]);	
 				});
+				if (this.__hasCustomCSS()) {
+					makeArray(this.customCSS()).forEach((sheet, index) => {
+						baseClass(this).getRenderFn(sheet, change)(
+							sheet.renderTemplate(change, this as any),
+							baseClass(this).renderContainers.customCSS[index]);
+					});
+				}
+				/* istanbul ignore next */
+				if (this.self.html) {
+					baseClass(this).getRenderFn(this.self.html, change)(
+						this.self.html.renderTemplate(change, this as any), 
+						baseClass(this).renderContainers.html);
+				}
+			} catch(e) {
+				/* istanbul ignore next */
+				throw new WCLibError(this, e.message);
 			}
-			/* istanbul ignore next */
-			if (this.self.html) {
-				this.___baseClass.getRenderFn(this.self.html, change)(
-					this.self.html.renderTemplate(change, this as any), 
-					this.___baseClass.renderContainers.html);
-			}
-		} catch(e) {
-			/* istanbul ignore next */
-			throw new WCLibError(this, e.message);
+			baseClass(this).doPostRenderLifecycle();
 		}
-		this.___baseClass.doPostRenderLifecycle();
-	}
 
-	/**
-	 * A method called before rendering (changing props won't trigger additional re-render)
-	 * If false is returned, cancels the render
-	 * 
-	 * @returns {false|any} The return value, if false, cancels the render
-	 */
-	public preRender(): false|any {}
-	/**
-	 * A method called after rendering
-	 */
-	public postRender() {}
-	/**
-	 * A method called after the very first render
-	 */
-	public firstRender() {}
+		/**
+		 * A method called before rendering (changing props won't trigger additional re-render)
+		 * If false is returned, cancels the render
+		 * 
+		 * @returns {false|any} The return value, if false, cancels the render
+		 */
+		public preRender(): false|any {}
+
+		/**
+		 * A method called after rendering
+		 */
+		public postRender(): any {}
+
+		/**
+		 * A method called after the very first render
+		 */
+		public firstRender(): any {}
+
+		/**
+		 * A method called when the component is mounted
+		 * to the DOM. Be sure to always call
+		 * `super.connectedCallback` if you 
+		 * override this
+		 */
+		public connectedCallback() {}
+	}
+	return WebComponentBase;
 }

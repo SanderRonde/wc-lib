@@ -1,6 +1,7 @@
-import { WebComponentBase, TemplateFnLike } from './base.js';
+import { WebComponentDefinerMixinClass } from './definer.js';
 import { EventListenerObj } from './listener.js';
 import { WebComponent } from './component.js';
+import { TemplateFnLike } from './base.js';
 
 /**
  * A configurable web component. This is the basic
@@ -41,7 +42,7 @@ export class ConfigurableWebComponent<ELS extends {
 	 * @readonly
 	 */
 	/* istanbul ignore next */
-	public get self(): (typeof ConfiguredComponent|typeof WebComponentBase) { return null as any}
+	public get self(): typeof ConfigurableWebComponent { return null as any}
 	/**
 	 * Components from which this component should inherit
 	 * 
@@ -76,7 +77,7 @@ export interface WebComponentConfiguration {
 	 * 
 	 * @readonly
 	 */
-	readonly dependencies?: (typeof WebComponentBase)[];
+	readonly dependencies?: (Pick<WebComponentDefinerMixinClass, 'define'>)[];
 	/**
 	 * The render method that will render this component's HTML
 	 * 
@@ -102,7 +103,17 @@ export interface WebComponentConfiguration {
  * from `ConfigurableWebComponent` and decorated
  * with `@configure`.
  */
-export declare class ConfiguredComponent extends WebComponentBase {
+export declare class ConfiguredComponent<ELS extends {
+	IDS: {
+		[key: string]: HTMLElement|SVGElement;
+	};
+	CLASSES: {
+		[key: string]: HTMLElement|SVGElement;
+	}
+} = {
+	IDS: {};
+	CLASSES: {}
+}, E extends EventListenerObj = {}> extends WebComponent<ELS, E> {
 	constructor();
 
 	/**
@@ -117,7 +128,8 @@ export declare class ConfiguredComponent extends WebComponentBase {
 	 * @readonly
 	 */
 	/* istanbul ignore next */
-	public self: (typeof ConfiguredComponent|typeof WebComponentBase);
+	//@ts-ignore
+	public self: typeof ConfiguredComponent;
 
 	/**
 	 * The template(s) that will render this component's css
@@ -140,7 +152,7 @@ export declare class ConfiguredComponent extends WebComponentBase {
 	 * 
 	 * @readonly
 	 */
-	static dependencies?: (typeof WebComponentBase)[]
+	static dependencies?: (Pick<WebComponentDefinerMixinClass, 'define'>)[];
 	/**
 	 * Components from which this component should inherit.
 	 * You should also call
@@ -157,21 +169,10 @@ export declare class ConfiguredComponent extends WebComponentBase {
 export const ConfigurableMixin = (_superFn: any) => ConfigurableWebComponent;
 
 /**
- * A class that is used as the base for the `ExtendableMixin`
- * mixin. Do not use this class directly. If you want to use
- * an extendable webcomponent, extend `WebComponent` instead.
- * If you want to use an extendable mixin call
- * `mixin(ExtendableMixin, ...mixins)`
- */
-export class NonAbstractWebComponent extends WebComponent {
-	/* istanbul ignore next */
-	get self() { return null as any };
-}
-/**
  * A mixin base for use with the manual adding/extending of
  * the `.css`, `.html`, `.is` and `.self` properties
  */
-export const ExtendableMixin = (_superFn: any) => NonAbstractWebComponent;
+export const ExtendableMixin = (_superFn: any) => WebComponent;
 
 /**
  * A function that, when passed a super-class
@@ -257,16 +258,16 @@ export function config(config: WebComponentConfiguration) {
 		[key: string]: HTMLElement|SVGElement;
 	}
 }, T, E extends EventListenerObj = {}>(target: T): T => {
-		const targetComponent = <any>target as typeof WebComponent;
-		class WebComponentConfig extends targetComponent<ELS, E> implements WebComponentBase {
+		const targetComponent = <any>target as typeof ConfigurableWebComponent;
+		class WebComponentConfig extends targetComponent<ELS, E> {
 			static is = is;
 			static dependencies = dependencies
 			static mixins = mixins;
-			static html = html;
+			static html = html!;
 			static css = css || [];
 
 			get self() {
-				return <any>WebComponentConfig as typeof ConfiguredComponent;
+				return <any>WebComponentConfig as typeof ConfigurableWebComponent;
 			}
 		}
 

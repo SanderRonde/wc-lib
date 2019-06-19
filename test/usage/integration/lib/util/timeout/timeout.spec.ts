@@ -20,7 +20,7 @@ context('Timeout', function() {
 			const fn = cy.spy();
 			const waitTime = 15 + (Math.random() * 1000);
 			Timeout.createCancellableTimeout({}, 'name', fn as any, waitTime);
-			cy.wait(waitTime)
+			cy.wait(waitTime + 100)
 				.then(() => {
 					expect(fn).to.be.calledOnce;
 				});

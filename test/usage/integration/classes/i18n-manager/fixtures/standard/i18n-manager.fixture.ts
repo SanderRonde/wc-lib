@@ -46,7 +46,7 @@ WebComponent.initI18N({
 	}
 });
 
-(window as any).WebComponentI18NManager = WebComponent;
+(window as any).WebComponent = WebComponent;
 TestElement.define();
 LangElement.define();
 RootElement.define();

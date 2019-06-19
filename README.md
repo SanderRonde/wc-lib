@@ -5,4 +5,6 @@
 
 ## TODO
 
-[ ] - Mixin-based classes
+[x] - Mixin-based classes
+[ ] - Create some pre-created bundles
+[ ] - Bundle, minify etc

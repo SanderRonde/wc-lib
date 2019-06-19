@@ -82,14 +82,18 @@ class ComponentClass {
 export type WebComponentSuper = Constructor<
 	HTMLElement &
 	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
-	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'|'connectedCallback'> &
-	Pick<WebComponentListenableMixinInstance, 'listen'>>;
+	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
+	Pick<WebComponentListenableMixinInstance, 'listen'> & {
+		connectedCallback(): void;
+	}>;
 
 export type WebComponentListenedSuper = Constructor<
 	HTMLElement &
 	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
-	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'|'connectedCallback'> &
-	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'>>;
+	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
+	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'> & {
+		connectedCallback(): void;
+	}>;
 
 export type WebComponentMixinInstance = InferInstance<WebComponentMixinClass>;
 export type WebComponentMixinClass = InferReturn<typeof WebComponentListenedMixin>;
@@ -375,9 +379,9 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 		/**
 		 * Called when the component is mounted to the dom.
 		 * Be sure to always call `super.connectedCallback()`
-		 * 	if you override this method
+		 * if you override this method
 		 */
-		connectedCallback = () => {
+		connectedCallback() {
 			super.connectedCallback();
 			if (!this.self) {
 				throw new WCLibError(this, 

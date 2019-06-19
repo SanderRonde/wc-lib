@@ -293,7 +293,7 @@ class MissingSelf extends WebComponent {
 		// Will be stubbed
 	}
 
-	connectedCallback = () => {
+	connectedCallback() {
 		MissingSelf.onConnected(super.connectedCallback.bind(this));
 	}
 }

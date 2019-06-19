@@ -190,7 +190,7 @@ class HierarchyClass {
 			this.__propagateDown(fn, results);
 			return results;
 		} else if (this.parent) {
-			return this.parent.propagateThroughTree(fn);
+			return this._getGetPrivate()(this.parent).propagateThroughTree(fn);
 		} else {
 			return [];
 		}
@@ -213,7 +213,9 @@ export type WebComponentHierarchyManagerMixinInstance = InferInstance<WebCompone
 export type WebComponentHierarchyManagerMixinClass = InferReturn<typeof WebComponentHierarchyManagerMixin>;
 
 export type WebComponentHierarchyManagerMixinSuper = Constructor<
-	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'> & HTMLElement>;
+	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'> & HTMLElement & {
+		connectedCallback(): void;
+	}>;
 
 
 /**
@@ -247,6 +249,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * Called when the component is mounted to the dom
 		 */
 		connectedCallback() {
+			super.connectedCallback();
 			hierarchyClass(this).isRoot = this.hasAttribute('_root');
 			hierarchyClass(this).globalProperties = {};
 			hierarchyClass(this).registerToParent();

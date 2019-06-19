@@ -54,6 +54,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		if (privateMap.has(self)) return privateMap.get(self)!;
 		return privateMap.set(self, new PrivateData(self)).get(self)!;
 	}
+	const componentThemeMap: WeakMap<typeof WebComponentThemeManager, string> = new WeakMap();
 
 	/**
 	 * A class that is responsible for managing
@@ -122,12 +123,19 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		}
 
 		/* istanbul ignore next */
-		public static __constructedCSSChanged(element: WebComponentThemeManager): boolean {
+		public static __constructedCSSChanged(element: WebComponentThemeManager & {
+			self: any;
+		}): boolean {
+			if (!componentThemeMap.has(element.self)) {
+				componentThemeMap.set(element.self, element.getThemeName());
+				return true;
+			}
+
 			const theme = element.getThemeName();
-			if (PrivateData.__lastRenderedTheme === theme) {
+			if (componentThemeMap.get(element.self)! === theme) {
 				return false;
 			}
-			PrivateData.__lastRenderedTheme = theme;
+			componentThemeMap.set(element.self, theme);
 			return true;
 		}
 	}

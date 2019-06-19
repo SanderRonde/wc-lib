@@ -314,8 +314,7 @@ context('Template Manager', function() {
 					});
 
 					cy.get('#complex').then(([complex]: JQuery<ComplexElement>) => {
-						//TODO: should stub hierarchyClass(this).__getParent
-						const getParentStub = cy.stub((complex as any).___hierarchyClass, '__getParent', () => {
+						const getParentStub = cy.stub(complex, 'getParent', () => {
 							return undefined;
 						});
 

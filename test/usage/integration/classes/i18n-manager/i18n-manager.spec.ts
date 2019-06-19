@@ -3,14 +3,14 @@
 import { expectMethodExists, expectPropertyExists, expectPromise } from "../../../lib/assertions";
 import { RootElement } from "../hierarchy-manager/elements/root-element";
 import { TestWindow, TestElement } from "../elements/test-element";
-import { WebComponentI18NManager } from "../../../../../src/wclib";
 import { LangElement } from "./elements/test-lang-element";
 import { ParentElement } from "../elements/parent-element";
+import { WebComponent } from "../../../../../src/wclib";
 import { getClassFixture } from "../../../lib/testing";
 import { SLOW } from "../../../lib/timing.js";
 
 interface I18NTestWindow extends Window {
-	WebComponentI18NManager: typeof WebComponentI18NManager;
+	WebComponent: typeof WebComponent;
 }
 
 function getRootChildren() {
@@ -338,9 +338,9 @@ context('I18n-Manager', function() {
 				});
 			});
 			it('returns a promise that resolves to the value when calling ' +
-				'WebComponentI18NManager.__prom', () => {
+				'WebComponent.__prom', () => {
 					cy.window().then((window: I18NTestWindow) => {
-						const prom = window.WebComponentI18NManager.__prom('test');
+						const prom = window.WebComponent.__prom('test');
 						expectPromise(prom);
 						prom.then((value) => {
 							expect(value).to.be.equal('english',
@@ -349,9 +349,9 @@ context('I18n-Manager', function() {
 					});
 				});	
 			it('returns whatever options.returner returns when calling ' +
-				'WebComponentI18NManager.__', () => {
+				'WebComponent.__', () => {
 					cy.window().then((window: I18NTestWindow) => {
-						const returned = window.WebComponentI18NManager.__<(() => void) & {
+						const returned = window.WebComponent.__<(() => void) & {
 							___marker: boolean;
 						}>('test');
 						

@@ -1,11 +1,12 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, WebComponentBase, MixinFn, TemplateFnLike } from '../../../../../../src/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, MixinFn, TemplateFnLike } from '../../../../../../src/wclib.js';
+import { WebComponentDefinerMixinClass } from '../../../../../../src/classes/types.js';
 
 export interface TestConfiguredWindow extends Window {
 	configured: {
 		HTMLTemplate: TemplateFn;
 		CSSTemplate: TemplateFn;
 		element: typeof ConfiguredElement;
-		dependencies: (typeof WebComponentBase)[];
+		dependencies: (Pick<WebComponentDefinerMixinClass, 'define'>)[];
 		mixins: MixinFn<any, any, any>[];
 
 		wrongClasses: {
@@ -33,7 +34,7 @@ declare const window: TestConfiguredWindow;
 
 const HTMLTemplate = new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {});
 const CSSTemplate = new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {});
-const dependencies = [] as (typeof WebComponentBase)[];
+const dependencies = [] as (Pick<WebComponentDefinerMixinClass, 'define'>)[];
 const mixins = [] as (MixinFn<any, any, any>)[];
 
 @config({

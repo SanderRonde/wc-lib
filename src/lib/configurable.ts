@@ -1,6 +1,6 @@
+import { FullWebComponent, WebComponent } from '../classes/full.js';
 import { WebComponentDefinerMixinClass } from './definer.js';
 import { EventListenerObj } from './listener.js';
-import { WebComponent } from './component.js';
 import { TemplateFnLike } from './base.js';
 
 /**
@@ -23,7 +23,7 @@ export class ConfigurableWebComponent<ELS extends {
 } = {
 	IDS: {};
 	CLASSES: {}
-}, E extends EventListenerObj = {}> extends WebComponent<ELS, E> {
+}, E extends EventListenerObj = {}> extends FullWebComponent<ELS, E> {
 	/**
 	 * The render method that will render this component's HTML
 	 * 
@@ -113,7 +113,7 @@ export declare class ConfiguredComponent<ELS extends {
 } = {
 	IDS: {};
 	CLASSES: {}
-}, E extends EventListenerObj = {}> extends WebComponent<ELS, E> {
+}, E extends EventListenerObj = {}> extends FullWebComponent<ELS, E> {
 	constructor();
 
 	/**
@@ -172,7 +172,9 @@ export const ConfigurableMixin = (_superFn: any) => ConfigurableWebComponent;
  * A mixin base for use with the manual adding/extending of
  * the `.css`, `.html`, `.is` and `.self` properties
  */
-export const ExtendableMixin = (_superFn: any) => WebComponent;
+export const ExtendableMixin = (_superFn: any): typeof WebComponent & {
+	self: any;
+} => FullWebComponent as any;
 
 /**
  * A function that, when passed a super-class

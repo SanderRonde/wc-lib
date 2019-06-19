@@ -227,7 +227,7 @@ context('Hierarchy-Manager', function() {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 					const callMap: WeakSet<ConfigurableWebComponent<any>> = new WeakSet();
 
-					root.runGlobalFunction((el) => {
+					root.runGlobalFunction<ConfigurableWebComponent<any>>((el) => {
 						callMap.add(el);
 					});
 					
@@ -243,7 +243,7 @@ context('Hierarchy-Manager', function() {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 					const callMap: Map<ConfigurableWebComponent<any>, number> = new Map();
 
-					const returnVal = root.runGlobalFunction((el) => {
+					const returnVal = root.runGlobalFunction<ConfigurableWebComponent<any>>((el) => {
 						const num = Math.random();
 						callMap.set(el, num);
 						return num;

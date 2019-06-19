@@ -1,4 +1,4 @@
-import { WebComponent } from "../component";
+import { WebComponent } from "../../classes/full.js";
 
 export function waitForMountedCallback(el: WebComponent): Promise<() => void> {
 	const realEl = el as WebComponent;

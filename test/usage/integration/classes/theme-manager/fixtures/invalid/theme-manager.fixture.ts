@@ -1,5 +1,5 @@
 import { ThemedElementParent, usedThemes } from "../../elements/themed-element.js";
-import { WebComponentThemeManger, noTheme } from "../../../../../../../src/wclib.js";
+import { WebComponent, noTheme } from "../../../../../../../src/wclib.js";
 import { TestElement } from "../../../elements/test-element.js";
 
 export interface ThemeManagerWindow extends Window {
@@ -7,7 +7,7 @@ export interface ThemeManagerWindow extends Window {
 }
 declare const window: ThemeManagerWindow;
 
-WebComponentThemeManger.initTheme({
+WebComponent.initTheme({
 	theme: usedThemes,
 	defaultTheme: 'nonexistent-theme'
 });

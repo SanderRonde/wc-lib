@@ -1,4 +1,4 @@
-import { WebComponent } from './component.js';
+import { WebComponent } from '../classes/full.js';
 import { CHANGE_TYPE } from './base.js';
 
 /**

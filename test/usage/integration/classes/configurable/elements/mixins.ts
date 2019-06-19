@@ -1,4 +1,5 @@
-import { mixin, ConfigurableMixin, config, ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, ExtendableMixin, NonAbstractWebComponent } from "../../../../../../src/wclib.js";
+import { mixin, ConfigurableMixin, config, ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, ExtendableMixin } from "../../../../../../src/wclib.js";
+import { Constructor } from "../../../../../../src/classes/types.js";
 
 export interface TestMixinsWindow extends Window {
 	mixins: {
@@ -28,7 +29,7 @@ const MixinD = (superFn: MixinReturn<typeof MixinC>) => class MixinD extends sup
 const MixinE = (superFn: MixinReturn<typeof MixinD>) => class MixinE extends superFn {
 	e = 1;
 }
-const MixinZ = (superFn: typeof NonAbstractWebComponent) => class MixinZ extends superFn {
+const MixinZ = <S extends Constructor<{}>>(superFn: S) => class MixinZ extends superFn {
 	z = 1;
 }
 

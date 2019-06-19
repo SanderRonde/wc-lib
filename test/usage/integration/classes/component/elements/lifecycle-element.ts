@@ -22,7 +22,7 @@ export class LifecycleElement extends ConfigurableWebComponent {
 		unmounted: 0
 	}
 
-	connectedCallback() {
+	connectedCallback = () => {
 		super.connectedCallback();
 		this.lifeCycleCalls.connected++;
 	}

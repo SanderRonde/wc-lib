@@ -226,9 +226,7 @@ declare class CommiterLike {
 	commit(): void;
 }
 
-export declare class TemplateResultLike {
-	constructor(...args: any[]);
-
+export interface TemplateResultLike {
 	getHTML(): string
 	getTemplateElement(): HTMLTemplateElement;
 }
@@ -248,7 +246,7 @@ export interface LitHTMLConfig {
 	 * ```js
 	 import { TemplateResult } from 'lit-html'```
 	 */
-	TemplateResult: typeof TemplateResultLike;
+	TemplateResult: Constructor<TemplateResultLike>;
 	/**
 	 * can be imported by calling
 	 * ```js
@@ -310,7 +308,7 @@ class TemplateClass {
 
 	public static _templateSettings: LitHTMLConfig|null = null;
 
-	public static get templateResult(): typeof TemplateResultLike {
+	public static get templateResult(): Constructor<TemplateResultLike> {
 		if (!this._templateSettings) {
 			console.warn('Missing templater, please initialize it ' +
 				'by calling ' +

@@ -334,14 +334,15 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * global hierarchy
 		 * 
 		 * @template R - The return type of given function
+		 * @template E - The components on the page's base types
 		 * 
 		 * @param {(element: WebComponentHierarchyManager) => R} fn - The
 		 * 	function that is ran on every component
 		 * 
 		 * @returns {R[]} All return values in an array
 		 */
-		public runGlobalFunction<R>(fn: (element: WebComponentHierarchyManager) => R): R[] {
-			return hierarchyClass(this).propagateThroughTree(fn);
+		public runGlobalFunction<E extends {}, R = any>(fn: (element: E) => R): R[] {
+			return hierarchyClass(this).propagateThroughTree(fn as any);
 		}
 
 		/**

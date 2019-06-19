@@ -1,4 +1,4 @@
-import { WebComponent } from './component.js';
+import { WebComponent } from "../classes/full.js";
 
 let _supportsPassive: boolean | null = null;
 /**

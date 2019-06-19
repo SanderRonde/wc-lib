@@ -4,10 +4,10 @@ import {
 	NodePart, isDirective, noChange 
 } from "../../../../../../../node_modules/lit-html/lit-html.js";
 import { PropsElement, EmptyProps, PrivProps, ReflectProps, MergedProps, UnmergedProps, InvalidDefineArg, OverriddenProp, NoReflectSelf } from '../../elements/props-element.js';
-import { WebComponentTemplateManager } from '../../../../../../../src/wclib.js';
+import { WebComponent } from '../../../../../../../src/wclib.js';
 
 
-WebComponentTemplateManager.initComplexTemplateProvider({
+WebComponent.initComplexTemplateProvider({
 	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
 	AttributeCommitter, NodePart, isDirective, noChange
 });

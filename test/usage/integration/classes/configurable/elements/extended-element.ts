@@ -1,11 +1,12 @@
-import { TemplateFn, CHANGE_TYPE, WebComponentBase, MixinFn, WebComponent, TemplateFnLike } from '../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, MixinFn, WebComponent, TemplateFnLike } from '../../../../../../src/wclib.js';
+import { WebComponentDefinerMixinClass } from '../../../../../../src/classes/types.js';
 
 export interface TestExtendedWindow extends Window {
 	extended: {
 		HTMLTemplate: TemplateFn;
 		CSSTemplate: TemplateFn;
 		element: typeof ExtendedElement;
-		dependencies: (typeof WebComponentBase)[];
+		dependencies: (Pick<WebComponentDefinerMixinClass, 'define'>)[];
 		mixins: MixinFn<any, any, any>[];
 
 		wrongClasses: {
@@ -34,7 +35,7 @@ declare const window: TestExtendedWindow;
 
 const HTMLTemplate = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
 const CSSTemplate = new TemplateFn<ExtendedElement>(null, CHANGE_TYPE.NEVER, () => {});
-const dependencies = [] as (typeof WebComponentBase)[];
+const dependencies = [] as (Pick<WebComponentDefinerMixinClass, 'define'>)[];
 const mixins = [] as (MixinFn<any, any, any>)[];
 
 export class ExtendedElement extends WebComponent {
@@ -292,7 +293,7 @@ class MissingSelf extends WebComponent {
 		// Will be stubbed
 	}
 
-	connectedCallback() {
+	connectedCallback = () => {
 		MissingSelf.onConnected(super.connectedCallback.bind(this));
 	}
 }

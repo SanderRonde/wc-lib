@@ -1,6 +1,6 @@
 import { directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
 import { RootElement } from '../../../hierarchy-manager/elements/root-element.js';
-import { WebComponentI18NManager } from '../../../../../../../src/wclib.js';
+import { WebComponent } from '../../../../../../../src/wclib.js';
 import { LangElement } from '../../elements/test-lang-element.js';
 import { TestElement } from "../../../elements/test-element.js";
 
@@ -18,7 +18,7 @@ function applyMarker<F>(fn: F): F {
 	return fn;
 }
 
-WebComponentI18NManager.initI18N({
+WebComponent.initI18N({
 	urlFormat: '/test/usage/fixtures/i18n/$LANG$.json',
 	defaultLang: 'en',
 	returner: directive((promise: Promise<any>, placeholder: string) => applyMarker((part: Part) => {
@@ -46,7 +46,7 @@ WebComponentI18NManager.initI18N({
 	}
 });
 
-(window as any).WebComponentI18NManager = WebComponentI18NManager;
+(window as any).WebComponentI18NManager = WebComponent;
 TestElement.define();
 LangElement.define();
 RootElement.define();

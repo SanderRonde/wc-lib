@@ -5,14 +5,9 @@ export {
 	bindToClass
 } from './lib/base.js';
 export {
-	PropChangeEvents, WebComponent
+	PropChangeEvents
 } from './lib/component.js';
-export {
-	ClassToObj, ConfigurableMixin,
-	ConfigurableWebComponent, ConfiguredComponent,
-	ExtendableMixin, MixinFn, WebComponentConfiguration,
-	config, mixin
-} from './lib/configurable.js';
+export * from './lib/configurable.js';
 export {
 	DefineMetadata
 } from './lib/definer.js';
@@ -32,3 +27,5 @@ export * from './lib/util.js';
 export {
 	noTheme
 } from './lib/theme-manager.js';
+
+export { WebComponent } from './classes/full.js';

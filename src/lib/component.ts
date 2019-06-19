@@ -2,7 +2,6 @@ import { EventListenerObj, WebComponentListenableMixinInstance } from './listene
 import { bindToClass, CHANGE_TYPE, WebComponentBaseMixinInstance } from './base.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
-import { FullWebComponent } from '../classes/full.js';
 import { Listeners } from './listeners.js';
 import { WCLibError } from './shared.js';
 import { Props } from './props.js';
@@ -510,21 +509,3 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 	}
 	return WebComponent;
 }
-
-export declare class WebComponent<ELS extends {
-	/**
-	 * All child elements of this component by ID
-	 */
-	IDS: {
-		[key: string]: HTMLElement|SVGElement;
-	};
-	/**
-	 * All child elements of this component by class
-	 */
-	CLASSES: {
-		[key: string]: HTMLElement|SVGElement;
-	}
-} = {
-	IDS: {};
-	CLASSES: {}
-}, E extends EventListenerObj = {}> extends FullWebComponent<ELS, E> { }

@@ -2,7 +2,7 @@ import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './de
 import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentThemeManagerMixinInstance } from './theme-manager.js';
-import { WebComponent } from './component.js';
+import { WebComponent } from '../classes/full.js';
 import { WCLibError } from './shared.js';
 
 function repeat(size: number) {
@@ -113,7 +113,7 @@ export type TemplateRenderResult = {
  *  the page
  */
 export type TemplateRenderFunction<C extends {
-	props: any;
+	props?: any;
 }, T, TR extends TemplateRenderResult> = (
 	/**
 	 * The base component
@@ -175,7 +175,7 @@ export type TemplateRenderFunction<C extends {
  */
 const templaterMap: WeakMap<Templater<any>, 
 	WeakMap<{
-		props: any;
+		props?: any;
 	}, WeakMap<TemplateFn<any, any, any>, 
 		//Any = R in TemplateFn
 		any|null>>> = new WeakMap();
@@ -190,16 +190,20 @@ export interface TemplateFnLike {
 	changeOn: CHANGE_TYPE;
 
 	renderAsText(changeType: CHANGE_TYPE, component: {
-		props: any;
+		props?: any;
 	}): string;
 	renderTemplate(changeType: CHANGE_TYPE, component: {
-		props: any; 
+		props?: any; 
 	}): any|null;
 	renderSame(changeType: CHANGE_TYPE, component: { 
-		props: any; 
+		props?: any; 
 	}, templater: any): any|string|null;
 	render(template: any|null, target: HTMLElement): void;
 	renderIfNew(template: any|null, target: HTMLElement): void;
+}
+
+type TemplateComponent = Partial<Pick<WebComponentThemeManagerMixinInstance, 'getTheme'>> & {
+	props: any;
 }
 
 /**
@@ -210,9 +214,7 @@ export interface TemplateFnLike {
  * @template T - The theme object
  * @template R - The return value of the template function
  */
-export class TemplateFn<C extends {
-	props: any;
-} & Partial<Pick<WebComponentThemeManagerMixinInstance, 'getTheme'>> = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> implements TemplateFnLike {
+export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> implements TemplateFnLike {
 	private _lastRenderChanged: boolean = true;
 
 	/**
@@ -266,11 +268,12 @@ export class TemplateFn<C extends {
 						rendered: cached
 					}
 				}
+				const templateComponent = component as unknown as TemplateComponent;
 				const rendered = this._template === null ?
 					null : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-							component, templater!, component.props, 
-							('getTheme' in component && component.getTheme) ? 
-								component.getTheme<T>() : null as any, changeType);
+						component, templater!, templateComponent.props, 
+						('getTheme' in templateComponent && templateComponent.getTheme) ? 
+							templateComponent.getTheme<T>() : null as any, changeType);
 				templateMap.set(this, rendered);
 				return {
 					changed: true,
@@ -280,10 +283,11 @@ export class TemplateFn<C extends {
 			if (this.changeOn & changeType ||
 				!templateMap.has(this)) {
 					//Change, rerender
+					const templateComponent = component as unknown as TemplateComponent;
 					const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-						component, templater!, component.props, 
-						('getTheme' in component && component.getTheme) ? 
-							component.getTheme<T>() : null as any, changeType);
+						component, templater!, templateComponent.props, 
+						('getTheme' in templateComponent && templateComponent.getTheme) ? 
+							templateComponent.getTheme<T>() : null as any, changeType);
 					templateMap.set(this, rendered);
 					return {
 						changed: true,

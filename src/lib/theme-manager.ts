@@ -80,11 +80,23 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			}
 		}
 
+		/**
+		 * Gets the name of the curent theme
+		 * 
+		 * @returns {string} The name of the current theme
+		 */
 		public getThemeName(): string {
 			return (this.globalProps && this.globalProps<{theme: string;}>().get('theme')) ||
 				currentTheme || PrivateData.__defaultTheme;
 		}
 
+		/**
+		 * Gets the current theme's theme object
+		 * 
+		 * @template T - The theme type
+		 * 
+		 * @returns {T} A theme type
+		 */
 		public getTheme<T>(): T {
 			if (PrivateData.__theme) {
 				const themeName = this.getThemeName();
@@ -95,7 +107,13 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			return noTheme as T;
 		}
 
-		//TODO: test this and document this
+		//TODO: test this
+		/**
+		 * Sets the theme of this component and any other
+		 * component in its hierarchy to the passed theme
+		 * 
+		 * @template T - The theme type
+		 */
 		public setTheme<T>(themeName: T) {
 			if (this.globalProps) {
 				this.globalProps<{theme: T;}>().set('theme', themeName);
@@ -104,10 +122,23 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			}
 		}
 
+		/**
+		 * Initializes the theme manager by passing
+		 * it the theme object and the default theme
+		 * 
+		 * @template T - The themes indexed by name
+		 */
 		static initTheme<T extends {
 			[name: string]: any;
 		}>({ theme, defaultTheme }: {
+			/**
+			 * The themes indexed by name
+			 */
 			theme: T;
+			/**
+			 * The default theme to use if no
+			 * other theme is set
+			 */
 			defaultTheme?: Extract<keyof T, string>
 		}) {
 			PrivateData.__theme = theme;
@@ -116,12 +147,32 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			}
 		}
 
+		/**
+		 * Sets the default theme
+		 * 
+		 * @template T - The themes indexed by name
+		 * 
+		 * @param {Extract<keyof T, string>} name - The
+		 * 	name of the default theme
+		 */
 		static setDefaultTheme<T extends {
 			[name: string]: any;
 		}>(name: Extract<keyof T, string>) {
 			PrivateData.__defaultTheme = name;
 		}
 
+		/**
+		 * Checks whether the constructed CSS should be changed. This function can be
+		 * overridden to allow for a custom checker. Since constructed CSS
+		 * is shared with all other instances of this specific component,
+		 * this should only return true if the CSS for all of these components
+		 * has changed. For example it might change when the theme has changed
+		 * 
+		 * @param {WebComponentBase} element - The element for which to
+		 * 	check it
+		 * 
+		 * @returns {boolean} Whether the constructed CSS has changed
+		 */
 		/* istanbul ignore next */
 		public static __constructedCSSChanged(element: WebComponentThemeManager & {
 			self: any;

@@ -202,7 +202,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * Be sure to always call `super.connectedCallback()`
 		 * 	if you override this method
 		 */
-		connectedCallback = () => {
+		connectedCallback() {
 			super.connectedCallback();
 			if (!this.self) {
 				throw new WCLibError(this, 

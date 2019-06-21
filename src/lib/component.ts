@@ -98,6 +98,8 @@ export type WebComponentListenedSuper = Constructor<
 export type WebComponentMixinInstance = InferInstance<WebComponentMixinClass>;
 export type WebComponentMixinClass = InferReturn<typeof WebComponentListenedMixin>;
 
+const connectedComponents: WeakSet<WebComponentMixinInstance> = new WeakSet();
+
 /**
  * A mixin that will return a wrapped up version of the final component,
  * taking care of some lifecycle events and adding some more
@@ -204,6 +206,8 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 */
 		connectedCallback() {
 			super.connectedCallback();
+			if (connectedComponents.has(this as WebComponentMixinInstance)) return;
+
 			if (!this.self) {
 				throw new WCLibError(this, 
 					'Missing .self property on component');
@@ -214,6 +218,8 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 			this.layoutMounted();
 
 			this.___definerClass.internals.connectedHooks.filter(fn => fn());
+
+			connectedComponents.add(this as WebComponentMixinInstance);
 		}
 
 		/**
@@ -383,6 +389,8 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 		 */
 		connectedCallback() {
 			super.connectedCallback();
+			if (connectedComponents.has(this as WebComponentMixinInstance)) return;
+			
 			if (!this.self) {
 				throw new WCLibError(this, 
 					'Missing .self property on component');
@@ -393,6 +401,7 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 			this.layoutMounted();
 
 			this.___definerClass.internals.connectedHooks.filter(fn => fn());
+			connectedComponents.add(this as WebComponentMixinInstance);
 		}
 
 		/**

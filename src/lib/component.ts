@@ -205,8 +205,10 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * 	if you override this method
 		 */
 		connectedCallback() {
+			let shouldQuit: boolean = connectedComponents.has(this as WebComponentMixinInstance);
+			connectedComponents.add(this as WebComponentMixinInstance);
 			super.connectedCallback();
-			if (connectedComponents.has(this as WebComponentMixinInstance)) return;
+			if (shouldQuit) return;
 
 			if (!this.self) {
 				throw new WCLibError(this, 
@@ -218,8 +220,6 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 			this.layoutMounted();
 
 			this.___definerClass.internals.connectedHooks.filter(fn => fn());
-
-			connectedComponents.add(this as WebComponentMixinInstance);
 		}
 
 		/**
@@ -388,8 +388,10 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 		 * if you override this method
 		 */
 		connectedCallback() {
+			let shouldQuit: boolean = connectedComponents.has(this as WebComponentMixinInstance);
+			connectedComponents.add(this as WebComponentMixinInstance);
 			super.connectedCallback();
-			if (connectedComponents.has(this as WebComponentMixinInstance)) return;
+			if (shouldQuit) return;
 			
 			if (!this.self) {
 				throw new WCLibError(this, 
@@ -401,7 +403,6 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 			this.layoutMounted();
 
 			this.___definerClass.internals.connectedHooks.filter(fn => fn());
-			connectedComponents.add(this as WebComponentMixinInstance);
 		}
 
 		/**

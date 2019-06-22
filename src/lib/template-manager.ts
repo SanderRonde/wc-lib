@@ -115,14 +115,20 @@ class ComplexValuePart implements Part {
 function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfig) {
 	return class ComponentEventPart extends eventPart {
 		element: WebComponentTemplateManagerMixinInstance|Element;
+
+		private _pendingValue: undefined|any = undefined;
 	
 		constructor(element: WebComponentTemplateManagerMixinInstance|Element, eventName: string, 
 			eventContext?: EventTarget) {
 				super(element, eventName, eventContext);
 				this.element = element;
-				this.eventName = eventName;
-				this.eventContext = eventContext;
+				(this.eventName as any) = eventName;
+				(this.eventContext as any) = eventContext;
 			}
+
+		setValue(value: any) {
+			this._pendingValue = value;
+		}
 	
 		commit() {
 			while (config.isDirective(this._pendingValue)) {

@@ -7,4 +7,4 @@
 
 [x] - Mixin-based classes
 [ ] - Create some pre-created bundles
-[ ] - Bundle, minify etc
+[ ] - Bundle, minify etc. Make sure it compiles without lit-html as a dependency

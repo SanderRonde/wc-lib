@@ -13,7 +13,6 @@ import { TemplateFnLike } from './base.js';
  * @template E - An object map of events to its args and return value. See
  * 	`WebComponentListenable` for more info
  */
-//@ts-ignore
 export class ConfigurableWebComponent<ELS extends {
 	IDS: {
 		[key: string]: HTMLElement|SVGElement;
@@ -104,7 +103,6 @@ export interface WebComponentConfiguration {
  * from `ConfigurableWebComponent` and decorated
  * with `@configure`.
  */
-//@ts-ignore
 export declare class ConfiguredComponent<ELS extends {
 	IDS: {
 		[key: string]: HTMLElement|SVGElement;

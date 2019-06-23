@@ -94,9 +94,17 @@ export const enum CHANGE_TYPE {
  */
 export type Templater<R> = (strings: TemplateStringsArray, ...values: any[]) => R;
 
+
+
 export type TemplateRenderResult = {
 	strings: string[]|TemplateStringsArray;
 	values: any[];
+}|{
+	readonly strings: string[]|TemplateStringsArray;
+	readonly values: any[];
+}|{
+	readonly strings: string[]|TemplateStringsArray;
+	readonly values: ReadonlyArray<unknown>;
 }|{
 	toText(): string;
 }|string;

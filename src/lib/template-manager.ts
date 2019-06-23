@@ -184,7 +184,7 @@ class ComplexTemplateProcessor implements TemplateProcessor {
 	}
 
 	handleAttributeExpressions(
-		element: Element, name: string, strings: string[]): PartLike[] {
+		element: Element, name: string, strings: string[]): PartLike[]|ReadonlyArray<PartLike> {
 			const prefix = name[0];
 			if (prefix === '@') {
 				if (name[1] === '@') {
@@ -228,7 +228,7 @@ declare class PartLike {
 declare class CommiterLike {
 	constructor(...args: any[]);
 	
-	parts: PartLike[];
+	readonly parts: ReadonlyArray<PartLike>;
 	commit(): void;
 }
 

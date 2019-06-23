@@ -196,16 +196,20 @@ const templaterMap: WeakMap<Templater<any>,
  */
 export type Renderer<T> = (template: T, container: HTMLElement|Element|Node) => any;
 
-export interface TemplateFnLike {
-	changeOn: CHANGE_TYPE;
+/**
+ * For some reason src/lib/base.CHANGE_TYPE is not assignable to
+ * build/lib/base.CHANGE_TYPe so this is needed
+ */
+export interface TemplateFnLike<CT extends number = number> {
+	changeOn: CT;
 
-	renderAsText(changeType: CHANGE_TYPE, component: {
+	renderAsText(changeType: CT, component: {
 		props?: any;
 	}): string;
-	renderTemplate(changeType: CHANGE_TYPE, component: {
+	renderTemplate(changeType: CT, component: {
 		props?: any; 
 	}): any|null;
-	renderSame(changeType: CHANGE_TYPE, component: { 
+	renderSame(changeType: CT, component: { 
 		props?: any; 
 	}, templater: any): any|string|null;
 	render(template: any|null, target: HTMLElement): void;
@@ -432,11 +436,11 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 }
 
 class BaseClassElementInstance {
-	public ___cssArr: TemplateFnLike[]|null = null;
-	public ___privateCSS: TemplateFnLike[]|null = null;
+	public ___cssArr: TemplateFnLike<CHANGE_TYPE>[]|null = null;
+	public ___privateCSS: TemplateFnLike<CHANGE_TYPE>[]|null = null;
 	public __cssSheets: {
 		sheet: CSSStyleSheet;
-		template: TemplateFnLike;
+		template: TemplateFnLike<CHANGE_TYPE>;
 	}[]|null = null;
 }
 
@@ -462,12 +466,12 @@ class BaseClass {
 		return classInstance;
 	}
 	
-	private get __cssArr(): TemplateFnLike[] {
+	private get __cssArr(): TemplateFnLike<CHANGE_TYPE>[] {
 		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
 		return (this.instance.___cssArr = 
 			makeArray(this._self.self.css || []));
 	};
-	public get __privateCSS(): TemplateFnLike[] {
+	public get __privateCSS(): TemplateFnLike<CHANGE_TYPE>[] {
 		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;
 		return (this.instance.___privateCSS = 
 			/* istanbul ignore next */
@@ -602,7 +606,7 @@ class BaseClass {
 		})());
 	}
 
-	public getRenderFn(template: TemplateFnLike, change: CHANGE_TYPE) {
+	public getRenderFn(template: TemplateFnLike<CHANGE_TYPE>, change: CHANGE_TYPE) {
 		if (change === CHANGE_TYPE.FORCE) {
 			return template.render.bind(template);	
 		} else {
@@ -642,7 +646,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * 
 		 * @readonly
 		 */
-		public static html: TemplateFnLike|null;
+		public static html: TemplateFnLike<CHANGE_TYPE>|null;
 
 		/**
 		 * The element's constructor
@@ -659,7 +663,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * 
 		 * @readonly
 		 */
-		public static css: TemplateFnLike|TemplateFnLike[]|null;
+		public static css: TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]|null;
 
 		/**
 		 * A function signaling whether this component has custom CSS applied to it
@@ -674,11 +678,11 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		/**
 		 * Gets this component's custom CSS templates
 		 * 
-		 * @returns {TemplateFnLike|TemplateFnLike[]} The
+		 * @returns {TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]} The
 		 * 	custom CSS templates
 		 */
 		/* istanbul ignore next */
-		public customCSS(): TemplateFnLike|TemplateFnLike[] {
+		public customCSS(): TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[] {
 			return [];
 		}
 

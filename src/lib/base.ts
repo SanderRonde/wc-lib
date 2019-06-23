@@ -1,3 +1,5 @@
+/// <reference path="../../typings/constructable-stylesheet.d.ts" />
+
 import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
 import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';

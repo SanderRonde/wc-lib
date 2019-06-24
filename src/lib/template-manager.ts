@@ -115,14 +115,20 @@ class ComplexValuePart implements Part {
 function getComponentEventPart(eventPart: typeof EventPart, config: LitHTMLConfig) {
 	return class ComponentEventPart extends eventPart {
 		element: WebComponentTemplateManagerMixinInstance|Element;
+
+		private _pendingValue: undefined|any = undefined;
 	
 		constructor(element: WebComponentTemplateManagerMixinInstance|Element, eventName: string, 
 			eventContext?: EventTarget) {
 				super(element, eventName, eventContext);
 				this.element = element;
-				this.eventName = eventName;
-				this.eventContext = eventContext;
+				(this.eventName as any) = eventName;
+				(this.eventContext as any) = eventContext;
 			}
+
+		setValue(value: any) {
+			this._pendingValue = value;
+		}
 	
 		commit() {
 			while (config.isDirective(this._pendingValue)) {
@@ -178,7 +184,7 @@ class ComplexTemplateProcessor implements TemplateProcessor {
 	}
 
 	handleAttributeExpressions(
-		element: Element, name: string, strings: string[]): PartLike[] {
+		element: Element, name: string, strings: string[]): PartLike[]|ReadonlyArray<PartLike> {
 			const prefix = name[0];
 			if (prefix === '@') {
 				if (name[1] === '@') {
@@ -222,7 +228,7 @@ declare class PartLike {
 declare class CommiterLike {
 	constructor(...args: any[]);
 	
-	parts: PartLike[];
+	readonly parts: ReadonlyArray<PartLike>;
 	commit(): void;
 }
 

@@ -557,7 +557,7 @@ export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<
 }
 
 export interface PropComponent extends HTMLElement {
-	renderToDOM(changeType: CHANGE_TYPE): void;
+	renderToDOM(changeType: number): void;
 	getParentRef(ref: string): any;
 	isMounted: boolean;
 	fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(

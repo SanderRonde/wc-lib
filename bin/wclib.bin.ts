@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -214,7 +216,7 @@ async function create(options: {
 	console.log(green(`\t${name}.css.ts`), green(checkmark()));
 }
 
-async function main() {
+export async function main() {
 	const { options, keywords: [ mainCmd ] } = parseArgs();
 	if (options.h || options.help) {
 		console.log('Usage: wclib command-name [options]');
@@ -242,7 +244,3 @@ async function main() {
 			process.exit(1);
 	}
 }
-
-(async() => {
-	await main();
-})();

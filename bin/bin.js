@@ -1,1 +1,3 @@
-require('./wclib.bin.js');
+#!/usr/bin/env node
+
+require('./wclib.bin.js').main();

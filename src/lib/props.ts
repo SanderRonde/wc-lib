@@ -40,7 +40,12 @@ function getterWithVal<R>(component: {
 				if (value.startsWith(refPrefix)) {
 					return component.getParentRef(value);
 				} else {
-					return JSON.parse(decodeURIComponent(value));
+					try {
+						return JSON.parse(decodeURIComponent(value));
+					} catch(e) {
+						console.warn('Failed to parse complex JSON value', decodeURIComponent(value));
+						return undefined;
+					}
 				}
 			}
 			return value;

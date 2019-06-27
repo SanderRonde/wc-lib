@@ -26,7 +26,6 @@
     "compileOnSave": true,
     "allowJs": true,
     "include": [
-        "./",
-        "../typings/"
+        "./"
     ]
 }

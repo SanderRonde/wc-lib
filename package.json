@@ -51,7 +51,7 @@
 		"compile:test": "tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json",
 		"compile:bin": "tsc -p bin/tsconfig.json",
 		"compile:all": "npm run compile && npm run compile:test && npm run compile:bin",
-		"install": "npm run compile && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
+		"install": "npm run compile && npm run compile:bin && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
 		"cypress": "node test/usage/test.js",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",

@@ -1,11 +1,20 @@
-/// <reference path="../../typings/constructable-stylesheet.d.ts" />
-
 import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
 import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentThemeManagerMixinInstance } from './theme-manager.js';
 import { WebComponent } from '../classes/full.js';
 import { WCLibError } from './shared.js';
+
+interface CSSStyleSheet {
+	insertRule(rule: string, index?: number): number;
+	deleteRule(index: number): void;
+	replace(text: string): Promise<CSSStyleSheet>;
+	replaceSync(text: string): void;
+}
+
+export interface ExtendedShadowRoot extends ShadowRoot {
+	adoptedStyleSheets: CSSStyleSheet[];
+}
 
 function repeat(size: number) {
 	return new Array(size).fill(0);
@@ -628,7 +637,7 @@ class BaseClass {
 				return template.changeOn === CHANGE_TYPE.THEME ||
 					template.changeOn & CHANGE_TYPE.NEVER;
 			}).map(t => ({
-				sheet: new CSSStyleSheet(),
+				sheet: new CSSStyleSheet() as unknown as CSSStyleSheet,
 				template: t
 			}));
 	}
@@ -789,7 +798,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 */
 		public readonly root = this.attachShadow({
 			mode: 'open'
-		});
+		}) as ExtendedShadowRoot;
 		
 		/**
 		 * The properties of this component

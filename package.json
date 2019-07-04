@@ -1,5 +1,13 @@
 {
 	"name": "wclib",
+	"bin": {
+		"wclib": "./bin/bin.js",
+		"wc-lib": "./bin/bin.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/SanderRonde/wc-lib.git"
+	},
 	"version": "1.0.0",
 	"description": "A webcomponent framework",
 	"main": "build/es/wclib.js",
@@ -7,6 +15,10 @@
 	"module": "build/cjs/wclib.js",
 	"author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
 	"license": "MIT",
+	"files": [
+		"bin/bin.js",
+		"buld/**"
+	],
 	"private": true,
 	"dependencies": {
 		"lit-html": "^1.1.0",
@@ -37,8 +49,9 @@
 	"scripts": {
 		"compile": "tsc -p src/tsconfig.json && tsc -p src/tsconfig.cjs.json",
 		"compile:test": "tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json",
-		"compile:all": "npm run compile && npm run compile:test",
-		"install": "npm run compile && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
+		"compile:bin": "tsc -p bin/tsconfig.json",
+		"compile:all": "npm run compile && npm run compile:test && npm run compile:bin",
+		"install": "npm run compile && npm run compile:bin && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
 		"cypress": "node test/usage/test.js",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",

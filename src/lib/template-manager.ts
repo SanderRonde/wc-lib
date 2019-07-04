@@ -490,6 +490,18 @@ export const WebComponentTemplateManagerMixin = <P extends WebComponentTemplateM
 			}
 			return parent.getRef(ref);
 		}
+
+		/**
+		 * Creates a reference to given value
+		 * 
+		 * @param {ComplexValue} value - The value that should be referenced
+		 * 
+		 * @returns {string} An string that represents
+		 * 	a reference to the passed value
+		 */
+		public genRef(value: ComplexValue): string {
+			return templateClass(this).genRef(value);
+		}
 	}
 	return WebComponentTemplateManager;
 }

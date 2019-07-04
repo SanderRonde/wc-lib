@@ -449,7 +449,7 @@ namespace Watching {
 	}
 
 	function watchObject(obj: any, properties: PathLevel, callback: () => void) {
-		if (typeof obj !== 'object' || obj === undefined || obj === null) {
+		if (typeof obj !== 'object' || obj === undefined || obj === null || obj instanceof HTMLElement) {
 			return obj;
 		}
 		if (typeof Proxy === 'undefined') {

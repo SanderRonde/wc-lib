@@ -187,7 +187,7 @@ export const enum PROP_TYPE {
 	 */
 	BOOL = 'bool'
 }
-type ComplexType<T> = typeof complex & {
+export type ComplexType<T> = typeof complex & {
 	__data: T;
 };
 

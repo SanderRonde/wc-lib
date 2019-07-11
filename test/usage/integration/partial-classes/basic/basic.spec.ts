@@ -13,4 +13,3 @@ context('Basic', function() {
 	propsSpec(getPartialClassFixture('basic', 'props'), 
 		getPartialClassFixture('basic', 'props-no-proxy'), false);
 });
-console.log(this, process);

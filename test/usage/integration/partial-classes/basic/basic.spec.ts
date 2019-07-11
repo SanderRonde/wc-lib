@@ -2,8 +2,8 @@ import { componentSpec } from "../../classes/component/componentSpec";
 import { listenerSpec } from "../../classes/listener/listenerSpec";
 import { definerSpec } from "../../classes/definer/definerspec";
 import { getPartialClassFixture } from "../../../lib/testing";
-import { baseSpec } from "../../classes/base/basespec";
 import { propsSpec } from "../../properties/props/propsspec";
+import { baseSpec } from "../../classes/base/basespec";
 
 context('Basic', function() {
 	definerSpec(getPartialClassFixture('basic', 'definer'));

@@ -51,6 +51,11 @@ context('Template Manager', function() {
 				expectMethodExists(el, 'getParentRef');
 			});
 		});
+		it('exposes a #genRef method', () => {
+			cy.get('#test').then(([el]: JQuery<TestElement>) => {
+				expectMethodExists(el, 'genRef');
+			});
+		});
 		it('exposes a static #initComplexTemplateProvider method', () => {
 			cy.window().then((window: TestWindow) => {
 				expectMethodExists(window.TestElement, 'initComplexTemplateProvider');
@@ -358,6 +363,13 @@ context('Template Manager', function() {
 							.to.be.equal(complex, 
 								'complex attribute resolves to the component');
 					});
+			});
+		});
+		it('can create a reference through #genRef', () => {
+			cy.get('#complex').then(([complex]: JQuery<ComplexElement>) => {
+				const someValue = {};
+				expect(complex.getRef(complex.genRef(someValue)))
+					.to.be.equal(someValue);
 			});
 		});
 	});

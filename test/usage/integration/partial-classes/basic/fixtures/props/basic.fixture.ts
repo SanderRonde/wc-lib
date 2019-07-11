@@ -1,5 +1,6 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../src/wclib.js";
-import { render } from "../../../../../../node_modules/lit-html/lit-html.js";
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../src/wclib.js";
+import { render, html } from "../../../../../../../node_modules/lit-html/lit-html.js";
+import { BasicWebComponent } from "../../../../../../../src/classes/partial.js";
 
 export interface PropsElementWindow extends Window {
 	accessSymbol: typeof accessSymbol;
@@ -32,11 +33,11 @@ export type DeepArr = {
 
 @config({
 	is: 'obj-el',
-	html: new TemplateFn<ObjEl>((html) => {
+	html: new TemplateFn<ObjEl>(() => {
 		return html``;
 	}, CHANGE_TYPE.NEVER, render)
 })
-export class ObjEl extends ConfigurableWebComponent {
+export class ObjEl extends BasicWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			complex: ComplexType<SomeComplexType>()
@@ -53,12 +54,9 @@ interface SymbolKeys {
 
 @config({
 	is: 'props-element',
-	html: new TemplateFn<PropsElement>(function (html) {
+	html: new TemplateFn<PropsElement>(function () {
 		return html`
-			<obj-el id="ref" #complex="${{
-				a: 'b',
-				c: 'd'
-			}}"></obj-el>
+			<obj-el id="ref"></obj-el>
 			<obj-el id="json" complex="${JSON.stringify({
 				a: 'b',
 				c: 'd'
@@ -73,7 +71,7 @@ interface SymbolKeys {
 		ObjEl
 	]
 })
-export class PropsElement extends ConfigurableWebComponent {
+export class PropsElement extends BasicWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			casingTest: {
@@ -428,7 +426,7 @@ export class PropsElement extends ConfigurableWebComponent {
 	is: 'empty-props',
 	html: null
 })
-export class EmptyProps extends ConfigurableWebComponent {
+export class EmptyProps extends BasicWebComponent {
 	props = Props.define(this);
 }
 
@@ -436,7 +434,7 @@ export class EmptyProps extends ConfigurableWebComponent {
 	is: 'priv-props',
 	html: null
 })
-export class PrivProps extends ConfigurableWebComponent {
+export class PrivProps extends BasicWebComponent {
 	props = Props.define(this, {
 		priv:  {
 			bool: {
@@ -459,7 +457,7 @@ export class PrivProps extends ConfigurableWebComponent {
 	is: 'reflect-props',
 	html: null
 })
-export class ReflectProps extends ConfigurableWebComponent {
+export class ReflectProps extends BasicWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			bool: {
@@ -478,7 +476,7 @@ export class ReflectProps extends ConfigurableWebComponent {
 	});
 }
 
-const PropMixin = (superFn: typeof ConfigurableWebComponent) => class PropMixin extends superFn {
+const PropMixin = (superFn: typeof BasicWebComponent) => class PropMixin extends superFn {
 	props = Props.define(this, {
 		reflect: {
 			bool: {
@@ -503,12 +501,14 @@ const PropMixin = (superFn: typeof ConfigurableWebComponent) => class PropMixin 
 	}
 }
 
+const propClass = mixin(ConfigurableMixin, PropMixin) as any;
+
 @config({
 	is: 'merged-props',
 	html: null
 })
-export class MergedProps extends mixin(ConfigurableMixin, PropMixin) {
-	props = Props.define(this, {
+export class MergedProps extends propClass {
+	props = Props.define(this as any, {
 		reflect: {
 			mergedBool: {
 				type: PROP_TYPE.BOOL,
@@ -532,15 +532,15 @@ export class MergedProps extends mixin(ConfigurableMixin, PropMixin) {
 	is: 'empty-props',
 	html: null
 })
-export class UnmergedProps extends mixin(ConfigurableMixin, PropMixin) {
-	props = Props.define(this) as any;
+export class UnmergedProps extends propClass {
+	props = Props.define(this as any) as any;
 }
 
 @config({
 	is: 'invalid-define-arg',
 	html: null
 })
-export class InvalidDefineArg extends ConfigurableWebComponent {
+export class InvalidDefineArg extends BasicWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			mergedBool: {
@@ -555,7 +555,7 @@ export class InvalidDefineArg extends ConfigurableWebComponent {
 	is: 'watched-component',
 	html: null
 })
-export class WatchedComponent extends ConfigurableWebComponent {
+export class WatchedComponent extends BasicWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			watched: {
@@ -586,7 +586,7 @@ export class WatchedComponent extends ConfigurableWebComponent {
 	is: 'overridden-component',
 	html: null
 })
-export class OverriddenProp extends ConfigurableWebComponent {
+export class OverriddenProp extends BasicWebComponent {
 	bool: string = 'str';
 
 	props = Props.define(this, {
@@ -611,7 +611,7 @@ export class OverriddenProp extends ConfigurableWebComponent {
 	is: 'no-reflect-self',
 	html: null
 })
-export class NoReflectSelf extends ConfigurableWebComponent {
+export class NoReflectSelf extends BasicWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			bool: {
@@ -632,3 +632,13 @@ export class NoReflectSelf extends ConfigurableWebComponent {
 		}
 	});
 }
+
+PropsElement.define();
+EmptyProps.define();
+PrivProps.define();
+ReflectProps.define();
+MergedProps.define();
+UnmergedProps.define();
+InvalidDefineArg.define();
+OverriddenProp.define();
+NoReflectSelf.define();

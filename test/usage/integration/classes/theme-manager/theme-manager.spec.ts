@@ -68,6 +68,11 @@ context('Theme Manager', function() {
 				expectMethodExists(el, 'getTheme');
 			});
 		});
+		it('exposes a #setTheme method', () => {
+			cy.get('#test').then(([el]: JQuery<TestElement>) => {
+				expectMethodExists(el, 'setTheme');
+			});
+		});
 		it('exposes a static #initTheme method', () => {
 			cy.window().then((window: TestWindow) => {
 				expectMethodExists(window.TestElement, 'initTheme');
@@ -152,120 +157,157 @@ context('Theme Manager', function() {
 				});
 			});
 		});
-		context('Changing', () => {
-			beforeEach(() => {
-				// Change theme to default
-				cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
-					el.globalProps<ThemeGlobalProps>().set('theme', 'first');
-				});
-			});
 
-			it('changes the theme across all elements in the scope', () => {
-				getDefaultThemedElements().then((elements) => {
-					for (const element of elements) {
-						expect(element.getThemeName()).to.be.equal(defaultTheme,
-							'default theme name is set');
-						expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme],
-							'default theme is set');
-					}
-				});
-
-				cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
-					el.globalProps<ThemeGlobalProps>().set('theme', 'second');
-				});
-
-				getDefaultThemedElements().then((elements) => {
-					for (const element of elements) {
-						expect(element.getThemeName()).to.be.equal('second',
-							'default theme name is set');
-						expect(element.getTheme()).to.be.deep.equal(usedThemes['second'],
-							'default theme is set');
-					}
-				});
-			});
-			it('applies the changed theme', () => {
-				getDeepThemedElements().then((elements) => {
-					for (const element of elements) {
-						expect(window.getComputedStyle(element.$('.text')!))
-							.to.have.property('color')
-							.to.be.equal(usedThemes[defaultTheme].color1,
-								'color1 is used');
-						expect(window.getComputedStyle(element.$('.text2')!))
-							.to.have.property('color')
-							.to.be.equal(usedThemes[defaultTheme].color2,
-								'color2 is used');
-					}
-				});
-
-				cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
-					el.globalProps<ThemeGlobalProps>().set('theme', 'second');
-				});
-
-				getDeepThemedElements().then((elements) => {
-					for (const element of elements) {
-						expect(window.getComputedStyle(element.$('.text')!))
-							.to.have.property('color')
-							.to.be.equal(usedThemes['second'].color1,
-								'color1 is used');
-						expect(window.getComputedStyle(element.$('.text2')!))
-							.to.have.property('color')
-							.to.be.equal(usedThemes['second'].color2,
-								'color2 is used');
-					}
-				});
-			});
-			it('applies the theme using adoptedStyleSheets', () => {
-				// The #separate element is not part of the hierarchy
-				// and as such won't receive the change in theme.
-				// The only way for its styles to change is for an
-				// adoptedStylesheet to change the global styles
-				// for the themed-element element
-
-				// Check for support
-				cy.window().then((window) => {
-					try { 
-						new (window as any).CSSStyleSheet(); 
-						return true; 
-					} catch(e) { 
-						return false;
-					}
-				}).then((supportsAdoptedStylesheets) => {
-					if (!supportsAdoptedStylesheets) return;
-
-					getDeepThemedElements().then((elements) => {
-						cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
-							for (const element of [...elements, ...separate]) {
-								expect(window.getComputedStyle(element.$('.text')!))
-									.to.have.property('color')
-									.to.be.equal(usedThemes[defaultTheme].color1,
-										'color1 is used');
-								expect(window.getComputedStyle(element.$('.text2')!))
-									.to.have.property('color')
-									.to.be.equal(usedThemes[defaultTheme].color2,
-										'color2 is used');
-							}
-						});
-					});
-
+		function genChangeTests(...tests: {
+			name: string, test: (doChange: () => void) => undefined
+		}[]) {
+			context('#setTheme', () => {
+				beforeEach(() => {
+					// Change theme to default
 					cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
-						el.globalProps<ThemeGlobalProps>().set('theme', 'second');
-					});
-
-					getDeepThemedElements().then((elements) => {
-						cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
-							for (const element of [...elements, ...separate]) {
-								expect(window.getComputedStyle(element.$('.text')!))
-									.to.have.property('color')
-									.to.be.equal(usedThemes['second'].color1,
-										'color1 is used');
-								expect(window.getComputedStyle(element.$('.text2')!))
-									.to.have.property('color')
-									.to.be.equal(usedThemes['second'].color2,
-										'color2 is used');
-							}
-						});
+						el.setTheme('first');
 					});
 				});
+				tests.forEach(({ name, test }) => {
+					it(name, () => {
+						test(() => {
+							cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
+								el.globalProps<ThemeGlobalProps>().set('theme', 'second');
+							});
+						})
+					});
+				});
+			});
+			context('global prop change', () => {
+				beforeEach(() => {
+					// Change theme to default
+					cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
+						el.globalProps<ThemeGlobalProps>().set('theme', 'first');
+					});
+				});
+				tests.forEach(({ name, test }) => {
+					it(name, () => {
+						test(() => {
+							cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
+								el.setTheme('second');
+							});
+						})
+					});
+				});
+			});
+		}
+
+		context('Changing', () => {
+			genChangeTests({
+				name: 'changes the theme across all elements in the scope', 
+				test: (doChange) => {
+					getDefaultThemedElements().then((elements) => {
+						for (const element of elements) {
+							expect(element.getThemeName()).to.be.equal(defaultTheme,
+								'default theme name is set');
+							expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme],
+								'default theme is set');
+						}
+					});
+
+					doChange();
+
+					getDefaultThemedElements().then((elements) => {
+						for (const element of elements) {
+							expect(element.getThemeName()).to.be.equal('second',
+								'default theme name is set');
+							expect(element.getTheme()).to.be.deep.equal(usedThemes['second'],
+								'default theme is set');
+						}
+					});
+					return undefined;
+				}
+			}, {
+				name: 'applies the changed theme',
+				test: (doChange) => {
+					getDeepThemedElements().then((elements) => {
+						for (const element of elements) {
+							expect(window.getComputedStyle(element.$('.text')!))
+								.to.have.property('color')
+								.to.be.equal(usedThemes[defaultTheme].color1,
+									'color1 is used');
+							expect(window.getComputedStyle(element.$('.text2')!))
+								.to.have.property('color')
+								.to.be.equal(usedThemes[defaultTheme].color2,
+									'color2 is used');
+						}
+					});
+	
+					doChange();
+	
+					getDeepThemedElements().then((elements) => {
+						for (const element of elements) {
+							expect(window.getComputedStyle(element.$('.text')!))
+								.to.have.property('color')
+								.to.be.equal(usedThemes['second'].color1,
+									'color1 is used');
+							expect(window.getComputedStyle(element.$('.text2')!))
+								.to.have.property('color')
+								.to.be.equal(usedThemes['second'].color2,
+									'color2 is used');
+						}
+					});
+					return undefined;
+				}
+			}, {
+				name: 'applies the theme using adoptedStyleSheets',
+				test: (doChange) => {
+					// The #separate element is not part of the hierarchy
+					// and as such won't receive the change in theme.
+					// The only way for its styles to change is for an
+					// adoptedStylesheet to change the global styles
+					// for the themed-element element
+	
+					// Check for support
+					cy.window().then((window) => {
+						try { 
+							new (window as any).CSSStyleSheet(); 
+							return true; 
+						} catch(e) { 
+							return false;
+						}
+					}).then((supportsAdoptedStylesheets) => {
+						if (!supportsAdoptedStylesheets) return;
+	
+						getDeepThemedElements().then((elements) => {
+							cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
+								for (const element of [...elements, ...separate]) {
+									expect(window.getComputedStyle(element.$('.text')!))
+										.to.have.property('color')
+										.to.be.equal(usedThemes[defaultTheme].color1,
+											'color1 is used');
+									expect(window.getComputedStyle(element.$('.text2')!))
+										.to.have.property('color')
+										.to.be.equal(usedThemes[defaultTheme].color2,
+											'color2 is used');
+								}
+							});
+						});
+	
+						doChange();
+	
+						getDeepThemedElements().then((elements) => {
+							cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
+								for (const element of [...elements, ...separate]) {
+									expect(window.getComputedStyle(element.$('.text')!))
+										.to.have.property('color')
+										.to.be.equal(usedThemes['second'].color1,
+											'color1 is used');
+									expect(window.getComputedStyle(element.$('.text2')!))
+										.to.have.property('color')
+										.to.be.equal(usedThemes['second'].color2,
+											'color2 is used');
+								}
+							});
+						});
+					});
+					return undefined;
+				}
 			});
 		});
 	});

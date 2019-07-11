@@ -42,7 +42,7 @@ class ComponentClass {
 	public supportsProxy: boolean = typeof Proxy !== 'undefined';
 
 	public genIdMapProxy<ELS extends {
-		IDS: any;
+		IDS?: any;
 	}>(self: WebComponentMixinInstance): IDMapFn<ELS["IDS"]> {
 		const __this = this;
 		return new Proxy((selector: string) => {
@@ -96,197 +96,9 @@ export type WebComponentListenedSuper = Constructor<
 	}>;
 
 export type WebComponentMixinInstance = InferInstance<WebComponentMixinClass>;
-export type WebComponentMixinClass = InferReturn<typeof WebComponentListenedMixin>;
+export type WebComponentMixinClass = InferReturn<typeof WebComponentMixin>;
 
 const connectedComponents: WeakSet<WebComponentMixinInstance> = new WeakSet();
-
-/**
- * A mixin that will return a wrapped up version of the final component,
- * taking care of some lifecycle events and adding some more
- * functionality
- */
-export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
-	const privateMap: WeakMap<WebComponent<any>, ComponentClass> = new WeakMap();
-	function getPrivate(self: WebComponent): ComponentClass {
-		if (privateMap.has(self)) return privateMap.get(self)!;
-		return privateMap.set(self, new ComponentClass()).get(self)!;
-	}
-
-	// ts-ignore
-	// Will show a warning regarding using generics in mixins
-	// This issue is tracked in the typescript repo's issues with numbers
-	// #26154 #24122 (among others)
-
-	/**
-	 * The class that wraps up all subclasses of a webcomponent
-	 * 
-	 * @template ELS - The elements found in this component's HTML
-	 * @template E - An object map of events to its args and return value. See
-	 * 	`WebComponentListenable` for more info
-	 */
-	//@ts-ignore
-	class WebComponent<ELS extends {
-		/**
-		 * All child elements of this component by ID
-		 */
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		/**
-		 * All child elements of this component by class
-		 */
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	} = {
-		IDS: {};
-		CLASSES: {}
-	}> extends superFn {
-		/**
-		 * An array of functions that get called when this
-		 * component gets unmounted. These will dispose
-		 * of any open listeners or similar garbage
-		 */
-		public disposables: (() => void)[] = [];
-
-		/**
-		 * Whether this component has been mounted
-		 */
-		public isMounted: boolean = false;
-
-		constructor(...args: any[]) {
-			super(...args);
-			this.___definerClass.internals.postRenderHooks.push(
-				getPrivate(this).clearMap);
-		}
-
-		/**
-		 * An object that contains all children
-		 * of this element mapped by their ID. 
-		 * This object can also be called with a
-		 * query, which is just a proxy call to 
-		 * `this.root.querySelector`.
-		 * 
-		 * **Note:** This function returns `undefined`
-		 * 	when no element can be found instead of 
-		 * 	null.
-		 * 
-		 * @readonly
-		 */
-		get $(): IDMapFn<ELS["IDS"]> {
-			if (getPrivate(this).supportsProxy) {
-				return getPrivate(this).idMapProxy ||
-					(getPrivate(this).idMapProxy = getPrivate(this).genIdMapProxy<ELS>(this as any))
-			}
-
-			// Re-generate the ID map every time
-			return getPrivate(this).getIdMapSnapshot(this as any);
-		}
-
-		/**
-		 * Proxy for `this.root.querySelectorAll(selector)`
-		 * 
-		 * @template E - An element
-		 * @param {string} selector - The query to use
-		 * 
-		 * @returns {NodeListOf<HTMLElement|SVGElement|E>} A list of
-		 * 	nodes that are the result of this query
-		 */
-		$$<K extends keyof HTMLElementTagNameMap>(selector: K): NodeListOf<HTMLElementTagNameMap[K]>;
-		$$<K extends keyof SVGElementTagNameMap>(selector: K): NodeListOf<SVGElementTagNameMap[K]>;
-		$$<E extends Element = Element>(selector: string): NodeListOf<E>;
-		$$(selector: string): NodeListOf<HTMLElement> {
-			return this.root.querySelectorAll(selector);
-		}
-
-		/**
-		 * Called when the component is mounted to the dom.
-		 * Be sure to always call `super.connectedCallback()`
-		 * 	if you override this method
-		 */
-		connectedCallback() {
-			let shouldQuit: boolean = connectedComponents.has(this as WebComponentMixinInstance);
-			connectedComponents.add(this as WebComponentMixinInstance);
-			super.connectedCallback();
-			if (shouldQuit) return;
-
-			if (!this.self) {
-				throw new WCLibError(this, 
-					'Missing .self property on component');
-			}
-
-			Props.onConnect(this);
-			this.renderToDOM(CHANGE_TYPE.ALWAYS);
-			this.layoutMounted();
-
-			this.___definerClass.internals.connectedHooks.filter(fn => fn());
-		}
-
-		/**
-		 * Called when the component is unmounted from the dom
-		 * Be sure to always call `super.disconnectedCallback()`
-		 * 	if you override this method
-		 */
-		disconnectedCallback() {
-			Listeners.removeAllElementListeners(this as any);
-			this.disposables.forEach(disposable => disposable());
-			this.disposables = [];
-			this.isMounted = false;
-			this.unmounted();
-		}
-
-		/**
-		 * Called when the component is mounted to the dom for the first time.
-		 * This will be part of the "constructor" and will slow down the initial render
-		 */
-		layoutMounted() {}
-
-		/**
-		 * Called when the component is mounted to the dom and is ready to be manipulated
-		 */
-		mounted() {}
-
-		/**
-		 * Called when the component is removed from the dom
-		 */
-		unmounted() {}
-
-		/**
-		 * Listeners for property change events on this node
-		 * 
-		 * @template P - The properties of this node
-		 * 
-		 * @param {PropChangeEvents} event - The type of change
-		 * 	to listen for. Either a `propChange` or a 
-		 * 	`beforePropChange` event
-		 * @param {(key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void} listener - The
-		 * 	listener that should be called when the event is fired. 
-		 * 	This listener is called with the name of the changed
-		 * 	property, the new value and the old value respectively
-		 * @param {boolean} [once] - Whther the listener should only
-		 * 	be called once
-		 */
-		public listenProp<P extends Props & {
-			[key: string]: any;
-		}>(event: PropChangeEvents, 
-			listener: (key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void,
-			once?: boolean): void;
-		public listenProp<P extends Props & {
-			[key: string]: any;
-		}, PK extends keyof P>(event: PropChangeEvents, 
-			listener: (key: PK, newValue: P[PK], oldValue: P[PK]) => void,
-			once?: boolean): void;
-		public listenProp<P extends Props & {
-			[key: string]: any;
-		}>(event: PropChangeEvents, 
-			listener: (key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void,
-			once: boolean = false) {
-				this.listen(event, listener, once);
-			}
-	}
-	return WebComponent;
-}
-
 /**
  * The class that wraps up all subclasses of a webcomponent.
  * This version takes two type parameters that allow for the
@@ -297,7 +109,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
  * @template E - An object map of events to its args and return value. See
  * 	`WebComponentListenable` for more info
  */
-export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(superFn: P) => {
+export const WebComponentMixin = <P extends WebComponentListenedSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponent<any>, ComponentClass> = new WeakMap();
 	function getPrivate(self: WebComponent): ComponentClass {
 		if (privateMap.has(self)) return privateMap.get(self)!;
@@ -312,19 +124,16 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 		/**
 		 * All child elements of this component by ID
 		 */
-		IDS: {
+		IDS?: {
 			[key: string]: HTMLElement|SVGElement;
 		};
 		/**
 		 * All child elements of this component by class
 		 */
-		CLASSES: {
+		CLASSES?: {
 			[key: string]: HTMLElement|SVGElement;
 		}
-	} = {
-		IDS: {};
-		CLASSES: {}
-	}, E extends EventListenerObj = {}> extends superFn {
+	} = {}, E extends EventListenerObj = {}> extends superFn {
 		/**
 		 * An array of functions that get called when this
 		 * component gets unmounted. These will dispose
@@ -391,6 +200,7 @@ export const WebComponentListenedMixin = <P extends WebComponentListenedSuper>(s
 			let shouldQuit: boolean = connectedComponents.has(this as WebComponentMixinInstance);
 			connectedComponents.add(this as WebComponentMixinInstance);
 			super.connectedCallback();
+			/** istanbul ignore if  */
 			if (shouldQuit) return;
 			
 			if (!this.self) {

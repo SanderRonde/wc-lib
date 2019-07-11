@@ -9,22 +9,22 @@ import { CHANGE_TYPE } from './base.js';
 export const refPrefix = '___complex_ref';
 
 function getterWithVal<R>(component: {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R;
 function getterWithVal(component: {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: 'bool'): boolean;
 function getterWithVal(component: {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: 'string'): string|undefined;
 function getterWithVal(component: {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: 'number'): number|undefined;
 function getterWithVal<R>(component: {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: typeof complex): R|undefined;
 function getterWithVal<R>(component: {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R {
 	if (type === 'bool') {
 		if (strict) {
@@ -38,7 +38,10 @@ function getterWithVal<R>(component: {
 				return ~~value;
 			} else if (type === complex) {
 				if (value.startsWith(refPrefix)) {
-					return component.getParentRef(value);
+					if (component.getParentRef) {
+						return component.getParentRef(value);
+					}
+					return value;
 				} else {
 					try {
 						return JSON.parse(decodeURIComponent(value));
@@ -73,22 +76,22 @@ function getterWithVal<R>(component: {
  * @returns {boolean|string|number|undefined|R} The value
  */
 export function getter<R>(element: HTMLElement & {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R;
 export function getter(element: HTMLElement & {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'bool'): boolean;
 export function getter(element: HTMLElement & {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string'): string|undefined;
 export function getter(element: HTMLElement & {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'number'): number|undefined;
 export function getter<R>(element: HTMLElement & {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: typeof complex): R|undefined;
 export function getter<R>(element: HTMLElement & {
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R {
 	return getterWithVal(element, element.getAttribute(name), strict, type);
 }
@@ -563,7 +566,7 @@ export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<
 
 export interface PropComponent extends HTMLElement {
 	renderToDOM(changeType: number): void;
-	getParentRef(ref: string): any;
+	getParentRef?(ref: string): any;
 	isMounted: boolean;
 	fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(
 		event: EV|any, ...params: DEFAULT_EVENTS[EV]['args']|any): R[]

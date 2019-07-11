@@ -107,7 +107,6 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			return noTheme as T;
 		}
 
-		//TODO: test this
 		/**
 		 * Sets the theme of this component and any other
 		 * component in its hierarchy to the passed theme

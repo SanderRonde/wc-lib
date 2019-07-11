@@ -668,8 +668,9 @@ class BaseClass {
 		}
 
 		this.instance.__cssSheets!.forEach(({ sheet, template }) => {
-			sheet.replaceSync(template.renderAsText(change, this._self).replace(
-				/<\/?style>/g, ''));
+			const rendered = template.renderAsText(change, this._self).replace(
+				/<\/?style>/g, '');
+			sheet.replaceSync(rendered);
 		});
 	}
 

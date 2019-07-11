@@ -1,6 +1,6 @@
 import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from "../../../../../../src/wclib.js";
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { TestTheme } from "../theme-manager.spec.js";
+import { TestTheme } from "../themeManagerspec";
 
 export const usedThemes: {
 	[key: string]: TestTheme;

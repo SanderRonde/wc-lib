@@ -83,16 +83,9 @@ export type WebComponentSuper = Constructor<
 	HTMLElement &
 	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
 	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
-	Pick<WebComponentListenableMixinInstance, 'listen'> & {
-		connectedCallback(): void;
-	}>;
-
-export type WebComponentListenedSuper = Constructor<
-	HTMLElement &
-	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
-	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
 	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'> & {
 		connectedCallback(): void;
+		disconnectedCallback?(): void;
 	}>;
 
 export type WebComponentMixinInstance = InferInstance<WebComponentMixinClass>;
@@ -109,7 +102,7 @@ const connectedComponents: WeakSet<WebComponentMixinInstance> = new WeakSet();
  * @template E - An object map of events to its args and return value. See
  * 	`WebComponentListenable` for more info
  */
-export const WebComponentMixin = <P extends WebComponentListenedSuper>(superFn: P) => {
+export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponent<any>, ComponentClass> = new WeakMap();
 	function getPrivate(self: WebComponent): ComponentClass {
 		if (privateMap.has(self)) return privateMap.get(self)!;
@@ -221,6 +214,7 @@ export const WebComponentMixin = <P extends WebComponentListenedSuper>(superFn: 
 		 * 	if you override this method
 		 */
 		disconnectedCallback() {
+			super.disconnectedCallback && super.disconnectedCallback();
 			Listeners.removeAllElementListeners(this as any);
 			this.disposables.forEach(disposable => disposable());
 			this.disposables = [];

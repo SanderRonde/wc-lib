@@ -34,6 +34,12 @@ class I18NClass {
 		this.setLang(I18NClass.__loadingLang!, true);
 	}
 
+	public async notifyNewLang(lang: string) {
+		for (const listener of I18NClass._listeners) {
+			listener(lang);
+		}
+	}
+
 	public async setLang(lang: string, delayRender: boolean = false) {
 		if (I18NClass.__loadingLang !== lang) {
 			I18NClass.__loadingLang = lang;
@@ -51,10 +57,6 @@ class I18NClass {
 			} else {
 				this._self.renderToDOM(CHANGE_TYPE.LANG);
 			}
-		}
-
-		for (const listener of I18NClass._listeners) {
-			listener(lang);
 		}
 	}
 
@@ -169,7 +171,6 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 					}
 				});
 			} else {
-				//TODO: test if this works without hierachy-manager
 				I18NClass.notifyOnLangChange((lang: string) => {
 					i18nClass(this).setLang(lang);
 				});
@@ -182,13 +183,14 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
-		public setLang<L extends string>(lang: L): void {
+		public async setLang<L extends string>(lang: L): Promise<void> {
 			if (this.globalProps) {
 				this.globalProps<{
 					lang: string;
 				}>().set('lang', lang);
 			} else {
-				i18nClass(this).setLang(lang);
+				await i18nClass(this).setLang(lang);
+				await i18nClass(this).notifyNewLang(lang);
 			}
 		}
 

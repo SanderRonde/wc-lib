@@ -1,5 +1,5 @@
 import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, bindToClass, Renderer } from '../../../../../../../src/wclib.js';
-import { render, html } from 'lit-html';
+import { render, html } from "../../../../../../../node_modules/lit-html/lit-html.js";
 import { ComplexTemplatingWebComponent } from '../../../../../../../src/classes/partial.js';
 
 export interface RenderTestWindow extends Window {

@@ -214,6 +214,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * 	if you override this method
 		 */
 		disconnectedCallback() {
+			/* istanbul ignore next */
 			super.disconnectedCallback && super.disconnectedCallback();
 			Listeners.removeAllElementListeners(this as any);
 			this.disposables.forEach(disposable => disposable());

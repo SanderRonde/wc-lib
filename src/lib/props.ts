@@ -38,9 +38,11 @@ function getterWithVal<R>(component: {
 				return ~~value;
 			} else if (type === complex) {
 				if (value.startsWith(refPrefix)) {
+					/* istanbul ignore else */
 					if (component.getParentRef) {
 						return component.getParentRef(value);
 					}
+					/* istanbul ignore next */
 					return value;
 				} else {
 					try {

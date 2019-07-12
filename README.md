@@ -8,6 +8,6 @@
 [x] - Mixin-based classes
 [x] - Create some pre-created bundles
 [ ] - Check out defs for pre-created bundles
-[ ] - Check what priv props really do
+[x] - Check what priv props really do
 [ ] - Bundle, minify etc. Make sure it compiles without lit-html as a dependency
 [ ] - Consider typed CSS

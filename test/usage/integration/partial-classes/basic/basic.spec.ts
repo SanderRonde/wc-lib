@@ -1,5 +1,5 @@
-import { componentSpec } from "../../classes/component/componentSpec";
-import { listenerSpec } from "../../classes/listener/listenerSpec";
+import { componentSpec } from "../../classes/component/componentspec";
+import { listenerSpec } from "../../classes/listener/listenerspec";
 import { definerSpec } from "../../classes/definer/definerspec";
 import { getPartialClassFixture } from "../../../lib/testing";
 import { propsSpec } from "../../properties/props/propsspec";

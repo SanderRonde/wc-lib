@@ -91,7 +91,6 @@ export type WebComponentSuper = Constructor<
 export type WebComponentMixinInstance = InferInstance<WebComponentMixinClass>;
 export type WebComponentMixinClass = InferReturn<typeof WebComponentMixin>;
 
-const connectedComponents: WeakSet<WebComponentMixinInstance> = new WeakSet();
 /**
  * The class that wraps up all subclasses of a webcomponent.
  * This version takes two type parameters that allow for the
@@ -190,11 +189,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * if you override this method
 		 */
 		connectedCallback() {
-			let shouldQuit: boolean = connectedComponents.has(this as WebComponentMixinInstance);
-			connectedComponents.add(this as WebComponentMixinInstance);
 			super.connectedCallback();
-			/** istanbul ignore if  */
-			if (shouldQuit) return;
 			
 			if (!this.self) {
 				throw new WCLibError(this, 

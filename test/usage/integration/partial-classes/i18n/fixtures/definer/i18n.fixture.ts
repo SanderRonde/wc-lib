@@ -1,6 +1,6 @@
 import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, DefineMetadata } from '../../../../../../../src/wclib.js';
 import { render, html } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { BasicWebComponent } from '../../../../../../../src/classes/partial.js';
+import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`
@@ -18,7 +18,7 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	html: TestElementHTML,
 	css: TestElementCSS
 })
-export class TestElement extends BasicWebComponent<{
+export class TestElement extends I18NWebComponent<{
 	IDS: {
 		divId: HTMLDivElement;
 		headerId: HTMLHeadingElement;
@@ -71,7 +71,7 @@ const ParentElementCSS = new TemplateFn<ParentElement>(() => {
 		TestElement
 	]
 })
-export class ParentElement extends BasicWebComponent<{
+export class ParentElement extends I18NWebComponent<{
 	IDS: {};
 	CLASSES: {};
 }, {

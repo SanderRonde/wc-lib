@@ -1,6 +1,6 @@
 import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../src/wclib.js";
 import { render, html } from "../../../../../../../node_modules/lit-html/lit-html.js";
-import { BasicWebComponent } from "../../../../../../../src/classes/partial.js";
+import { I18NWebComponent } from "../../../../../../../src/classes/partial.js";
 
 export interface PropsElementWindow extends Window {
 	accessSymbol: typeof accessSymbol;
@@ -37,7 +37,7 @@ export type DeepArr = {
 		return html``;
 	}, CHANGE_TYPE.NEVER, render)
 })
-export class ObjEl extends BasicWebComponent {
+export class ObjEl extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			complex: ComplexType<SomeComplexType>()
@@ -71,7 +71,7 @@ interface SymbolKeys {
 		ObjEl
 	]
 })
-export class PropsElement extends BasicWebComponent {
+export class PropsElement extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			casingTest: {
@@ -426,7 +426,7 @@ export class PropsElement extends BasicWebComponent {
 	is: 'empty-props',
 	html: null
 })
-export class EmptyProps extends BasicWebComponent {
+export class EmptyProps extends I18NWebComponent {
 	props = Props.define(this);
 }
 
@@ -434,7 +434,7 @@ export class EmptyProps extends BasicWebComponent {
 	is: 'priv-props',
 	html: null
 })
-export class PrivProps extends BasicWebComponent {
+export class PrivProps extends I18NWebComponent {
 	props = Props.define(this, {
 		priv:  {
 			bool: {
@@ -457,7 +457,7 @@ export class PrivProps extends BasicWebComponent {
 	is: 'reflect-props',
 	html: null
 })
-export class ReflectProps extends BasicWebComponent {
+export class ReflectProps extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			bool: {
@@ -476,7 +476,7 @@ export class ReflectProps extends BasicWebComponent {
 	});
 }
 
-const PropMixin = (superFn: typeof BasicWebComponent) => class PropMixin extends superFn {
+const PropMixin = (superFn: typeof I18NWebComponent) => class PropMixin extends superFn {
 	props = Props.define(this, {
 		reflect: {
 			bool: {
@@ -540,7 +540,7 @@ export class UnmergedProps extends propClass {
 	is: 'invalid-define-arg',
 	html: null
 })
-export class InvalidDefineArg extends BasicWebComponent {
+export class InvalidDefineArg extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			mergedBool: {
@@ -555,7 +555,7 @@ export class InvalidDefineArg extends BasicWebComponent {
 	is: 'watched-component',
 	html: null
 })
-export class WatchedComponent extends BasicWebComponent {
+export class WatchedComponent extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			watched: {
@@ -586,7 +586,7 @@ export class WatchedComponent extends BasicWebComponent {
 	is: 'overridden-component',
 	html: null
 })
-export class OverriddenProp extends BasicWebComponent {
+export class OverriddenProp extends I18NWebComponent {
 	bool: string = 'str';
 
 	props = Props.define(this, {
@@ -611,7 +611,7 @@ export class OverriddenProp extends BasicWebComponent {
 	is: 'no-reflect-self',
 	html: null
 })
-export class NoReflectSelf extends BasicWebComponent {
+export class NoReflectSelf extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			bool: {

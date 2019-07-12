@@ -1,6 +1,6 @@
 import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, bindToClass, Renderer } from '../../../../../../../src/wclib.js';
 import { render, html } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { BasicWebComponent } from '../../../../../../../src/classes/partial.js';
+import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
 
 export interface RenderTestWindow extends Window {
 	renderCalled: {
@@ -43,7 +43,7 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	return html`<style> * {color: red; } </style>`;
 }, CHANGE_TYPE.NEVER, render);
 
-export class TestElementBase extends BasicWebComponent<{
+export class TestElementBase extends I18NWebComponent<{
 	IDS: {};
 	CLASSES: {};
 }> {
@@ -155,7 +155,7 @@ window.renderCalled['all'] = 0;
 class RenderTestElementAll extends TestElementBase { }
 
 
-class NoCSS extends BasicWebComponent {
+class NoCSS extends I18NWebComponent {
 	static is = 'no-css';
 	static html = new TemplateFn<NoCSS>(() => {
 		return html`<div id="content">test</div>`;
@@ -172,7 +172,7 @@ class NoCSS extends BasicWebComponent {
 	is: 'bind-test',
 	html: null
 })
-export class BindTest extends BasicWebComponent {
+export class BindTest extends I18NWebComponent {
 	@bindToClass
 	fn() {
 		return this;
@@ -185,7 +185,7 @@ window.WrongBindTest = (() => {
 		is: 'wrong-bind-test',
 		html: null
 	})
-	class WrongBindTest extends BasicWebComponent {
+	class WrongBindTest extends I18NWebComponent {
 		@(bindToClass as any)
 		fn: boolean = true;
 	}
@@ -289,7 +289,7 @@ const customTemplateNoRenderer = new TemplateFn<any>(() => {
 		return html`<h1>${'test'}</h1>`;
 	}, CHANGE_TYPE.NEVER, render)
 })
-export class ChangeNever extends BasicWebComponent {
+export class ChangeNever extends I18NWebComponent {
 }
 
 TestElement.define();

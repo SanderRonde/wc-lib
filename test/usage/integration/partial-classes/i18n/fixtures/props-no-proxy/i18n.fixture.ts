@@ -1,12 +1,12 @@
 import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../src/wclib.js';
 import { DeepObject } from '../../../../properties/props/elements/props-element.js';
-import { BasicWebComponent } from '../../../../../../../src/classes/partial.js';
+import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
 
 @config({
 	is: 'reflect-props',
 	html: null
 })
-export class ReflectProps extends BasicWebComponent {
+export class ReflectProps extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			bool: {
@@ -29,7 +29,7 @@ export class ReflectProps extends BasicWebComponent {
 	is: 'watched-component',
 	html: null
 })
-export class WatchedComponent extends BasicWebComponent {
+export class WatchedComponent extends I18NWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			watched: {

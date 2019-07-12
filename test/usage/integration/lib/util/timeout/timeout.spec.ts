@@ -1,5 +1,5 @@
-import { SLOW } from "../../../../lib/timing";
 import { Timeout } from "../../../../../../src/wclib";
+import { SLOW } from "../../../../lib/timing";
 
 context('Timeout', function() {
 	this.slow(SLOW);

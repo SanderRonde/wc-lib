@@ -32,11 +32,11 @@ export type DeepArr = {
 
 @config({
 	is: 'obj-el',
-	html: new TemplateFn<ComplexReceiverElement>((html) => {
+	html: new TemplateFn<ObjEl>((html) => {
 		return html``;
 	}, CHANGE_TYPE.NEVER, render)
 })
-export class ComplexReceiverElement extends ConfigurableWebComponent {
+export class ObjEl extends ConfigurableWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			complex: ComplexType<SomeComplexType>()
@@ -58,15 +58,19 @@ interface SymbolKeys {
 			<obj-el id="ref" #complex="${{
 				a: 'b',
 				c: 'd'
-			}}"></complex-receiver-element>
+			}}"></obj-el>
 			<obj-el id="json" complex="${JSON.stringify({
 				a: 'b',
 				c: 'd'
-			})}"></complex-receiver-element>
+			})}"></obj-el>
+			<obj-el id="invalid-json" complex="${JSON.stringify({
+				a: 'b',
+				c: 'd'
+			}) + 'padding'}"></obj-el>
 		`;
 	}, CHANGE_TYPE.PROP, render),
 	dependencies: [
-		ComplexReceiverElement
+		ObjEl
 	]
 })
 export class PropsElement extends ConfigurableWebComponent {

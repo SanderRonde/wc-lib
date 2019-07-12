@@ -130,7 +130,7 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 	 * and firing of events
 	 */
 	//@ts-ignore
-	class WebComponentListenable<E extends EventListenerObj> extends superFn {
+	class WebComponentListenable<E extends EventListenerObj = {}> extends superFn {
 		constructor(...args: any[]) {
             super(...args);
 		}

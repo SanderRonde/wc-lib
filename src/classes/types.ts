@@ -21,7 +21,6 @@ export {
 } from '../lib/base.js';
 export {
 	WebComponentSuper,
-	WebComponentListenedSuper,
 	WebComponentMixinInstance,
 	WebComponentMixinClass
 } from '../lib/component.js';

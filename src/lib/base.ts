@@ -3,7 +3,6 @@ import { WebComponentTemplateManagerMixinInstance } from './template-manager.js'
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentThemeManagerMixinInstance } from './theme-manager.js';
 import { WebComponent } from '../classes/full.js';
-import { WCLibError } from './shared.js';
 
 interface CSSStyleSheet {
 	insertRule(rule: string, index?: number): number;
@@ -825,28 +824,23 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 			if (baseClass(this).canUseConstructedCSS) {
 				baseClass(this).renderConstructedCSS(change);
 			}
-			try {
-				baseClass(this).__privateCSS.forEach((sheet, index) => {
+			baseClass(this).__privateCSS.forEach((sheet, index) => {
+				baseClass(this).getRenderFn(sheet, change)(
+					sheet.renderTemplate(change, this as any), 
+					baseClass(this).renderContainers.css[index]);	
+			});
+			if (this.__hasCustomCSS()) {
+				makeArray(this.customCSS()).forEach((sheet, index) => {
 					baseClass(this).getRenderFn(sheet, change)(
-						sheet.renderTemplate(change, this as any), 
-						baseClass(this).renderContainers.css[index]);	
+						sheet.renderTemplate(change, this as any),
+						baseClass(this).renderContainers.customCSS[index]);
 				});
-				if (this.__hasCustomCSS()) {
-					makeArray(this.customCSS()).forEach((sheet, index) => {
-						baseClass(this).getRenderFn(sheet, change)(
-							sheet.renderTemplate(change, this as any),
-							baseClass(this).renderContainers.customCSS[index]);
-					});
-				}
-				/* istanbul ignore next */
-				if (this.self.html) {
-					baseClass(this).getRenderFn(this.self.html, change)(
-						this.self.html.renderTemplate(change, this as any), 
-						baseClass(this).renderContainers.html);
-				}
-			} catch(e) {
-				/* istanbul ignore next */
-				throw new WCLibError(this, e.message);
+			}
+			/* istanbul ignore next */
+			if (this.self.html) {
+				baseClass(this).getRenderFn(this.self.html, change)(
+					this.self.html.renderTemplate(change, this as any), 
+					baseClass(this).renderContainers.html);
 			}
 			baseClass(this).doPostRenderLifecycle();
 		}

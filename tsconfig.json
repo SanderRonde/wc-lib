@@ -25,7 +25,6 @@
     "compileOnSave": true,
     "allowJs": true,
     "include": [
-        "gulpfile.ts",
-        "../types/"
+        "gulpfile.ts"
     ]
 }

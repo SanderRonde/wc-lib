@@ -24,8 +24,7 @@
     "compileOnSave": true,
 	"allowJs": true,
 	"include": [
-		"**/*",
-        "../types/"
+		"**/*"
     ],
     "exclude": [
         "usage/test.ts",

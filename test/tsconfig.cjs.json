@@ -26,7 +26,6 @@
     "compileOnSave": true,
 	"allowJs": true,
 	"include": [
-		"usage/test.ts",
-        "../types/"
+		"usage/test.ts"
     ]
 }

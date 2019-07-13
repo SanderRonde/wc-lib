@@ -110,7 +110,7 @@ export type Templater<R> = {
 
 export type JSXTemplater<R> = {
 	(strings: TemplateStringsArray, ...values: any[]): R;
-	jsx(tag: string|typeof WebComponent, attrs: {
+	jsx(tag: string|Constructor<any>, attrs: {
 		[key: string]: any;
 	}|null, ...children: (JSXInterpreted|any)[]): JSXInterpreted;
 };
@@ -321,9 +321,11 @@ function anyToString(value: any): string {
 
 export class JSXInterpreted {
 	public children: (JSXInterpreted|any)[];
-	constructor(public tag: string|typeof WebComponent, public attrs: {
+	constructor(public tag: string|Constructor<any>, public attrs: {
 		[key: string]: any;
-	}|null, children: (JSXInterpreted|any)[], public root: WebComponent<any, any>) { 
+	}|null, children: (JSXInterpreted|any)[], public root: {
+		genRef?(value: any): string
+	}) { 
 		this.children = children.filter(c => c !== undefined);
 	}
 
@@ -348,7 +350,9 @@ declare global {
 	}
 }
 
-function jsxInterpreter(root: WebComponent<any, any>, tag: string|typeof WebComponent, attrs: {
+function jsxInterpreter(root: {
+	genRef?(value: any): string
+}, tag: string|Constructor<any>, attrs: {
 	[key: string]: any;
 }|null, ...children: (JSXInterpreted|any)[]) {
 	return new JSXInterpreted(tag, attrs, children, root);
@@ -383,8 +387,10 @@ function addListener(el: HTMLElement|WebComponent<any, any>, name: string, value
 	eventListeners.get(el)!.set(name, value);
 }
 
-const eventListeners: WeakMap<HTMLElement|WebComponent<any, any>, Map<string, Function>> = new WeakMap();
-function handleSpecialNames(root: WebComponent<any, any>, el: HTMLElement|WebComponent<any, any>, 
+const eventListeners: WeakMap<HTMLElement|Constructor<any>, Map<string, Function>> = new WeakMap();
+function handleSpecialNames(root: {
+	genRef?(value: any): string
+}, el: HTMLElement|any, 
 	attr: string, value: any) {
 		const prefix = attr[0];
 		const name = attr.slice(1);
@@ -413,6 +419,9 @@ function handleSpecialNames(root: WebComponent<any, any>, el: HTMLElement|WebCom
 			}
 		} else if (prefix === '#' || attr === CUSTOM_CSS_PROP_NAME) {
 			// Ref
+			if (!root.genRef) {
+				throw new Error('Could not generate ref since the template-manager layer is not loaded');
+			}
 			el.setAttribute(prefix === '#' ? name : attr, 
 				root.genRef(value));
 		} else {
@@ -421,7 +430,9 @@ function handleSpecialNames(root: WebComponent<any, any>, el: HTMLElement|WebCom
 		return true;
 	}
 
-function setAttribute(root: WebComponent<any, any>, el: HTMLElement|WebComponent<any, any>, attr: string, value: any) {
+function setAttribute(root: {
+	genRef?(value: any): string
+}, el: HTMLElement|any, attr: string, value: any) {
 	if (handleSpecialNames(root, el, attr, value)) return;
 	if (!propConfigs.has(el as any)) {
 		el.setAttribute(attr, value);
@@ -449,6 +460,9 @@ function setAttribute(root: WebComponent<any, any>, el: HTMLElement|WebComponent
 	}
 	if (typeof prop === 'symbol' || typeof (prop as DefinePropTypeConfig).type === 'symbol') {
 		// Complex type
+		if (!root.genRef) {
+			throw new Error('Could not generate ref since the template-manager layer is not loaded');
+		}
 		el.setAttribute(attr, root.genRef(value));
 		return;
 	}
@@ -626,7 +640,7 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 			const componentTemplateMap = templaterMap.get(templater!)!;
 
 			const jsxAddedTemplate = templater as unknown as JSXTemplater<R>;
-			jsxAddedTemplate.jsx = (tag: string|typeof WebComponent, attrs: {
+			jsxAddedTemplate.jsx = (tag: string|Constructor<any>, attrs: {
 				[key: string]: any;
 			}|null, ...children: (JSXInterpreted|any)[]) => {
 				return jsxInterpreter(component as any, tag, attrs, ...children);

@@ -159,21 +159,31 @@ interface Coerced {
 	coerce: true;
 }
 
+type PreDefined = {
+	value: any;
+}|{
+	defaultValue: any;
+}
+
 type GetTSType<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> = 
-	V extends PROP_TYPE.BOOL ? boolean : 
-	V extends PROP_TYPE.NUMBER ?  number : 
-	V extends PROP_TYPE.STRING ? string : 
-	V extends ComplexType<infer R> ? R : 
+	V extends PROP_TYPE.BOOL ? boolean|undefined : 
+	V extends PROP_TYPE.NUMBER ? number|undefined : 
+	V extends PROP_TYPE.STRING ? string|undefined : 
+	V extends ComplexType<infer R> ? R|undefined : 
 	V extends DefineTypeConfig ? 
 		V extends ExactTypeHaver ? V['exactType'] :
 			V['type'] extends PROP_TYPE.BOOL ? 
-				V extends Coerced ? boolean : boolean|undefined : 
+				V extends Coerced ? boolean : 
+					V extends PreDefined ? boolean : boolean|undefined : 
 			V['type'] extends PROP_TYPE.NUMBER ? 
-				V extends Coerced ? number : number|undefined : 
+				V extends Coerced ? number : 
+					V extends PreDefined ? number : number|undefined : 
 			V['type'] extends PROP_TYPE.STRING ? 
-				V extends Coerced ? string : string|undefined : 
-			V['type'] extends ComplexType<infer R> ? R :
-				void : void;
+				V extends Coerced ? string : 
+					V extends PreDefined ? string :string|undefined : 
+			V['type'] extends ComplexType<infer R> ? 
+				V extends PreDefined ? R : R|undefined :
+					void : void;
 
 /**
  * Basic property types for properties

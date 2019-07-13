@@ -228,7 +228,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 										.to.have.property('numberDefault')
 										.to.be.equal(10);
 									expect(el).to.have.attr('number-default');
-									el.props.numberDefault = undefined;
+									el.props.numberDefault = undefined as any;
 									cy.wrap(stub).should('be.calledOnce');
 									expect(el)
 										.to.have.property('numberDefault')

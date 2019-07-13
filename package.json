@@ -34,6 +34,7 @@
 	},
 	"devDependencies": {
 		"@types/http-server": "^0.10.0",
+		"@types/react": "^16.8.23",
 		"chai": "^4.2.0",
 		"chai-jquery": "^2.1.0",
 		"coveralls": "^3.0.4",

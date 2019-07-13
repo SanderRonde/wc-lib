@@ -17,13 +17,15 @@
         "experimentalDecorators": true,
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
+        "jsx": "react",
+        "jsxFactory": "html.jsx",
         "strictBindCallApply": true
 	},
     "compileOnSave": true,
 	"allowJs": true,
 	"include": [
 		"**/*",
-		"../typings/"
+        "../types/"
     ],
     "exclude": [
         "usage/test.ts",

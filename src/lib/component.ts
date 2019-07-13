@@ -1,4 +1,4 @@
-import { EventListenerObj, WebComponentListenableMixinInstance } from './listener.js';
+import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet } from './listener.js';
 import { bindToClass, CHANGE_TYPE, WebComponentBaseMixinInstance } from './base.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
@@ -83,7 +83,7 @@ export type WebComponentSuper = Constructor<
 	HTMLElement &
 	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
 	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
-	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'> & {
+	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'> & {
 		connectedCallback(): void;
 		disconnectedCallback?(): void;
 	}>;
@@ -266,6 +266,9 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 			once: boolean = false) {
 				this.listen(event, listener, once);
 			}
+
+			
+		public listenerMap = super.listenerMap as ListenerSet<E> || {};
 
 		/**
 		 * Listens for given event and fires

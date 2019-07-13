@@ -21,6 +21,10 @@ export interface EventListenerObj {
 	};
 }
 
+export type ListenerSet<E extends EventListenerObj> = {
+	[P in keyof E]: Set<(...params: E[P]['args']) => E[P]['returnType']>;
+};
+
 /**
  * The class responsible for handling the
  * listening and firing of events on this
@@ -30,15 +34,9 @@ export interface EventListenerObj {
  * 	`WebComponentListenable` for more info
  */
 class ListenableClass<E extends EventListenerObj> {
-	/**
-	 * A map that maps every event name to
-	 * a set containing all of its listeners
-	 * 
-	 * @readonly
-	 */
-	public listenerMap: {
-		[P in keyof E]: Set<(...params: E[P]['args']) => E[P]['returnType']>;
-	} = {} as any;
+	constructor(private _self: WebComponentListenableMixinInstance & {
+		listenerMap: ListenerSet<E>;
+	}) {}
 
 	/**
 	 * Inserts a listener to only be called
@@ -92,11 +90,11 @@ class ListenableClass<E extends EventListenerObj> {
 	 * 	call this listener once (false by default)
 	 */
 	public listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean) {
-		this.__assertKeyExists(event, this.listenerMap);
+		this.__assertKeyExists(event, this._self.listenerMap);
 		if (once) {
-			this.__insertOnce(this.listenerMap[event], listener);
+			this.__insertOnce(this._self.listenerMap[event], listener);
 		} else {
-			this.listenerMap[event].add(listener);
+			this._self.listenerMap[event].add(listener);
 		}
 	}
 }
@@ -117,7 +115,7 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 	const privateMap: WeakMap<WebComponentListenable<any>, ListenableClass<any>> = new WeakMap();
 	function listenableClass<E extends EventListenerObj>(self: WebComponentListenable<E>): ListenableClass<E> {
 		if (privateMap.has(self)) return privateMap.get(self)!;
-		return privateMap.set(self, new ListenableClass()).get(self)!;
+		return privateMap.set(self, new ListenableClass(self as any)).get(self)!;
 	}
 
 	// Explanation for ts-ignore:
@@ -134,6 +132,14 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 		constructor(...args: any[]) {
             super(...args);
 		}
+
+		/**
+		 * A map that maps every event name to
+		 * a set containing all of its listeners
+		 * 
+		 * @readonly
+		 */
+		public listenerMap: ListenerSet<E> = {} as any;
 		
 		/**
 		 * Listens for given event and fires
@@ -163,8 +169,8 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 		 * 	listeners for the event
 		 */
 		public clearListener<EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) {
-			if (event in listenableClass(this).listenerMap) {
-				const eventListeners = listenableClass(this).listenerMap[event];
+			if (event in this.listenerMap) {
+				const eventListeners = this.listenerMap[event];
 				if (!listener) {
 					eventListeners.clear();
 					return;
@@ -193,11 +199,11 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 		 * 	listeners
 		 */
 		public fire<EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] {
-			if (!(event in listenableClass(this).listenerMap)) {
+			if (!(event in this.listenerMap)) {
 				return [];
 			}
 
-			const set = listenableClass(this).listenerMap[event];
+			const set = this.listenerMap[event];
 			const returnValues: R[] = [];
 			for (const listener of set.values()) {
 				returnValues.push(listener(...params));

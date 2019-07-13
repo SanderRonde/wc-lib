@@ -998,6 +998,11 @@ export type PropReturn<PUB extends PropConfigObject, PRIV extends PropConfigObje
 	[K in keyof PRIV]: GetTSType<PRIV[K]>;
 }
 
+export const propConfigs: WeakMap<PropComponent, {
+	reflect?: PropConfigObject;
+	priv?: PropConfigObject;
+}> = new WeakMap();
+
 /**
  * A class used to define properties for components
  */
@@ -1072,6 +1077,12 @@ export class Props {
 			reflect?: PUB;
 			priv?: PRIV;
 		} = {}, parentProps: PP = (element as any).props): Props & R & PP {
+			if (propConfigs.has(element)) {
+				propConfigs.set(element, {...propConfigs.get(element)!, ...config});
+			} else {
+				propConfigs.set(element, config);
+			}
+
 			// if parentProps = {}, that is the default value created in base.ts
 			// ignore that as it's neither a Props object or something the user passed
 			if (parentProps && !(typeof parentProps === 'object' && Object.keys(parentProps).length === 0 && !(parentProps instanceof Props))) {

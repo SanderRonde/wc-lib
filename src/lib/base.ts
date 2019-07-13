@@ -1,8 +1,10 @@
+import { WebComponentTemplateManagerMixinInstance, CUSTOM_CSS_PROP_NAME } from './template-manager.js';
 import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
-import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentThemeManagerMixinInstance } from './theme-manager.js';
+import { propConfigs, DefinePropTypeConfig, PROP_TYPE } from './props.js';
 import { WebComponent } from '../classes/full.js';
+import { classNames } from './shared.js';
 
 interface CSSStyleSheet {
 	insertRule(rule: string, index?: number): number;
@@ -102,8 +104,16 @@ export const enum CHANGE_TYPE {
  * string into a value that, when passed to the
  * renderer, renders the template to the page
  */
-export type Templater<R> = (strings: TemplateStringsArray, ...values: any[]) => R;
+export type Templater<R> = {
+	(strings: TemplateStringsArray, ...values: any[]): R;
+};
 
+export type JSXTemplater<R> = {
+	(strings: TemplateStringsArray, ...values: any[]): R;
+	jsx(tag: string|typeof WebComponent, attrs: {
+		[key: string]: any;
+	}|null, ...children: (JSXInterpreted|any)[]): JSXInterpreted;
+};
 
 
 export type TemplateRenderResult = {
@@ -117,7 +127,7 @@ export type TemplateRenderResult = {
 	readonly values: ReadonlyArray<unknown>;
 }|{
 	toText(): string;
-}|string;
+}|string|JSXInterpreted|HTMLElement;
 
 /**
  * A template render function that gets called on
@@ -174,7 +184,7 @@ export type TemplateRenderFunction<C extends {
 	 * 	change the CSS of individual instances of an element,
 	 * 	while still using the element itself's shared CSS
 	 */
-	complexHTML: Templater<TR>,
+	complexHTML: JSXTemplater<TR>,
 	/**
 	 * The component's properties
 	 */
@@ -302,6 +312,269 @@ type TemplateComponent = Partial<Pick<WebComponentThemeManagerMixinInstance, 'ge
 	props: any;
 }
 
+function anyToString(value: any): string {
+	if (typeof value === 'object' && 'toString' in value || value.toString) {
+		return value.toString();
+	}
+	return value + '';
+}
+
+export class JSXInterpreted {
+	public children: (JSXInterpreted|any)[];
+	constructor(public tag: string|typeof WebComponent, public attrs: {
+		[key: string]: any;
+	}|null, children: (JSXInterpreted|any)[], public root: WebComponent<any, any>) { 
+		this.children = children.filter(c => c !== undefined);
+	}
+
+	toText(): string {
+		return `<${this.tag} ${!this.attrs ? '' : Object.getOwnPropertyNames(this.attrs).map((attr) => {
+			return `${attr}="${anyToString(this.attrs![attr as any])}"`;
+		}).join(' ')}>
+			${this.children.map((child) => {
+				if (child instanceof JSXInterpreted) {
+					return child.toText() ;
+				}
+				return anyToString(child);
+			}).join('\n')}
+		</${this.tag}>`
+	}
+}
+
+
+declare global {
+	namespace JSX {
+		interface Element extends JSXInterpreted { }
+	}
+}
+
+function jsxInterpreter(root: WebComponent<any, any>, tag: string|typeof WebComponent, attrs: {
+	[key: string]: any;
+}|null, ...children: (JSXInterpreted|any)[]) {
+	return new JSXInterpreted(tag, attrs, children, root);
+}
+
+const renderedMap: WeakMap<HTMLElement, JSXInterpreted> = new WeakMap();
+
+function renderTextNode(text: any) {
+	return document.createTextNode(text);
+}
+
+function addListener(el: HTMLElement|WebComponent<any, any>, name: string, value: any, isCustom: boolean) {
+	// Custom listener
+	if (eventListeners.has(el) && eventListeners.get(el)!.has(name)) {
+		const lastFn = eventListeners.get(el)!.get(name)!;
+		// Same functions, no need to change anything
+		if (lastFn === value) return;
+		// Remove previous one
+		if (isCustom) {
+			(el as WebComponent<any, any>).clearListener(name, eventListeners.get(el)!.get(name)! as any);
+		} else {
+			el.removeEventListener(name, eventListeners.get(el)!.get(name)! as any);
+		}
+	}
+	// Add new one
+	if (isCustom) {
+		(el as WebComponent<any, any>).listen(name, value);
+	} else {
+		el.addEventListener(name, value);
+	}
+	if (!eventListeners.has(el)) eventListeners.set(el, new Map());
+	eventListeners.get(el)!.set(name, value);
+}
+
+const eventListeners: WeakMap<HTMLElement|WebComponent<any, any>, Map<string, Function>> = new WeakMap();
+function handleSpecialNames(root: WebComponent<any, any>, el: HTMLElement|WebComponent<any, any>, 
+	attr: string, value: any) {
+		const prefix = attr[0];
+		const name = attr.slice(1);
+		if (prefix === '@') {
+			if (attr[1] === '@') {
+				// Custom listener
+				addListener(el, name, value, true);
+			} else {
+				// Regular listener
+				addListener(el, name, value, false);
+			}
+		} else if (prefix === '?') {
+			// Boolean
+			if (el.hasAttribute(name) === !!value) return;
+			if (value) {
+				el.setAttribute(name, '');
+			} else {
+				el.removeAttribute(name);
+			}
+		} else if (prefix === 'class') {
+			// Class
+			if (Array.isArray(value)) {
+				el.setAttribute('class', classNames(...value));
+			} else {
+				el.setAttribute('class', classNames(value));
+			}
+		} else if (prefix === '#' || attr === CUSTOM_CSS_PROP_NAME) {
+			// Ref
+			el.setAttribute(prefix === '#' ? name : attr, 
+				root.genRef(value));
+		} else {
+			return false;
+		}
+		return true;
+	}
+
+function setAttribute(root: WebComponent<any, any>, el: HTMLElement|WebComponent<any, any>, attr: string, value: any) {
+	if (handleSpecialNames(root, el, attr, value)) return;
+	if (!propConfigs.has(el as any)) {
+		el.setAttribute(attr, value);
+		return;
+	}
+
+	const { priv = {}, reflect = {} } = propConfigs.get(el as any)!;
+	const props = {...priv, ...reflect};
+	if (!(attr in props)) {
+		el.setAttribute(attr, value);
+		return;
+	}
+	const prop = props[attr];
+	if (typeof prop === 'string') {
+		// Simple PROP_TYPE
+		if (prop === PROP_TYPE.BOOL) {
+			if (el.hasAttribute(attr) === !!value) return;
+			if (value) {
+				el.setAttribute(attr, '');
+			} else {
+				el.removeAttribute(attr);
+			}
+		}
+		return;
+	}
+	if (typeof prop === 'symbol' || typeof (prop as DefinePropTypeConfig).type === 'symbol') {
+		// Complex type
+		el.setAttribute(attr, root.genRef(value));
+		return;
+	}
+	const config = prop as DefinePropTypeConfig;
+	if (config.type === PROP_TYPE.BOOL) {
+		if (el.hasAttribute(attr) === !!value) return;
+		if (value) {
+			el.setAttribute(attr, '');
+		} else {
+			el.removeAttribute(attr);
+		}
+		return;
+	}
+	if (attr === '__listeners') {
+		for (const name in value as {
+			[key: string]: Function;
+		}) {
+			addListener(el, name, value, false);
+		}
+		return;
+	}
+	if (attr === '___listeners') {
+		for (const name in value as {
+			[key: string]: Function;
+		}) {
+			addListener(el, name, value, true);
+		}
+		return;
+	}
+	el.setAttribute(attr, anyToString(value));
+}
+
+function renderFresh(descriptor: JSXInterpreted|any): HTMLElement|Text {
+	if (!(descriptor instanceof JSXInterpreted)) {
+		return renderTextNode(descriptor);
+	}
+	const { attrs, tag, children } = descriptor;
+	const el = typeof tag === 'string' ? 
+		document.createElement(tag) : 
+		new tag();
+	if (attrs) {
+		for (const attr in attrs) {
+			setAttribute(descriptor.root, el, attr, attrs[attr]);
+		}
+	}
+	for (const child of children) {
+		el.appendChild(renderFresh(child));
+	}
+	return el;
+}
+
+function renderToIndex(element: HTMLElement|Text, parent: HTMLElement, index: number) {
+	if (parent.children[index]) {
+		parent.children[index].remove();
+	}
+	if (!parent.children[index + 1]) {
+		parent.appendChild(element);
+	} else {
+		parent.insertBefore(element, parent.children[index + 1]);
+	}
+}
+
+function updateRender(currentRender: JSXInterpreted, lastRender: JSXInterpreted, parent: HTMLElement) {
+	if (parent.children.length !== currentRender.children.length) {
+		Array.from(parent.children).forEach(c => c.remove());
+		currentRender.children.forEach(c => parent.appendChild(renderFresh(c)));
+		return;
+	}
+
+	for (let i = 0; i < Math.min(currentRender.children.length, lastRender.children.length); i++) {
+		const currentChild = currentRender.children[i];
+		const lastChild = lastRender.children[i];
+
+		if (!(currentChild instanceof JSXInterpreted)) {
+			if (!(lastChild instanceof JSXInterpreted) || currentChild !== lastChild) {
+				renderToIndex(renderTextNode(currentChild), parent, i);
+			}
+			continue;
+		}
+
+		// Check tag
+		if (lastChild instanceof JSXInterpreted || currentChild.tag !== lastChild.tag) {
+			// Big change, just do a fresh render
+			renderToIndex(renderFresh(currentChild), parent, i);
+			continue;
+		}
+
+		// Check attrs
+		const element = parent.children[i] as HTMLElement;
+		const currentAttrs = currentChild.attrs || {};
+		const lastAttrs = lastChild.attrs || {};
+		const joinedAttrs = {...currentAttrs, ...lastAttrs};
+		for (const key in joinedAttrs) {
+			if (!(key in currentAttrs)) {
+				// Removed 
+				element.removeAttribute(key);
+			} else if (currentAttrs[key] !== lastAttrs[key] || !(key in lastAttrs)) {
+				element.setAttribute(key, currentAttrs[key] + '');
+			}
+		}
+
+		// Check children
+		updateRender(currentChild, lastChild, element);
+	}
+	if (currentRender.children.length !== lastRender.children.length) {
+		if (currentRender.children.length > lastRender.children.length) {
+			currentRender.children.slice(lastRender.children.length).forEach(c => parent.appendChild(renderFresh(c)));
+		} else {
+			Array.from(parent.children).slice(currentRender.children.length).forEach(c => c.remove());
+		}
+	}
+}
+
+function renderJSX(interpreted: JSXInterpreted, target: HTMLElement) {
+	if (!renderedMap.has(target) || target.children.length !== 1) {
+		Array.from(target.children).forEach(c => c.remove());
+		target.appendChild(renderFresh(interpreted));
+	} else {
+		updateRender(
+			new JSXInterpreted(target.tagName, null, [interpreted], interpreted.root), 
+			new JSXInterpreted(target.tagName, null, [renderedMap.get(target)!], interpreted.root), 
+			target);
+	}
+	renderedMap.set(target, interpreted);
+}
+
 /**
  * A template class that renders given template
  * when given change occurs using given renderer
@@ -351,6 +624,14 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 				templaterMap.set(templater!, new WeakMap());
 			}
 			const componentTemplateMap = templaterMap.get(templater!)!;
+
+			const jsxAddedTemplate = templater as unknown as JSXTemplater<R>;
+			jsxAddedTemplate.jsx = (tag: string|typeof WebComponent, attrs: {
+				[key: string]: any;
+			}|null, ...children: (JSXInterpreted|any)[]) => {
+				return jsxInterpreter(component as any, tag, attrs, ...children);
+			};
+
 			if (!componentTemplateMap.has(component)) {
 				componentTemplateMap.set(component, new WeakMap());
 			}
@@ -367,7 +648,7 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 				const templateComponent = component as unknown as TemplateComponent;
 				const rendered = this._template === null ?
 					null : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-						component, templater!, templateComponent.props, 
+						component, jsxAddedTemplate!, templateComponent.props, 
 						('getTheme' in templateComponent && templateComponent.getTheme) ? 
 							templateComponent.getTheme<T>() : null as any, changeType);
 				templateMap.set(this, rendered);
@@ -381,7 +662,7 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 					//Change, rerender
 					const templateComponent = component as unknown as TemplateComponent;
 					const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
-						component, templater!, templateComponent.props, 
+						component, jsxAddedTemplate!, templateComponent.props, 
 						('getTheme' in templateComponent && templateComponent.getTheme) ? 
 							templateComponent.getTheme<T>() : null as any, changeType);
 					templateMap.set(this, rendered);
@@ -409,6 +690,9 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 	private static _templateResultToText(result: Exclude<TemplateRenderResult|null, string>) {
 		if (result === null || result === undefined) return '';
 
+		if (result instanceof HTMLElement || result instanceof Element) {
+			return result.innerHTML;
+		}
 		if ('toText' in result && typeof result.toText === 'function') {
 			return result.toText();
 		}
@@ -473,7 +757,7 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 	 * @returns {TR|null|string} The return value of the templater
 	 */
 	public renderSame<TR extends TemplateRenderResult>(changeType: CHANGE_TYPE, component: C,
-		templater: Templater<TR|string>): TR|null|string {
+		templater: JSXTemplater<TR|string>): TR|null|string {
 			const { changed, rendered } = this._renderWithTemplater(changeType, component,
 				templater);
 			this._lastRenderChanged = changed;
@@ -490,6 +774,14 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 	 */
 	public render(template: R|null, target: HTMLElement) {
 		if (template === null) return;
+		if (template instanceof HTMLElement || template instanceof Element) {
+			target.appendChild(template);
+			return;
+		}
+		if (template instanceof JSXInterpreted) {
+			renderJSX(template, target);
+			return;
+		}
 		if (this._renderer) {
 			this._renderer(template, target);
 		} else {
@@ -507,13 +799,8 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 	 * 	it to
 	 */
 	public renderIfNew(template: R|null, target: HTMLElement) {
-		if (template === null) return;
 		if (!this._lastRenderChanged) return;
-		if (this._renderer) {
-			this._renderer(template, target);
-		} else {
-			throw new Error('Missing renderer');
-		}
+		this.render(template, target);
 	}
 }
 

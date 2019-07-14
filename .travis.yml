@@ -12,10 +12,11 @@ stages:
 install:
 - yarn --ignore-engines
 - npm install -g typescript
+- npm install -g codecov
 script:
 - npm run coverage:prep && nyc --reporter=lcov npm run cypress
 after_success:
-- cat coverage/lcov.info | coveralls
+- codecov -f coverage/lcov.info
 notifications:
   email:
     on_success: change

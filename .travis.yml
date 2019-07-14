@@ -13,7 +13,6 @@ install:
 - yarn --ignore-engines
 - npm install -g typescript
 script:
-- key=$CYPRESS_KEY
 - npm run coverage:prep && nyc --reporter=lcov npm run cypress
 after_success:
 - cat coverage/lcov.info | coveralls
@@ -21,8 +20,3 @@ notifications:
   email:
     on_success: change
     on_failure: change
-services:
-- mongodb
-env:
-  global:
-    secure: XGJR0DBR5SJcV9NNTTdrZzj8pI+dELEF9Q/XeG3pamzJuIxP8eRv/uq88NpqlJIM+R/bnaCVt0CpQmc6VEy3UCtinP/DvKlhVMR9oClPpHSGsPKY1NdlDQFlYJsjbKfrvmBKba/ZQxHrw/8ik/CGG4SDz8ixfZemzfTaQj+6AME47RhMJN3BYprLK+Rls55fojy4Ul0f15GRgrwTIRZDuvOGbpWA1Z7LOELwRnyFIVIeOws8VYK3xErH5Mj5Ptw24i5eMAIChfw4DtPLnJO2l9hDxaLhboPCPwzFVxY9TVgtNZ9muhhCVXuHH3M8X3mVGMU1PLqKUHpVHqvKLCaNsgAY9DP4r+q9dcit2M+dlhilBQnxvAQUEYr27qGIggdDRnZHxnGG+h6kZa8x/fyaWV0pbPaJ9RYG12hCUF1QkjiapppOQbt8yuJNElfVk6YpeiQaSP3E0D5SfbQ1gfWJsM8VaH7R2jiyhjCA6ca6egwWZiF7efOvNTIHRUQv7M9Bq5jEe1FvJmy2fr6ahzDkpXax0HB0T+Ui0ySDipHL2sNfXfLK/XScLf8lfQHr+mcQ3xTPOSrAMMbDsdNdyIHT3k5dNkKle8oIlo+I6/8JQpZym3on8Qf3XU42cAGxSXzc7R7kVvAS6IuZVpj8Rp2EhG1qOnIWfgNtRgoudbO79ZI=

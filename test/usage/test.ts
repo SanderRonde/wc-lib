@@ -17,9 +17,8 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 		}));
 	cypress.run({
 		...configFile,
-		record: !!process.env.TRAVIS || process.argv.includes('--record'),
-		key: process.env.key,
-		parallel: !!process.env.CYPRESS_PARALLEL
+		record: process.argv.includes('--record'),
+		key: process.env.key
 	}).then((results) => {
 		console.log('Done');
 		httpServer.close();

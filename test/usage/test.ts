@@ -17,6 +17,7 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 		}));
 	cypress.run({
 		...configFile,
+		record: !!process.env.TRAVIS,
 		key: process.env.key
 	}).then((results) => {
 		console.log('Done');

@@ -13,7 +13,8 @@ install:
 - yarn --ignore-engines
 - npm install -g typescript
 script:
-- npm run coverage:prep && nyc --reporter=lcov npm run cypress $CYPRESS_KEY
+- key=$CYPRESS_KEY
+- npm run coverage:prep && nyc --reporter=lcov npm run cypress
 after_success:
 - cat coverage/lcov.info | coveralls
 notifications:

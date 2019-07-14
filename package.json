@@ -47,10 +47,10 @@
 		"ts-node": "^8.2.0"
 	},
 	"scripts": {
-		"compile": "tsc -p src/tsconfig.json && tsc -p src/tsconfig.cjs.json",
-		"compile:test": "tsc -p test/tsconfig.json && tsc -p test/tsconfig.cjs.json",
+		"compile": "tsc -p src/tsconfig.cjs.json && tsc -p src/tsconfig.json",
+		"compile:test": "tsc -p test/tsconfig.cjs.json && tsc -p test/tsconfig.json",
 		"compile:bin": "tsc -p bin/tsconfig.json",
-		"compile:all": "npm run compile && npm run compile:test && npm run compile:bin",
+		"compile:all": "npm run compile:test && npm run compile && npm run compile:bin",
 		"install": "npm run compile && npm run compile:bin && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
 		"cypress": "node test/usage/test.js",
 		"test": "npm run compile:all && npm run cypress",

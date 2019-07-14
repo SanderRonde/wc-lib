@@ -1,5 +1,5 @@
-import { CUSTOM_CSS_PROP_NAME, WebComponentTemplateManagerMixinInstance } from './template-manager.js';
-import { CHANGE_TYPE, TemplateFn, TemplateFnLike, WebComponentBaseMixinInstance } from './base.js';
+import { CHANGE_TYPE, TemplateFn, TemplateFnLike, WebComponentBaseMixinInstance, CUSTOM_CSS_PROP_NAME } from './base.js';
+import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 
 class CustomCSSClass {

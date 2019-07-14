@@ -1,18 +1,11 @@
+import { bindToClass, TemplateFn, CHANGE_TYPE, TemplateFnLike, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
-import { bindToClass, TemplateFn, CHANGE_TYPE, TemplateFnLike } from './base.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { TemplateProcessor, EventPart, Part, NodePart } from 'lit-html';
 import { WebComponentListenableMixinInstance } from './listener.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
 import { classNames, ClassNamesArg } from './shared.js';
 import { refPrefix } from './props.js';
-
-/**
- * The property name for custom-css
- * 
- * @constant
- */
-export const CUSTOM_CSS_PROP_NAME = 'custom-css';
 
 class ClassAttributePart implements Part {
 	public value: any = undefined;

@@ -1,10 +1,17 @@
-import { WebComponentTemplateManagerMixinInstance, CUSTOM_CSS_PROP_NAME } from './template-manager.js';
 import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
+import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentThemeManagerMixinInstance } from './theme-manager.js';
 import { propConfigs, DefinePropTypeConfig, PROP_TYPE } from './props.js';
 import { WebComponent } from '../classes/full.js';
 import { classNames } from './shared.js';
+
+/**
+ * The property name for custom-css
+ * 
+ * @constant
+ */
+export const CUSTOM_CSS_PROP_NAME = 'custom-css';
 
 interface CSSStyleSheet {
 	insertRule(rule: string, index?: number): number;

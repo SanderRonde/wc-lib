@@ -2,7 +2,7 @@ export {
 	CHANGE_TYPE, Renderer, TemplateFn,
 	TemplateFnLike, TemplateRenderFunction, 
 	TemplateRenderResult, Templater, 
-	bindToClass
+	bindToClass, CUSTOM_CSS_PROP_NAME
 } from './lib/base.js';
 export {
 	PropChangeEvents
@@ -20,7 +20,7 @@ export {
 export * from './lib/props.js';
 export * from './lib/shared.js';
 export {
-	CUSTOM_CSS_PROP_NAME, LitHTMLConfig, 
+	LitHTMLConfig, 
 	TemplateResultLike
 } from './lib/template-manager.js';
 export * from './lib/util.js';

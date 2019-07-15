@@ -159,13 +159,14 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @readonly
 		 */
 		get $(): IDMapFn<ELS["IDS"]> {
-			if (getPrivate(this).supportsProxy) {
-				return getPrivate(this).idMapProxy ||
-					(getPrivate(this).idMapProxy = getPrivate(this).genIdMapProxy<ELS>(this))
+			const priv = getPrivate(this);
+			if (priv.supportsProxy) {
+				return priv.idMapProxy ||
+					(priv.idMapProxy = priv.genIdMapProxy<ELS>(this))
 			}
 
 			// Re-generate the ID map every time
-			return getPrivate(this).getIdMapSnapshot(this);
+			return priv.getIdMapSnapshot(this);
 		}
 
 		/**

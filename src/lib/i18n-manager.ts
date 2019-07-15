@@ -163,20 +163,21 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		constructor(...args: any[]) {
 			super(...args);
 
+			const priv = i18nClass(this);
 			if (this.listenGP) {
 				this.listenGP<{
 					lang: string;
 				}, 'lang'>('globalPropChange', (prop, value) => {
 					if (prop === 'lang') {
-						i18nClass(this).setLang(value!);
+						priv.setLang(value!);
 					}
 				});
 			} else {
 				I18NClass.notifyOnLangChange((lang: string) => {
-					i18nClass(this).setLang(lang);
+					priv.setLang(lang);
 				});
 			}
-			i18nClass(this).setInitialLang();
+			priv.setInitialLang();
 		}
 
 		/**
@@ -190,8 +191,9 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 					lang: string;
 				}>().set('lang', lang);
 			} else {
-				await i18nClass(this).setLang(lang);
-				await i18nClass(this).notifyNewLang(lang);
+				const priv = i18nClass(this);
+				await priv.setLang(lang);
+				await priv.notifyNewLang(lang);
 			}
 		}
 

@@ -364,34 +364,35 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 */
 		@bindToClass
 		public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.FORCE) {
-			if (baseClass(this).disableRender) return;
-			if (baseClass(this).doPreRenderLifecycle() === false) {
+			const priv = baseClass(this);
+			if (priv.disableRender) return;
+			if (priv.doPreRenderLifecycle() === false) {
 				return;
 			}
 
 			/* istanbul ignore if */
-			if (baseClass(this).canUseConstructedCSS) {
-				baseClass(this).renderConstructedCSS(change);
+			if (priv.canUseConstructedCSS) {
+				priv.renderConstructedCSS(change);
 			}
-			baseClass(this).__privateCSS.forEach((sheet, index) => {
-				baseClass(this).getRenderFn(sheet, change)(
+			priv.__privateCSS.forEach((sheet, index) => {
+				priv.getRenderFn(sheet, change)(
 					sheet.renderTemplate(change, this as any), 
-					baseClass(this).renderContainers.css[index]);	
+					priv.renderContainers.css[index]);	
 			});
 			if (this.__hasCustomCSS()) {
 				makeArray(this.customCSS()).forEach((sheet, index) => {
-					baseClass(this).getRenderFn(sheet, change)(
+					priv.getRenderFn(sheet, change)(
 						sheet.renderTemplate(change, this as any),
-						baseClass(this).renderContainers.customCSS[index]);
+						priv.renderContainers.customCSS[index]);
 				});
 			}
 			/* istanbul ignore next */
 			if (this.self.html) {
-				baseClass(this).getRenderFn(this.self.html, change)(
+				priv.getRenderFn(this.self.html, change)(
 					this.self.html.renderTemplate(change, this as any), 
-					baseClass(this).renderContainers.html);
+					priv.renderContainers.html);
 			}
-			baseClass(this).doPostRenderLifecycle();
+			priv.doPostRenderLifecycle();
 		}
 
 		/**

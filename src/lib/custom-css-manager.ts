@@ -71,19 +71,20 @@ export const WebComponentCustomCSSManagerMixin = <P extends WebComponentCustomCS
 		 * @returns {boolean} Whether this component uses custom CSS
 		 */
 		public __hasCustomCSS(): boolean {
-			if (customCSSClass(this).hasCustomCSS !== null) {
-				return customCSSClass(this).hasCustomCSS!;
+			const priv = customCSSClass(this);
+			if (priv.hasCustomCSS !== null) {
+				return priv.hasCustomCSS!;
 			}
 			if (!this.hasAttribute(CUSTOM_CSS_PROP_NAME) ||
 				!this.getParentRef(this.getAttribute(CUSTOM_CSS_PROP_NAME)!)) {
 					//No custom CSS applies
 					if (this.isMounted) {
-						customCSSClass(this).hasCustomCSS = false;
+						priv.hasCustomCSS = false;
 					}
 					return false;
 				}
 
-			return (customCSSClass(this).hasCustomCSS = true);
+			return (priv.hasCustomCSS = true);
 		}
 
 		/**

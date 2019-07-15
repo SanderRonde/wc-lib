@@ -250,12 +250,13 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 */
 		connectedCallback() {
 			super.connectedCallback();
-			hierarchyClass(this).isRoot = this.hasAttribute('_root');
-			hierarchyClass(this).globalProperties = {};
-			hierarchyClass(this).registerToParent();
-			if (hierarchyClass(this).isRoot) {
-				hierarchyClass(this).globalProperties = {
-					...hierarchyClass(this).getGlobalProperties()
+			const priv = hierarchyClass(this);
+			priv.isRoot = this.hasAttribute('_root');
+			priv.globalProperties = {};
+			priv.registerToParent();
+			if (priv.isRoot) {
+				priv.globalProperties = {
+					...priv.getGlobalProperties()
 				};	
 			}
 		}
@@ -273,9 +274,10 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		public registerChild<G extends {
 			[key: string]: any;
 		}>(element: WebComponentHierarchyManager): G {
-			hierarchyClass(this).clearNonExistentChildren();
-			hierarchyClass(this).children.add(element as any);
-			return hierarchyClass(this).globalProperties as G;
+			const priv = hierarchyClass(this);
+			priv.clearNonExistentChildren();
+			priv.children.add(element as any);
+			return priv.globalProperties as G;
 		}
 
 		/**
@@ -288,8 +290,9 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		public globalProps<G extends {
 			[key: string]: any;
 		}>(): GlobalPropsFunctions<G> {
-			if (hierarchyClass(this).globalPropsFns) {
-				return hierarchyClass(this).globalPropsFns!;
+			const priv = hierarchyClass(this);
+			if (priv.globalPropsFns) {
+				return priv.globalPropsFns!;
 			}
 
 			const __this = this;
@@ -326,10 +329,11 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * @returns {T} The root
 		 */
 		public getRoot<T>(): T {
-			if (hierarchyClass(this).isRoot) {
+			const priv = hierarchyClass(this);
+			if (priv.isRoot) {
 				return <T><any>this;
 			}
-			return hierarchyClass(this).parent!.getRoot();
+			return priv.parent!.getRoot();
 		}
 
 		/**

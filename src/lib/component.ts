@@ -268,8 +268,16 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 				this.listen(event, listener, once);
 			}
 
-			
-		public listenerMap = super.listenerMap as ListenerSet<E> || {};
+		
+		/**
+		 * A map that maps every event name to
+		 * a set containing all of its listeners
+		 * 
+		 * @readonly
+		 */
+		get listenerMap(): ListenerSet<E> {
+			return super.listenerMap as ListenerSet<E>;
+		}
 
 		/**
 		 * Listens for given event and fires

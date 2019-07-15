@@ -34,9 +34,13 @@ export type ListenerSet<E extends EventListenerObj> = {
  * 	`WebComponentListenable` for more info
  */
 class ListenableClass<E extends EventListenerObj> {
-	constructor(private _self: WebComponentListenableMixinInstance & {
-		listenerMap: ListenerSet<E>;
-	}) {}
+	/**
+	 * A map that maps every event name to
+	 * a set containing all of its listeners
+	 * 
+	 * @readonly
+	 */
+	listenerMap: ListenerSet<E> = {} as ListenerSet<E>;
 
 	/**
 	 * Inserts a listener to only be called
@@ -90,11 +94,11 @@ class ListenableClass<E extends EventListenerObj> {
 	 * 	call this listener once (false by default)
 	 */
 	public listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean) {
-		this.__assertKeyExists(event, this._self.listenerMap);
+		this.__assertKeyExists(event, this.listenerMap);
 		if (once) {
-			this.__insertOnce(this._self.listenerMap[event], listener);
+			this.__insertOnce(this.listenerMap[event], listener);
 		} else {
-			this._self.listenerMap[event].add(listener);
+			this.listenerMap[event].add(listener);
 		}
 	}
 }
@@ -115,7 +119,7 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 	const privateMap: WeakMap<WebComponentListenable<any>, ListenableClass<any>> = new WeakMap();
 	function listenableClass<E extends EventListenerObj>(self: WebComponentListenable<E>): ListenableClass<E> {
 		if (privateMap.has(self)) return privateMap.get(self)!;
-		return privateMap.set(self, new ListenableClass(self as any)).get(self)!;
+		return privateMap.set(self, new ListenableClass()).get(self)!;
 	}
 
 	// Explanation for ts-ignore:
@@ -139,7 +143,9 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 		 * 
 		 * @readonly
 		 */
-		public listenerMap: ListenerSet<E> = {} as any;
+		get listenerMap(): ListenerSet<E> {
+			return listenableClass(this).listenerMap as ListenerSet<E>;
+		}
 		
 		/**
 		 * Listens for given event and fires

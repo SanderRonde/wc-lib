@@ -58,6 +58,7 @@ jspm_packages/
 .next
 
 src/**/*.js
+src/**/*.d.ts
 **/*.map
 build/
 temp/

@@ -44,6 +44,7 @@
 		"jquery": "^3.4.1",
 		"lodash": "^4.17.13",
 		"nyc": "^14.1.1",
+		"remap-istanbul": "^0.13.0",
 		"ts-node": "^8.2.0"
 	},
 	"scripts": {
@@ -53,10 +54,11 @@
 		"compile:all": "npm run compile:test && npm run compile && npm run compile:bin",
 		"install": "npm run compile && npm run compile:bin && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
 		"cypress": "node test/usage/test.js",
+		"cypress:ts": "tsc -p src/tsconfig.sourcemap.json && npm run cypress && remap-istanbul -i .nyc_output/out.json -o .nyc_output/out.json",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",
 		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument src/ instrumented/ && gulp replaceTestImports",
-		"coverage": "npm run coverage:prep && nyc --reporter=lcov --reporter=text npm run cypress && echo \"Coverage can be found in coverage/index.html\"",
+		"coverage": "npm run coverage:prep && nyc  --reporter=lcov --reporter=text npm run cypress:ts && echo \"Coverage can be found in coverage/index.html\"",
 		"prepublishOnly": "gulp removeIstanbulIgnoresSource"
 	}
 }

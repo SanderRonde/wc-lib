@@ -217,22 +217,18 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 						test: (doChange) => {
 							getDeepThemedElements().then((elements) => {
 								for (const element of elements) {
-									expect(window.getComputedStyle(element.$('.text')!))
-										.to.have.property('color')
+									expect(window.getComputedStyle(element.$('.text')!).color)
 										.to.be.equal(usedThemes[defaultTheme].color1, 'color1 is used');
-									expect(window.getComputedStyle(element.$('.text2')!))
-										.to.have.property('color')
+									expect(window.getComputedStyle(element.$('.text2')!).color)
 										.to.be.equal(usedThemes[defaultTheme].color2, 'color2 is used');
 								}
 
 								doChange().then(() => {
 									getDeepThemedElements().then((elements) => {
 										for (const element of elements) {
-											expect(window.getComputedStyle(element.$('.text')!))
-												.to.have.property('color')
+											expect(window.getComputedStyle(element.$('.text')!).color)
 												.to.be.equal(usedThemes['second'].color1, 'color1 is used');
-											expect(window.getComputedStyle(element.$('.text2')!))
-												.to.have.property('color')
+											expect(window.getComputedStyle(element.$('.text2')!).color)
 												.to.be.equal(usedThemes['second'].color2, 'color2 is used');
 										}
 									});
@@ -263,11 +259,9 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 								getDeepThemedElements().then((elements) => {
 									cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
 										for (const element of [...elements, ...separate]) {
-											expect(window.getComputedStyle(element.$('.text')!))
-												.to.have.property('color')
+											expect(window.getComputedStyle(element.$('.text')!).color)
 												.to.be.equal(usedThemes[defaultTheme].color1, 'color1 is used');
-											expect(window.getComputedStyle(element.$('.text2')!))
-												.to.have.property('color')
+											expect(window.getComputedStyle(element.$('.text2')!).color)
 												.to.be.equal(usedThemes[defaultTheme].color2, 'color2 is used');
 										}
 
@@ -275,11 +269,9 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 											getDeepThemedElements().then((elements) => {
 												cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
 													for (const element of [...elements, ...separate]) {
-														expect(window.getComputedStyle(element.$('.text')!))
-															.to.have.property('color')
+														expect(window.getComputedStyle(element.$('.text')!).color)
 															.to.be.equal(usedThemes['second'].color1, 'color1 is used');
-														expect(window.getComputedStyle(element.$('.text2')!))
-															.to.have.property('color')
+														expect(window.getComputedStyle(element.$('.text2')!).color)
 															.to.be.equal(usedThemes['second'].color2, 'color2 is used');
 													}
 												});

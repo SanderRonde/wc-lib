@@ -178,7 +178,6 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 					tests.forEach(({ name, test }) => {
 						it(name, () => {
 							test(() => {
-								cy.get('#default').debug();
 								return cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
 									el.setTheme('second');
 								});

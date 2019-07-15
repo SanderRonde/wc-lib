@@ -1,8 +1,9 @@
-import { bindToClass, TemplateFn, CHANGE_TYPE, TemplateFnLike, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { TemplateFn, CHANGE_TYPE, TemplateFnLike } from './template-fn.js';
 import { TemplateProcessor, EventPart, Part, NodePart } from 'lit-html';
 import { WebComponentListenableMixinInstance } from './listener.js';
+import { bindToClass, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
 import { classNames, ClassNamesArg } from './shared.js';
 import { refPrefix } from './props.js';

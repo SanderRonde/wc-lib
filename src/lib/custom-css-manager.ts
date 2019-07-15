@@ -1,6 +1,7 @@
-import { CHANGE_TYPE, TemplateFn, TemplateFnLike, WebComponentBaseMixinInstance, CUSTOM_CSS_PROP_NAME } from './base.js';
+import { WebComponentBaseMixinInstance, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { CHANGE_TYPE, TemplateFn, TemplateFnLike } from './template-fn.js';
 
 class CustomCSSClass {
 	public hasCustomCSS: boolean|null = null;

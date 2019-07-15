@@ -1,9 +1,11 @@
+export { 
+	bindToClass, CUSTOM_CSS_PROP_NAME
+} from './lib/base.js';
 export {
 	CHANGE_TYPE, Renderer, TemplateFn,
 	TemplateFnLike, TemplateRenderFunction, 
-	TemplateRenderResult, Templater, 
-	bindToClass, CUSTOM_CSS_PROP_NAME
-} from './lib/base.js';
+	TemplateRenderResult, Templater
+} from './lib/template-fn.js';
 export {
 	PropChangeEvents
 } from './lib/component.js';

@@ -1,7 +1,7 @@
 import { FullWebComponent, WebComponent } from '../classes/full.js';
 import { WebComponentDefinerMixinClass } from './definer.js';
 import { EventListenerObj } from './listener.js';
-import { TemplateFnLike } from './base.js';
+import { TemplateFnLike } from './template-fn.js';
 
 /**
  * A configurable web component. This is the basic

@@ -11,6 +11,6 @@
   "chromeWebSecurity": false,
   "numTestsKeptInMemory": 0,
   "testFiles": "**/*.spec.js",
-  "video": true,
-  "watchForFileChanges": true
+  "video": false,
+  "watchForFileChanges": false
 }

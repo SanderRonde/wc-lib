@@ -54,11 +54,14 @@
 		"compile:all": "npm run compile:test && npm run compile && npm run compile:bin",
 		"install": "npm run compile && npm run compile:bin && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
 		"cypress": "node test/usage/test.js",
-		"cypress:ts": "tsc -p src/tsconfig.sourcemap.json && npm run cypress && remap-istanbul -i .nyc_output/out.json -o .nyc_output/out.json",
+		"cypress:report": "npm run cypress && npm run coverage:remap",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",
 		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument src/ instrumented/ && gulp replaceTestImports",
-		"coverage": "npm run coverage:prep && nyc  --reporter=lcov --reporter=text npm run cypress:ts && echo \"Coverage can be found in coverage/index.html\"",
+		"coverage:remap:lcov": "remap-istanbul -i .nyc_output/out.json -t lcovonly -o coverage/lcov.info",
+		"coverage:remap:html": "remap-istanbul -i .nyc_output/out.json -t html -o coverage/",
+		"coverage:remap": "tsc -p src/tsconfig.sourcemap.json && npm run coverage:remap:html && npm run coverage:remap:lcov",
+		"coverage": "npm run coverage:prep && remap-istanbul --reporter=text npm run cypress:report && echo \"Coverage can be found in coverage/index.html\"",
 		"prepublishOnly": "gulp removeIstanbulIgnoresSource"
 	}
 }

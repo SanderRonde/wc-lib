@@ -14,7 +14,7 @@ install:
 - npm install -g typescript
 - npm install -g codecov
 script:
-- npm run coverage:prep && nyc --reporter=lcov npm run cypress
+- yarn coverage
 after_success:
 - codecov -f coverage/lcov.info
 notifications:

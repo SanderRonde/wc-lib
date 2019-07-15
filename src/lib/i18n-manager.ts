@@ -1,6 +1,7 @@
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
-import { CHANGE_TYPE, WebComponentBaseMixinInstance } from './base.js';
+import { WebComponentBaseMixinInstance } from './base.js';
+import { CHANGE_TYPE } from './template-fn.js';
 
 class I18NClass {
 	public static urlFormat: string = '/i18n/';

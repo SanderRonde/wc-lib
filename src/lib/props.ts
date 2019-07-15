@@ -1,5 +1,5 @@
 import { WebComponent } from '../classes/full.js';
-import { CHANGE_TYPE } from './base.js';
+import { CHANGE_TYPE } from './template-fn.js';
 
 /**
  * The prefix used for complex references

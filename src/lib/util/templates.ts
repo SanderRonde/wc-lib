@@ -1,4 +1,4 @@
-import { TemplateFn, CHANGE_TYPE, Renderer } from '../base.js';
+import { TemplateFn, CHANGE_TYPE, Renderer } from '../template-fn.js';
 
 export namespace Templates {
 	/**

@@ -1,7 +1,8 @@
 import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet } from './listener.js';
-import { bindToClass, CHANGE_TYPE, WebComponentBaseMixinInstance } from './base.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
+import { CHANGE_TYPE } from './template-fn.js';
 import { Listeners } from './listeners.js';
 import { WCLibError } from './shared.js';
 import { Props } from './props.js';

@@ -218,12 +218,6 @@ function renderToIndex(element: HTMLElement|Text, parent: HTMLElement, index: nu
 }
 
 function updateRender(currentRender: JSXInterpreted, lastRender: JSXInterpreted, parent: HTMLElement) {
-	if (parent.children.length !== currentRender.children.length) {
-		Array.from(parent.children).forEach(c => c.remove());
-		currentRender.children.forEach(c => parent.appendChild(renderFresh(c)));
-		return;
-	}
-
 	for (let i = 0; i < Math.min(currentRender.children.length, lastRender.children.length); i++) {
 		const currentChild = currentRender.children[i];
 		const lastChild = lastRender.children[i];

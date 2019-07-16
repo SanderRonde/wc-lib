@@ -70,7 +70,7 @@
 		"coverage:classes": "npm run coverage:prep && nyc --reporter=text npm run cypress:classes && coverage:post",
 		"coverage:lib": "npm run coverage:prep && nyc --reporter=text npm run cypress:lib && coverage:post",
 		"coverage:partial-classes": "npm run coverage:prep && nyc --reporter=text npm run cypress:partial-classes && coverage:post",
-		"coverage:report": "npm run coverage:prep && nyc --reporter=text npm run cypress:report && coverage:post",
+		"coverage:properties": "npm run coverage:prep && nyc --reporter=text npm run cypress:properties && coverage:post",
 		"prepublishOnly": "gulp removeIstanbulIgnoresSource"
 	}
 }

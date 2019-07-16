@@ -19,7 +19,7 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 		...configFile,
 		record: process.argv.includes('--record'),
 		key: process.env.key,
-		testFiles: process.argv.includes('--spec') ?
+		spec: process.argv.includes('--spec') ?
 			process.argv[process.argv.indexOf('--spec') + 1] : 'test/**/*.spec.js'
 	}).then((results) => {
 		console.log('Done');

@@ -18,7 +18,9 @@ httpServer.listen(USAGE_TEST_PORT, async () => {
 	cypress.run({
 		...configFile,
 		record: process.argv.includes('--record'),
-		key: process.env.key
+		key: process.env.key,
+		spec: process.argv.includes('--spec') ?
+			process.argv[process.argv.indexOf('--spec') + 1] : 'test/**/*.spec.js'
 	}).then((results) => {
 		console.log('Done');
 		httpServer.close();

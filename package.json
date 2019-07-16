@@ -66,11 +66,11 @@
 		"coverage:remap:html": "remap-istanbul -i .nyc_output/out.json -t html -o coverage/",
 		"coverage:remap": "tsc -p src/tsconfig.sourcemap.json && npm run coverage:remap:html && npm run coverage:remap:lcov",
 		"coverage:post": "echo \"Coverage can be found in coverage/index.html\"",
-		"coverage": "npm run coverage:prep && nyc --reporter=text npm run cypress:report && coverage:post",
-		"coverage:classes": "npm run coverage:prep && nyc --reporter=text npm run cypress:classes && coverage:post",
-		"coverage:lib": "npm run coverage:prep && nyc --reporter=text npm run cypress:lib && coverage:post",
-		"coverage:partial-classes": "npm run coverage:prep && nyc --reporter=text npm run cypress:partial-classes && coverage:post",
-		"coverage:properties": "npm run coverage:prep && nyc --reporter=text npm run cypress:properties && coverage:post",
+		"coverage": "npm run coverage:prep && nyc --reporter=text npm run cypress:report && npm run coverage:post",
+		"coverage:classes": "npm run coverage:prep && nyc --reporter=text npm run cypress:classes && npm run coverage:post",
+		"coverage:lib": "npm run coverage:prep && nyc --reporter=text npm run cypress:lib && npm run coverage:post",
+		"coverage:partial-classes": "npm run coverage:prep && nyc --reporter=text npm run cypress:partial-classes && npm run coverage:post",
+		"coverage:properties": "npm run coverage:prep && nyc --reporter=text npm run cypress:properties && npm run coverage:post",
 		"prepublishOnly": "gulp removeIstanbulIgnoresSource"
 	}
 }

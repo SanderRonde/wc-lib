@@ -263,7 +263,7 @@ export function config(config: WebComponentConfiguration) {
 		const targetComponent = <any>target as typeof ConfigurableWebComponent;
 		class WebComponentConfig extends targetComponent<ELS, E> {
 			static is = is;
-			static dependencies = dependencies
+			static dependencies = [...targetComponent.dependencies || [], ...dependencies]
 			static mixins = mixins;
 			static html = html!;
 			static css = css || [];

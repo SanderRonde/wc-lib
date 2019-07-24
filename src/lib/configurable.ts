@@ -14,10 +14,10 @@ import { TemplateFnLike } from './template-fn.js';
  * 	`WebComponentListenable` for more info
  */
 export class ConfigurableWebComponent<ELS extends {
-	IDS: {
+	IDS?: {
 		[key: string]: HTMLElement|SVGElement;
 	};
-	CLASSES: {
+	CLASSES?: {
 		[key: string]: HTMLElement|SVGElement;
 	}
 } = {

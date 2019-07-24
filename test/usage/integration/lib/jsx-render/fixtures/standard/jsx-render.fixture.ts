@@ -1,3 +1,3 @@
-import { JSXRender } from "../../elements/jsx-render";
+import { JSXElement } from "../../elements/jsx-element.js";
 
-JSXRender.define();
+JSXElement.define();

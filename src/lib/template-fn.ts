@@ -1,6 +1,6 @@
 import { Constructor, WebComponentThemeManagerMixinInstance, WebComponentTemplateManagerMixinInstance } from '../classes/types.js'
-import { JSXInterpreted, jsxInterpreter, renderJSX } from './jsx-render.js';
 import { WebComponent } from '../classes/full.js';
+import { jsxToLiteral } from './jsx-render.js';
 
 /**
  * The type of change that should re-render
@@ -49,9 +49,11 @@ export type Templater<R> = {
 
 export type JSXTemplater<R> = {
 	(strings: TemplateStringsArray, ...values: any[]): R;
-	jsx(tag: string|Constructor<any>, attrs: {
+	jsx(tag: string|Constructor<any> & {
+		is: string;
+	}, attrs: {
 		[key: string]: any;
-	}|null, ...children: (JSXInterpreted|any)[]): JSXInterpreted;
+	}|null, ...children: (R|any)[]): R;
 };
 
 
@@ -66,7 +68,7 @@ export type TemplateRenderResult = {
 	readonly values: ReadonlyArray<unknown>;
 }|{
 	toText(): string;
-}|string|JSXInterpreted|HTMLElement;
+}|string|Element|HTMLElement;
 
 /**
  * A template render function that gets called on
@@ -301,11 +303,14 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 			}
 			const componentTemplateMap = templaterMap.get(templater!)!;
 
-			const jsxAddedTemplate = templater as unknown as JSXTemplater<R>;
-			jsxAddedTemplate.jsx = (tag: string|Constructor<any>, attrs: {
+			const jsxAddedTemplate = templater! as unknown as JSXTemplater<TR>;
+			jsxAddedTemplate.jsx = (tag: string|Constructor<any> & {
+				is: string;
+			}, attrs: {
 				[key: string]: any;
-			}|null, ...children: (JSXInterpreted|any)[]) => {
-				return jsxInterpreter(component as any, tag, attrs, ...children);
+			}|null, ...children: (TR|any)[]) => {
+				const { strings, values } = jsxToLiteral(tag, attrs, ...children);
+				return templater!(strings, ...values);
 			};
 
 			if (!componentTemplateMap.has(component)) {
@@ -452,10 +457,6 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 		if (template === null) return;
 		if (template instanceof HTMLElement || template instanceof Element) {
 			target.appendChild(template);
-			return;
-		}
-		if (template instanceof JSXInterpreted) {
-			renderJSX(template, target);
 			return;
 		}
 		if (this._renderer) {

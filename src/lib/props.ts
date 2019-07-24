@@ -165,24 +165,44 @@ type PreDefined = {
 	defaultValue: any;
 }
 
+type IsUnassigned<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> = 
+	V extends PROP_TYPE.BOOL ? true : 
+	V extends PROP_TYPE.NUMBER ? true : 
+	V extends PROP_TYPE.STRING ? true : 
+	V extends ComplexType<any> ? true : 
+	V extends DefineTypeConfig ? 
+		V extends ExactTypeHaver ? false :
+			V['type'] extends PROP_TYPE.BOOL ? 
+				V extends Coerced ? false : 
+					V extends PreDefined ? false : true : 
+			V['type'] extends PROP_TYPE.NUMBER ? 
+				V extends Coerced ? false : 
+					V extends PreDefined ? false : true : 
+			V['type'] extends PROP_TYPE.STRING ? 
+				V extends Coerced ? false : 
+					V extends PreDefined ? false :true : 
+			V['type'] extends ComplexType<any> ? 
+				V extends PreDefined ? false : true :
+					false : false;
+
 type GetTSType<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> = 
-	V extends PROP_TYPE.BOOL ? boolean|undefined : 
-	V extends PROP_TYPE.NUMBER ? number|undefined : 
-	V extends PROP_TYPE.STRING ? string|undefined : 
-	V extends ComplexType<infer R> ? R|undefined : 
+	V extends PROP_TYPE.BOOL ? boolean : 
+	V extends PROP_TYPE.NUMBER ? number : 
+	V extends PROP_TYPE.STRING ? string : 
+	V extends ComplexType<infer R> ? R : 
 	V extends DefineTypeConfig ? 
 		V extends ExactTypeHaver ? V['exactType'] :
 			V['type'] extends PROP_TYPE.BOOL ? 
 				V extends Coerced ? boolean : 
-					V extends PreDefined ? boolean : boolean|undefined : 
+					V extends PreDefined ? boolean : boolean : 
 			V['type'] extends PROP_TYPE.NUMBER ? 
 				V extends Coerced ? number : 
-					V extends PreDefined ? number : number|undefined : 
+					V extends PreDefined ? number : number : 
 			V['type'] extends PROP_TYPE.STRING ? 
 				V extends Coerced ? string : 
-					V extends PreDefined ? string :string|undefined : 
+					V extends PreDefined ? string :string : 
 			V['type'] extends ComplexType<infer R> ? 
-				V extends PreDefined ? R : R|undefined :
+				V extends PreDefined ? R : R :
 					void : void;
 
 /**
@@ -520,7 +540,7 @@ function dashesToCasing(name: string) {
 	return newStr;
 }
 
-function casingToDashes(name: string) {
+export function casingToDashes(name: string) {
 	if (!/[A-Z]/.test(name)) return name;
 
 	let newStr = '';
@@ -587,16 +607,46 @@ export interface PropComponent extends HTMLElement {
 	}|any;
 }
 
+type _Remove<A extends {
+	[key: string]: any;
+}, B> = {
+	[K in keyof A]: A[K] extends B ? never : K;
+}[keyof A];
+
+type RemoveType<A extends {
+	[key: string]: any;
+}, B> = {
+	[K in _Remove<A, B>]: A[K];
+}
+
+// Reflect and private type configs
+interface PropTypeConfig {
+	[key: string]: DefinePropTypes|DefinePropTypeConfig;
+};
+type ReturnType<R extends PropTypeConfig, P extends PropTypeConfig> = {
+	[K in keyof RemoveType<{
+		[K2 in keyof R]: IsUnassigned<R[K2]>;
+	}, false>]?: GetTSType<R[K]>
+} & {
+	[K in keyof Omit<R, keyof RemoveType<{
+		[K2 in keyof R]: IsUnassigned<R[K2]>;
+	}, false>>]: GetTSType<R[K]>
+} &  {
+	[K in keyof RemoveType<{
+		[K2 in keyof P]: IsUnassigned<P[K2]>;
+	}, false>]?: GetTSType<P[K]>
+} & {
+	[K in keyof Omit<P, keyof RemoveType<{
+		[K2 in keyof P]: IsUnassigned<P[K2]>;
+	}, false>>]: GetTSType<P[K]>
+};
+type SimpleReturnType<R extends PropTypeConfig, P extends PropTypeConfig> = {
+	[K in keyof P]: GetTSType<P[K]>;
+} & {
+	[K in keyof R]: GetTSType<R[K]>;
+};
+
 namespace PropsDefiner {
-	// Reflect and private type configs
-	interface PropTypeConfig {
-		[key: string]: DefinePropTypes|DefinePropTypeConfig;
-	};
-	type ReturnType<R extends PropTypeConfig, P extends PropTypeConfig> = {
-		[K in keyof R]: GetTSType<R[K]>;
-	} & {
-		[K in keyof P]: GetTSType<P[K]>;
-	};
 	type KeyPart<C extends PropTypeConfig, B extends boolean> = {
 		key: Extract<keyof C, string>;
 		value: C[keyof C];
@@ -633,7 +683,7 @@ namespace PropsDefiner {
 			reflectToAttr: boolean;
 			strict: boolean;
 		}> = new Map();
-		public propValues: Partial<ReturnType<R, P>> = {};
+		public propValues: Partial<SimpleReturnType<R, P>> = {};
 		public preMountedQueue: {
 			set: [string, string][],
 			remove: string[]
@@ -754,13 +804,13 @@ namespace PropsDefiner {
 				el.removeAttr(key);
 		}
 
-	const propConfigs: WeakMap<Props, {
+	const elementConfigs: WeakMap<Props, {
 		element: ElementRepresentation<PropTypeConfig, PropTypeConfig>;
 		composite: boolean;
 	}> = new WeakMap();
 
 	interface PropConfig<R,P> extends Omit<Required<DefinePropTypeConfig>, 'value'|'exactType'> {
-		mapKey: Extract<keyof R|P, string>;
+		mapKey: Extract<keyof P|keyof R, string>;
 		key: string;
 		reflectToAttr: boolean;
 		propName: string;
@@ -795,7 +845,7 @@ namespace PropsDefiner {
 			}
 
 			private __config: PropConfig<P,R>|null = null;
-			private get _config() {
+			public get config() {
 				if (this.__config) {
 					return this.__config;
 				}
@@ -816,7 +866,7 @@ namespace PropsDefiner {
 					type: mapType,
 					strict,
 					reflectToAttr
-				} = this._config;
+				} = this.config;
 
 				keyMap.set(key, {
 					watch, coerce, mapType, strict, reflectToAttr
@@ -825,7 +875,7 @@ namespace PropsDefiner {
 
 			private _setReflect() {
 				const _this = this;
-				const { mapKey, key } = this._config;
+				const { mapKey, key } = this.config;
 
 				if (mapKey in this._rep.component) return;
 				Object.defineProperty(this._rep.component, mapKey, {
@@ -833,19 +883,20 @@ namespace PropsDefiner {
 						return _this._rep.propValues[mapKey];
 					},
 					set(value) {
-						const prevVal = _this._props[mapKey];
+						const props = _this._props as SimpleReturnType<R, P>;
+						const prevVal = props[mapKey];
 						_this._rep.component.fire('beforePropChange', key, value, prevVal);
 
-						if (_this._props[mapKey] === value) return;
+						if (props[mapKey] === value) return;
 
-						_this._props[mapKey] = value;
+						props[mapKey] = value;
 						_this._rep.component.fire('propChange', key, value, prevVal);
 					}
 				});
 			}
 
 			public setReflect() {
-				const { reflectToSelf } = this._config;
+				const { reflectToSelf } = this.config;
 				if (reflectToSelf) {
 					this._setReflect();
 				}
@@ -856,7 +907,7 @@ namespace PropsDefiner {
 				const { 
 					mapKey, coerce, type, key,
 					watch, watchProperties, propName
-				} = this._config;
+				} = this.config;
 				Object.defineProperty(this._props, mapKey, {
 					get() {
 						const value = _this._rep.propValues[mapKey];
@@ -871,7 +922,7 @@ namespace PropsDefiner {
 						value = Watching.watchValue(createQueueRenderFn(_this._rep.component), 
 							value, watch, watchProperties);
 
-						if (_this._props[mapKey] === value) return;
+						if ((<SimpleReturnType<R, P>>_this._props)[mapKey] === value) return;
 						const prevVal = _this._rep.propValues[mapKey];
 						_this._rep.component.fire('beforePropChange', key, value, prevVal);
 						_this._rep.propValues[mapKey] = value;
@@ -888,31 +939,35 @@ namespace PropsDefiner {
 				});
 			}
 
-			public async doInitialAssign() {
+			public async assignComplexType() {
 				const { 
 					type, mapKey, propName, strict, watch,
 					watchProperties
-				} = this._config;
-				if (type !== complex) {
+				} = this.config;
+				await hookIntoConnect(this._rep.component as any, () => {
 					this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), 
-						this._rep.component.hasAttribute(propName) || (strict && type === 'bool') ?
+						this._rep.component.hasAttribute(propName) ?
 							getter(this._rep.component, propName, strict, type) as any : undefined,
 						watch, watchProperties);
-				} else {
-					await hookIntoConnect(this._rep.component as any, () => {
-						this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), 
-							this._rep.component.hasAttribute(propName) ?
-								getter(this._rep.component, propName, strict, type) as any : undefined,
-							watch, watchProperties);
-					});
-				}
+				});
+			}
+
+			public assignSimpleType() {
+				const { 
+					type, mapKey, propName, strict, watch,
+					watchProperties
+				} = this.config;
+				this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), 
+					this._rep.component.hasAttribute(propName) || (strict && type === 'bool') ?
+						getter(this._rep.component, propName, strict, type) as any : undefined,
+					watch, watchProperties);
 			}
 
 			public async doDefaultAssign() {
 				const { 
 					defaultValue, mapKey, watch, watchProperties,
 					propName, type, reflectToAttr
-				} = this._config;
+				} = this.config;
 				if (defaultValue !== undefined && this._rep.propValues[mapKey] === undefined) {
 					this._rep.propValues[mapKey] = Watching.watchValue(
 						createQueueRenderFn(this._rep.component), 
@@ -932,7 +987,7 @@ namespace PropsDefiner {
 			}
 		}
 
-	function defineProperties<R extends PropTypeConfig, P extends PropTypeConfig, Z extends ReturnType<R, P>>(
+	async function defineProperties<R extends PropTypeConfig, P extends PropTypeConfig, Z extends ReturnType<R, P>>(
 		element: ElementRepresentation<PropTypeConfig, PropTypeConfig>, 
 		props: Props & Partial<Z>, config: {
 			reflect?: R;
@@ -943,13 +998,17 @@ namespace PropsDefiner {
 			properties.forEach(property => property.setKeyMap(element.keyMap));
 			properties.forEach(property => property.setReflect());
 			properties.forEach(property => property.setPropAccessors());
-			properties.forEach(async (property) => {
-				await property.doInitialAssign();
-				await property.doDefaultAssign();
-			});
+			await Promise.all(properties.map(async (property) => {
+				if (property.config.type === complex) {
+					await property.assignComplexType();
+				} else {
+					property.assignSimpleType();
+				}
+				return property.doDefaultAssign();
+			}));
 		}
 
-	export function define<R extends PropTypeConfig, P extends PropTypeConfig, Z extends ReturnType<R, P>>(
+	export async function define<R extends PropTypeConfig, P extends PropTypeConfig, Z extends ReturnType<R, P>>(
 		props: Props & Partial<Z>, component: PropComponent, config: {
 			reflect?: R;
 			priv?: P;
@@ -961,30 +1020,31 @@ namespace PropsDefiner {
 				element.runQueued();
 			});
 
-			defineProperties(element, props, config);
-			
-			propConfigs.set(props, {
+			elementConfigs.set(props, {
 				composite: false,
 				element
 			});
+
+			await defineProperties(element, props, config);
 		}
 
-	export function joinProps<R extends PropTypeConfig, P extends PropTypeConfig, PP extends PropReturn<any, any>>(
+	export async function joinProps<R extends PropTypeConfig, P extends PropTypeConfig, PP extends PropReturn<any, any>>(
 		previousProps: PP, config: {
 			reflect?: R;
 			priv?: P;
 		}) {
 			/* istanbul ignore next */
-			if (!propConfigs.has(previousProps)) {
+			if (!elementConfigs.has(previousProps)) {
 				throw new Error('Previous props not defined');
 			}
-			const { element } = propConfigs.get(previousProps)!;
+			const { element } = elementConfigs.get(previousProps)!;
 
-			defineProperties(element, previousProps, config);
-			propConfigs.set(previousProps, {
+			elementConfigs.set(previousProps, {
 				composite: true,
 				element
-			})
+			});
+
+			await defineProperties(element, previousProps, config);
 		}
 }
 
@@ -998,10 +1058,10 @@ export type PropReturn<PUB extends PropConfigObject, PRIV extends PropConfigObje
 	[K in keyof PRIV]: GetTSType<PRIV[K]>;
 }
 
-export const propConfigs: WeakMap<PropComponent, {
+export const propConfigs: Map<string, {
 	reflect?: PropConfigObject;
 	priv?: PropConfigObject;
-}> = new WeakMap();
+}> = new Map();
 
 /**
  * A class used to define properties for components
@@ -1030,46 +1090,30 @@ export class Props {
 		element: PropComponent, props?: {
 			reflect: PUB;
 			priv: PRIV;
-		}): Props & {
-			[K in keyof PUB]: GetTSType<PUB[K]>;
-		} & {
-			[K in keyof PRIV]: GetTSType<PRIV[K]>;
-		};
+		}): Props & ReturnType<PUB, PRIV>;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
 		element: PropComponent, props?: {
 			priv: PRIV;
-		}): Props & {
-			[K in keyof PRIV]: GetTSType<PRIV[K]>;
-		};
+		}): Props & ReturnType<{}, PRIV>;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
 		element: PropComponent, props?: {
 			reflect: PUB;
-		}): Props & {
-			[K in keyof PUB]: GetTSType<PUB[K]>;
-		};
+		}): Props & ReturnType<PUB, {}>;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
 		element: PropComponent, props?: { }): Props;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
 		element: PropComponent, props: {
 			reflect: PUB;
 			priv: PRIV;
-		}, parentProps: PP): Props & {
-			[K in keyof PUB]: GetTSType<PUB[K]>;
-		} & {
-			[K in keyof PRIV]: GetTSType<PRIV[K]>;
-		} & PP;
+		}, parentProps: PP): ReturnType<PUB, PRIV> & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
 		element: PropComponent, props: {
 			priv: PRIV;
-		}, parentProps: PP): Props & {
-			[K in keyof PRIV]: GetTSType<PRIV[K]>;
-		} & PP;
+		}, parentProps: PP): ReturnType<{}, PRIV> & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
 		element: PropComponent, props: {
 			reflect: PUB;
-		}, parentProps: PP): Props & {
-			[K in keyof PUB]: GetTSType<PUB[K]>;
-		} & PP;
+		}, parentProps: PP): Props & ReturnType<PUB, {}> & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
 		element: PropComponent, props: { }, parentProps: PP): Props & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
@@ -1077,10 +1121,11 @@ export class Props {
 			reflect?: PUB;
 			priv?: PRIV;
 		} = {}, parentProps: PP = (element as any).props): Props & R & PP {
-			if (propConfigs.has(element)) {
-				propConfigs.set(element, {...propConfigs.get(element)!, ...config});
+			const tag = element.tagName.toLowerCase();
+			if (propConfigs.has(tag)) {
+				propConfigs.set(tag, {...propConfigs.get(tag)!, ...config});
 			} else {
-				propConfigs.set(element, config);
+				propConfigs.set(tag, config);
 			}
 
 			// if parentProps = {}, that is the default value created in base.ts

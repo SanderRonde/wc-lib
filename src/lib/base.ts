@@ -1,5 +1,5 @@
 import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
-import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, JSXDefinition } from '../classes/types.js';
 import { TemplateFnLike, CHANGE_TYPE } from '../wclib.js';
 
 /**
@@ -355,6 +355,16 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * @readonly
 		 */
 		props: any = {};
+
+		/**
+		 * The properties of this component but
+		 * suited to be used as JSX props
+		 * 
+		 * @readonly
+		 */
+		get jsxProps(): JSXDefinition<this> {
+			return this.props;
+		}
 
 		/**
 		 * The method that starts the rendering cycle

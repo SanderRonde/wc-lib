@@ -1,5 +1,6 @@
 import { ListenerSet, EventListenerObj } from '../lib/listener.js';
-import { Props } from '../lib/props.js';
+import { TemplateFnLike } from '../lib/template-fn.js';
+import { ClassNamesArg } from '../lib/shared.js';
 
 /**
  * A constructable function that returns the passed type
@@ -19,7 +20,11 @@ export type InferInstance<F> = F extends new(...args: any[]) => infer R ? R : vo
 /**
  * Infers props of a component from passed component['props']
  */
-type InferProps<C> = C extends Props & infer P ? P : void;
+type InferProps<C extends {
+	props: any;
+}> = {
+	[K in keyof C['props']]: C['props'][K];
+}
 
 /**
  * Infers the events listener object from the passed component
@@ -31,8 +36,8 @@ type InferEvents<C> = C extends {
 /**
  * Converts an eventname->event map to an eventname->function map
  */
-type EventsToAttr<E, EL> = {
-	[EV in keyof E]: (this: EL, event: E[EV]) => any;
+type EventsToAttr<E> = {
+	[EV in keyof E]: (event: E[EV]) => any;
 }
 
 /**
@@ -57,11 +62,19 @@ type CustomEventsToAttr<E extends EventListenerObj> = {
  */
 export type JSXDefinition<C extends {
 	props: any;
-}> = 
-	React.HTMLAttributes<C> & 
-	Partial<InferProps<C['props']>> & {
-		__listeners?: Partial<EventsToAttr<HTMLElementEventMap, C>>;
-		___listeners?: Partial<CustomEventsToAttr<InferEvents<C>>>;
+}, ATTR = {}> = 
+	ATTR & Partial<InferProps<C>> & {
+		__listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
+		"@"?: Partial<EventsToAttr<HTMLElementEventMap>>;
+		__component_listeners?: Partial<CustomEventsToAttr<InferEvents<C>>>;
+		"@@"?: Partial<CustomEventsToAttr<InferEvents<C>>>;
+		__bools?: Partial<InferProps<C>>;
+		"?"?: Partial<InferProps<C>>;
+		__refs?: Partial<InferProps<C>>;
+		"#"?: Partial<InferProps<C>>;
+		id?: string;
+		class?: string|ClassNamesArg|ClassNamesArg[];
+		"custom-css"?: TemplateFnLike;
 	};
 
 export {  

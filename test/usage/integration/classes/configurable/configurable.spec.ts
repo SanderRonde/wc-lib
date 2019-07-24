@@ -66,9 +66,7 @@ context('Configurable Component', function() {
 					const { added, parent } = window.configured.dependencyInherit;
 					expect(classInstance).to.have.property('dependencies');
 					expect(classInstance.dependencies).to.have.members(
-						parent);
-					expect(classInstance.dependencies).to.have.members(
-						added);
+						[...parent, ...added]);
 				});
 			});
 			it('filters out duplicate dependencies', () => {

@@ -65,9 +65,9 @@ context('Configurable Component', function() {
 					const classInstance = window.configured.dependencyInherit.class;
 					const { added, parent } = window.configured.dependencyInherit;
 					expect(classInstance).to.have.property('dependencies');
-					expect(window.configured.element.dependencies).to.have.members(
+					expect(classInstance.dependencies).to.have.members(
 						parent);
-					expect(window.configured.element.dependencies).to.have.members(
+					expect(classInstance.dependencies).to.have.members(
 						added);
 				});
 			});
@@ -76,9 +76,9 @@ context('Configurable Component', function() {
 					const classInstance = window.configured.duplicates.class;
 					const { dependencies } = window.configured.duplicates;
 					expect(classInstance).to.have.property('dependencies');
-					expect(window.configured.element.dependencies).to.have.members(
+					expect(classInstance.dependencies).to.have.members(
 						dependencies);
-					expect(window.configured.element.dependencies).to.have.length(
+					expect(classInstance.dependencies).to.have.length(
 						dependencies.length);
 				});
 			});

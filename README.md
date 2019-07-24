@@ -9,7 +9,7 @@
 [x] - Create some pre-created bundles
 [x] - Check what priv props really do
 [x] - Support JSX
-[ ] - Add JSX tests
+[x] - Add JSX tests
 [ ] - Consider typed CSS
 [ ] - Bundle, minify etc. Make sure it compiles without lit-html as a dependency
 [ ] - Check out defs for pre-created bundles

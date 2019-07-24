@@ -143,14 +143,13 @@ export function jsxToLiteral<TR>(tag: string|Constructor<any> & {
 		}
 		strings.push(`</${tagName}>`);
 	} else {
-		if (!openTagClosed) {
-			// Push the remaining text
-			strings.push(`"></${tagName}>`);
-			openTagClosed = true;
-		} else {
-			// Push just the tag
-			strings.push(`</${tagName}>`);
-		}
+		// The only way for openTagClosed
+		// to be true is for hasAttrs to be
+		// false. However, if !hasAttrs && !hasChildren
+		// the function returns early
+
+		// Push the remaining text
+		strings.push(`"></${tagName}>`);
 	}
 
 	const arr: Partial<TemplateStringsArray> = strings;

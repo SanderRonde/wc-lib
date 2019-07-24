@@ -95,6 +95,9 @@ export class SpecialPropClass extends ConfigurableWebComponent<{}, {
 					<div></div>
 					<div></div>
 				</div>
+				<div id="singleChildWithAttrs">
+					<div></div>
+				</div>
 				<unknown></unknown>
 				<OtherClass id="classComponent"></OtherClass>
 				<SpecialPropClass {...{"@": {

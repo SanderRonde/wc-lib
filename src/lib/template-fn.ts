@@ -372,9 +372,9 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 		if (result === null || result === undefined) return '';
 
 		if (result instanceof HTMLElement || result instanceof Element) {
-			return `<${result.tagName} ${Array.from(result.attributes).map((attr) => {
+			return `<${result.tagName.toLowerCase()} ${Array.from(result.attributes).map((attr) => {
 				return `${attr.name}="${attr.value}"`;
-			}).join(' ')}>${result.innerHTML}</${result.tagName}>`;
+			}).join(' ')}>${result.innerHTML}</${result.tagName.toLowerCase()}>`;
 		}
 		if ('toText' in result && typeof result.toText === 'function') {
 			return result.toText();

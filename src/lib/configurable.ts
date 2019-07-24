@@ -263,6 +263,7 @@ export function config(config: WebComponentConfiguration) {
 		const targetComponent = <any>target as typeof ConfigurableWebComponent;
 		class WebComponentConfig extends targetComponent<ELS, E> {
 			static is = is;
+			/* istanbul ignore next */
 			static dependencies = [...targetComponent.dependencies || [], ...dependencies]
 				.filter((dependency, index, arr) => arr.indexOf(dependency) === index);
 			static mixins = mixins;

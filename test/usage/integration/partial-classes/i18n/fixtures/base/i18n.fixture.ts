@@ -25,6 +25,7 @@ export interface RenderTestWindow extends Window {
 		customNull: TemplateFn;
 		customNoText: TemplateFn;
 		customNoRenderer: TemplateFn;
+		htmlElementTemplate: TemplateFn;
 	}
 	html: typeof html;
 }
@@ -292,6 +293,22 @@ const customTemplateNoRenderer = new TemplateFn<any>(() => {
 export class ChangeNever extends I18NWebComponent {
 }
 
+const htmlElementTemplate = new TemplateFn<any>(() => {
+	const el = document.createElement('div');
+	el.id = 'sub-el';
+	el.setAttribute('a', 'b');
+	el.setAttribute('c', 'd');
+	el.appendChild(document.createElement('span'));
+	return el;
+}, CHANGE_TYPE.NEVER, render);
+
+@config({
+	is: 'html-element-template',
+	html: htmlElementTemplate
+})
+export class HTMLElementTemplate extends I18NWebComponent {
+}
+
 TestElement.define();
 ChangeNever.define();
 RenderTestElementNever.define();
@@ -303,6 +320,7 @@ RenderTestElementPropTheme.define();
 RenderTestElementPropLang.define();
 RenderTestElementThemeLang.define();
 RenderTestElementAll.define();
+HTMLElementTemplate.define();
 
 NoCSS.define();
 BindTest.define();
@@ -316,5 +334,6 @@ window.templates = {
 	customString: customTemplateString,
 	customNull: customTemplateNull,
 	customNoText: customTemplateNoText,
-	customNoRenderer: customTemplateNoRenderer
+	customNoRenderer: customTemplateNoRenderer,
+	htmlElementTemplate
 }

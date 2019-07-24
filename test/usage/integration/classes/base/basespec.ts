@@ -448,6 +448,17 @@ export function baseSpec(fixture: string) {
 					});
 				});
 			});
+			it('renders elements if template returns an element', () => {
+				cy.window().then((window: RenderTestWindow) => {
+					cy.get('#element')
+						.shadowFind('#sub-el').then(([el]: JQuery<HTMLElement>) => {
+							expect(el instanceof window.HTMLElement).to.be.true;
+							expect(el).to.have.attr('a', 'b');
+							expect(el).to.have.attr('c', 'd');
+							expect(el.children).to.have.length(1);
+						});
+				});
+			});
 			it('can #renderAsText', () => {
 				cy.window().then((window: RenderTestWindow) => {
 					const val = Math.random() + '';
@@ -455,6 +466,14 @@ export function baseSpec(fixture: string) {
 
 					const text = template.renderAsText(11, {props: {}} as any);
 					expect(text).to.be.equal(`<div>${val}</div>`)
+				});
+			});
+			it('can convert html element templates to text', () => {
+				cy.window().then((window: RenderTestWindow) => {
+					const template = window.templates.htmlElementTemplate;
+
+					const text = template.renderAsText(11, {props: {}} as any);
+					expect(text).to.be.equal(`<div id="sub-el" a="b" c="d"><span></span></div>`)
 				});
 			});
 			it('can use #renderSame when using #renderTemplate', () => {

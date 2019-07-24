@@ -362,6 +362,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * 
 		 * @readonly
 		 */
+		/* istanbul ignore next */
 		get jsxProps(): JSXDefinition<this> {
 			return this.props;
 		}

@@ -63,6 +63,7 @@ class I18NClass {
 
 	public static notifyOnLangChange(listener: (newLang: string) => void) {
 		this._listeners.push(listener);
+		/* istanbul ignore if */
 		if (I18NClass.currentLang) {
 			listener(I18NClass.currentLang!);
 		}

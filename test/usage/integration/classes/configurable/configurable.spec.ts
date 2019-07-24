@@ -55,8 +55,9 @@ context('Configurable Component', function() {
 			it('sets the static .dependencies property to the config\'s .dependencies value', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expectPropertyExists(window.configured.element, 'dependencies');
-					expect(window.configured.element).to.have.property('dependencies', 
-						window.configured.dependencies)
+					expect(window.configured.element).to.have.property('dependencies');
+					expect(window.configured.element.dependencies).to.have.members(
+						window.configured.dependencies);
 				});
 			});
 			it('sets the static .mixins property to the config\'s .mixins value', () => {

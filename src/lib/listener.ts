@@ -159,6 +159,7 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 		 * @param {boolean} [once] - Whether to only
 		 * 	call this listener once (false by default)
 		 */
+		/* istanbul ignore next */
 		public listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) {
 			listenableClass(this).listen(event, listener, once);
 		}

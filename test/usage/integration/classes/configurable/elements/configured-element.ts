@@ -8,6 +8,15 @@ export interface TestConfiguredWindow extends Window {
 		element: typeof ConfiguredElement;
 		dependencies: (Pick<WebComponentDefinerMixinClass, 'define'>)[];
 		mixins: MixinFn<any, any, any>[];
+		dependencyInherit: {
+			class: typeof DependencyInheriter;
+			parent: any[];
+			added: any[];
+		};
+		duplicates: {
+			class: typeof DuplicateDependencies;
+			dependencies: any[];
+		}
 
 		wrongClasses: {
 			MissingIs: typeof MissingIs;
@@ -46,6 +55,33 @@ const mixins = [] as (MixinFn<any, any, any>)[];
 })
 export class ConfiguredElement extends ConfigurableWebComponent { }
 
+const parentDependencies = [{}, {}];
+const addedDependencies = [{}, {}];
+
+@config({
+	is: 'parent-dependencies',
+	html: null,
+	css: null,
+	dependencies: parentDependencies as any
+})
+class ParentDependencies extends ConfiguredElement { }
+
+@config({
+	is: 'dependency-inheriter',
+	html: null,
+	css: null,
+	dependencies: addedDependencies as any
+})
+class DependencyInheriter extends ParentDependencies { }
+
+const someDependencies = [{}, {}, {}];
+@config({
+	is: 'duplicate-dependencies',
+	html: null,
+	css: null,
+	dependencies: [...someDependencies, ...someDependencies, ...someDependencies] as any
+})
+class DuplicateDependencies extends ConfiguredElement { } 
 
 @config({
 	html: new TemplateFn<ConfiguredElement>(null, CHANGE_TYPE.NEVER, () => {}),
@@ -228,6 +264,15 @@ window.configured = {
 	CSSTemplate,
 	element: ConfiguredElement,
 	dependencies,
+	dependencyInherit: {
+		class: DependencyInheriter,
+		parent: parentDependencies,
+		added: addedDependencies
+	},
+	duplicates: {
+		class: DuplicateDependencies,
+		dependencies: someDependencies
+	},
 	mixins,
 
 	wrongClasses: {

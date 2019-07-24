@@ -264,6 +264,7 @@ export function config(config: WebComponentConfiguration) {
 		class WebComponentConfig extends targetComponent<ELS, E> {
 			static is = is;
 			static dependencies = [...targetComponent.dependencies || [], ...dependencies]
+				.filter((dependency, index, arr) => arr.indexOf(dependency) === index);
 			static mixins = mixins;
 			static html = html!;
 			static css = css || [];

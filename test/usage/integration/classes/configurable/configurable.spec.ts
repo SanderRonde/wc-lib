@@ -60,6 +60,28 @@ context('Configurable Component', function() {
 						window.configured.dependencies);
 				});
 			});
+			it('joins the parent\'s dependencies with the added dependencies', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					const classInstance = window.configured.dependencyInherit.class;
+					const { added, parent } = window.configured.dependencyInherit;
+					expect(classInstance).to.have.property('dependencies');
+					expect(window.configured.element.dependencies).to.have.members(
+						parent);
+					expect(window.configured.element.dependencies).to.have.members(
+						added);
+				});
+			});
+			it('filters out duplicate dependencies', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					const classInstance = window.configured.duplicates.class;
+					const { dependencies } = window.configured.duplicates;
+					expect(classInstance).to.have.property('dependencies');
+					expect(window.configured.element.dependencies).to.have.members(
+						dependencies);
+					expect(window.configured.element.dependencies).to.have.length(
+						dependencies.length);
+				});
+			});
 			it('sets the static .mixins property to the config\'s .mixins value', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expectPropertyExists(window.configured.element, 'mixins');

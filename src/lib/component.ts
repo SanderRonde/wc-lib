@@ -171,26 +171,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 	// This issue is tracked in the typescript repo's issues with numbers
 	// #26154 #24122 (among others)
 	//@ts-ignore
-	class WebComponent<ELS extends {
-		/**
-		 * All child elements of this component by ID
-		 */
-		IDS?: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		/**
-		 * All child elements of this component by class
-		 */
-		CLASSES?: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-		/**
-		 * All child elements of this component by tag name
-		 */
-		TAGS?: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	} = {}, E extends EventListenerObj = {}> extends superFn {
+	class WebComponent<ELS extends SelectorMap = {}, E extends EventListenerObj = {}> extends superFn {
 		/**
 		 * An array of functions that get called when this
 		 * component gets unmounted. These will dispose

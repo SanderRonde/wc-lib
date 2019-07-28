@@ -28,6 +28,17 @@ type BasicClass = InferrableClass<{
 		TAGS: {
 			e: 'e-toggle';
 		}
+	};
+	ATTRIBUTES: {
+		IDS: {
+			a: 'a-attr'|'a-attr-2';
+		}
+		CLASSES: {
+			c: 'c-attr';
+		}
+		TAGS: {
+			e: 'e-attr';
+		}
 	}
 }>;
 
@@ -187,6 +198,28 @@ context('Typed CSS', () => {
 			const expr = css<BasicClass>().id.a.toggle['a-toggle']
 				.toggle["a-toggle-2"];
 			expect(expr.toString()).to.be.equal('#a.a-toggle.a-toggle-2');
+		});
+	});
+	context('Attributes', () => {
+		it('adds attribute keys to ID strings', () => {
+			const expr = css<BasicClass>().id.a.attr['a-attr'];
+			expect(expr.toString()).to.be.equal('#a[a-attr]');
+		});
+		it('adds attribute keys to class strings', () => {
+			const expr = css<BasicClass>().class.c.attr['c-attr'];
+			expect(expr.toString()).to.be.equal('.c[c-attr]');
+		});
+		it('adds attribute keys to tag strings', () => {
+			const expr = css<BasicClass>().tag.e.attr['e-attr'];
+			expect(expr.toString()).to.be.equal('e[e-attr]');
+		});
+		it('can add an attribute key through calling the function', () => {
+			const expr = css<BasicClass>().id.a.attrFn('a-attr')
+			expect(expr.toString()).to.be.equal('#a[a-attr]');
+		});
+		it('can add an attribute value as well through calling the function', () => {
+			const expr = css<BasicClass>().id.a.attrFn('a-attr', 'some-value');
+			expect(expr.toString()).to.be.equal('#a[a-attr="some-value"]');
 		});
 	});
 });

@@ -7,10 +7,11 @@ type InferSelectors<C> = C extends {
 	CLASSES: {};
 	TAGS: {};
 	TOGGLES: {};
+	ATTRIBUTES: {};
 };
 
 type DefaultObj<S> = S extends undefined ? {} : S;
-type DefaultTogglesObj<S> = S extends undefined ? {
+type DefaultToggleableObj<S> = S extends undefined ? {
 	IDS: {};
 	CLASSES: {};
 	TAGS: {};
@@ -19,7 +20,7 @@ type DefaultTogglesObj<S> = S extends undefined ? {
 abstract class AllCSSMap<S extends SelectorMap> {
 	constructor(private _onValue?: (sel: CSSSelector<S, any, any, any>) => CSSSelector<S, any, any, any>) { }
 	
-	_genProxy<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'>, M extends {
+	_genProxy<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, M extends {
 		[key: string]: any;
 	}>(prefix: string): {
 			[K in keyof M]: CSSSelector<S, T, M, K>;
@@ -38,7 +39,7 @@ abstract class AllCSSMap<S extends SelectorMap> {
 	t = this.tag;
 }
 
-function genProxy<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'>, M extends {
+function genProxy<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, M extends {
 	[key: string]: any;
 }>(prefix: string, preRet?: (sel: CSSSelector<S, T, M, any>) => CSSSelector<S, T, any, any>): {
 		[K in keyof M]: CSSSelector<S, T, M, K>;
@@ -62,19 +63,31 @@ class OrClass<S extends SelectorMap> extends AllCSSMap<S> {
 	}
 }
 
-type ToggleFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'>, ST extends SelectorMap[T], N extends keyof ST> = {
+type ToggleFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> = {
 	// @ts-ignore
-	(...toggles: DefaultTogglesObj<S['TOGGLES']>[T][N][]): CSSSelector<S, T, ST, N>;
+	(...toggles: DefaultToggleableObj<S['TOGGLES']>[T][N][]): CSSSelector<S, T, ST, N>;
 } & {
 	// @ts-ignore
-	[K in DefaultTogglesObj<S['TOGGLES']>[T][N]]: CSSSelector<S, T, ST, N>;
+	[K in DefaultToggleableObj<S['TOGGLES']>[T][N]]: CSSSelector<S, T, ST, N>;
 }
 
-class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'>, ST extends SelectorMap[T], N extends keyof ST> {
+type AttrFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> = {
+	// @ts-ignore
+	(toggle: DefaultToggleableObj<S['ATTRIBUTES']>[T][N], value?: any): CSSSelector<S, T, ST, N>;
+} & {
+	// @ts-ignore
+	[K in DefaultToggleableObj<S['ATTRIBUTES']>[T][N]]: CSSSelector<S, T, ST, N>;
+}
+
+class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> {
 	private _andGroup: CSSSelector<S, any, any, any>[] = [];
 	private _orParent: CSSSelector<S, any, any, any>|null = null;
 	private _orGroup: CSSSelector<S, any, any, any>[] = [];
 	private _toggles: string[] = [];
+	private _attrs: {
+		key: string;
+		value?: any;
+	}[] = [];
 
 	constructor(private _selector: N, private _prefix: string) { }
 
@@ -109,7 +122,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		this._registerOr(sel);
 		return sel;
 	});
-	orFn<T extends Exclude<keyof SelectorMap, 'TOGGLES'>, ST extends SelectorMap[T], N extends keyof ST>(
+	orFn<T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST>(
 		sel: CSSSelector<S, T, ST, N>): CSSSelector<S, T, ST, N> {
 			this._registerOr(sel);
 			return sel;
@@ -126,8 +139,24 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		}
 	}) as unknown as ToggleFn<S, T, ST, N>;;
 	//@ts-ignore
-	toggleFn(...toggles: DefaultTogglesObj<S['TOGGLES']>[T][N][]): CSSSelector<S, T, ST, N> {
+	toggleFn(...toggles: DefaultToggleableObj<S['TOGGLES']>[T][N][]): CSSSelector<S, T, ST, N> {
 		this._toggles.push(...toggles as unknown as string);
+		return this;
+	};
+
+	attr = new Proxy({}, {
+		get: (_, key) => {
+			if (typeof key === 'string') {
+				this._attrs.push({ key });
+			} else {
+				this._attrs.push({ key: '?' });
+			}
+			return this;
+		}
+	}) as unknown as AttrFn<S, T, ST, N>;;
+	//@ts-ignore
+	attrFn(attr: DefaultToggleableObj<S['ATTRIBUTES']>[T][N], value?: any): CSSSelector<S, T, ST, N> {
+		this._attrs.push({ key: attr as unknown as string, value });
 		return this;
 	};
 
@@ -141,10 +170,17 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		const ownSelector = `${this._prefix}${this._selector}`;
 		// Then add any toggles
 		const toggles = this._toggles.map(t => `.${t}`).join('');
+		// Then any attributes
+		const attributes = this._attrs.map(({key, value}) => {
+			if (value === void 0) {
+				return `[${key}]`;
+			}
+			return `[${key}="${value}"]`;
+		}).join('');
 		// Then any ands
 		const ands = this._andGroup.map(a => a.toString()).join('');
 		
-		const andGroupSelector = `${ownSelector}${toggles}${ands}`;
+		const andGroupSelector = `${ownSelector}${toggles}${attributes}${ands}`;
 
 		return [
 			this._orParent ? this._orParent.toString(ignore) : null,

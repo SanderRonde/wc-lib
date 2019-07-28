@@ -67,6 +67,35 @@ export type SelectorMap<I extends {
 		TAGS?: {
 			[K in keyof T]?: string;
 		}
+	};
+	ATTRIBUTES?: {
+		/**
+		 * Togglable attributes for classes in the IDS group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['IDS'] and the value
+		 * is the toggleable attribute
+		 */
+		IDS?: {
+			[K in keyof I]?: string;
+		}
+		/**
+		 * Togglable attributes for classes in the CLASSES group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['CLASSES'] and the value
+		 * is the toggleable attribute
+		 */
+		CLASSES?: {
+			[K in keyof C]?: string;
+		}
+		/**
+		 * Togglable attributes for classes in the TAGS group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['TAGS'] and the value
+		 * is the toggleable attribute
+		 */
+		TAGS?: {
+			[K in keyof T]?: string;
+		}
 	}
 }
 

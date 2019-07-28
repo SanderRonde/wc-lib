@@ -15,7 +15,7 @@ export {
 	SelectorMap, PropChangeEvents
 } from './lib/component.js';
 export {
-	ConfigurableWebComponent, ConfiguredComponent,
+	ConfigurableWebComponent,
 	ConfigurableMixin, ExtendableMixin, 
 	MixinFn, mixin, config
 }from './lib/configurable.js';

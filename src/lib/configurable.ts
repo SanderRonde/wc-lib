@@ -2,6 +2,7 @@ import { FullWebComponent, WebComponent } from '../classes/full.js';
 import { WebComponentDefinerMixinClass } from './definer.js';
 import { EventListenerObj } from './listener.js';
 import { TemplateFnLike } from './template-fn.js';
+import { SelectorMap } from './component.js';
 
 /**
  * A configurable web component. This is the basic
@@ -13,16 +14,10 @@ import { TemplateFnLike } from './template-fn.js';
  * @template E - An object map of events to its args and return value. See
  * 	`WebComponentListenable` for more info
  */
-export class ConfigurableWebComponent<ELS extends {
-	IDS?: {
-		[key: string]: HTMLElement|SVGElement;
-	};
-	CLASSES?: {
-		[key: string]: HTMLElement|SVGElement;
-	}
-} = {
+export class ConfigurableWebComponent<ELS extends SelectorMap = {
 	IDS: {};
-	CLASSES: {}
+	CLASSES: {};
+	TAGS: {};
 }, E extends EventListenerObj = {}> extends FullWebComponent<ELS, E> {
 	/**
 	 * The render method that will render this component's HTML

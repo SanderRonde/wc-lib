@@ -20,31 +20,30 @@
 		"buld/**"
 	],
 	"private": true,
-	"dependencies": {
-		"@types/fs-extra": "^7.0.0",
+	"dependencies": { },
+	"devDependencies": {
 		"@types/glob": "^7.1.1",
 		"@types/gulp": "^4.0.6",
 		"@types/gulp-replace": "^0.0.31",
-		"@types/node": "^11.13.7",
-		"fs-extra": "^8.0.1",
-		"gulp": "^4.0.2",
-		"gulp-replace": "^1.0.0",
-		"lit-html": "^1.1.0",
-		"typescript": "^3.5.1"
-	},
-	"devDependencies": {
+		"@types/fs-extra": "^7.0.0",
 		"@types/http-server": "^0.10.0",
+		"@types/node": "^11.13.7",
 		"chai": "^4.2.0",
 		"chai-jquery": "^2.1.0",
 		"cypress": "^3.4.0",
+		"fs-extra": "^8.0.1",
 		"glob": "^7.1.4",
+		"gulp": "^4.0.2",
+		"gulp-replace": "^1.0.0",
 		"http-server": "^0.11.1",
 		"istanbul-lib-coverage": "^2.0.5",
 		"jquery": "^3.4.1",
+		"lit-html": "^1.1.0",
 		"lodash": "^4.17.13",
 		"nyc": "^14.1.1",
 		"remap-istanbul": "^0.13.0",
-		"ts-node": "^8.2.0"
+		"ts-node": "^8.2.0",
+		"typescript": "^3.5.1"
 	},
 	"scripts": {
 		"compile": "tsc -p src/tsconfig.cjs.json && tsc -p src/tsconfig.json",

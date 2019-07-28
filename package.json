@@ -72,10 +72,10 @@
 		"coverage:current-cypress": "npm run coverage:prep && nyc --reporter=text npm run cypress:report && npm run coverage:post",
 		"coverage:classes": "npm run set-cypress:classes && npm run coverage:current-cypress",
 		"coverage:lib": "npm run set-cypress:lib && npm run coverage:current-cypress",
-		"coverage:partial-classes-basic": "npm run set-cypress:partial-classes-basic && npm run coverage:current-cypress",
-		"coverage:partial-classes-complex-template": "npm run set-cypress:partial-classes-complex-template && npm run coverage:current-cypress",
-		"coverage:partial-classes-i18n": "npm run set-cypress:partial-classes-i18n && npm run coverage:current-cypress",
-		"coverage:partial-classes-theming": "npm run set-cypress:partial-classes-theming && npm run coverage:current-cypress",
+		"coverage:partial-classes-basic": "npm run set-cypress:partial-class-basic && npm run coverage:current-cypress",
+		"coverage:partial-classes-complex-template": "npm run set-cypress:partial-class-complex-template && npm run coverage:current-cypress",
+		"coverage:partial-classes-i18n": "npm run set-cypress:partial-class-i18n && npm run coverage:current-cypress",
+		"coverage:partial-classes-theming": "npm run set-cypress:partial-class-theming && npm run coverage:current-cypress",
 		"coverage:properties": "npm run set-cypress:properties && npm run coverage:current-cypress",
 		"prepublishOnly": "gulp removeIstanbulIgnoresSource"
 	}

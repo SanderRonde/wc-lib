@@ -65,16 +65,10 @@ class OrClass<S extends SelectorMap> extends AllCSSMap<S> {
 
 type ToggleFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> = {
 	// @ts-ignore
-	(...toggles: DefaultToggleableObj<S['TOGGLES']>[T][N][]): CSSSelector<S, T, ST, N>;
-} & {
-	// @ts-ignore
 	[K in DefaultToggleableObj<S['TOGGLES']>[T][N]]: CSSSelector<S, T, ST, N>;
 }
 
 type AttrFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> = {
-	// @ts-ignore
-	(toggle: DefaultToggleableObj<S['ATTRIBUTES']>[T][N], value?: any): CSSSelector<S, T, ST, N>;
-} & {
 	// @ts-ignore
 	[K in DefaultToggleableObj<S['ATTRIBUTES']>[T][N]]: CSSSelector<S, T, ST, N>;
 }

@@ -1,5 +1,10 @@
+/** 
+ * Essential exports and exports that come in handy
+ * when creating webcomponents with this library
+ **/
+
 export { 
-	bindToClass, CUSTOM_CSS_PROP_NAME
+	bindToClass
 } from './lib/base.js';
 export {
 	CHANGE_TYPE, Renderer, TemplateFn,
@@ -7,9 +12,13 @@ export {
 	TemplateRenderResult, Templater
 } from './lib/template-fn.js';
 export {
-	PropChangeEvents
+	SelectorMap, PropChangeEvents
 } from './lib/component.js';
-export * from './lib/configurable.js';
+export {
+	ConfigurableWebComponent, ConfiguredComponent,
+	ConfigurableMixin, ExtendableMixin, 
+	MixinFn, mixin, config
+}from './lib/configurable.js';
 export {
 	DefineMetadata
 } from './lib/definer.js';
@@ -19,7 +28,10 @@ export {
 export {
 	Listeners
 } from './lib/listeners.js';
-export * from './lib/props.js';
+export {
+	PROP_TYPE, ComplexType, DefinePropTypeConfig,
+	awaitConnected, hookIntoConnect, Props
+} from './lib/props.js';
 export * from './lib/shared.js';
 export {
 	LitHTMLConfig, 

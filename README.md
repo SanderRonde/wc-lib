@@ -11,5 +11,6 @@
 [x] - Support JSX
 [x] - Add JSX tests
 [x] - Consider typed CSS
+[ ] - Organize exports
 [ ] - Bundle, minify etc. Make sure it compiles without lit-html as a dependency
 [ ] - Check out defs for pre-created bundles

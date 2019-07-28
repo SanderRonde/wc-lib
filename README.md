@@ -82,6 +82,9 @@ Using [html-typings](https://github.com/SanderRonde/html-typings) (coincidentall
 The second thing this is used for is for typed CSS. Something that often happens to websites is that they feature unused CSS. It can be very hard to get rid of this since you might never know if a click somewhere triggers some code that adds a class that is eventually used by your CSS. This is why this library allows you to use typed CSS. This way you only generate selectors that you know are actually in your HTML template. Here's an example:
 
 ```js
+const enum STATES {
+	HOVER = 'hover'
+}
 html`<style>
 	${css(this).id['something-red']} {
 		color: red;
@@ -101,7 +104,7 @@ html`<style>
 </style>`;
 ```
 
-If any of these elements were to be removed from your HTML, you'd notice the type error and you could remove the offending CSS rule. It also has the benefit of removing the possibility of any typos in your CSS which can be a huge cause of frustration.
+If any of these elements were to be removed from your HTML, you'd notice the type error and you could remove the offending CSS rule. You could also pass in enums. This can be great when combined with toggled classes. Say for example, that you have some code that applies a `hover` style to some button element. You could instead apply `STATES.HOVER`, after which you pass the `STATES` enum to the toggle types, which allows you to pick `hover` as a togglable state. This way your CSS can reference your code, adding even more type safety. It also has the benefit of removing the possibility of any typos in your CSS which can be a huge cause of frustration.
 
 
 ## License

@@ -81,6 +81,10 @@ context('Typed CSS', () => {
 		it('can generate a single tag string through .t', () => {
 			expect(css<BasicClass>().t.e.toString()).to.be.equal('e');
 		});
+		it('returns ? if the key is not a string', () => {
+			expect((css<BasicClass>().id as any)[Symbol() as any]
+				.toString()).to.be.equal('#?');
+		});
 	});
 	context('Single joining', () => {
 		context('And', () => {
@@ -199,6 +203,10 @@ context('Typed CSS', () => {
 				.toggle["a-toggle-2"];
 			expect(expr.toString()).to.be.equal('#a.a-toggle.a-toggle-2');
 		});
+		it('returns ? if the key is not a string', () => {
+			const expr = (css<BasicClass>().id.a.toggle as any)[Symbol()];
+			expect(expr.toString()).to.be.equal('#a.?');
+		});
 	});
 	context('Attributes', () => {
 		it('adds attribute keys to ID strings', () => {
@@ -220,6 +228,10 @@ context('Typed CSS', () => {
 		it('can add an attribute value as well through calling the function', () => {
 			const expr = css<BasicClass>().id.a.attrFn('a-attr', 'some-value');
 			expect(expr.toString()).to.be.equal('#a[a-attr="some-value"]');
+		});
+		it('returns ? if the key is not a string', () => {
+			const expr = (css<BasicClass>().id.a.attr as any)[Symbol()];
+			expect(expr.toString()).to.be.equal('#a[?]');
 		});
 	});
 });

@@ -45,6 +45,9 @@
 		"ts-node": "^8.2.0",
 		"typescript": "^3.5.1"
 	},
+	"peerDependencies": {
+		"lit-html": "^1.1.0"
+	},
 	"scripts": {
 		"compile": "tsc -p src/tsconfig.cjs.json && tsc -p src/tsconfig.json",
 		"compile:test": "tsc -p test/tsconfig.cjs.json && tsc -p test/tsconfig.json",

@@ -15,7 +15,7 @@ install:
 - npm install -g codecov
 script:
 - yarn $TEST
-after_success:
+after_script:
 - codecov -f coverage/lcov.info
 notifications:
   email:

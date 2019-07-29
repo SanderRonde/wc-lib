@@ -7,6 +7,14 @@ A small library for creating webcomponents based around the idea of importing wh
 
 See below for more detailed explanations of these features.
 
+## Getting started
+
+The easiest way to get started is to use the command-line tool to generate a component for you. First make sure to install the library through NPM or git as well as installing [lit-html](https://github.com/Polymer/lit-html). Then use the `wc-lib create --name "my-element"` command to generate a component in `./my-element`. At this point it's as simple as modifying the template files (`./my-element/my-element.html.ts` and `./my-element/my-element.css.ts`) to change what is rendered and the class definition itself (`./my-element/my-element.ts`) to change any properties and methods it has. Then make sure to call `MyElement.define()` somewhere in your code to make sure it's defined and at that point any `my-element` tags will render your element instead.
+
+## Examples
+
+Check out the `/examples` directory for any example code.
+
 ## Features
 
 ### Smart template system

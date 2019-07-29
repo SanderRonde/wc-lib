@@ -46,10 +46,8 @@ function genProxy<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	} {
 	return new Proxy({}, {
 		get(_, selector) {
-			if (typeof selector !== 'string') {
-				return '?';
-			}
-			const cls = new CSSSelector<S, T, M, any>(selector, prefix);
+			const cls = new CSSSelector<S, T, M, any>(
+				typeof selector === 'string' ? selector : '?', prefix);
 			return preRet ? preRet(cls) : cls;
 		}
 	}) as {

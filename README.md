@@ -81,7 +81,7 @@ The property system for example, allows you to define properties on an element a
 The custom events that can be listened to for a given component can be specified in the class' type as well. This way you always know what events a specific component delivers and what arguments they have. 
 
 #### JSX
-The library also features support for JSX. Combining JSX with typed properties and events makes sure you even have type safety in your HTML, making sure you only pass the correct types of values to properties.
+The library also features support for JSX. Combining JSX with typed properties and events makes sure you even have type safety in your HTML, making sure you only pass the correct types of values to properties. **Note:** Make sure you have `{"jsx": "react", "jsxFactory": "html.jsx"}` in your tsconfig's compiler options since passing React elements won't work.
 
 #### HTML and CSS Typings
 

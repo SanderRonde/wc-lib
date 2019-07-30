@@ -21,6 +21,11 @@ export interface EventListenerObj {
 	};
 }
 
+/**
+ * A type that maps an event listener object to an object
+ * indexed by the events with as a value a set that holds
+ * the listener functions.
+ */
 export type ListenerSet<E extends EventListenerObj> = {
 	[P in keyof E]: Set<(...params: E[P]['args']) => E[P]['returnType']>;
 };

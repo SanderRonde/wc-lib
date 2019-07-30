@@ -7,15 +7,106 @@ import { Listeners } from './listeners.js';
 import { WCLibError } from './shared.js';
 import { Props } from './props.js';
 
+export type SelectorMap<I extends {
+	[key: string]: HTMLElement|SVGElement;
+} = {
+	[key: string]: HTMLElement|SVGElement;
+}, C extends {
+	[key: string]: HTMLElement|SVGElement;
+} = {
+	[key: string]: HTMLElement|SVGElement;
+}, T extends {
+	[key: string]: HTMLElement|SVGElement;
+} = {
+	[key: string]: HTMLElement|SVGElement;
+}> = {
+	/**
+	 * All child elements of this component by ID
+	 */
+	IDS?: I;
+	/**
+	 * All child elements of this component by class
+	 */
+	CLASSES?: C;
+	/**
+	 * All child elements of this component by tag name
+	 */
+	TAGS?: T;
+	/**
+	 * Togglable classes that can be put onto other elements.
+	 * The first property (IDS, CLASSES, TAGS) is the group
+	 * to which they apply. The key is the element to which
+	 * it is applied and the value is the toggleable class' 
+	 * name
+	 */
+	TOGGLES?: {
+		/**
+		 * Togglable classes for classes in the IDS group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['IDS'] and the value
+		 * is the toggleable class
+		 */
+		IDS?: {
+			[K in keyof I]?: string;
+		}
+		/**
+		 * Togglable classes for classes in the CLASSES group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['CLASSES'] and the value
+		 * is the toggleable class
+		 */
+		CLASSES?: {
+			[K in keyof C]?: string;
+		}
+		/**
+		 * Togglable classes for classes in the TAGS group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['TAGS'] and the value
+		 * is the toggleable class
+		 */
+		TAGS?: {
+			[K in keyof T]?: string;
+		}
+	};
+	ATTRIBUTES?: {
+		/**
+		 * Togglable attributes for classes in the IDS group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['IDS'] and the value
+		 * is the toggleable attribute
+		 */
+		IDS?: {
+			[K in keyof I]?: string;
+		}
+		/**
+		 * Togglable attributes for classes in the CLASSES group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['CLASSES'] and the value
+		 * is the toggleable attribute
+		 */
+		CLASSES?: {
+			[K in keyof C]?: string;
+		}
+		/**
+		 * Togglable attributes for classes in the TAGS group
+		 * where the key is the selector (that should also
+		 * be present in SelectorMap['TAGS'] and the value
+		 * is the toggleable attribute
+		 */
+		TAGS?: {
+			[K in keyof T]?: string;
+		}
+	}
+}
 
-type IDMapFn<IDS> = {
+export type IDMapFn<IDS extends SelectorMap> = {
 	/**
 	 * Query this component's root for given selector
 	 */
 	<K extends keyof HTMLElementTagNameMap>(selector: K): HTMLElementTagNameMap[K] | undefined;
     <K extends keyof SVGElementTagNameMap>(selector: K): SVGElementTagNameMap[K] | undefined;
     <E extends HTMLElement = HTMLElement>(selector: string): E | undefined;
-} & IDS;
+} & IDS['IDS'];
 
 /**
  * Type of property change events that can be listened for
@@ -42,9 +133,7 @@ class ComponentClass {
 	public idMapProxy: IDMapFn<any>| null = null;
 	public supportsProxy: boolean = typeof Proxy !== 'undefined';
 
-	public genIdMapProxy<ELS extends {
-		IDS?: any;
-	}>(self: WebComponentMixinInstance): IDMapFn<ELS["IDS"]> {
+	public genIdMapProxy<ELS extends SelectorMap>(self: WebComponentMixinInstance): IDMapFn<ELS> {
 		const __this = this;
 		return new Proxy((selector: string) => {
 			return self.root.querySelector(selector) as HTMLElement;
@@ -59,24 +148,22 @@ class ComponentClass {
 				}
 				const el = self.root.getElementById(id);
 				if (el) {
-					__this.idMap.set(id, el as ELS["IDS"][keyof ELS["IDS"]]);
+					__this.idMap.set(id, el as unknown as ELS["IDS"][keyof ELS["IDS"]]);
 				}
 				return el || undefined;
 			}
-		}) as IDMapFn<ELS["IDS"]>;
+		}) as IDMapFn<ELS>;
 	}
 
-	public getIdMapSnapshot<ELS extends {
-		IDS: any;
-	}>(self: WebComponentMixinInstance) {
-		const snapshot: Partial<IDMapFn<ELS["IDS"]>> = ((selector: string) => {
+	public getIdMapSnapshot<ELS extends SelectorMap>(self: WebComponentMixinInstance) {
+		const snapshot: Partial<IDMapFn<ELS>> = ((selector: string) => {
 			return self.root.querySelector(selector) as HTMLElement;
-		}) as IDMapFn<ELS["IDS"]>
+		}) as IDMapFn<ELS>
 		for (const item of self.root.querySelectorAll('[id]')) {
 			(snapshot as any)[item.id as any] = item;
 		}
 
-		return snapshot as IDMapFn<ELS["IDS"]>;
+		return snapshot as IDMapFn<ELS>;
 	}
 }
 
@@ -113,20 +200,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 	// This issue is tracked in the typescript repo's issues with numbers
 	// #26154 #24122 (among others)
 	//@ts-ignore
-	class WebComponent<ELS extends {
-		/**
-		 * All child elements of this component by ID
-		 */
-		IDS?: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		/**
-		 * All child elements of this component by class
-		 */
-		CLASSES?: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	} = {}, E extends EventListenerObj = {}> extends superFn {
+	class WebComponent<ELS extends SelectorMap = {}, E extends EventListenerObj = {}> extends superFn {
 		/**
 		 * An array of functions that get called when this
 		 * component gets unmounted. These will dispose
@@ -158,7 +232,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * 
 		 * @readonly
 		 */
-		get $(): IDMapFn<ELS["IDS"]> {
+		get $(): IDMapFn<ELS> {
 			const priv = getPrivate(this);
 			if (priv.supportsProxy) {
 				return priv.idMapProxy ||

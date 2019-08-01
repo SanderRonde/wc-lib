@@ -6,12 +6,18 @@ export const I18nComponentHTML = new TemplateFn<I18nComponent>(function () {
 	return html`
 		<div>${this.__('what_is_your_name')}</div>
 		<div>
-			<span>My name is</span>
-			<input style="display: inline-block">
+			<label for="input">${this.__('my_name_is')}</span>
+			<input id="input">
 		</div>
 		<br />
-		<button>Set lang to english</button>
-		<button>Set lang to german</button>
-		<button>Set lang to spanish</button>
+		<button @click=${() => {
+			this.setLang('en');
+		}}>${this.__('set_lang_to', this.__('english'))}</button>
+		<button @click=${() => {
+			this.setLang('de');
+		}}>${this.__('set_lang_to', this.__('german'))}</button>
+		<button @click=${() => {
+			this.setLang('es');
+		}}>${this.__('set_lang_to', this.__('spanish'))}</button>
 	`
 }, CHANGE_TYPE.LANG, render);

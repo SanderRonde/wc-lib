@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '../../src/wclib';
+import { ConfigurableWebComponent, Props, config } from '../../src/wclib';
 import { TypedHtmlHTML } from './typed-html.html.js';
 import { TypedHtmlCSS } from './typed-html.css.js';
 

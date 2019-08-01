@@ -5,7 +5,8 @@ import {
 	WebComponentHierarchyManagerMixin, WebComponentListenableMixin, 
 	WebComponentBaseMixin, WebComponentDefinerMixin, elementBase 
 } from "./parts.js";
-import { EventListenerObj } from "../lib/listener.js";
+import { EventListenerObj, GetEvents } from "../lib/listener.js";
+import { SelectorMap, GetEls } from "../lib/component.js";
 
 export const FullWebComponent = WebComponentMixin(
 	WebComponentCustomCSSManagerMixin(WebComponentTemplateManagerMixin(
@@ -13,20 +14,7 @@ export const FullWebComponent = WebComponentMixin(
 			WebComponentHierarchyManagerMixin(WebComponentListenableMixin(
 				WebComponentBaseMixin(WebComponentDefinerMixin(elementBase)))))))));
 
-export class WebComponent<ELS extends {
-	/**
-	 * All child elements of this component by ID
-	 */
-	IDS: {
-		[key: string]: HTMLElement|SVGElement;
-	};
-	/**
-	 * All child elements of this component by class
-	 */
-	CLASSES: {
-		[key: string]: HTMLElement|SVGElement;
-	}
-} = {
-	IDS: {};
-	CLASSES: {}
-}, E extends EventListenerObj = {}> extends FullWebComponent<ELS, E> { }
+export class WebComponent<GA extends {
+	events?: EventListenerObj;
+	selectors?: SelectorMap;
+} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> { }

@@ -45,8 +45,10 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 }, CHANGE_TYPE.NEVER, render);
 
 export class TestElementBase extends ThemingWebComponent<{
-	IDS: {};
-	CLASSES: {};
+	selectors: {
+		IDS: {};
+		CLASSES: {};
+	}
 }> {
 	props = Props.define(this, {
 		reflect: {

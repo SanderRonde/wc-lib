@@ -1,3 +1,4 @@
+import { EventListenerObj, SelectorMap } from "../wclib.js";
 import { WebComponent } from "../classes/full.js";
 
 let _supportsPassive: boolean | null = null;
@@ -43,14 +44,10 @@ export namespace Listeners {
 			map: IDMap;
 		}>;
 	}> = new WeakMap();
-	function doListen<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, type: 'element' | 'identifier', 
+	function doListen<GA extends {
+		events?: EventListenerObj;
+		selectors?: SelectorMap;
+	}, E extends EventListenerObj, ELS extends SelectorMap, T extends WebComponent<GA, E, ELS>, K extends keyof HTMLElementEventMap>(base: T, type: 'element' | 'identifier', 
 		element: HTMLElement, id: string, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		options?: boolean | AddEventListenerOptions) {
 			const boundListener = listener.bind(base);
@@ -130,14 +127,10 @@ export namespace Listeners {
 	 * @returns {() => void} A function that, when called, removes
 	 * 	this listener
 	 */
-	export function listen<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
+	export function listen<GA extends {
+		events?: EventListenerObj;
+		selectors?: SelectorMap;
+	}, E extends EventListenerObj, ELS extends SelectorMap, T extends WebComponent<GA, E, ELS>, K extends keyof HTMLElementEventMap>(base: T, 
 		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		options?: boolean | AddEventListenerOptions): () => void {
 			const element: HTMLElement = (base.$ as any)[id];
@@ -177,14 +170,10 @@ export namespace Listeners {
 	 * @returns {() => void} A function that, when called, removes
 	 * 	this listener
 	 */
-	export function listenWithIdentifier<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
+	export function listenWithIdentifier<GA extends {
+		events?: EventListenerObj;
+		selectors?: SelectorMap;
+	}, E extends EventListenerObj, ELS extends SelectorMap, T extends WebComponent<GA, E, ELS>, K extends keyof HTMLElementEventMap>(base: T, 
 		element: HTMLElement, identifier: string, event: K, 
 		listener: (this: T, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): () => void {
 			return doListen(base as any, 'identifier', element, identifier, event, listener, options);
@@ -253,14 +242,10 @@ export namespace Listeners {
 	 * @returns {() => void} A function that, when called, removes
 	 * 	this listener
 	 */
-	export function listenIfNew<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
+	export function listenIfNew<GA extends {
+		events?: EventListenerObj;
+		selectors?: SelectorMap;
+	}, E extends EventListenerObj, ELS extends SelectorMap, T extends WebComponent<GA, E, ELS>, K extends keyof HTMLElementEventMap>(base: T, 
 		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		isNew?: boolean, options?: boolean | AddEventListenerOptions): () => void {
 			const element: HTMLElement = (base.$ as any)[id];

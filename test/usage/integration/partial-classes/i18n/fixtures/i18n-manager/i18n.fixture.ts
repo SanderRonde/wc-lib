@@ -71,22 +71,25 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends I18NWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
-	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
-	};
-}, {
-	test: {
-		args: [number, number];
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -128,16 +131,15 @@ const ParentElementCSS = new TemplateFn<ParentElement>(() => {
 	]
 })
 export class ParentElement extends I18NWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -174,16 +176,15 @@ const RootElementCSS = new TemplateFn<RootElement>(() => {
 	]
 })
 export class RootElement extends I18NWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {

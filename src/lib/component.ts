@@ -1,11 +1,16 @@
-import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet } from './listener.js';
-import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet, GetEvents } from './listener.js';
+import { Constructor, InferInstance, InferReturn, DefaultObj } from '../classes/types.js';
 import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { Listeners } from './listeners.js';
 import { WCLibError } from './shared.js';
 import { Props } from './props.js';
+
+export type GetEls<GA extends {
+	selectors?: SelectorMap;
+}> = Required<GA>['selectors'] extends undefined ? 
+	{} : DefaultObj<Required<GA>['selectors'], SelectorMap>;
 
 export type SelectorMap<I extends {
 	[key: string]: HTMLElement|SVGElement;
@@ -200,7 +205,10 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 	// This issue is tracked in the typescript repo's issues with numbers
 	// #26154 #24122 (among others)
 	//@ts-ignore
-	class WebComponent<ELS extends SelectorMap = {}, E extends EventListenerObj = {}> extends superFn {
+	class WebComponent<GA extends {
+		events?: EventListenerObj;
+		selectors?: SelectorMap;
+	} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends superFn {
 		/**
 		 * An array of functions that get called when this
 		 * component gets unmounted. These will dispose

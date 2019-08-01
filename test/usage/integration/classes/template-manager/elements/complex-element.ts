@@ -9,11 +9,10 @@ import { TestElement } from "../../elements/test-element.js";
 	}, CHANGE_TYPE.NEVER, render)
 })
 export class EventTriggeringElement extends ConfigurableWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	ev: {
-		args: [number];
+	events: {
+		ev: {
+			args: [number];
+		}
 	}
 }> { }
 

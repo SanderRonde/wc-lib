@@ -18,6 +18,11 @@ export type InferReturn<F> = F extends (...args: any[]) => infer R ? R : void;
 export type InferInstance<F> = F extends new(...args: any[]) => infer R ? R : void;
 
 /**
+ * Returns a different type if type is undefined
+ */
+export type DefaultObj<V, D = {}> = V extends undefined ? D : V;
+
+/**
  * Infers props of a component from passed component['props']
  */
 type InferProps<C extends {

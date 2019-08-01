@@ -44,10 +44,7 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	return html`<style> * {color: red; } </style>`;
 }, CHANGE_TYPE.NEVER, render);
 
-export class TestElementBase extends ConfigurableWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}> {
+export class TestElementBase extends ConfigurableWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			x: {

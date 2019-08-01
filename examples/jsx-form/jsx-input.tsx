@@ -45,13 +45,16 @@ declare global {
 	}, CHANGE_TYPE.NEVER, render)
 })
 export class JsxInput extends ConfigurableWebComponent<{
-	IDS: {
-		input: HTMLInputElement;
-	}
-}, {
-	change: {
-		args: [string, string]
-	}
+	selectors: {
+		IDS: {
+			input: HTMLInputElement;
+		}
+	};
+	events: {
+		change: {
+			args: [string, string]
+		}
+	};
 }> {
 	private _lastVal: string = '';
 

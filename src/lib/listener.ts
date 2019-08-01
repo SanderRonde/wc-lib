@@ -1,4 +1,9 @@
-import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultObj } from '../classes/types.js';
+
+export type GetEvents<GA extends {
+	events?: EventListenerObj;
+}> = Required<GA>['events'] extends undefined ? 
+	{} : DefaultObj<Required<GA>['events'], EventListenerObj>;
 
 /**
  * An object that maps an event name
@@ -35,10 +40,13 @@ export type ListenerSet<E extends EventListenerObj> = {
  * listening and firing of events on this
  * component
  * 
- * @template E - An object map of events to its args and return value. See
+ * @template GA - An object containing an "events" key that contains
+ * 	an object map of events to its args and return value. See
  * 	`WebComponentListenable` for more info
  */
-class ListenableClass<E extends EventListenerObj> {
+class ListenableClass<GA extends {
+	events?: EventListenerObj;
+} = {}, E extends EventListenerObj = GetEvents<GA>> {
 	/**
 	 * A map that maps every event name to
 	 * a set containing all of its listeners
@@ -121,8 +129,10 @@ export type WebComponentListenableMixinSuper = Constructor<{}>;
  * class
  */
 export const WebComponentListenableMixin = <P extends WebComponentListenableMixinSuper>(superFn: P) => {
-	const privateMap: WeakMap<WebComponentListenable<any>, ListenableClass<any>> = new WeakMap();
-	function listenableClass<E extends EventListenerObj>(self: WebComponentListenable<E>): ListenableClass<E> {
+	const privateMap: WeakMap<WebComponentListenable<any, any>, ListenableClass<any>> = new WeakMap();
+	function listenableClass<GA extends {
+		events?: EventListenerObj;
+	} = {}, E extends EventListenerObj = GetEvents<GA>>(self: WebComponentListenable<GA, E>): ListenableClass<GA, E> {
 		if (privateMap.has(self)) return privateMap.get(self)!;
 		return privateMap.set(self, new ListenableClass()).get(self)!;
 	}
@@ -137,7 +147,9 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 	 * and firing of events
 	 */
 	//@ts-ignore
-	class WebComponentListenable<E extends EventListenerObj = {}> extends superFn {
+	class WebComponentListenable<GA extends {
+		events?: EventListenerObj;
+	} = {}, E extends EventListenerObj = GetEvents<GA>> extends superFn {
 		constructor(...args: any[]) {
             super(...args);
 		}

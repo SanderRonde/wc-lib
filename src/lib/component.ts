@@ -333,19 +333,16 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @param {boolean} [once] - Whther the listener should only
 		 * 	be called once
 		 */
-		public listenProp<P extends Props & {
-			[key: string]: any;
-		}>(event: PropChangeEvents, 
-			listener: (key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void,
+		public listenProp<P extends Props & { [key: string]: any; }>(
+			event: PropChangeEvents, 
+			listener: (key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void, 
 			once?: boolean): void;
-		public listenProp<P extends Props & {
-			[key: string]: any;
-		}, PK extends keyof P>(event: PropChangeEvents, 
+		public listenProp<P extends Props & { [key: string]: any; }, PK extends keyof P>(
+			event: PropChangeEvents, 
 			listener: (key: PK, newValue: P[PK], oldValue: P[PK]) => void,
 			once?: boolean): void;
-		public listenProp<P extends Props & {
-			[key: string]: any;
-		}>(event: PropChangeEvents, 
+		public listenProp<P extends Props & { [key: string]: any; }>(
+			event: PropChangeEvents, 
 			listener: (key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void,
 			once: boolean = false) {
 				this.listen(event, listener, once);

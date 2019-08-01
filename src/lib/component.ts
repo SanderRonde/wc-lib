@@ -1,5 +1,5 @@
 import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet, GetEvents } from './listener.js';
-import { Constructor, InferInstance, InferReturn, DefaultObj } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal } from '../classes/types.js';
 import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
 import { CHANGE_TYPE } from './template-fn.js';
@@ -10,7 +10,7 @@ import { Props } from './props.js';
 export type GetEls<GA extends {
 	selectors?: SelectorMap;
 }> = Required<GA>['selectors'] extends undefined ? 
-	{} : DefaultObj<Required<GA>['selectors'], SelectorMap>;
+	{} : DefaultVal<Required<GA>['selectors'], SelectorMap>;
 
 export type SelectorMap<I extends {
 	[key: string]: HTMLElement|SVGElement;

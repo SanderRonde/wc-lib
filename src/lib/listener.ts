@@ -1,9 +1,9 @@
-import { Constructor, InferInstance, InferReturn, DefaultObj } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal } from '../classes/types.js';
 
 export type GetEvents<GA extends {
 	events?: EventListenerObj;
 }> = Required<GA>['events'] extends undefined ? 
-	{} : DefaultObj<Required<GA>['events'], EventListenerObj>;
+	{} : DefaultVal<Required<GA>['events'], EventListenerObj>;
 
 /**
  * An object that maps an event name

@@ -1,4 +1,4 @@
-import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentI18NManagerMixinInstance } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentI18NManagerMixinInstance, WebComponentThemeManagerMixinInstance } from '../classes/types.js';
 import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet, GetEvents } from './listener.js';
 import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
@@ -177,6 +177,7 @@ export type WebComponentSuper = Constructor<
 	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
 	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
 	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'> & 
+	Partial<Pick<WebComponentThemeManagerMixinInstance, 'getTheme'|'getThemeName'|'setTheme'>> &
 	Partial<Pick<WebComponentI18NManagerMixinInstance, 'getLang'|'setLang'|'__'|'__prom'>> & {
 		connectedCallback(): void;
 		disconnectedCallback?(): void;
@@ -210,6 +211,9 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		i18n?: any;
 		langs?: string;
 		events?: EventListenerObj;
+		themes?: {
+			[key: string]: any;
+		};
 		selectors?: SelectorMap;
 	} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends superFn {
 		/**
@@ -480,6 +484,45 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 				throw new Error('Not implemented');
 			}
 			return super.__(key, ...values);
+		}
+
+		/**
+		 * Gets the name of the curent theme
+		 * 
+		 * @returns {string} The name of the current theme
+		 */
+		public getThemeName = <N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> => {
+			if (!super.getThemeName) {
+				throw new Error('Not implemented');
+			}
+			return super.getThemeName();
+		}
+
+		/**
+		 * Gets the current theme's theme object
+		 * 
+		 * @template T - The themes type
+		 * 
+		 * @returns {T[keyof T]} A theme instance type
+		 */
+		public getTheme = <T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] => {
+			if (!super.getTheme) {
+				throw new Error('Not implemented');
+			}
+			return super.getTheme();
+		}
+
+		/**
+		 * Sets the theme of this component and any other
+		 * component in its hierarchy to the passed theme
+		 * 
+		 * @template N - The theme name
+		 */
+		public setTheme = <N extends GA['themes'] = { [key: string]: any }>(themeName: N) => {
+			if (!super.setTheme) {
+				throw new Error('Not implemented');
+			}
+			return super.setTheme(themeName);
 		}
 	}
 

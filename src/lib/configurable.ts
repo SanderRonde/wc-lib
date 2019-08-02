@@ -18,6 +18,9 @@ export class ConfigurableWebComponent<GA extends {
 	i18n?: any;
 	langs?: string;
 	events?: EventListenerObj;
+	themes?: {
+		[key: string]: any;
+	};
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
 	/**
@@ -103,6 +106,9 @@ export declare class ConfiguredComponent<GA extends {
 	i18n?: any;
 	langs?: string;
 	events?: EventListenerObj;
+	themes?: {
+		[key: string]: any;
+	};
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
 	constructor();
@@ -243,12 +249,7 @@ export function config(config: WebComponentConfiguration) {
 		mixins = [],
 		dependencies = []
 	} = config;
-	return <T, GA extends {
-		i18n?: any;
-		langs?: string;
-		events?: EventListenerObj;
-		selectors?: SelectorMap;
-	} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(target: T): T => {
+	return <T, GA extends { i18n?: any; langs?: string; events?: EventListenerObj; themes?: {[key: string]: any; };selectors?: SelectorMap; } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(target: T): T => {
 		const targetComponent = <any>target as typeof ConfigurableWebComponent;
 		class WebComponentConfig extends targetComponent<GA, E, ELS> {
 			static is = is;

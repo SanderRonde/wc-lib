@@ -145,7 +145,7 @@ export type TemplateRenderFunction<C extends {
 const templaterMap: WeakMap<Templater<any>, 
 	WeakMap<{
 		props?: any;
-	}, WeakMap<TemplateFn<any, any, any>, 
+	}, WeakMap<TemplateFn<any, any>, 
 		//Any = R in TemplateFn
 		any|null>>> = new WeakMap();
 
@@ -253,6 +253,10 @@ type TemplateComponent = Partial<Pick<WebComponentThemeManagerMixinInstance, 'ge
 	props: any;
 }
 
+type InferThemeVal<C> = C extends {
+	getTheme(): infer T;
+} ? T : void;
+
 /**
  * A template class that renders given template
  * when given change occurs using given renderer
@@ -261,7 +265,7 @@ type TemplateComponent = Partial<Pick<WebComponentThemeManagerMixinInstance, 'ge
  * @template T - The theme object
  * @template R - The return value of the template function
  */
-export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R extends TemplateRenderResult = TemplateRenderResult> implements TemplateFnLike {
+export class TemplateFn<C extends {} = WebComponent<any, any>, R extends TemplateRenderResult = TemplateRenderResult> implements TemplateFnLike {
 	private _lastRenderChanged: boolean = true;
 
 	/**
@@ -278,12 +282,12 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 	 * 	with the container element as the second element and is
 	 * 	tasked with rendering it to the DOM
 	 */
-	constructor(_template: (TemplateRenderFunction<C, T, R>)|null,
+	constructor(_template: (TemplateRenderFunction<C, InferThemeVal<C>, R>)|null,
 		changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R>|null);
-	constructor(_template: (TemplateRenderFunction<C, T, R>),
+	constructor(_template: (TemplateRenderFunction<C, InferThemeVal<C>, R>),
 		changeOn: CHANGE_TYPE.ALWAYS|CHANGE_TYPE.PROP|CHANGE_TYPE.THEME|CHANGE_TYPE.LANG, 
 		renderer: Renderer<R>|null);
-	constructor(private _template: (TemplateRenderFunction<C, T, R>)|null,
+	constructor(private _template: (TemplateRenderFunction<C, InferThemeVal<C>, R>)|null,
 		public changeOn: CHANGE_TYPE, 
 		private _renderer: Renderer<R>|null) { }
 
@@ -328,10 +332,10 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 				}
 				const templateComponent = component as unknown as TemplateComponent;
 				const rendered = this._template === null ?
-					null : (this._template as TemplateRenderFunction<C, T, R|TR>).call(
+					null : (this._template as TemplateRenderFunction<C, InferThemeVal<C>, R|TR>).call(
 						component, jsxAddedTemplate!, templateComponent.props, 
 						('getTheme' in templateComponent && templateComponent.getTheme) ? 
-							templateComponent.getTheme<T>() : null as any, changeType);
+							templateComponent.getTheme() : null as any, changeType);
 				templateMap.set(this, rendered);
 				return {
 					changed: true,
@@ -342,10 +346,10 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, T = void, R exten
 				!templateMap.has(this)) {
 					//Change, rerender
 					const templateComponent = component as unknown as TemplateComponent;
-					const rendered = (this._template as TemplateRenderFunction<C, T, R|TR>).call(
+					const rendered = (this._template as TemplateRenderFunction<C, InferThemeVal<C>, R|TR>).call(
 						component, jsxAddedTemplate!, templateComponent.props, 
 						('getTheme' in templateComponent && templateComponent.getTheme) ? 
-							templateComponent.getTheme<T>() : null as any, changeType);
+							templateComponent.getTheme() : null as any, changeType);
 					templateMap.set(this, rendered);
 					return {
 						changed: true,

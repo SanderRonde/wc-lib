@@ -17,11 +17,11 @@ export namespace Templates {
 	 * @returns {TemplateFn<T, any, any>} The merged template
 	 */
 	export function joinTemplates<T extends { props: any; }>(
-		renderer: Renderer<T>, ...templates: TemplateFn<T, any, any>[]): TemplateFn<T, any, any> {
+		renderer: Renderer<T>, ...templates: TemplateFn<T, any>[]): TemplateFn<T, any> {
 			const changeType = templates.reduce((prev, template) => {
 				return prev | template.changeOn;
 			}, 0) || CHANGE_TYPE.NEVER;
-			return new TemplateFn<T, any, any>(function (html) {
+			return new TemplateFn<T, any>(function (html) {
 				return html`${templates.map((template) => {
 					return template.renderSame(changeType, this, html);
 				})}`;

@@ -1,6 +1,8 @@
+import { GetEvents, WebComponentListenableMixinInstance, ListenerSet } from './listener.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal } from '../classes/types.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
-import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentBaseMixinInstance } from './base.js';
+import { EventListenerObj } from '../wclib.js';
 import { CHANGE_TYPE } from './template-fn.js';
 
 /**
@@ -18,7 +20,14 @@ export type WebComponentThemeManagerMixinClass = InferReturn<typeof WebComponent
 
 export type WebComponentThemeManagerMixinSuper = Constructor<
 	Pick<WebComponentBaseMixinInstance, 'renderToDOM'> & 
-	Partial<Pick<WebComponentHierarchyManagerMixinInstance, 'globalProps'|'listenGP'>>>;
+	Partial<Pick<WebComponentHierarchyManagerMixinInstance, 'globalProps'|'listenGP'>> & 
+	Partial<Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'>> & 
+	Partial<{
+		setLang(lang: string): Promise<any>;
+		getLang(): string;
+		__prom(key: string, ...values: any[]): Promise<any>;
+		__(key: string, ...values: any[]): any;
+	}>>;
 
 /**
  * A mixin that, when applied, takes care of 
@@ -57,12 +66,25 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 	}
 	const componentThemeMap: WeakMap<typeof WebComponentThemeManager, string> = new WeakMap();
 
+	// Explanation for ts-ignore:
+	// Will show a warning regarding using generics in mixins
+	// This issue is tracked in the typescript repo's issues with numbers
+	// #26154 #24122 (among others)
+
 	/**
 	 * A class that is responsible for managing
 	 * the current theme and passing it to the template
 	 * function when it changes
 	 */
-	class WebComponentThemeManager extends superFn {
+	//@ts-ignore
+	class WebComponentThemeManager<GA extends {
+		i18n?: any;
+		langs?: string;
+		events?: EventListenerObj;
+		themes?: {
+			[key: string]: any;
+		};
+	} = {}, E extends EventListenerObj = GetEvents<GA>> extends superFn {
 		constructor(...args: any[]) {
 			super(...args);
 
@@ -86,7 +108,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 
 		 * @returns {string} The name of the current theme
 		 */
-		public getThemeName(): string {
+		public getThemeName<N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> {
 			return (this.globalProps && this.globalProps<{theme: string;}>().get('theme')) ||
 				currentTheme || PrivateData.__defaultTheme;
 		}
@@ -94,29 +116,29 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		/**
 		 * Gets the current theme's theme object
 		 * 
-		 * @template T - The theme type
+		 * @template T - The themes type
 		 * 
-		 * @returns {T} A theme type
+		 * @returns {T[keyof T]} A theme instance type
 		 */
-		public getTheme<T>(): T {
+		public getTheme<T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] {
 			if (PrivateData.__theme) {
 				const themeName = this.getThemeName();
 				if (themeName && themeName in PrivateData.__theme) {
-					return PrivateData.__theme[themeName] as T;
+					return PrivateData.__theme[themeName] as T[keyof T];
 				}
 			}
-			return noTheme as T;
+			return noTheme as T[keyof T];
 		}
 
 		/**
 		 * Sets the theme of this component and any other
 		 * component in its hierarchy to the passed theme
 		 * 
-		 * @template T - The theme type
+		 * @template N - The theme name
 		 */
-		public setTheme<T>(themeName: T) {
+		public setTheme<N extends GA['themes'] = { [key: string]: any }>(themeName: N) {
 			if (this.globalProps) {
-				this.globalProps<{theme: T;}>().set('theme', themeName);
+				this.globalProps<{theme: N;}>().set('theme', themeName);
 			} else {
 				changeTheme(themeName);
 			}
@@ -189,6 +211,146 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			componentThemeMap.set(element.self, theme);
 			return true;
 		}
+
+		/**
+		 * A map that maps every event name to
+		 * a set containing all of its listeners
+		 * 
+		 * @readonly
+		 */
+		get listenerMap(): ListenerSet<E> {
+			return super.listenerMap as ListenerSet<E>;
+		}
+
+		/**
+		 * Listens for given event and fires
+		 * the listener when it's triggered
+		 * 
+		 * @template EV - The event's name
+		 * 
+		 * @param {EV} event - The event's name
+		 * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
+		 * 	listener called when the event is fired
+		 * @param {boolean} [once] - Whether to only
+		 * 	call this listener once (false by default)
+		 */
+		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
+			if (!super.listen) {
+				throw new Error('Not implemented');
+			}
+			super.listen(event as any, listener, once);
+		}
+
+		/**
+		 * Clears all listeners on this component for
+		 * given event
+		 * 
+		 * @template EV - The name of the event
+		 * 
+		 * @param {EV} event - The name of the event to clear
+		 * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
+		 * 	specific listener to clear. If not passed, clears all
+		 * 	listeners for the event
+		 */
+		public clearListener = <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
+			if (!super.clearListener) {
+				throw new Error('Not implemented');
+			}
+			super.clearListener(event as any, listener);
+		}
+
+		/**
+		 * Fires given event on this component
+		 * with given params, returning an array
+		 * containing the return values of all
+		 * triggered listeners
+		 * 
+		 * @template EV - The event's name
+		 * @template R - The return type of the
+		 * 	event's listeners
+		 * 
+		 * @param {EV} event - The event's anme
+		 * @param {E[EV]['args']} params - The parameters
+		 * 	passed to the listeners when they are
+		 * 	called
+		 * 
+		 * @returns {R[]} An array containing the
+		 * 	return values of all triggered
+		 * 	listeners
+		 */
+		public fire = <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
+			if (!super.fire) {
+				throw new Error('Not implemented');
+			}
+			return super.fire(event as any, ...params);
+		}
+
+		/**
+		 * Sets the current language
+		 * 
+		 * @param {string} lang - The language to set it to, a regular string
+		 */
+		public setLang = <L extends string = DefaultVal<GA['langs'], string>>(lang: L): Promise<void> => {
+			if (!super.setLang) {
+				throw new Error('Not implemented');
+			}
+			return super.setLang(lang);
+		}
+
+		/**
+		 * Gets the currently active language
+		 */
+		public getLang = (): DefaultVal<GA['langs'], string> => {
+			if (!super.getLang) {
+				throw new Error('Not implemented');
+			}
+			return super.getLang() as DefaultVal<GA['langs'], string>;
+		}
+
+		/**
+		 * Returns a promise that resolves to the message. You will generally
+		 * want to use this inside the class itself since it resolves to a simple promise.
+		 * 
+		 * **Note:** Does not call the `options.returner` function before returning.
+		 * 
+		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+		 * 		that can be used as placeholders or something similar
+		 * 
+		 * @returns {Promise<string>} A promise that resolves to the found message
+		 */
+		public __prom = <I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string> => {
+			if (!super.__prom) {
+				throw new Error('Not implemented');
+			}
+			return super.__prom(key, ...values);
+		}
+
+		/**
+		 * Returns either a string or whatever the `options.returner` function
+		 * returns. If you have not set the `options.returner` function, this will
+		 * return either a string or a promise that resolves to a string. Since
+		 * this function calls `options.returner` with the promise if the i18n file
+		 * is not loaded yet.
+		 * 
+		 * You will generally want to use this function inside your templates since it
+		 * allows for the `options.returner` function to return a template-friendly
+		 * value that can display a placeholder or something of the sort
+		 * 
+		 * @template R - The return value of your returner function
+		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+		 * 		that can be used as placeholders or something similar
+		 * 
+		 * @returns {string|R} A promise that resolves to the found message
+		 */
+		public __ = <R, I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R => {
+			if (!super.__) {
+				throw new Error('Not implemented');
+			}
+			return super.__(key, ...values);
+		}
 	}
+
 	return WebComponentThemeManager;
 }

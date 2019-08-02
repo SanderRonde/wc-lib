@@ -28,7 +28,7 @@ export const defaultTheme = 'first';
 			<div class="text2">test2</div>
 		`;
 	}, CHANGE_TYPE.NEVER, render),
-	css: new TemplateFn<ThemedElement, TestTheme>((_html, _prop, theme) => {
+	css: new TemplateFn<ThemedElement>((_html, _prop, theme) => {
 		return html`<style>
 				.text {
 					color: ${theme.color1};
@@ -40,7 +40,9 @@ export const defaultTheme = 'first';
 			</style>`
 	}, CHANGE_TYPE.THEME, render)
 })
-export class ThemedElement extends ConfigurableWebComponent {
+export class ThemedElement extends ConfigurableWebComponent<{
+	themes: typeof usedThemes;
+}> {
 
 }
 

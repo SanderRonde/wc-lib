@@ -88,7 +88,7 @@ TestElement.define();
 			<div class="text2">test2</div>
 		`;
 	}, CHANGE_TYPE.NEVER, render),
-	css: new TemplateFn<ThemedElement, TestTheme>((_html, _prop, theme) => {
+	css: new TemplateFn<ThemedElement>((_html, _prop, theme) => {
 		return html`<style>
 			.text {
 				color: ${theme.color1};
@@ -100,7 +100,9 @@ TestElement.define();
 		</style>`
 	}, CHANGE_TYPE.THEME, render)
 })
-export class ThemedElement extends ThemingWebComponent {
+export class ThemedElement extends ThemingWebComponent<{
+	themes: typeof usedThemes;
+}> {
 
 }
 

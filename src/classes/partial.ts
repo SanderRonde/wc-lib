@@ -21,6 +21,9 @@ export class ThemingWebComponent<GA extends {
 	i18n?: any;
 	langs?: string;
 	events?: EventListenerObj;
+	themes?: {
+			[key: string]: any;
+		};
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends WebComponentMixin(
 	WebComponentThemeManagerMixin(WebComponentListenableMixin(
@@ -30,6 +33,9 @@ export class I18NWebComponent<GA extends {
 	i18n?: any;
 	langs?: string;
 	events?: EventListenerObj;
+	themes?: {
+		[key: string]: any;
+	};
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends WebComponentMixin(
 	WebComponentI18NManagerMixin(WebComponentListenableMixin(

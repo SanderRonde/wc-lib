@@ -257,6 +257,15 @@ type InferThemeVal<C> = C extends {
 	getTheme(): infer T;
 } ? T : void;
 
+function getTheme(component: TemplateComponent) {
+	try {
+		if ('getTheme' in component && component.getTheme) {
+			return component.getTheme();
+		}
+	} catch(e) { }
+	return null;
+}
+
 /**
  * A template class that renders given template
  * when given change occurs using given renderer
@@ -334,8 +343,7 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, R extends Templat
 				const rendered = this._template === null ?
 					null : (this._template as TemplateRenderFunction<C, InferThemeVal<C>, R|TR>).call(
 						component, jsxAddedTemplate!, templateComponent.props, 
-						('getTheme' in templateComponent && templateComponent.getTheme) ? 
-							templateComponent.getTheme() : null as any, changeType);
+						getTheme(templateComponent), changeType);
 				templateMap.set(this, rendered);
 				return {
 					changed: true,
@@ -348,8 +356,7 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, R extends Templat
 					const templateComponent = component as unknown as TemplateComponent;
 					const rendered = (this._template as TemplateRenderFunction<C, InferThemeVal<C>, R|TR>).call(
 						component, jsxAddedTemplate!, templateComponent.props, 
-						('getTheme' in templateComponent && templateComponent.getTheme) ? 
-							templateComponent.getTheme() : null as any, changeType);
+						getTheme(templateComponent), changeType);
 					templateMap.set(this, rendered);
 					return {
 						changed: true,

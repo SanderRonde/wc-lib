@@ -518,7 +518,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * 
 		 * @template N - The theme name
 		 */
-		public setTheme = <N extends GA['themes'] = { [key: string]: any }>(themeName: N) => {
+		public setTheme = <N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) => {
 			if (!super.setTheme) {
 				throw new Error('Not implemented');
 			}

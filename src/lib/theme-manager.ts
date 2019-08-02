@@ -136,9 +136,9 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 
 		 * @template N - The theme name
 		 */
-		public setTheme<N extends GA['themes'] = { [key: string]: any }>(themeName: N) {
+		public setTheme<N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) {
 			if (this.globalProps) {
-				this.globalProps<{theme: N;}>().set('theme', themeName);
+				this.globalProps<{theme: Extract<keyof N, string>;}>().set('theme', themeName);
 			} else {
 				changeTheme(themeName);
 			}

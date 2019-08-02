@@ -483,28 +483,5 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		}
 	}
 
-	new WebComponent<{
-		selectors: {
-			IDS: {
-				divId: HTMLDivElement;
-				headerId: HTMLHeadingElement;
-			};
-			CLASSES: {
-				divClass: HTMLDivElement;
-				headerClass: HTMLHeadingElement;
-			};
-		};
-		events: {
-			test: {
-				args: [number, number];
-			}
-			test2: {
-				args: [];
-				returnType: number;
-			}
-		}
-		langs: 'a'|'b';
-	}>().listen
-
 	return WebComponent;
 }

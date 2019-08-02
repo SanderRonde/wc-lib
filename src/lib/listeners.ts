@@ -126,9 +126,7 @@ export namespace Listeners {
 	 * 	this listener
 	 */
 	export function listen<T extends {
-		$: {
-			[key: string]: HTMLElement|SVGElement;
-		}
+		$: any;
 	}, K extends keyof HTMLElementEventMap>(base: T, 
 		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		options?: boolean | AddEventListenerOptions): () => void {
@@ -235,9 +233,7 @@ export namespace Listeners {
 	 * 	this listener
 	 */
 	export function listenIfNew<T extends {
-		$: {
-			[key: string]: HTMLElement|SVGElement;
-		}
+		$: any;
 	}, K extends keyof HTMLElementEventMap>(base: T, 
 		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		isNew?: boolean, options?: boolean | AddEventListenerOptions): () => void {

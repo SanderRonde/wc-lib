@@ -12,12 +12,12 @@ export const I18nComponentHTML = new TemplateFn<I18nComponent>(function () {
 		<br />
 		<button @click=${() => {
 			this.setLang('en');
-		}}>${this.__('set_lang_to', this.__('english'))}</button>
+		}}>${this.__('set_lang_to', this.__prom('english'))}</button>
 		<button @click=${() => {
 			this.setLang('de');
-		}}>${this.__('set_lang_to', this.__('german'))}</button>
+		}}>${this.__('set_lang_to', this.__prom('german'))}</button>
 		<button @click=${() => {
 			this.setLang('es');
-		}}>${this.__('set_lang_to', this.__('spanish'))}</button>
+		}}>${this.__('set_lang_to', this.__prom('spanish'))}</button>
 	`
 }, CHANGE_TYPE.LANG, render);

@@ -51,4 +51,11 @@ const placeholder = directive((key: string, value: Promise<any>|string) => (part
 	}, CHANGE_TYPE.LANG, render),
 	css: null
 })
-export class LangElement extends ConfigurableWebComponent { }
+export class LangElement extends ConfigurableWebComponent<{
+	langs: 'en'|'nl';
+	i18n: {
+		test: string;
+		nonexistent: string;
+		values: string;
+	}
+}> { }

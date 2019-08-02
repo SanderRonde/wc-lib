@@ -52,7 +52,14 @@ const placeholder = directive((key: string, value: Promise<any>|string) => (part
 	}, CHANGE_TYPE.LANG, render),
 	css: null
 })
-export class LangElement extends I18NWebComponent { }
+export class LangElement extends I18NWebComponent<{
+	langs: 'en'|'nl';
+	i18n: {
+		test: string;
+		nonexistent: string;
+		values: string;
+	}
+}> { }
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`

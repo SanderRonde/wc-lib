@@ -1,5 +1,5 @@
+import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentI18NManagerMixinInstance } from '../classes/types.js';
 import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet, GetEvents } from './listener.js';
-import { Constructor, InferInstance, InferReturn, DefaultVal } from '../classes/types.js';
 import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
 import { CHANGE_TYPE } from './template-fn.js';
@@ -176,7 +176,8 @@ export type WebComponentSuper = Constructor<
 	HTMLElement &
 	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
 	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
-	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'> & {
+	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'> & 
+	Partial<Pick<WebComponentI18NManagerMixinInstance, 'getLang'|'setLang'|'__'|'__prom'>> & {
 		connectedCallback(): void;
 		disconnectedCallback?(): void;
 	}>;
@@ -206,6 +207,8 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 	// #26154 #24122 (among others)
 	//@ts-ignore
 	class WebComponent<GA extends {
+		i18n?: any;
+		langs?: string;
 		events?: EventListenerObj;
 		selectors?: SelectorMap;
 	} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends superFn {
@@ -412,6 +415,96 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public fire = <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
 			return super.fire(event as any, ...params);
 		}
+
+		/**
+		 * Sets the current language
+		 * 
+		 * @param {string} lang - The language to set it to, a regular string
+		 */
+		public setLang = <L extends string = DefaultVal<GA['langs'], string>>(lang: L): Promise<void> => {
+			if (!super.setLang) {
+				throw new Error('Not implemented');
+			}
+			return super.setLang(lang);
+		}
+
+		/**
+		 * Gets the currently active language
+		 */
+		public getLang = (): DefaultVal<GA['langs'], string> => {
+			if (!super.getLang) {
+				throw new Error('Not implemented');
+			}
+			return super.getLang() as DefaultVal<GA['langs'], string>;
+		}
+
+		/**
+		 * Returns a promise that resolves to the message. You will generally
+		 * want to use this inside the class itself since it resolves to a simple promise.
+		 * 
+		 * **Note:** Does not call the `options.returner` function before returning.
+		 * 
+		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+		 * 		that can be used as placeholders or something similar
+		 * 
+		 * @returns {Promise<string>} A promise that resolves to the found message
+		 */
+		public __prom = <I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string> => {
+			if (!super.__prom) {
+				throw new Error('Not implemented');
+			}
+			return super.__prom(key, ...values);
+		}
+
+		/**
+		 * Returns either a string or whatever the `options.returner` function
+		 * returns. If you have not set the `options.returner` function, this will
+		 * return either a string or a promise that resolves to a string. Since
+		 * this function calls `options.returner` with the promise if the i18n file
+		 * is not loaded yet.
+		 * 
+		 * You will generally want to use this function inside your templates since it
+		 * allows for the `options.returner` function to return a template-friendly
+		 * value that can display a placeholder or something of the sort
+		 * 
+		 * @template R - The return value of your returner function
+		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
+		 * 		that can be used as placeholders or something similar
+		 * 
+		 * @returns {string|R} A promise that resolves to the found message
+		 */
+		public __ = <R, I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R => {
+			if (!super.__) {
+				throw new Error('Not implemented');
+			}
+			return super.__(key, ...values);
+		}
 	}
+
+	new WebComponent<{
+		selectors: {
+			IDS: {
+				divId: HTMLDivElement;
+				headerId: HTMLHeadingElement;
+			};
+			CLASSES: {
+				divClass: HTMLDivElement;
+				headerClass: HTMLHeadingElement;
+			};
+		};
+		events: {
+			test: {
+				args: [number, number];
+			}
+			test2: {
+				args: [];
+				returnType: number;
+			}
+		}
+		langs: 'a'|'b';
+	}>().listen
+
 	return WebComponent;
 }

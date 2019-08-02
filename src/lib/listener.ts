@@ -129,7 +129,7 @@ export type WebComponentListenableMixinSuper = Constructor<{}>;
  * class
  */
 export const WebComponentListenableMixin = <P extends WebComponentListenableMixinSuper>(superFn: P) => {
-	const privateMap: WeakMap<WebComponentListenable<any, any>, ListenableClass<any>> = new WeakMap();
+	const privateMap: WeakMap<WebComponentListenable<any, any>, ListenableClass<any, any>> = new WeakMap();
 	function listenableClass<GA extends {
 		events?: EventListenerObj;
 	} = {}, E extends EventListenerObj = GetEvents<GA>>(self: WebComponentListenable<GA, E>): ListenableClass<GA, E> {

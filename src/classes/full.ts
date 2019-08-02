@@ -15,6 +15,8 @@ export const FullWebComponent = WebComponentMixin(
 				WebComponentBaseMixin(WebComponentDefinerMixin(elementBase)))))))));
 
 export class WebComponent<GA extends {
+	i18n?: any;
+	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> { }

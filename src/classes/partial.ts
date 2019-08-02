@@ -9,6 +9,8 @@ import { WebComponentDefinerMixin } from "../lib/definer.js";
 import { WebComponentBaseMixin } from "../lib/base.js";
 
 export class BasicWebComponent<GA extends {
+	i18n?: any;
+	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends WebComponentMixin(
@@ -16,6 +18,8 @@ export class BasicWebComponent<GA extends {
 		WebComponentDefinerMixin(elementBase))))<GA, E, ELS> {}
 
 export class ThemingWebComponent<GA extends {
+	i18n?: any;
+	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends WebComponentMixin(
@@ -23,6 +27,8 @@ export class ThemingWebComponent<GA extends {
 		WebComponentBaseMixin(WebComponentDefinerMixin(elementBase)))))<GA, E, ELS> {}
 
 export class I18NWebComponent<GA extends {
+	i18n?: any;
+	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends WebComponentMixin(
@@ -30,6 +36,8 @@ export class I18NWebComponent<GA extends {
 		WebComponentBaseMixin(WebComponentDefinerMixin(elementBase)))))<GA, E, ELS> {}
 
 export class ComplexTemplatingWebComponent<GA extends {
+	i18n?: any;
+	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends WebComponentMixin(

@@ -15,6 +15,8 @@ import { TemplateFnLike } from './template-fn.js';
  * 	`WebComponentListenable` for more info
  */
 export class ConfigurableWebComponent<GA extends {
+	i18n?: any;
+	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
@@ -98,6 +100,8 @@ export interface WebComponentConfiguration {
  * with `@configure`.
  */
 export declare class ConfiguredComponent<GA extends {
+	i18n?: any;
+	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
@@ -240,6 +244,8 @@ export function config(config: WebComponentConfiguration) {
 		dependencies = []
 	} = config;
 	return <T, GA extends {
+		i18n?: any;
+		langs?: string;
 		events?: EventListenerObj;
 		selectors?: SelectorMap;
 	} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(target: T): T => {

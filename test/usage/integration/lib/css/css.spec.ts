@@ -51,10 +51,30 @@ context('Typed CSS', () => {
 			expect(cls.toString()).to.be.equal('#a');
 		});
 		it('String(cls) works on classes', () => {
+			console.log(Proxy);
 			const cls = css<BasicClass>().$.a;
 			expect(cls).to.not.be.string;
 			expect(String(cls)).to.be.string;
 			expect(String(cls)).to.be.equal('#a');
+		});
+		context('No Proxy', () => {
+			let _proxy: typeof Proxy;
+			before(() => {
+				_proxy = (window as any).Proxy;
+				delete (window as any).Proxy;
+			});
+			it('throws an error if Proxy is disabled', () => {
+				expect(() => {
+					css<BasicClass>().id.a;
+				}).to.throw(
+					// This captures the inner error even though it
+					// should capture the outer error so just 
+					// look for the outer error
+					'Proxy is not defined');
+			});
+			after(() => {
+				(window as any).Proxy = _proxy;
+			});
 		});
 	});
 	context('Single string', () => {

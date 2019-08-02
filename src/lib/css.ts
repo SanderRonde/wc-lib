@@ -44,13 +44,13 @@ function genProxy<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 }>(prefix: string, preRet?: (sel: CSSSelector<S, T, M, any>) => CSSSelector<S, T, any, any>): {
 		[K in keyof M]: CSSSelector<S, T, M, K>;
 	} {
-	return new Proxy({}, {
-		get(_, selector) {
-			const cls = new CSSSelector<S, T, M, any>(
-				typeof selector === 'string' ? selector : '?', prefix);
-			return preRet ? preRet(cls) : cls;
-		}
-	}) as {
+		return new Proxy({}, {
+			get(_, selector) {
+				const cls = new CSSSelector<S, T, M, any>(
+					typeof selector === 'string' ? selector : '?', prefix);
+				return preRet ? preRet(cls) : cls;
+			}
+		}) as {
 			[K in keyof M]: CSSSelector<S, T, M, K>;
 		};
 }
@@ -186,8 +186,13 @@ class CSS<S extends SelectorMap> extends AllCSSMap<S> { }
 
 let cssInstance: CSS<any>|null = null;
 export function css<C>(_c?: C) {
-	if (cssInstance) {
-		return cssInstance as CSS<InferSelectors<C>>;
+	try {
+		if (cssInstance) {
+			return cssInstance as CSS<InferSelectors<C>>;
+		}
+		return (cssInstance = new CSS()) as CSS<InferSelectors<C>>;
+	} catch(e) {
+		console.log('throwing');
+		throw new Error('Attempting to use css map while proxy is not supported');
 	}
-	return (cssInstance = new CSS()) as CSS<InferSelectors<C>>;
 }

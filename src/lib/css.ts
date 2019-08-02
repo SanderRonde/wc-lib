@@ -184,7 +184,10 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 
 class CSS<S extends SelectorMap> extends AllCSSMap<S> { }
 
-let cssInstance = new CSS<any>();
+let cssInstance: CSS<any>|null = null;
 export function css<C>(_c?: C) {
-	return cssInstance as CSS<InferSelectors<C>>;;
+	if (cssInstance) {
+		return cssInstance as CSS<InferSelectors<C>>;
+	}
+	return (cssInstance = new CSS()) as CSS<InferSelectors<C>>;
 }

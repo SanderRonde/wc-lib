@@ -19,7 +19,7 @@ type MessageEntry = {
 
 // A key-value map that represents your language file.
 // This is only really used for typing
-interface LangFile {
+export interface LangFile {
 	what_is_your_name: MessageEntry;
 	my_name_is: MessageEntry;
 	set_lang_to: MessageEntry;
@@ -29,7 +29,7 @@ interface LangFile {
 }
 
 WebComponent.initI18N({
-	urlFormat: './$LANG$.json',
+	urlFormat: './json-files/$LANG$.json',
 	defaultLang: 'en',
 	// Optional. Combined with lit-html this
 	// sets the value to a placeholder while the
@@ -77,5 +77,3 @@ WebComponent.initComplexTemplateProvider({
 });
 
 I18nComponent.define();
-
-//TODO: json files

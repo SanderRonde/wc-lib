@@ -435,12 +435,5 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		}
 	}
 
-	new WebComponentI18NManagerClass<{
-		i18n: {
-			a: string;
-		}
-	}>().__prom('a');
-	new WebComponentI18NManagerClass().__prom('c');
-
 	return WebComponentI18NManagerClass;
 }

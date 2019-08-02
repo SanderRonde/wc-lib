@@ -10,11 +10,11 @@ export const ThemedComponentHTML = new TemplateFn<ThemedComponent>(function () {
 					<h1 id="primary">Primary color</div>
 					<h2 id="secondary">Secondary color</div>
 					<div id="regular">Regular text</div>
-					<button @click="${() => {
-						this.setTheme('light');
+					<button class="theme-option" id="light" @click="${() => {
+						this.changeTheme('light');
 					}}">Light mode</button>
-					<button @click="${() => {
-						this.setTheme('dark');
+					<button class="theme-option" id="dark" @click="${() => {
+						this.changeTheme('dark');
 					}}">Dark mode</button>
 				</div>
 			</div>

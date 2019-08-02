@@ -1,37 +1,45 @@
-import { TemplateFn, CHANGE_TYPE } from '../../src/wclib';
+import { TemplateFn, CHANGE_TYPE, css } from '../../src/wclib';
 import { ThemedComponent } from './themed-component.js';
 import { render } from 'lit-html';
 
 export const ThemedComponentCSS = new TemplateFn<ThemedComponent>(function (html, _, theme) {
 	return html`<style>
-		#horizontal-centerer {
+		${css(this).$["horizontal-centerer"]} {
 			display: flex;
 			flex-direction: row;
 			justify-content: center;
 		}
 
-		#vertical-centerer {
+		${css(this).$["vertical-centerer"]} {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 		}
 
-		#background {
+		${css(this).$.background} {
 			width: 90vw;
 			height: 90vw;
 			background-color: ${theme.background};
 		}
 
-		#primary {
+		${css(this).$.primary} {
 			color: ${theme.primary};
 		}
 
-		#secondary {
+		${css(this).$.secondary} {
 			color: ${theme.secondary};
 		}
 
-		#regular {
+		${css(this).$.regular} {
 			color: ${theme.regular}
+		}
+
+		${css(this).class["theme-option"]} {
+			font-weight: normal;
+		}
+
+		${css(this).class["theme-option"].toggle.active} {
+			font-weight: bold;
 		}
 	</style>`
 }, CHANGE_TYPE.THEME, render);

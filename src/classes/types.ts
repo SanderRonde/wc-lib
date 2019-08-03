@@ -82,6 +82,15 @@ export type JSXDefinition<C extends {
 		"custom-css"?: TemplateFnLike;
 	};
 
+/**
+ * Intrinsic properties that can be used by the complex
+ * templater to turn JSX props into (for example) listeners.
+ */
+export interface JSXIntrinsicProps {
+	__listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
+	"@"?: Partial<EventsToAttr<HTMLElementEventMap>>;
+}
+
 export {  
 	WebComponentBaseMixinInstance,
 	WebComponentBaseMixinClass,

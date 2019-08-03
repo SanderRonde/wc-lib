@@ -1,19 +1,16 @@
 import { ConfigurableWebComponent, Props, config, PROP_TYPE, CHANGE_TYPE, TemplateFn } from '../../src/wclib';
+import { JSXIntrinsicProps } from '../../src/classes/types';
 import { render } from 'lit-html';
 
 declare global {
 	namespace JSX {
+		interface IntrinsicAttributes extends JSXIntrinsicProps { }
 		interface IntrinsicElements {
 			div: {
 				id?: string;
 			}
 			h2: {};
 			input: {
-				"@"?: {
-					"change": (event: Event) => any;
-					"focus": (event: FocusEvent) => any;
-					"blur": (event: Event) => any;
-				};
 				id?: string;
 				value?: string;
 				type?: 'text'|'password'|'tel'|'number'

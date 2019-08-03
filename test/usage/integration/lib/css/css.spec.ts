@@ -51,7 +51,6 @@ context('Typed CSS', () => {
 			expect(cls.toString()).to.be.equal('#a');
 		});
 		it('String(cls) works on classes', () => {
-			console.log(Proxy);
 			const cls = css<BasicClass>().$.a;
 			expect(cls).to.not.be.string;
 			expect(String(cls)).to.be.string;
@@ -106,55 +105,53 @@ context('Typed CSS', () => {
 				.toString()).to.be.equal('#?');
 		});
 	});
-	context('Single joining', () => {
-		context('And', () => {
-			it('can join two class strings', () => {
-				const expr = css<BasicClass>().class.c.and.d;
-				expect(expr.toString()).to.be.equal('.c.d');
-			});
-			it('can join a class string with an ID string', () => {
-				const expr = css<BasicClass>().id.a.and.d;
-				expect(expr.toString()).to.be.equal('#a.d');
-			});
-			it('can join a class string with a tag string', () => {
-				const expr = css<BasicClass>().tag.e.and.d;
-				expect(expr.toString()).to.be.equal('e.d');
-			});
+	context('And', () => {
+		it('can join two class strings', () => {
+			const expr = css<BasicClass>().class.c.and.d;
+			expect(expr.toString()).to.be.equal('.c.d');
 		});
-		context('Or', () => {
-			it('can join two ID strings', () => {
-				const expr = css<BasicClass>().id.a.or.id.b;
-				expect(expr.toString()).to.be.equal('#a, #b');
-			});
-			it('can join two class strings', () => {
-				const expr = css<BasicClass>().class.c.or.class.d;
-				expect(expr.toString()).to.be.equal('.c, .d');
-			});
-			it('can join two tag strings', () => {
-				const expr = css<BasicClass>().tag.e.or.tag.f;
-				expect(expr.toString()).to.be.equal('e, f');
-			});
-			it('can join an ID string with another type', () => {
-				const expr1 = css<BasicClass>().id.a.or.class.c;
-				expect(expr1.toString()).to.be.equal('#a, .c');
-				const expr2 = css<BasicClass>().id.a.or.tag.e;
-				expect(expr2.toString()).to.be.equal('#a, e');
-			});
-			it('can join a class string with another type', () => {
-				const expr1 = css<BasicClass>().class.c.or.id.a;
-				expect(expr1.toString()).to.be.equal('.c, #a');
-				const expr2 = css<BasicClass>().class.c.or.tag.e;
-				expect(expr2.toString()).to.be.equal('.c, e');
-			});
-			it('can join a tag string with another type', () => {
-				const expr1 = css<BasicClass>().tag.e.or.id.a;
-				expect(expr1.toString()).to.be.equal('e, #a');
-				const expr2 = css<BasicClass>().tag.e.or.class.c;
-				expect(expr2.toString()).to.be.equal('e, .c');
-			});
+		it('can join a class string with an ID string', () => {
+			const expr = css<BasicClass>().id.a.and.d;
+			expect(expr.toString()).to.be.equal('#a.d');
+		});
+		it('can join a class string with a tag string', () => {
+			const expr = css<BasicClass>().tag.e.and.d;
+			expect(expr.toString()).to.be.equal('e.d');
 		});
 	});
-	context('Longer join chains', () => {
+	context('Or', () => {
+		it('can join two ID strings', () => {
+			const expr = css<BasicClass>().id.a.or.id.b;
+			expect(expr.toString()).to.be.equal('#a, #b');
+		});
+		it('can join two class strings', () => {
+			const expr = css<BasicClass>().class.c.or.class.d;
+			expect(expr.toString()).to.be.equal('.c, .d');
+		});
+		it('can join two tag strings', () => {
+			const expr = css<BasicClass>().tag.e.or.tag.f;
+			expect(expr.toString()).to.be.equal('e, f');
+		});
+		it('can join an ID string with another type', () => {
+			const expr1 = css<BasicClass>().id.a.or.class.c;
+			expect(expr1.toString()).to.be.equal('#a, .c');
+			const expr2 = css<BasicClass>().id.a.or.tag.e;
+			expect(expr2.toString()).to.be.equal('#a, e');
+		});
+		it('can join a class string with another type', () => {
+			const expr1 = css<BasicClass>().class.c.or.id.a;
+			expect(expr1.toString()).to.be.equal('.c, #a');
+			const expr2 = css<BasicClass>().class.c.or.tag.e;
+			expect(expr2.toString()).to.be.equal('.c, e');
+		});
+		it('can join a tag string with another type', () => {
+			const expr1 = css<BasicClass>().tag.e.or.id.a;
+			expect(expr1.toString()).to.be.equal('e, #a');
+			const expr2 = css<BasicClass>().tag.e.or.class.c;
+			expect(expr2.toString()).to.be.equal('e, .c');
+		});
+	});
+	context('Mixed And and Or', () => {
 		it('can join more than two strings with and', () => {
 			type MultiClassStr = InferrableClass<{
 				IDS: { a: HTMLElement; }
@@ -252,6 +249,95 @@ context('Typed CSS', () => {
 		it('returns ? if the key is not a string', () => {
 			const expr = (css<BasicClass>().id.a.attr as any)[Symbol()];
 			expect(expr.toString()).to.be.equal('#a[?]');
+		});
+	});
+	context('Pseudo selectors', () => {
+		it('adds a single pseudo selector', () => {
+			const expr = css<BasicClass>().id.a.pseudo('hover');
+			expect(expr.toString()).to.be.equal('#a:hover');
+		});
+		it('adds multiple pseudo selectors', () => {
+			const expr = css<BasicClass>().id.a.pseudo('hover', 'active', 'visited');
+			expect(expr.toString()).to.be.equal('#a:hover:active:visited');
+		});
+	});
+	context('Children', () => {
+		it('can add a child ', () => {
+			const expr = css<BasicClass>().id.a.child.$.b
+			expect(expr.toString()).to.be.equal('#a > #b');
+		});
+		it('can add multiple children', () => {
+			const expr = css<BasicClass>().id.a.child.$.b.child.class.c.child.class.d;
+			expect(expr.toString()).to.be.equal('#a > #b > .c > .d');
+		});
+		it('can mix children with and selectors', () => {
+			const expr = css<BasicClass>().id.a.child.$.b.and.c.child.class.d;
+			expect(expr.toString()).to.be.equal('#a > #b.c > .d');
+		});
+		it('can mix children with or selectors', () => {
+			const expr = css<BasicClass>().id.a.child.$.b.or.class.c.child.class.d;
+			expect(expr.toString()).to.be.equal('#a > #b, .c > .d');
+		});
+	});
+	context('Descendants', () => {
+		it('can add a descendant ', () => {
+			const expr = css<BasicClass>().id.a.descendant.$.b
+			expect(expr.toString()).to.be.equal('#a #b');
+		});
+		it('can add multiple descendants', () => {
+			const expr = css<BasicClass>().id.a.descendant.$.b.
+				descendant.class.c.descendant.class.d;
+			expect(expr.toString()).to.be.equal('#a #b .c .d');
+		});
+		it('can mix descendants with and selectors', () => {
+			const expr = css<BasicClass>().id.a.descendant.$.b.and.c.descendant.class.d;
+			expect(expr.toString()).to.be.equal('#a #b.c .d');
+		});
+		it('can mix descendants with or selectors', () => {
+			const expr = css<BasicClass>().id.a.descendant.$.b.or.class.c.descendant.class.d;
+			expect(expr.toString()).to.be.equal('#a #b, .c .d');
+		});
+	});
+	context('Children, Or and Descendant chains', () => {
+		it('can chain children and descendants together', () => {
+			{
+				const expr = css<BasicClass>().id.a.child.$.b.descendant.class.c;
+				expect(expr.toString()).to.be.equal('#a > #b .c');
+			}
+			{
+				const expr = css<BasicClass>().id.a.descendant.$.b.child.class.c;
+				expect(expr.toString()).to.be.equal('#a #b > .c');
+			}
+		});
+		it('can join and, children and descendants together', () => {
+			{
+				const expr = css<BasicClass>().id.a.child.$.b.and.d.descendant.class.c;
+				expect(expr.toString()).to.be.equal('#a > #b.d .c');
+			}
+			{
+				const expr = css<BasicClass>().id.a.descendant.$.b.and.d.child.class.c;
+				expect(expr.toString()).to.be.equal('#a #b.d > .c');
+			}
+		});
+		it('can join or, children and descendants together', () => {
+			{
+				const expr = css<BasicClass>().id.a.child.$.b.or.$.a.descendant.class.c;
+				expect(expr.toString()).to.be.equal('#a > #b, #a .c');
+			}
+			{
+				const expr = css<BasicClass>().id.a.descendant.$.b.or.$.a.child.class.c;
+				expect(expr.toString()).to.be.equal('#a #b, #a > .c');
+			}
+		});
+		it('can join and, or, children and descendants together', () => {
+			{
+				const expr = css<BasicClass>().id.a.child.$.b.or.$.a.descendant.class.c.and.d;
+				expect(expr.toString()).to.be.equal('#a > #b, #a .c.d');
+			}
+			{
+				const expr = css<BasicClass>().id.a.descendant.$.b.or.$.a.child.class.c.and.d;
+				expect(expr.toString()).to.be.equal('#a #b, #a > .c.d');
+			}
 		});
 	});
 });

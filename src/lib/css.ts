@@ -55,7 +55,7 @@ function genProxy<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		};
 }
 
-class OrClass<S extends SelectorMap> extends AllCSSMap<S> {
+class DiffSelectorClass<S extends SelectorMap> extends AllCSSMap<S> {
 	constructor(onValue: (sel: CSSSelector<S, any, any, any>) => CSSSelector<S, any, any, any>) {
 		super(onValue);
 	}
@@ -71,10 +71,29 @@ type AttrFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES
 	[K in DefaultToggleableObj<S['ATTRIBUTES']>[T][N]]: CSSSelector<S, T, ST, N>;
 }
 
+interface DiffSelector<S extends SelectorMap> {
+	parent: CSSSelector<S, any, any, any>|null;
+	group: CSSSelector<S, any, any, any>[];
+	name: '_orSelectors'|'_childSelectors'|'_descendantSelectors';
+}
+
 class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> {
 	private _andGroup: CSSSelector<S, any, any, any>[] = [];
-	private _orParent: CSSSelector<S, any, any, any>|null = null;
-	private _orGroup: CSSSelector<S, any, any, any>[] = [];
+	private _orSelectors: DiffSelector<S> = {
+		parent: null,
+		group: [],
+		name: '_orSelectors'
+	}
+	private _childSelectors: DiffSelector<S> = {
+		parent: null,
+		group: [],
+		name: '_childSelectors'
+	}
+	private _descendantSelectors: DiffSelector<S> = {
+		parent: null,
+		group: [],
+		name: '_descendantSelectors'
+	}
 	private _toggles: string[] = [];
 	private _attrs: {
 		key: string;
@@ -92,34 +111,47 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		this._and(sel);
 		return this;
 	}) as {
-			[K in keyof DefaultObj<S['CLASSES']>]: CSSSelector<S, 'CLASSES', DefaultObj<S['CLASSES']>, K>;
-		};
+		[K in keyof DefaultObj<S['CLASSES']>]: CSSSelector<S, 'CLASSES', DefaultObj<S['CLASSES']>, K>;
+	};
 
-	private _registerOr(selector: CSSSelector<S, any, any, any>) {
-		let orParent: CSSSelector<S, any, any, any> = this;
-		while (orParent._orParent) {
-			orParent = orParent._orParent;
+	private _registerDiffSelector(container: DiffSelector<S>, selector: CSSSelector<S, any, any, any>) {
+		let parent: CSSSelector<S, any, any, any> = this;
+		while (parent[container.name].parent) {
+			parent = parent[container.name].parent!;
 		}
-		orParent._orGroup.push(
+		parent[container.name].group.push(
 			selector, 
-			...selector._orGroup,
-			...selector._orParent ? 
-				[...selector._orParent._orGroup, selector._orParent] : []
+			...selector[container.name].group,
+			...selector[container.name].parent ? 
+				[
+					...selector[container.name].parent![container.name].group, 
+					selector[container.name].parent!
+				] : []
 			);
-		orParent._orGroup = orParent._orGroup
+		parent[container.name].group = parent[container.name].group
 			.filter((v, i, a) => a.indexOf(v) === i);
-		selector._orParent = this;
+		selector[container.name].parent = this;
 	}
-	
-	or = new OrClass<S>((sel) => {
-		this._registerOr(sel);
+
+	or = new DiffSelectorClass<S>((sel) => {
+		this._registerDiffSelector(this._orSelectors, sel);
 		return sel;
 	});
 	orFn<T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST>(
 		sel: CSSSelector<S, T, ST, N>): CSSSelector<S, T, ST, N> {
-			this._registerOr(sel);
+			this._registerDiffSelector(this._orSelectors, sel);
 			return sel;
 		}
+
+	child = new DiffSelectorClass<S>((sel) => {
+		this._registerDiffSelector(this._childSelectors, sel);
+		return sel;
+	});
+
+	descendant = new DiffSelectorClass<S>((sel) => {
+		this._registerDiffSelector(this._descendantSelectors, sel);
+		return sel;
+	});
 
 	toggle = new Proxy({}, {
 		get: (_, key) => {
@@ -158,6 +190,18 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		return this;
 	}
 
+	private _collapseDiffSelector(group: DiffSelector<S>, 
+		ignore: WeakSet<CSSSelector<S, any, any, any>>): {
+			pre: string|null;
+			post: (string|null)[];
+		} {
+			return {
+				pre: this[group.name].parent ?
+					this[group.name].parent!.toString(ignore) : null,
+				post: this[group.name].group.map(o => o.toString(ignore))
+			}
+		}
+
 	toString(): string;
 	toString(ignore: WeakSet<CSSSelector<S, any, any, any>>): string|null;
 	toString(ignore: WeakSet<CSSSelector<S, any, any, any>> = new WeakSet()): string|null {
@@ -182,11 +226,26 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		
 		const andGroupSelector = `${ownSelector}${toggles}${attributes}${pseudo}${ands}`;
 
+		const { pre: orPre, post: orPost } = this._collapseDiffSelector(
+			this._orSelectors, ignore);
+		const { pre: childPre, post: childPost } = this._collapseDiffSelector(
+			this._childSelectors, ignore);
+		const { pre: descendantPre, post: descendantPost } = this._collapseDiffSelector(
+			this._descendantSelectors, ignore);
+
 		return [
-			this._orParent ? this._orParent.toString(ignore) : null,
-			andGroupSelector,
-			...this._orGroup.map(o => o.toString(ignore))
-		].filter(i => i !== null).join(', ');
+			descendantPre,
+			[
+				childPre,
+				[
+					orPre,
+					andGroupSelector,
+					...orPost
+				].filter(i => i !== null).join(', '),
+				...childPost
+			].filter(i => i !== null).join(' > '),
+			...descendantPost
+		].filter(i => i !== null).join(' ');
 	}
 }
 

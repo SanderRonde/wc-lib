@@ -235,6 +235,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 	call this listener once (false by default)
 		 */
 		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
+			// istanbul ignore next
 			if (!super.listen) {
 				throw new Error('Not implemented');
 			}
@@ -253,6 +254,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 	listeners for the event
 		 */
 		public clearListener = <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
+			// istanbul ignore next
 			if (!super.clearListener) {
 				throw new Error('Not implemented');
 			}
@@ -279,6 +281,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 	listeners
 		 */
 		public fire = <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
+			// istanbul ignore next
 			if (!super.fire) {
 				throw new Error('Not implemented');
 			}
@@ -291,6 +294,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
 		public setLang = <L extends string = DefaultVal<GA['langs'], string>>(lang: L): Promise<void> => {
+			// istanbul ignore next
 			if (!super.setLang) {
 				throw new Error('Not implemented');
 			}
@@ -301,6 +305,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * Gets the currently active language
 		 */
 		public getLang = (): DefaultVal<GA['langs'], string> => {
+			// istanbul ignore next
 			if (!super.getLang) {
 				throw new Error('Not implemented');
 			}
@@ -320,6 +325,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @returns {Promise<string>} A promise that resolves to the found message
 		 */
 		public __prom = <I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string> => {
+			// istanbul ignore next
 			if (!super.__prom) {
 				throw new Error('Not implemented');
 			}
@@ -345,6 +351,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @returns {string|R} A promise that resolves to the found message
 		 */
 		public __ = <R, I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R => {
+			// istanbul ignore next
 			if (!super.__) {
 				throw new Error('Not implemented');
 			}

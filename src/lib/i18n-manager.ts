@@ -388,6 +388,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	call this listener once (false by default)
 		 */
 		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
+			// istanbul ignore next
 			if (!super.listen) {
 				throw new Error('Not implemented');
 			}
@@ -406,6 +407,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	listeners for the event
 		 */
 		public clearListener = <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
+			// istanbul ignore next
 			if (!super.clearListener) {
 				throw new Error('Not implemented');
 			}
@@ -432,6 +434,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	listeners
 		 */
 		public fire = <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
+			// istanbul ignore next
 			if (!super.fire) {
 				throw new Error('Not implemented');
 			}
@@ -444,6 +447,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @returns {string} The name of the current theme
 		 */
 		public getThemeName = <N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> => {
+			// istanbul ignore next
 			if (!super.getThemeName) {
 				throw new Error('Not implemented');
 			}
@@ -458,6 +462,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @returns {T[keyof T]} A theme instance type
 		 */
 		public getTheme = <T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] => {
+			// istanbul ignore next
 			if (!super.getTheme) {
 				throw new Error('Not implemented');
 			}
@@ -471,6 +476,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @template N - The theme name
 		 */
 		public setTheme = <N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) => {
+			// istanbul ignore next
 			if (!super.setTheme) {
 				throw new Error('Not implemented');
 			}

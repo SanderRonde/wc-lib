@@ -426,6 +426,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
 		public setLang = <L extends string = DefaultVal<GA['langs'], string>>(lang: L): Promise<void> => {
+			// istanbul ignore next
 			if (!super.setLang) {
 				throw new Error('Not implemented');
 			}
@@ -436,6 +437,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * Gets the currently active language
 		 */
 		public getLang = (): DefaultVal<GA['langs'], string> => {
+			// istanbul ignore next
 			if (!super.getLang) {
 				throw new Error('Not implemented');
 			}
@@ -455,6 +457,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @returns {Promise<string>} A promise that resolves to the found message
 		 */
 		public __prom = <I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string> => {
+			// istanbul ignore next
 			if (!super.__prom) {
 				throw new Error('Not implemented');
 			}
@@ -480,6 +483,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @returns {string|R} A promise that resolves to the found message
 		 */
 		public __ = <R, I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R => {
+			// istanbul ignore next
 			if (!super.__) {
 				throw new Error('Not implemented');
 			}
@@ -492,6 +496,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @returns {string} The name of the current theme
 		 */
 		public getThemeName = <N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> => {
+			// istanbul ignore next
 			if (!super.getThemeName) {
 				throw new Error('Not implemented');
 			}
@@ -506,6 +511,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @returns {T[keyof T]} A theme instance type
 		 */
 		public getTheme = <T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] => {
+			// istanbul ignore next
 			if (!super.getTheme) {
 				throw new Error('Not implemented');
 			}
@@ -519,6 +525,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @template N - The theme name
 		 */
 		public setTheme = <N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) => {
+			// istanbul ignore next
 			if (!super.setTheme) {
 				throw new Error('Not implemented');
 			}

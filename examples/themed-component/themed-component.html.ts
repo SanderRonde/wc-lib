@@ -1,6 +1,6 @@
+import { render, html } from '../../node_modules/lit-html/lit-html.js';
 import { TemplateFn, CHANGE_TYPE } from '../../src/wclib';
 import { ThemedComponent } from './themed-component.js';
-import { html, render } from 'lit-html';
 
 export const ThemedComponentHTML = new TemplateFn<ThemedComponent>(function () {
 	return html`

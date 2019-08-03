@@ -1,6 +1,6 @@
 import { ConfigurableWebComponent, Props, config, PROP_TYPE, CHANGE_TYPE, TemplateFn } from '../../src/wclib';
+import { render } from '../../node_modules/lit-html/lit-html.js';
 import { JSXIntrinsicProps } from '../../src/classes/types';
-import { render } from 'lit-html';
 
 declare global {
 	namespace JSX {

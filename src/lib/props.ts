@@ -8,10 +8,6 @@ import { CHANGE_TYPE } from './template-fn.js';
  */
 export const refPrefix = '___complex_ref';
 
-function isRef(value: unknown) {
-	return typeof value === 'string' && value.startsWith(refPrefix);
-}
-
 function getterWithVal<R>(component: {
 	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R;
@@ -41,7 +37,7 @@ function getterWithVal<R>(component: {
 			if (type === 'number') {
 				return ~~value;
 			} else if (type === complex) {
-				if (isRef(value)) {
+				if (value.startsWith(refPrefix)) {
 					/* istanbul ignore else */
 					if (component.getParentRef) {
 						return component.getParentRef(value);

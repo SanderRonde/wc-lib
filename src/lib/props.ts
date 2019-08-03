@@ -8,6 +8,10 @@ import { CHANGE_TYPE } from './template-fn.js';
  */
 export const refPrefix = '___complex_ref';
 
+function isRef(value: unknown) {
+	return typeof value === 'string' && value.startsWith(refPrefix);
+}
+
 function getterWithVal<R>(component: {
 	getParentRef?(ref: string): any;
 }, value: string|null, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R;
@@ -37,7 +41,7 @@ function getterWithVal<R>(component: {
 			if (type === 'number') {
 				return ~~value;
 			} else if (type === complex) {
-				if (value.startsWith(refPrefix)) {
+				if (isRef(value)) {
 					/* istanbul ignore else */
 					if (component.getParentRef) {
 						return component.getParentRef(value);
@@ -999,12 +1003,42 @@ namespace PropsDefiner {
 			properties.forEach(property => property.setReflect());
 			properties.forEach(property => property.setPropAccessors());
 			await Promise.all(properties.map(async (property) => {
-				if (property.config.type === complex) {
-					await property.assignComplexType();
-				} else {
+				/**
+				 * If type is simple, check for values first and then assign default value
+				 * 
+				 * If type is complex, there are two cases
+				 * 		If the value is a ref it should wait for that ref
+				 * 			to resolve through its parent and in the meantime
+				 * 			assign a default value
+				 *		If the value is not a ref it should assign it
+				 * 			and otherwise do the default
+				 * 		If there is no value, the default should be assigned
+				 */
+				if (property.config.type !== complex) {
 					property.assignSimpleType();
+					return property.doDefaultAssign();
 				}
-				return property.doDefaultAssign();
+
+				if (!element.component.hasAttribute(property.config.propName)) {
+					// Has no value at all, do default assign
+					element.propValues[property.config.mapKey] = undefined;
+					return property.doDefaultAssign();
+				} else if (isRef(element.component.getAttribute(property.config.propName))) {
+					// Is a ref, wait for initial assignment and then assign default
+					await property.assignComplexType();
+					return property.doDefaultAssign();
+				} else {
+					// Not a ref, don't wait for initial assignment
+					property.assignComplexType();
+					return property.doDefaultAssign();
+				}
+
+				// if (property.config.type === complex) {
+				// 	await property.assignComplexType();
+				// } else {
+				// 	property.assignSimpleType();
+				// }
+				// return property.doDefaultAssign();
 			}));
 		}
 

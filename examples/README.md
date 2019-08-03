@@ -4,6 +4,8 @@
 
 Clone the repo, run `yarn examples` (or `npm run examples`) and go to `http://localhost:1251/examples/index.html`.
 
+Keep in mind that this is the unminified code and consists of a bunch of different files. Normally you'd bundle the code up.
+
 ## List
 
 Here's a list of the examples and what features they use/focus on

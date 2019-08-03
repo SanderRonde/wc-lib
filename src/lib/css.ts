@@ -556,7 +556,9 @@ export function css<C>(_c?: C): CSS<InferSelectors<C>> {
 		}
 		return (cssInstance = new CSS()) as CSS<InferSelectors<C>>;
 	} catch(e) {
-		console.log('throwing');
+		// This is covered but is a bit hard to test
+		
+		// istanbul ignore next
 		throw new Error('Attempting to use css map while proxy is not supported');
 	}
 }

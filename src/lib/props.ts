@@ -147,6 +147,7 @@ export function setter(setAttrFn: (key: string, val: string) => void,
 				try {
 					setAttrFn(name, encodeURIComponent(JSON.stringify(strVal)));
 				} catch(e) {
+					// istanbul ignore next
 					setAttrFn(name, encodeURIComponent('_'));
 				}
 			} else {
@@ -585,8 +586,9 @@ export async function awaitConnected(el: WebComponent): Promise<void> {
 }
 
 export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<void> {
+	// istanbul ignore next
     if (connectedElements.has(el)) {
-        fn(); 
+		fn(); 
         return;
     }
     await new Promise(async (resolve) => {
@@ -1032,13 +1034,6 @@ namespace PropsDefiner {
 					property.assignComplexType();
 					return property.doDefaultAssign();
 				}
-
-				// if (property.config.type === complex) {
-				// 	await property.assignComplexType();
-				// } else {
-				// 	property.assignSimpleType();
-				// }
-				// return property.doDefaultAssign();
 			}));
 		}
 

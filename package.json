@@ -66,6 +66,7 @@
 		"set-cypress:properties": "node scripts/set-specs.js test/usage/integration/properties",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",
+		"examples": "tsc -p examples/tsconfig.json && npm run serve",
 		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument src/ instrumented/ && gulp replaceTestImports",
 		"coverage:remap:lcov": "remap-istanbul -i .nyc_output/out.json -t lcovonly -o coverage/lcov.info",
 		"coverage:remap:html": "remap-istanbul -i .nyc_output/out.json -t html -o coverage/",

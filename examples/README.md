@@ -2,7 +2,7 @@
 
 ## How to run it
 
-Clone the repo, run `yarn serve` (or `npm run serve`) and go to `http://localhost:1251/examples/index.html`.
+Clone the repo, run `yarn examples` (or `npm run examples`) and go to `http://localhost:1251/examples/index.html`.
 
 ## List
 

@@ -16,8 +16,7 @@ The `mounted()` function is called when the component is mounted to the DOM and 
 
 ```ts
 {
-	// Watch this property for changes. Only relevant if the type
-	// of this value is an object/array. Setting this to true
+	// Watch this property for changes. In objects, setting this to true
 	// means that any of its keys are watched for changes (see watchProperties)
 	//
 	// NOTE: This uses Proxy to watch objects. This does mean that

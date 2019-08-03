@@ -234,11 +234,13 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @param {boolean} [once] - Whether to only
 		 * 	call this listener once (false by default)
 		 */
+		// istanbul ignore next
 		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
 			// istanbul ignore next
 			if (!super.listen) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			super.listen(event as any, listener, once);
 		}
 
@@ -258,6 +260,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			if (!super.clearListener) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			super.clearListener(event as any, listener);
 		}
 
@@ -285,6 +288,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			if (!super.fire) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.fire(event as any, ...params);
 		}
 
@@ -298,6 +302,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			if (!super.setLang) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.setLang(lang);
 		}
 
@@ -309,6 +314,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			if (!super.getLang) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.getLang() as DefaultVal<GA['langs'], string>;
 		}
 
@@ -329,6 +335,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			if (!super.__prom) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.__prom(key, ...values);
 		}
 
@@ -355,6 +362,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 			if (!super.__) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.__(key, ...values);
 		}
 	}

@@ -387,6 +387,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @param {boolean} [once] - Whether to only
 		 * 	call this listener once (false by default)
 		 */
+		// istanbul ignore next
 		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
 			// istanbul ignore next
 			if (!super.listen) {
@@ -411,6 +412,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			if (!super.clearListener) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			super.clearListener(event as any, listener);
 		}
 
@@ -438,6 +440,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			if (!super.fire) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.fire(event as any, ...params);
 		}
 
@@ -451,6 +454,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			if (!super.getThemeName) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.getThemeName();
 		}
 
@@ -466,6 +470,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			if (!super.getTheme) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.getTheme();
 		}
 
@@ -480,6 +485,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			if (!super.setTheme) {
 				throw new Error('Not implemented');
 			}
+			// istanbul ignore next
 			return super.setTheme(themeName);
 		}
 	}

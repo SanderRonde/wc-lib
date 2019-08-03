@@ -20,12 +20,12 @@
 		"buld/**"
 	],
 	"private": true,
-	"dependencies": { },
+	"dependencies": {},
 	"devDependencies": {
+		"@types/fs-extra": "^7.0.0",
 		"@types/glob": "^7.1.1",
 		"@types/gulp": "^4.0.6",
 		"@types/gulp-replace": "^0.0.31",
-		"@types/fs-extra": "^7.0.0",
 		"@types/http-server": "^0.10.0",
 		"@types/node": "^11.13.7",
 		"chai": "^4.2.0",

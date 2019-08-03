@@ -6,7 +6,7 @@
 		"defaultValue": "Me llamo"
 	}],
 	"set_lang_to": [{
-		"defaultValue": "Establecer idioma para"
+		"defaultValue": "Establecer idioma para "
 	}, {
 		"defaultValue": "idioma",
 		"replaceable": true

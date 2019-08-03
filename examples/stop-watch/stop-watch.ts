@@ -1,6 +1,9 @@
-import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '../../src/wclib';
+import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '../../src/wclib.js';
 import { StopWatchHTML } from './stop-watch.html.js';
 import { StopWatchCSS } from './stop-watch.css.js';
+
+// 10 MS precision
+const TIMER_PRECISION = 10;
 
 @config({
 	is: 'stop-watch',
@@ -12,7 +15,7 @@ export class StopWatch extends ConfigurableWebComponent {
 
 	props = Props.define(this, {
 		reflect: {
-			seconds: {
+			ms: {
 				type: PROP_TYPE.NUMBER,
 				value: 0
 			}
@@ -25,13 +28,21 @@ export class StopWatch extends ConfigurableWebComponent {
 		}
 	});
 
+	formatTime(ms: number) {
+		return `${Math.round(ms / 1000)}.${(ms % 1000) / TIMER_PRECISION}`
+	}
+
+	private _startTimer() {
+		this._timer = window.setInterval(() => {
+			this.props.ms += TIMER_PRECISION;
+		}, TIMER_PRECISION);
+	}
+
 	onStart() {
 		if (this.props.running) return;
 
 		this.props.running = true;
-		this._timer = window.setInterval(() => {
-			this.props.seconds++;
-		}, 1000);
+		this._startTimer();
 	}
 
 	onStop() {
@@ -42,6 +53,6 @@ export class StopWatch extends ConfigurableWebComponent {
 	}
 
 	onReset() {
-		this.props.seconds = 0;
+		this.props.ms = 0;
 	}
 }

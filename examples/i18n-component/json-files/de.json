@@ -6,7 +6,7 @@
 		"defaultValue": "Mein Name ist"
 	}],
 	"set_lang_to": [{
-		"defaultValue": "Sprache einstellen auf"
+		"defaultValue": "Sprache einstellen auf "
 	}, {
 		"defaultValue": "sprache",
 		"replaceable": true

@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE } from '../../src/wclib';
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE } from '../../src/wclib.js';
 import { render, html } from '../../node_modules/lit-html/lit-html.js';
 
 @config({

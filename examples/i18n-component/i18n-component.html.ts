@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE } from '../../src/wclib';
-import { I18nComponent } from './i18n-component.js';
 import { render, html } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, CHANGE_TYPE } from '../../src/wclib.js';
+import { I18nComponent } from './i18n-component.js';
 
 export const I18nComponentHTML = new TemplateFn<I18nComponent>(function () {
 	return html`

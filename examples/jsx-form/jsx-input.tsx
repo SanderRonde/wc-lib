@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, Props, config, PROP_TYPE, CHANGE_TYPE, TemplateFn } from '../../src/wclib';
+import { ConfigurableWebComponent, Props, config, PROP_TYPE, CHANGE_TYPE, TemplateFn } from '../../src/wclib.js';
 import { render } from '../../node_modules/lit-html/lit-html.js';
 import { JSXIntrinsicProps } from '../../src/classes/types';
 
@@ -13,7 +13,8 @@ declare global {
 			input: {
 				id?: string;
 				value?: string;
-				type?: 'text'|'password'|'tel'|'number'
+				type?: 'text'|'password'|'tel'|'number';
+				class?: string;
 			}
 		}
 	}
@@ -36,10 +37,10 @@ declare global {
 					"change": this.onChange,
 					"focus": this.onFocus,
 					"blur": this.onBlur
-				}}} type={props.type} value={props.placeholder} id="input"></input>
+				}}} class="placeholder" type="text" value={props.placeholder} id="input"></input>
 			</div>
 		)
-	}, CHANGE_TYPE.NEVER, render)
+	}, CHANGE_TYPE.PROP, render)
 })
 export class JsxInput extends ConfigurableWebComponent<{
 	selectors: {
@@ -85,6 +86,7 @@ export class JsxInput extends ConfigurableWebComponent<{
 	onFocus() {
 		if (this.$.input.value === this.props.placeholder) {
 			this.$.input.classList.remove('placeholder');
+			this.$.input.type = this.props.type;
 			this.$.input.value = '';
 		}
 	}
@@ -93,6 +95,7 @@ export class JsxInput extends ConfigurableWebComponent<{
 		if (this.$.input.value === '') {
 			this.$.input.classList.add('placeholder');
 			this.$.input.value = this.props.placeholder;
+			this.$.input.type = 'text';
 		}
 	}
 }

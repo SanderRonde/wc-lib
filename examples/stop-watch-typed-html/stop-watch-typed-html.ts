@@ -1,6 +1,10 @@
-import { ConfigurableWebComponent, config, Listeners } from '../../src/wclib';
+import { ConfigurableWebComponent, config, Listeners } from '../../src/wclib.js';
 import { StopWatchTypedHTMLHTML } from './stop-watch-typed-html.html.js';
 import { StopWatchTypedHTMLCSS } from './stop-watch-typed-html.css.js';
+
+// 10 MS precision
+const TIMER_PRECISION = 10;
+
 
 @config({
 	is: 'stop-watch-typed-html',
@@ -22,12 +26,16 @@ export class StopWatchTypedHTML extends ConfigurableWebComponent<{
 	};
 }> {
 	private _timer: number|null = null;
-	private _seconds: number = 0;
+	private _ms: number = 0;
 	private _running: boolean = false;
 
 	private _change() {
 		this.$.header.innerText = `Stopwatch ${this._running ? 'running' : 'not running'}`;
-		this.$.time.innerText = this._seconds + '';
+		this.$.time.innerText = this.formatTime(this._ms);
+	}
+
+	formatTime(ms: number) {
+		return `${Math.round(ms / 1000)}.${(ms % 1000) / TIMER_PRECISION}`
 	}
 
 	onStart() {
@@ -36,9 +44,9 @@ export class StopWatchTypedHTML extends ConfigurableWebComponent<{
 		this._running = true;
 		this._change();
 		this._timer = window.setInterval(() => {
-			this._seconds++;
+			this._ms += TIMER_PRECISION;
 			this._change();
-		}, 1000);
+		}, TIMER_PRECISION);
 	}
 
 	onStop() {
@@ -50,11 +58,15 @@ export class StopWatchTypedHTML extends ConfigurableWebComponent<{
 	}
 
 	onReset() {
-		this._seconds = 0;
+		this._ms = 0;
 		this._change();
 	}
 
-	render() {
+	firstRender() {
+		this._change();
+	}
+
+	postRender() {
 		Listeners.listenIfNew(this, 'start', 'click', this.onStart);
 		Listeners.listenIfNew(this, 'stop', 'click', this.onStop);
 		Listeners.listenIfNew(this, 'reset', 'click', this.onReset);

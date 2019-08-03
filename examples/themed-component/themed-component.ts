@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config } from '../../src/wclib';
+import { ConfigurableWebComponent, config } from '../../src/wclib.js';
 import { ThemedComponentHTML } from './themed-component.html.js';
 import { ThemedComponentCSS } from './themed-component.css.js';
 import { theme } from './index.js';
@@ -49,7 +49,7 @@ export class ThemedComponent extends ConfigurableWebComponent<{
 	themes: typeof theme;
 }> { 
 	changeTheme(color: 'dark'|'light') {
-		Array.from(this.querySelectorAll('.theme-option')).forEach((option) => {
+		Array.from(this.root.querySelectorAll('.theme-option')).forEach((option) => {
 			option.classList.remove(BUTTON_STATE.ACTIVE);
 		});
 		this.$[color].classList.add(BUTTON_STATE.ACTIVE);

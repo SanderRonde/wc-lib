@@ -80,6 +80,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		key: string;
 		value?: any;
 	}[] = [];
+	private _pseudo: string[] = [];
 
 	constructor(private _selector: N, private _prefix: string) { }
 
@@ -152,6 +153,11 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 		return this;
 	};
 
+	pseudo(...selector: string[]) {
+		this._pseudo.push(...selector);
+		return this;
+	}
+
 	toString(): string;
 	toString(ignore: WeakSet<CSSSelector<S, any, any, any>>): string|null;
 	toString(ignore: WeakSet<CSSSelector<S, any, any, any>> = new WeakSet()): string|null {
@@ -169,10 +175,12 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 			}
 			return `[${key}="${value}"]`;
 		}).join('');
+		// Then any pseudo selectors
+		const pseudo = this._pseudo.map(p => `:${p}`).join('');
 		// Then any ands
 		const ands = this._andGroup.map(a => a.toString()).join('');
 		
-		const andGroupSelector = `${ownSelector}${toggles}${attributes}${ands}`;
+		const andGroupSelector = `${ownSelector}${toggles}${attributes}${pseudo}${ands}`;
 
 		return [
 			this._orParent ? this._orParent.toString(ignore) : null,

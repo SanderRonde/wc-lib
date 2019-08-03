@@ -974,16 +974,18 @@ namespace PropsDefiner {
 					defaultValue, mapKey, watch, watchProperties,
 					propName, type, reflectToAttr
 				} = this.config;
-				if (defaultValue !== undefined && this._rep.propValues[mapKey] === undefined) {
-					this._rep.propValues[mapKey] = Watching.watchValue(
-						createQueueRenderFn(this._rep.component), 
-						defaultValue as any, watch, watchProperties);
-					if (reflectToAttr) {
-						await hookIntoConnect(this._rep.component as any, () => {
+				if (defaultValue !== undefined) {
+					await hookIntoConnect(this._rep.component as any, () => {
+						if (this._rep.propValues[mapKey] === undefined) {
+							this._rep.propValues[mapKey] = Watching.watchValue(
+								createQueueRenderFn(this._rep.component), 
+								defaultValue as any, watch, watchProperties);
+						}
+						if (reflectToAttr) {
 							setter(this._rep.setAttr, this._rep.removeAttr, propName, 
 								defaultValue, type);
-						});
-					}
+						}
+					});
 				} else if (type === complex && reflectToAttr) {
 					await hookIntoConnect(this._rep.component as any, () => {
 						setter(this._rep.setAttr, this._rep.removeAttr, propName,
@@ -1021,19 +1023,10 @@ namespace PropsDefiner {
 					return property.doDefaultAssign();
 				}
 
-				if (!element.component.hasAttribute(property.config.propName)) {
-					// Has no value at all, do default assign
-					element.propValues[property.config.mapKey] = undefined;
-					return property.doDefaultAssign();
-				} else if (isRef(element.component.getAttribute(property.config.propName))) {
-					// Is a ref, wait for initial assignment and then assign default
-					await property.assignComplexType();
-					return property.doDefaultAssign();
-				} else {
-					// Not a ref, don't wait for initial assignment
-					property.assignComplexType();
-					return property.doDefaultAssign();
-				}
+				return Promise.all([
+					property.assignComplexType(),
+					property.doDefaultAssign()
+				]);
 			}));
 		}
 

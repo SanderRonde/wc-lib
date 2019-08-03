@@ -4,6 +4,7 @@ import { render, html } from "../../../../../../../node_modules/lit-html/lit-htm
 
 export interface PropsElementWindow extends Window {
 	accessSymbol: typeof accessSymbol;
+	ChildEl: typeof ChildEl;
 }
 
 declare const window: PropsElementWindow;
@@ -31,6 +32,7 @@ export type DeepArr = {
 	d?: any;
 }[];
 
+
 @config({
 	is: 'obj-el',
 	html: new TemplateFn<ObjEl>(() => {
@@ -52,9 +54,45 @@ interface SymbolKeys {
 	[accessSymbol]: string;
 }
 
+
+@config({
+	is: 'child-el',
+	html: new TemplateFn<ChildEl>(function () {
+		ChildEl.onRender(this.props);
+		return html``;
+	}, CHANGE_TYPE.PROP, render)
+})
+export class ChildEl extends ComplexTemplatingWebComponent {
+	props = Props.define(this, {
+		reflect: {
+			noVal: {
+				type: ComplexType<{}>(),
+				defaultValue: { a: 'b' }
+			},
+			ref: {
+				type: ComplexType<{}>(),
+				defaultValue: { c: 'd' }
+			},
+			noref: {
+				type: ComplexType<{}>(),
+				defaultValue: { e: 'f' }
+			},
+		}
+	})
+
+	static onRender(_props: any) { }
+
+	connectedCallback() {
+		super.connectedCallback();
+	}
+}
+
+window.ChildEl = ChildEl;
+
+
 @config({
 	is: 'props-element',
-	html: new TemplateFn<PropsElement>(function () {
+	html: new TemplateFn<PropsElement>(function (_, props) {
 		return html`
 			<obj-el id="ref"></obj-el>
 			<obj-el id="json" complex="${JSON.stringify({
@@ -65,10 +103,23 @@ interface SymbolKeys {
 				a: 'b',
 				c: 'd'
 			}) + 'padding'}"></obj-el>
+			${(() => {
+				switch (props.childElIndex) {
+					case 0:
+						return html`<child-el></child-el>`;
+					case 1:
+						return html`<child-el #ref="${{e: 'f'}}"></child-el>`;
+					case 2:
+						return html`<child-el noref="${JSON.stringify({g: 'h'})}"></child-el>`;
+					default: 
+						return html``;
+				}
+			})()}
 		`;
 	}, CHANGE_TYPE.PROP, render),
 	dependencies: [
-		ObjEl
+		ObjEl,
+		ChildEl
 	]
 })
 export class PropsElement extends ComplexTemplatingWebComponent {
@@ -86,6 +137,11 @@ export class PropsElement extends ComplexTemplatingWebComponent {
 			bool: PROP_TYPE.BOOL,
 			string: PROP_TYPE.STRING,
 			number: PROP_TYPE.NUMBER,
+
+			childElIndex: {
+				type: PROP_TYPE.NUMBER,
+				value: -1
+			},
 
 			boolDefault: {
 				type: PROP_TYPE.BOOL,
@@ -420,6 +476,10 @@ export class PropsElement extends ComplexTemplatingWebComponent {
 			}
 		}
 	});
+
+	forceChildElRender(index: number) {
+		this.props.childElIndex = index;
+	}
 };
 
 @config({

@@ -31,6 +31,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 			});
 			context('Basic Props Types', () => {
+				return;
 				context('General', () => {
 					context('Getting', () => {
 						it('can get a boolean value', () => {
@@ -763,6 +764,54 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 										c: 'd'
 									});
 							});
+					});
+
+					it('assigns default if no value was passed', () => {
+						cy.window().then((win: PropsElementWindow) => {
+							let calls: number = 0;
+							const stub = cy.stub(win.ChildEl, 'onRender', (props) => {
+								if (calls) return;
+								calls++;
+								expect(props.noVal).to.have.property('a', 'b');
+							});
+							cy.get('props-element')
+								.then(([el]: JQuery<PropsElement>) => {
+									el.forceChildElRender(0);
+									cy.wrap(stub).should('be.called');
+								});
+						});
+					});
+					if (complex) {
+						it('does not overwrite passed ref', () => {
+							cy.window().then((win: PropsElementWindow) => {
+								let calls: number = 0;
+								const stub = cy.stub(win.ChildEl, 'onRender', (props) => {
+									if (calls) return;
+									expect(props.ref).to.have.property('e', 'f');
+									calls++;
+								});
+								cy.get('props-element')
+									.then(([el]: JQuery<PropsElement>) => {
+										el.forceChildElRender(1);
+										cy.wrap(stub).should('be.called');
+									});
+							});
+						});
+					}
+					it('does not overwrite passed non-ref', () => {
+						cy.window().then((win: PropsElementWindow) => {
+							let calls: number = 0;
+							const stub = cy.stub(win.ChildEl, 'onRender', (props) => {
+								if (calls) return;
+								expect(props.noref).to.have.property('g', 'h');
+								calls++;
+							});
+							cy.get('props-element')
+								.then(([el]: JQuery<PropsElement>) => {
+									el.forceChildElRender(2);
+									cy.wrap(stub).should('be.called');
+								});
+						});
 					});
 				});
 				context('Attribute Setting', () => {

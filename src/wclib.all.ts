@@ -24,6 +24,5 @@ export * from './lib/template-fn.js'
 export * from './lib/template-manager.js'
 export * from './lib/theme-manager.js'
 export * from './lib/util.js'
-export { Theme } from './lib/webcomponent-types.js'
  
 export * from './tasks/typed-css.js';

@@ -196,8 +196,9 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @returns {boolean} Whether the constructed CSS has changed
 		 */
 		/* istanbul ignore next */
-		public static __constructedCSSChanged(element: WebComponentThemeManager & {
+		public static __constructedCSSChanged(element: {
 			self: any;
+			getThemeName(): string;
 		}): boolean {
 			if (!componentThemeMap.has(element.self)) {
 				componentThemeMap.set(element.self, element.getThemeName());

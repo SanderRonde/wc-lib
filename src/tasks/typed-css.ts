@@ -41,10 +41,12 @@ function findParts(text: string) {
 					state.opened = true;
 					state.brackets = 1;
 					state.openedText = '$';
+				// istanbul ignore next
 				} else if (state.opened && char === '{' && state.lastChar !== '\\') {
 					state.brackets++;
 				} else if (state.opened && char === '}' && state.lastChar !== '\\') {
 					state.brackets--;
+					// istanbul ignore next
 					if (state.brackets === 0) {
 						state.opened = false;
 						parts.push(state.openedText + '}');

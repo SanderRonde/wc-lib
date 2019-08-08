@@ -310,13 +310,13 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		/**
 		 * Gets the currently active language
 		 */
-		public getLang = (): DefaultVal<GA['langs'], string> => {
+		public getLang = (): DefaultVal<GA['langs'], string>|string => {
 			// istanbul ignore next
 			if (!super.getLang) {
 				throw new Error('Not implemented');
 			}
 			// istanbul ignore next
-			return super.getLang() as DefaultVal<GA['langs'], string>;
+			return super.getLang() as DefaultVal<GA['langs'], string>|string;
 		}
 
 		/**

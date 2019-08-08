@@ -228,8 +228,8 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		/**
 		 * Gets the currently active language
 		 */
-		public getLang(): DefaultVal<GA['langs'], string> {
-			return I18NClass.lang! as DefaultVal<GA['langs'], string>;
+		public getLang(): DefaultVal<GA['langs'], string>|string {
+			return I18NClass.lang! as DefaultVal<GA['langs'], string>|string;
 		}
 		
 		/**

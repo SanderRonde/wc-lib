@@ -174,7 +174,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 * For example:
 	 * ```js
 	 * css(this).id.a.and.b === '#a.b'
-	 * css(this).id.a.and.b.and.c.and.d === '#a.b.c.d
+	 * css(this).id.a.and.b.and.c.and.d === '#a.b.c.d'
 	 * ```
 	 */
 	and = genProxy<S, 'CLASSES', DefaultObj<S['CLASSES']>>('.', (sel) => {

@@ -1,6 +1,7 @@
-import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentI18NManagerMixinInstance, WebComponentThemeManagerMixinInstance } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentThemeManagerMixinInstance } from '../classes/types.js';
 import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet, GetEvents } from './listener.js';
 import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
+import { WebComponentI18NManagerMixinLike } from './i18n-manager.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { Listeners } from './listeners.js';
@@ -178,7 +179,7 @@ export type WebComponentSuper = Constructor<
 	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
 	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'> & 
 	Partial<Pick<WebComponentThemeManagerMixinInstance, 'getTheme'|'getThemeName'|'setTheme'>> &
-	Partial<Pick<WebComponentI18NManagerMixinInstance, 'getLang'|'setLang'|'__'|'__prom'>> & {
+	Partial<Pick<WebComponentI18NManagerMixinLike, 'getLang'|'setLang'|'__'|'__prom'>> & {
 		connectedCallback(): void;
 		disconnectedCallback?(): void;
 	}>;

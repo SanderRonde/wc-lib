@@ -153,6 +153,13 @@ export type WebComponentI18NManagerMixinSuper = Constructor<
 	Partial<Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'>> & 
 	Partial<Pick<WebComponentThemeManagerMixinInstance, 'getThemeName'|'getTheme'|'setTheme'>>>;
 
+export interface WebComponentI18NManagerMixinLike {
+	getLang(): string;
+	setLang(lang: string): Promise<void>;
+	__<R, I extends any = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R;
+	__prom<I extends any = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string>;
+}
+
 /**
  * A mixin that, when applied, adds i18n support in the
  * form of adding a `__` method
@@ -180,7 +187,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		themes?: {
 			[key: string]: any;
 		};
-	} = {}, E extends EventListenerObj = GetEvents<GA>> extends superFn {
+	} = {}, E extends EventListenerObj = GetEvents<GA>> extends superFn implements WebComponentI18NManagerMixinLike {
 		constructor(...args: any[]) {
 			super(...args);
 

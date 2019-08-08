@@ -18,28 +18,8 @@ type BasicClass = InferrableClass<{
 		e: HTMLElement;
 		f: HTMLElement;
 	};
-	TOGGLES: {
-		IDS: {
-			a: 'a-toggle'|'a-toggle-2';
-		}
-		CLASSES: {
-			c: 'c-toggle';
-		}
-		TAGS: {
-			e: 'e-toggle';
-		}
-	};
-	ATTRIBUTES: {
-		IDS: {
-			a: 'a-attr'|'a-attr-2';
-		}
-		CLASSES: {
-			c: 'c-attr';
-		}
-		TAGS: {
-			e: 'e-attr';
-		}
-	}
+	TOGGLES: 'a-toggle'|'a-toggle-2'|'c-toggle'|'e-toggle';
+	ATTRIBUTES: 'a-attr'|'a-attr-2'|'c-attr'|'e-attr';
 }>;
 
 context('Typed CSS', () => {

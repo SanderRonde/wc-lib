@@ -6,16 +6,12 @@ type InferSelectors<C> = C extends {
 	IDS: {};
 	CLASSES: {};
 	TAGS: {};
-	TOGGLES: {};
-	ATTRIBUTES: {};
+	TOGGLES: string;
+	ATTRIBUTES: string;
 };
 
+type DefaultStr<S> = S extends undefined ? string : S;
 type DefaultObj<S> = S extends undefined ? {} : S;
-type DefaultToggleableObj<S> = S extends undefined ? {
-	IDS: {};
-	CLASSES: {};
-	TAGS: {};
-} : S;
 
 abstract class AllCSSMap<S extends SelectorMap> {
 	constructor(private _onValue?: (sel: CSSSelector<S, any, any, any>) => CSSSelector<S, any, any, any>) { }
@@ -110,15 +106,19 @@ class DiffSelectorClass<S extends SelectorMap> extends AllCSSMap<S> {
 	}
 }
 
-type ToggleFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> = {
-	// @ts-ignore
-	[K in DefaultToggleableObj<S['TOGGLES']>[T][N]]: CSSSelector<S, T, ST, N>;
-}
+type ToggleFn<S extends SelectorMap, 
+	T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, 
+	ST extends SelectorMap[T], 
+	N extends keyof ST> = {
+		[K in DefaultStr<S['TOGGLES']>]: CSSSelector<S, T, ST, N>;
+	}
 
-type AttrFn<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, ST extends SelectorMap[T], N extends keyof ST> = {
-	// @ts-ignore
-	[K in DefaultToggleableObj<S['ATTRIBUTES']>[T][N]]: CSSSelector<S, T, ST, N>;
-}
+type AttrFn<S extends SelectorMap, 
+	T extends Exclude<keyof SelectorMap, 'TOGGLES'|'ATTRIBUTES'>, 
+	ST extends SelectorMap[T], 
+	N extends keyof ST> = {
+		[K in DefaultStr<S['ATTRIBUTES']>]: CSSSelector<S, T, ST, N>;
+	}
 
 interface DiffSelector<S extends SelectorMap> {
 	parent: CSSSelector<S, any, any, any>|null;
@@ -174,7 +174,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 * For example:
 	 * ```js
 	 * css(this).id.a.and.b === '#a.b'
-	 * css(this).id.a.and.b.and.c.and.d === '#a.b.c.d'
+	 * css(this).id.a.and.b.and.c.and.d === '#a.b.c.d
 	 * ```
 	 */
 	and = genProxy<S, 'CLASSES', DefaultObj<S['CLASSES']>>('.', (sel) => {
@@ -282,10 +282,9 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 
 	/**
 	 * Used to toggle on or off classes
-	 * An object where the keys are valid classes for the current selector.
-	 * The current selector is based off of the last chained element
-	 * and the valid classes are selected from the `TOGGLES` key of the
-	 * class' selector type. Returns this same `CSSSelector` instance.
+	 * An object where the keys are togglable classes
+	 * defined in the selectors object (see example).
+	 * Returns this same `CSSSelector` instance.
 	 * 
 	 * Examples:
 	 * ```js
@@ -295,15 +294,10 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 *             "someid": HTMLDivElement;
 	 *             "otherid": HTMLDivElement;
 	 *         };
-	 *         TOGGLES: {
-	 *             IDS: {
-	 *                 "someid": "someclas"|"otherclass"
-	 *             }
-	 *         }
+	 *         TOGGLES: "someclas"|"otherclass";
 	 *     }
 	 * }> {};
 	 * 
-	 * css(this).id.otherid.toggle === {} // No suggestions since there are no toggles
 	 * css(this).id.someid.toggle === { "someclass": ..., "otherclass": ... } // Suggestions
 	 * css(this).id.someid.toggle.someclass === '#id.someclass'
 	 * css(this).id.someid.toggle.someclass.toggle.otherclass === '#id.someclass.otherclass'
@@ -322,11 +316,8 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 
 	/**
 	 * Used to toggle on or off classes
-	 * An function that takes any number of valid toggled classes for 
-	 * the current selector. The current selector is based off of the 
-	 * last chained element and the valid classes are selected from 
-	 * the `TOGGLES` key of the class' selector type. Returns this 
-	 * same `CSSSelector` instance.
+	 * A function that takes any number of toggled classes.
+	 * Returns this same `CSSSelector` instance.
 	 * 
 	 * Examples:
 	 * ```js
@@ -336,11 +327,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 *             "someid": HTMLDivElement;
 	 *             "otherid": HTMLDivElement;
 	 *         };
-	 *         TOGGLES: {
-	 *             IDS: {
-	 *                 "someid": "someclas"|"otherclass"
-	 *             }
-	 *         }
+	 *         TOGGLES: "someclass"|"otherclass";
 	 *     }
 	 * }> {};
 	 * 
@@ -353,17 +340,15 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 * 
 	 * @returns this
 	 */
-	//@ts-ignore
-	toggleFn(...toggles: DefaultToggleableObj<S['TOGGLES']>[T][N][]): this {
+	toggleFn(...toggles: S['TOGGLES'][]): this {
 		this._toggles.push(...toggles as unknown as string);
 		return this;
 	};
 
 	/**
-	 * Used to set valid attributes on this selector.
-	 * The current selector is based off of the last chained element
-	 * and the valid attributes are selected from the `ATTRIBUTES` key of
-	 * the class' selector type. Returns this same `CSSSelector` instance.
+	 * Used to set attributes and their values on this selector.
+	 * Passed attribute can be any string defined in selectors['ATTRIBUTES']
+	 * Returns this same `CSSSelector` instance.
 	 * Note that this does not allow the settin of values, for that use
 	 * `attrFn(key, value)`.
 	 * 
@@ -375,11 +360,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 *             "someid": HTMLDivElement;
 	 *             "otherid": HTMLDivElement;
 	 *         };
-	 *         ATTRIBUTES: {
-	 *             IDS: {
-	 *                 "someid": "someattr"
-	 *             }
-	 *         }
+	 *         ATTRIBUTES: 'someattr';
 	 *     }
 	 * }> {};
 	 * 
@@ -398,10 +379,10 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	}) as unknown as AttrFn<S, T, ST, N>;;
 
 	/**
-	 * Used to set valid attributes and their values on this selector.
-	 * The current selector is based off of the last chained element
-	 * and the valid attributes are selected from the `ATTRIBUTES` key of
-	 * the class' selector type. Returns this same `CSSSelector` instance.
+	 * Used to set attributes and their values on this selector.
+	 * Passed attribute can be any string defined in selectors['ATTRIBUTES']
+	 * Value can optionally be passed to give it a value.
+	 * Returns this same `CSSSelector` instance.
 	 * 
 	 * Examples:
 	 * ```js
@@ -411,15 +392,12 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 *             "someid": HTMLDivElement;
 	 *             "otherid": HTMLDivElement;
 	 *         };
-	 *         ATTRIBUTES: {
-	 *             IDS: {
-	 *                 "someid": "someattr"
-	 *             }
-	 *         }
+	 *         ATTRIBUTES: 'someattr'
 	 *     }
 	 * }> {};
 	 * 
-	 * css(this).id.someid.attr.someattr === '#id[someattr]'
+	 * css(this).id.someid.attrFn('someattr') === '#id[someattr]'
+	 * css(this).id.someid.attrFn('someattr', 'value') === '#id[someattr="value"]'
 	 * ```
 	 * 
 	 * @param {DefaultToggleableObj<S['ATTRIBUTES']>[T][N]} attr - The name
@@ -428,8 +406,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 * 
 	 * @returns {this} - Return this again
 	 */
-	//@ts-ignore
-	attrFn(attr: DefaultToggleableObj<S['ATTRIBUTES']>[T][N], value?: any): this {
+	attrFn(attr: S['ATTRIBUTES'], value?: any): this {
 		this._attrs.push({ key: attr as unknown as string, value });
 		return this;
 	};

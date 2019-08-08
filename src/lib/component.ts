@@ -13,96 +13,39 @@ export type GetEls<GA extends {
 }> = Required<GA>['selectors'] extends undefined ? 
 	{} : DefaultVal<Required<GA>['selectors'], SelectorMap>;
 
-export type SelectorMap<I extends {
-	[key: string]: HTMLElement|SVGElement;
-} = {
-	[key: string]: HTMLElement|SVGElement;
-}, C extends {
-	[key: string]: HTMLElement|SVGElement;
-} = {
-	[key: string]: HTMLElement|SVGElement;
-}, T extends {
-	[key: string]: HTMLElement|SVGElement;
-} = {
-	[key: string]: HTMLElement|SVGElement;
-}> = {
+export interface SelectorMap {
 	/**
 	 * All child elements of this component by ID
 	 */
-	IDS?: I;
+	IDS?: {
+		[key: string]: HTMLElement|SVGElement;
+	};
 	/**
 	 * All child elements of this component by class
 	 */
-	CLASSES?: C;
+	CLASSES?: {
+		[key: string]: HTMLElement|SVGElement;
+	};
 	/**
 	 * All child elements of this component by tag name
 	 */
-	TAGS?: T;
+	TAGS?: {
+		[key: string]: HTMLElement|SVGElement;
+	};
 	/**
 	 * Togglable classes that can be put onto other elements.
-	 * The first property (IDS, CLASSES, TAGS) is the group
-	 * to which they apply. The key is the element to which
-	 * it is applied and the value is the toggleable class' 
-	 * name
+	 * The string value is used as options for the toggles.
+	 * For example if the string value is 'a'|'b'
+	 * the suggestions will be 'a'|'b'
 	 */
-	TOGGLES?: {
-		/**
-		 * Togglable classes for classes in the IDS group
-		 * where the key is the selector (that should also
-		 * be present in SelectorMap['IDS'] and the value
-		 * is the toggleable class
-		 */
-		IDS?: {
-			[K in keyof I]?: string;
-		}
-		/**
-		 * Togglable classes for classes in the CLASSES group
-		 * where the key is the selector (that should also
-		 * be present in SelectorMap['CLASSES'] and the value
-		 * is the toggleable class
-		 */
-		CLASSES?: {
-			[K in keyof C]?: string;
-		}
-		/**
-		 * Togglable classes for classes in the TAGS group
-		 * where the key is the selector (that should also
-		 * be present in SelectorMap['TAGS'] and the value
-		 * is the toggleable class
-		 */
-		TAGS?: {
-			[K in keyof T]?: string;
-		}
-	};
-	ATTRIBUTES?: {
-		/**
-		 * Togglable attributes for classes in the IDS group
-		 * where the key is the selector (that should also
-		 * be present in SelectorMap['IDS'] and the value
-		 * is the toggleable attribute
-		 */
-		IDS?: {
-			[K in keyof I]?: string;
-		}
-		/**
-		 * Togglable attributes for classes in the CLASSES group
-		 * where the key is the selector (that should also
-		 * be present in SelectorMap['CLASSES'] and the value
-		 * is the toggleable attribute
-		 */
-		CLASSES?: {
-			[K in keyof C]?: string;
-		}
-		/**
-		 * Togglable attributes for classes in the TAGS group
-		 * where the key is the selector (that should also
-		 * be present in SelectorMap['TAGS'] and the value
-		 * is the toggleable attribute
-		 */
-		TAGS?: {
-			[K in keyof T]?: string;
-		}
-	}
+	TOGGLES?: string;
+	/**
+	 * Attributes that can be put onto other elements.
+	 * The string value is used as options for the toggles.
+	 * For example if the string value is 'a'|'b'
+	 * the suggestions will be 'a'|'b'
+	 */
+	ATTRIBUTES?: string;
 }
 
 export type IDMapFn<IDS extends SelectorMap> = {

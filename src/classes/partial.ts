@@ -68,6 +68,11 @@ export class ComplexTemplatingWebComponent<GA extends {
 	langs?: string;
 	events?: EventListenerObj;
 	selectors?: SelectorMap;
+	root?: any;
+	parent?: any;
+	globalProps?: {
+		[key: string]: any;
+	}
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends WebComponentMixin(
 	WebComponentTemplateManagerMixin(WebComponentHierarchyManagerMixin(
 		WebComponentListenableMixin(WebComponentBaseMixin(

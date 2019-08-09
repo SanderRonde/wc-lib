@@ -1,5 +1,6 @@
-import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentThemeManagerMixinInstance, DefaultValUnknown } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentThemeManagerMixinInstance, DefaultValUnknown, WebComponentHierarchyManagerMixinInstance } from '../classes/types.js';
 import { EventListenerObj, WebComponentListenableMixinInstance, ListenerSet, GetEvents } from './listener.js';
+import { ListenGPType, GlobalPropsFunctions } from './hierarchy-manager.js';
 import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentI18NManagerMixinLike } from './i18n-manager.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
@@ -135,7 +136,8 @@ export type WebComponentSuper = Constructor<
 	Pick<WebComponentBaseMixinInstance, 'root'|'self'|'renderToDOM'> &
 	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'> & 
 	Partial<Pick<WebComponentThemeManagerMixinInstance, 'getTheme'|'getThemeName'|'setTheme'>> &
-	Partial<Pick<WebComponentI18NManagerMixinLike, 'getLang'|'setLang'|'__'|'__prom'>> & {
+	Partial<Pick<WebComponentI18NManagerMixinLike, 'getLang'|'setLang'|'__'|'__prom'>> &
+	Partial<Pick<WebComponentHierarchyManagerMixinInstance, 'registerChild'|'globalProps'|'getRoot'|'getParent'|'listenGP'|'runGlobalFunction'>> & {
 		connectedCallback(): void;
 		disconnectedCallback?(): void;
 	}>;
@@ -179,6 +181,11 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 			[key: string]: any;
 		};
 		selectors?: SelectorMap;
+		root?: any;
+		parent?: any;
+		globalProps?: {
+			[key: string]: any;
+		}
 	} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends superFn {
 		/**
 		 * An array of functions that get called when this
@@ -494,6 +501,121 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 				throw new Error('Not implemented');
 			}
 			return super.setTheme(themeName);
+		}
+
+		/**
+		 * Registers `element` as the child of this
+		 * component
+		 * 
+		 * @template G - Global properties
+		 * @param {HTMLElement} element - The
+		 * 	component that is registered as the child of this one
+		 * 
+		 * @returns {G} The global properties
+		 */
+		public registerChild = <G extends GA['globalProps'] = { [key: string]: any; }>(
+			element: HTMLElement): G => {
+				// istanbul ignore next
+				if (!super.registerChild) {
+					throw new Error('Not implemented');
+				}
+				// istanbul ignore next
+				return super.registerChild(element as any);
+			}
+
+		/**
+		 * Gets the global properties functions
+		 * 
+		 * @template G - The global properties
+		 * @returns {GlobalPropsFunctions<G>} Functions
+		 * 	that get and set global properties
+		 */
+		public globalProps = <G extends GA['globalProps'] = { [key: string]: any; }>(): GlobalPropsFunctions<DefaultVal<G, {[key: string]: any }>> => {
+			// istanbul ignore next
+			if (!super.globalProps) {
+				throw new Error('Not implemented');
+			}
+			// istanbul ignore next
+			return super.globalProps();
+		}
+
+		/**
+		 * Gets the root node of the global hierarchy
+		 * 
+		 * @template T - The type of the root
+		 * 
+		 * @returns {T} The root
+		 */
+		public getRoot = <T extends GA['root'] = {}>(): T => {
+			// istanbul ignore next
+			if (!super.getRoot) {
+				throw new Error('Not implemented');
+			}
+			// istanbul ignore next
+			return super.getRoot();
+		}
+
+		/**
+		 * Returns the parent of this component
+		 * 
+		 * @template T - The parent's type
+		 * @returns {T|null} - The component's parent or 
+		 * 	null if it has none
+		 */
+		public getParent = <T extends GA['parent'] = {}>(): T|null => {
+			// istanbul ignore next
+			if (!super.getParent) {
+				throw new Error('Not implemented');
+			}
+			// istanbul ignore next
+			return super.getParent();
+		}
+
+		/**
+		 * Listeners for global property changes
+		 * 
+		 * @template GP - The global properties
+		 * 
+		 * @param {'globalPropChange'} event - The
+		 * 	event to listen for
+		 * @param {(prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void} listener - 
+		 * 	The listener that is called when the
+		 * 	event is fired
+		 * @param {boolean} [once] - Whether to 
+		 * 	only fire this event once
+		 */
+		public listenGP = (<GP extends GA['globalProps'] = { [key: string]: any; }>(
+			event: 'globalPropChange', 
+			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+			// istanbul ignore next
+			once: boolean = false) => {
+				// istanbul ignore next
+				if (!super.listenGP) {
+					throw new Error('Not implemented');
+				}
+				// istanbul ignore next
+				return super.listenGP(event, listener, once);
+		}) as ListenGPType<GA>;
+
+		/**
+		 * Runs a function for every component in this
+		 * global hierarchy
+		 * 
+		 * @template R - The return type of given function
+		 * @template E - The components on the page's base types
+		 * 
+		 * @param {(element: WebComponentHierarchyManager) => R} fn - The
+		 * 	function that is ran on every component
+		 * 
+		 * @returns {R[]} All return values in an array
+		 */
+		public runGlobalFunction = <E extends {}, R = any>(fn: (element: E) => R): R[] => {
+			// istanbul ignore next
+			if (!super.runGlobalFunction) {
+				throw new Error('Not implemented');
+			}
+			// istanbul ignore next
+			return super.runGlobalFunction(fn);
 		}
 	}
 

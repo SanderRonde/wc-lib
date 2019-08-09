@@ -1,6 +1,6 @@
 import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from "../../../../../../build/es/wclib.js";
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { TestTheme } from "../themeManagerspec";
+import { TestTheme, ThemeGlobalProps } from "../themeManagerspec";
 
 export const usedThemes: {
 	[key: string]: TestTheme;
@@ -62,6 +62,8 @@ export class ThemedElement extends ConfigurableWebComponent<{
 		ThemedElement
 	]
 })
-export class ThemedElementParent extends ConfigurableWebComponent {
+export class ThemedElementParent extends ConfigurableWebComponent<{
+	globalProps: ThemeGlobalProps;
+}> {
 
 }

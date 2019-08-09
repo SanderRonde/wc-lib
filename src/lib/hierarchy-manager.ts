@@ -1,6 +1,26 @@
-import { Constructor, InferReturn, InferInstance } from '../classes/types.js';
-import { WebComponentListenableMixinInstance } from './listener.js';
+import { WebComponentListenableMixinInstance, EventListenerObj, GetEvents, ListenerSet } from './listener.js';
+import { Constructor, InferReturn, InferInstance, DefaultVal } from '../classes/types.js';
 import { bindToClass } from './base.js';
+
+/**
+ * The type of the `component.listenGP` function
+ */
+export interface ListenGPType<GA extends {
+	globalProps?: {
+		[key: string]: any;
+	}
+}> {
+	<GP extends GA['globalProps'] = { [key: string]: any; }>(event: 'globalPropChange', 
+			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+			once?: boolean): void;
+	<GP extends GA['globalProps'] = { [key: string]: any; }, K extends keyof GP = any>(event: 'globalPropChange', 
+		listener: (prop: K, newValue: GP[K], oldValue: GP[K]) => void,
+		once?: boolean): void;
+	<GP extends GA['globalProps'] = { [key: string]: any; }>(
+		event: 'globalPropChange', 
+		listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+		once?: boolean): void;
+}
 
 /**
  * Global properties functions returned by
@@ -8,7 +28,7 @@ import { bindToClass } from './base.js';
  * 
  * @template G - The global properties
  */
-type GlobalPropsFunctions<G extends {
+export type GlobalPropsFunctions<G extends {
 	[key: string]: any;
 }> = {
 	/**
@@ -223,7 +243,9 @@ export type WebComponentHierarchyManagerMixinClass = InferReturn<typeof WebCompo
  * The parent/super type required by the hierarchy manager mixin
  */
 export type WebComponentHierarchyManagerMixinSuper = Constructor<
-	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'> & HTMLElement & {
+	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'> & 
+	Partial<Pick<WebComponentListenableMixinInstance, 'clearListener'|'listenerMap'>> & 
+	HTMLElement & {
 		connectedCallback(): void;
 	}>;
 
@@ -246,6 +268,11 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		return privateMap.set(self, new HierarchyClass(self as any, () => hierarchyClass)).get(self)!;
 	}
 
+	// Explanation for ts-ignore:
+	// Will show a warning regarding using generics in mixins
+	// This issue is tracked in the typescript repo's issues with numbers
+	// #26154 #24122 (among others)
+
 	/**
 	 * The class that is responsible for managing 
 	 * the hierarchy of the page, establishing a
@@ -253,7 +280,20 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 	 * to flow from children to the root and back to
 	 * children
 	 */
-	class WebComponentHierarchyManager extends superFn {
+	//@ts-ignore
+	class WebComponentHierarchyManager<GA extends {
+		i18n?: any;
+		langs?: string;
+		events?: EventListenerObj;
+		themes?: {
+			[key: string]: any;
+		};
+		root?: any;
+		parent?: any;
+		globalProps?: {
+			[key: string]: any;
+		}
+	} = {}, E extends EventListenerObj = GetEvents<GA>> extends superFn {
 		constructor(...args: any[]) {
 			super(...args);
 			HierarchyClass.hierarchyClasses.add(this as any);
@@ -280,19 +320,18 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * component
 		 * 
 		 * @template G - Global properties
-		 * @param {WebComponentHierarchyManager} element - The
+		 * @param {HTMLElement} element - The
 		 * 	component that is registered as the child of this one
 		 * 
 		 * @returns {G} The global properties
 		 */
-		public registerChild<G extends {
-			[key: string]: any;
-		}>(element: WebComponentHierarchyManager): G {
-			const priv = hierarchyClass(this);
-			priv.clearNonExistentChildren();
-			priv.children.add(element as any);
-			return priv.globalProperties as G;
-		}
+		public registerChild<G extends GA['globalProps'] = { [key: string]: any; }>(
+			element: HTMLElement): G {
+				const priv = hierarchyClass(this);
+				priv.clearNonExistentChildren();
+				priv.children.add(element as any);
+				return priv.globalProperties as G;
+			}
 
 		/**
 		 * Gets the global properties functions
@@ -301,34 +340,33 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * @returns {GlobalPropsFunctions<G>} Functions
 		 * 	that get and set global properties
 		 */
-		public globalProps<G extends {
-			[key: string]: any;
-		}>(): GlobalPropsFunctions<G> {
+		public globalProps<G extends GA['globalProps'] = { [key: string]: any; }>(): GlobalPropsFunctions<DefaultVal<G, {[key: string]: any }>> {
 			const priv = hierarchyClass(this);
 			if (priv.globalPropsFns) {
 				return priv.globalPropsFns!;
 			}
 
+			type DefaultG = DefaultVal<G, { [key: string]: any }>;
 			const __this = this;
-			const fns: GlobalPropsFunctions<G> = {
+			const fns: GlobalPropsFunctions<DefaultG> = {
 				get all() {
 					return hierarchyClass(__this).globalProperties;
 				},
-				get<K extends keyof G>(key: Extract<K, string>): G[K] {
+				get<K extends keyof DefaultG>(key: Extract<K, string>): DefaultG[K] {
 					/* istanbul ignore next */
 					if (!hierarchyClass(__this).globalProperties) {
 						return undefined as any;
 					}
 					return hierarchyClass(__this).globalProperties[key] as any;
 				},
-				set<K extends keyof G, V extends G[K]>(key: Extract<K, string>, value: V): void {
+				set<K extends keyof DefaultG, V extends DefaultG[K]>(key: Extract<K, string>, value: V): void {
 					/* istanbul ignore if */
 					if (!hierarchyClass(__this).parent && !hierarchyClass(__this).isRoot) {
 						console.warn(`Failed to propagate global property "${key}" since this element has no registered parent`);
 						return;
 					}
 					hierarchyClass(__this).propagateThroughTree((element) => {
-						hierarchyClass(element).setGlobalProperty<G>(key, value);
+						hierarchyClass(element).setGlobalProperty<DefaultG>(key, value);
 					});
 				}
 			};
@@ -342,7 +380,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * 
 		 * @returns {T} The root
 		 */
-		public getRoot<T>(): T {
+		public getRoot<T extends GA['root'] = {}>(): T {
 			const priv = hierarchyClass(this);
 			if (priv.isRoot) {
 				return <T><any>this;
@@ -373,7 +411,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * @returns {T|null} - The component's parent or 
 		 * 	null if it has none
 		 */
-		public getParent<T>(): T|null {
+		public getParent<T extends GA['parent'] = {}>(): T|null {
 			return hierarchyClass(this).__getParent() as T;
 		}
 
@@ -390,23 +428,88 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * @param {boolean} [once] - Whether to 
 		 * 	only fire this event once
 		 */
-		public listenGP<GP extends {
-			[key: string]: any;
-		}>(event: 'globalPropChange', 
+		public listenGP<GP extends GA['globalProps'] = { [key: string]: any; }>(event: 'globalPropChange', 
 			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
 			once?: boolean): void;
-		public listenGP<GP extends {
-			[key: string]: any;
-		}, K extends keyof GP>(event: 'globalPropChange', 
+		public listenGP<GP extends GA['globalProps'] = { [key: string]: any; }, K extends keyof GP = any>(event: 'globalPropChange', 
 			listener: (prop: K, newValue: GP[K], oldValue: GP[K]) => void,
 			once?: boolean): void;
-		public listenGP<GP extends {
-			[key: string]: any;
-		}>(event: 'globalPropChange', 
+		public listenGP<GP extends GA['globalProps'] = { [key: string]: any; }>(
+			event: 'globalPropChange', 
 			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
 			once: boolean = false) {
 				this.listen(event, listener, once);
 		}
+
+		/**
+		 * A map that maps every event name to
+		 * a set containing all of its listeners
+		 * 
+		 * @readonly
+		 */
+		get listenerMap(): ListenerSet<E> {
+			return super.listenerMap as ListenerSet<E>;
+		}
+
+		/**
+		 * Listens for given event and fires
+		 * the listener when it's triggered
+		 * 
+		 * @template EV - The event's name
+		 * 
+		 * @param {EV} event - The event's name
+		 * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
+		 * 	listener called when the event is fired
+		 * @param {boolean} [once] - Whether to only
+		 * 	call this listener once (false by default)
+		 */
+		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
+			super.listen(event as any, listener, once);
+		}
+
+		/**
+		 * Fires given event on this component
+		 * with given params, returning an array
+		 * containing the return values of all
+		 * triggered listeners
+		 * 
+		 * @template EV - The event's name
+		 * @template R - The return type of the
+		 * 	event's listeners
+		 * 
+		 * @param {EV} event - The event's name
+		 * @param {E[EV]['args']} params - The parameters
+		 * 	passed to the listeners when they are
+		 * 	called
+		 * 
+		 * @returns {R[]} An array containing the
+		 * 	return values of all triggered
+		 * 	listeners
+		 */
+		public fire = <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
+			return super.fire(event as any, ...params);
+		}
+
+		/**
+		 * Clears all listeners on this component for
+		 * given event
+		 * 
+		 * @template EV - The name of the event
+		 * 
+		 * @param {EV} event - The name of the event to clear
+		 * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
+		 * 	specific listener to clear. If not passed, clears all
+		 * 	listeners for the event
+		 */
+		public clearListener = <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
+			// istanbul ignore next
+			if (!super.clearListener) {
+				throw new Error('Not implemented');
+			}
+			// istanbul ignore next
+			super.clearListener(event as any, listener);
+		}
 	}
+
 	return WebComponentHierarchyManager;
 }

@@ -36,4 +36,9 @@ export class WebComponent<GA extends {
 		[key: string]: any;
 	};
 	selectors?: SelectorMap;
+	root?: any;
+	parent?: any;
+	globalProps?: {
+		[key: string]: any;
+	}
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> { }

@@ -1,4 +1,5 @@
 import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../build/es/wclib.js';
+import { TestGlobalProperties } from '../fixtures/standard/hierarchy-manager.fixture.js';
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
 import { ParentElement } from '../../elements/parent-element.js';
 import { TestElement } from '../../elements/test-element.js';
@@ -35,6 +36,8 @@ export class RootElement extends ConfigurableWebComponent<{
 			returnType: number;
 		}
 	}
+	root: RootElement;
+	globalProps: TestGlobalProperties;
 }> {
 	props = Props.define(this, {
 		reflect: {

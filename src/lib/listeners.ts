@@ -52,6 +52,11 @@ export namespace Listeners {
 		langs?: string;
 		events?: EventListenerObj;
 		selectors?: SelectorMap;
+		root?: any;
+		parent?: any;
+		globalProps?: {
+			[key: string]: any;
+		}
 	}, E extends EventListenerObj, ELS extends SelectorMap, T extends WebComponent<GA, E, ELS>, K extends keyof HTMLElementEventMap>(base: T, type: 'element' | 'identifier', 
 		element: HTMLElement|SVGElement, id: string, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		options?: boolean | AddEventListenerOptions) {

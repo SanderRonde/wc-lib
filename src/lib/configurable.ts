@@ -22,6 +22,11 @@ export class ConfigurableWebComponent<GA extends {
 		[key: string]: any;
 	};
 	selectors?: SelectorMap;
+	root?: any;
+	parent?: any;
+	globalProps?: {
+		[key: string]: any;
+	}
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
 	/**
 	 * The render method that will render this component's HTML
@@ -110,6 +115,11 @@ export declare class ConfiguredComponent<GA extends {
 		[key: string]: any;
 	};
 	selectors?: SelectorMap;
+	root?: any;
+	parent?: any;
+	globalProps?: {
+		[key: string]: any;
+	}
 } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
 	constructor();
 

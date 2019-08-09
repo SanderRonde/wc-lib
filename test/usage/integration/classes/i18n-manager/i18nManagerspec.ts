@@ -3,7 +3,7 @@ import { RootElement } from "../hierarchy-manager/elements/root-element";
 import { TestWindow, TestElement } from "../elements/test-element";
 import { LangElement } from "./elements/test-lang-element";
 import { ParentElement } from "../elements/parent-element";
-import { WebComponent } from "../../../../../src/wclib";
+import { WebComponent } from "../../../../../build/es/wclib";
 import { SLOW } from "../../../lib/timing.js";
 interface I18NTestWindow extends Window {
 	WebComponent: typeof WebComponent;

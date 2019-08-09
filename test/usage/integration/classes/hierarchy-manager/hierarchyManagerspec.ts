@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent } from "../../../../../src/wclib";
+import { ConfigurableWebComponent } from "../../../../../build/es/wclib";
 import { TestGlobalProperties } from "./fixtures/standard/hierarchy-manager.fixture";
 import { expectMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "../elements/parent-element";

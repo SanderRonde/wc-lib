@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE, ComplexType, ClassNamesArg, WebComponent } from "../../../../../../src/wclib.js";
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE, ComplexType, ClassNamesArg, WebComponent } from "../../../../../../build/es/wclib.js";
 import { TemplateResult, PropertyCommitter, EventPart, 
 	BooleanAttributePart, AttributeCommitter, 
 	NodePart, isDirective, noChange, render 

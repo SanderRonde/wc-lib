@@ -1,5 +1,5 @@
 import { OtherClass, JSXElement, SpecialPropClass } from "./elements/jsx-element.js";
-import { CHANGE_TYPE } from "../../../../../src/wclib.js";
+import { CHANGE_TYPE } from "../../../../../build/es/wclib.js";
 import { getLibFixture } from "../../../lib/testing.js";
 import { SLOW } from "../../../lib/timing.js";
 

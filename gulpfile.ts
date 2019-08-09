@@ -99,7 +99,7 @@ gulp.task('replaceTestImports', () => {
 			cwd: './test',
 			base: './test'
 		})
-		.pipe(replace('/src/', '/instrumented/'))
+		.pipe(replace('/build/es/', '/instrumented/'))
 		.pipe(gulp.dest('test'));
 });
 

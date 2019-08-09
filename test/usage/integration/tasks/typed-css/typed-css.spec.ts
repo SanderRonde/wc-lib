@@ -1,4 +1,4 @@
-import { inlineTypedCSS, inlineTypedCSSPipe } from '../../../../../src/tasks/typed-css.js';
+import { inlineTypedCSS, inlineTypedCSSPipe } from '../../../../../build/es/tasks/typed-css.js';
 
 class FakeBuffer {
 	constructor(private _data: string) { }

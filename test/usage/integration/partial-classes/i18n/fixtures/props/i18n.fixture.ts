@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../src/wclib.js";
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../build/es/wclib.js";
 import { render, html } from "../../../../../../../node_modules/lit-html/lit-html.js";
-import { I18NWebComponent } from "../../../../../../../src/classes/partial.js";
+import { I18NWebComponent } from "../../../../../../../build/es/classes/partial.js";
 
 export interface PropsElementWindow extends Window {
 	accessSymbol: typeof accessSymbol;

@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, noTheme } from '../../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, noTheme } from '../../../../../../../build/es/wclib.js';
 import { render, html } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { ThemingWebComponent } from "../../../../../../../src/classes/partial.js";
+import { ThemingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 import { TestTheme } from "../../../../classes/theme-manager/themeManagerspec.js";
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {

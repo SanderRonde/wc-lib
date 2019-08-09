@@ -1,6 +1,6 @@
-import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../src/wclib.js';
+import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wclib.js';
 import { DeepObject } from '../../../../properties/props/elements/props-element.js';
-import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
+import { I18NWebComponent } from '../../../../../../../build/es/classes/partial.js';
 
 @config({
 	is: 'reflect-props',

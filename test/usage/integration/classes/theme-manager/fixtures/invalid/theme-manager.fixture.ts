@@ -1,5 +1,5 @@
 import { ThemedElementParent, usedThemes } from "../../elements/themed-element.js";
-import { WebComponent, noTheme } from "../../../../../../../src/wclib.js";
+import { WebComponent, noTheme } from "../../../../../../../build/es/wclib.js";
 import { TestElement } from "../../../elements/test-element.js";
 
 export interface ThemeManagerWindow extends Window {

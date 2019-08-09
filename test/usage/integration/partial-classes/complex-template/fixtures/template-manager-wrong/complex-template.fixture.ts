@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType } from '../../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wclib.js';
 import { render, html, directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { ComplexTemplatingWebComponent } from "../../../../../../../src/classes/partial.js";
+import { ComplexTemplatingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`

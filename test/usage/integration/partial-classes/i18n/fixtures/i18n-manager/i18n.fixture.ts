@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../build/es/wclib.js';
 import { render, html, directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
+import { I18NWebComponent } from '../../../../../../../build/es/classes/partial.js';
 
 const awaitPromise = directive((key: string, value: Promise<any>|string) => (part: Part) => {
 	if (typeof value === 'string') {

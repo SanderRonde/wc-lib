@@ -1,5 +1,5 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../src/wclib.js";
-import { ComplexTemplatingWebComponent } from "../../../../../../../src/classes/partial.js";
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../build/es/wclib.js";
+import { ComplexTemplatingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 import { render, html } from "../../../../../../../node_modules/lit-html/lit-html.js";
 
 export interface PropsElementWindow extends Window {

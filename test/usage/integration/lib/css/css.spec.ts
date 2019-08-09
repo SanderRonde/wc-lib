@@ -1,5 +1,5 @@
-import { SelectorMap, IDMapFn } from '../../../../../src/lib/component.js';
-import { css } from '../../../../../src/lib/css.js';
+import { SelectorMap, IDMapFn } from '../../../../../build/es/lib/component.js';
+import { css } from '../../../../../build/es/lib/css.js';
 
 type InferrableClass<S extends SelectorMap> = {
 	$: IDMapFn<S>;

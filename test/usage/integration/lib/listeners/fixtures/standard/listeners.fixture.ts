@@ -1,5 +1,5 @@
 import { TestElement } from "../../../../classes/elements/test-element.js";
-import { Listeners } from "../../../../../../../src/wclib.js";
+import { Listeners } from "../../../../../../../build/es/wclib.js";
 
 export interface ListenerWindow extends Window {
 	Listeners: typeof Listeners

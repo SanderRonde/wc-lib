@@ -1,4 +1,4 @@
-import { WebComponent } from '../../../../../../../src/wclib.js';
+import { WebComponent } from '../../../../../../../build/es/wclib.js';
 import { LangElement } from '../../elements/test-lang-element.js';
 
 WebComponent.initI18N({

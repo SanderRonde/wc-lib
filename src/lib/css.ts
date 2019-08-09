@@ -263,7 +263,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	});
 
 	/**
-	 * Used to create selectors with descenants (non-direct children)
+	 * Used to create selectors with descendants (non-direct children)
 	 * This is an object where the keys are the basic selector types again
 	 * and the values are their respective key-value maps. 
 	 * 
@@ -349,7 +349,7 @@ class CSSSelector<S extends SelectorMap, T extends Exclude<keyof SelectorMap, 'T
 	 * Used to set attributes and their values on this selector.
 	 * Passed attribute can be any string defined in selectors['ATTRIBUTES']
 	 * Returns this same `CSSSelector` instance.
-	 * Note that this does not allow the settin of values, for that use
+	 * Note that this does not allow the setting of values, for that use
 	 * `attrFn(key, value)`.
 	 * 
 	 * Examples:

@@ -13,11 +13,21 @@ import { CHANGE_TYPE } from './template-fn.js';
  */
 export const noTheme = {};
 
+/**
+ * An instance of the theme manager mixin's resulting class
+ */
 export type WebComponentThemeManagerMixinInstance = InferInstance<WebComponentThemeManagerMixinClass> & {
 	self: WebComponentThemeManagerMixinClass;
 };
+
+/**
+ * The theme manager mixin's resulting class
+ */
 export type WebComponentThemeManagerMixinClass = InferReturn<typeof WebComponentThemeManagerMixin>;
 
+/**
+ * The parent/super's type required by the theme manager mixin
+ */
 export type WebComponentThemeManagerMixinSuper = Constructor<
 	Pick<WebComponentBaseMixinInstance, 'renderToDOM'> & 
 	Partial<Pick<WebComponentHierarchyManagerMixinInstance, 'globalProps'|'listenGP'>> & 
@@ -33,6 +43,10 @@ export type WebComponentThemeManagerMixinSuper = Constructor<
  * A mixin that, when applied, takes care of 
  * re-rendering when the theme changes. It also
  * adds some methods for getting/setting the them
+ * 
+ * @template P - The parent/super's type
+ * 
+ * @param {P} superFn - The parent/super
  */
 export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManagerMixinSuper>(superFn: P) => {
 	let currentTheme: any|null = null;

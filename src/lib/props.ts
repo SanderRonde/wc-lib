@@ -1,4 +1,3 @@
-import { WebComponent } from '../classes/full.js';
 import { CHANGE_TYPE } from './template-fn.js';
 
 /**
@@ -223,6 +222,11 @@ export const enum PROP_TYPE {
 	 */
 	BOOL = 'bool'
 }
+
+/**
+ * A complex type for a property where the passed
+ * template value is the actual type
+ */
 export type ComplexType<T> = typeof complex & {
 	__data: T;
 };
@@ -247,6 +251,10 @@ type DefinePropTypes = PROP_TYPE|ComplexType<any>;
 interface DefineTypeConfig {
 	type: DefinePropTypes;
 }
+
+/**
+ * The type of a property's config object
+ */
 export interface DefinePropTypeConfig extends DefineTypeConfig {
 	watch?: boolean;
 	defaultValue?: GetTSType<this['type']>;
@@ -541,7 +549,17 @@ function dashesToCasing(name: string) {
 	return newStr;
 }
 
-export function casingToDashes(name: string) {
+/**
+ * Converts casing to dashes
+ * 
+ * **Example:**
+ * "camelCasedName" -> "camel-cased-name"
+ * 
+ * @param {string} name - The name/string to convert
+ * 
+ * @returns {string} - The hyphen/dashes-cased string
+ */
+export function casingToDashes(name: string): string {
 	if (!/[A-Z]/.test(name)) return name;
 
 	let newStr = '';
@@ -571,7 +589,17 @@ function getCoerced(initial: any, mapType: DefinePropTypes) {
 const connectMap = new WeakMap<HTMLElement, any>();
 const connectedElements = new WeakSet<HTMLElement>();
 
-export async function awaitConnected(el: WebComponent): Promise<void> {
+/**
+ * Waits for the element to be connected to the DOM
+ * (`connectedCallback` was called)
+ * 
+ * @param {HTMLElement} el - The element for which
+ * to wait for it to be connected to the DOM.
+ * 
+ * @returns {Promise<void>} - A promise that resolves when
+ * 	the element has been connected
+ */
+export async function awaitConnected(el: HTMLElement): Promise<void> {
 	/* istanbul ignore next */
     if (connectedElements.has(el)) return;
     await new Promise(async (resolve) => {
@@ -581,7 +609,20 @@ export async function awaitConnected(el: WebComponent): Promise<void> {
     });
 }
 
-export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<void> {
+/**
+ * Hooks into the `connectedCallback` function of the element
+ * and runs the passed function in it
+ * 
+ * @param {HTMLElement} el - The element for which to
+ * hook into its `connectedCallback`
+ * @param {() => any} fn - A function to call 
+ * in the `connectedCallback`
+ * 
+ * @returns {Promise<void>} - A promise that resolves when
+ * 	the function has been called (aka `connectedCallback`
+ * 	was called)
+ */
+export async function hookIntoConnect(el: HTMLElement, fn: () => any): Promise<void> {
 	// istanbul ignore next
     if (connectedElements.has(el)) {
 		fn(); 
@@ -598,6 +639,9 @@ export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<
     });
 }
 
+/**
+ * The type that can be passed to `Props.define(xxx, { })`
+ */
 export interface PropComponent extends HTMLElement {
 	renderToDOM(changeType: number): void;
 	getParentRef?(ref: string): any;
@@ -1066,16 +1110,27 @@ namespace PropsDefiner {
 		}
 }
 
+/**
+ * The type of a prop config object. This is the value
+ * that is passed to the `reflect` and `priv` keys
+ */
 export type PropConfigObject = {
 	[key: string]: DefinePropTypes|DefinePropTypeConfig;
 };
 
+/**
+ * The return type given the two prop config objects (
+ * the public one and the private one))
+ */
 export type PropReturn<PUB extends PropConfigObject, PRIV extends PropConfigObject> = {
 	[K in keyof PUB]: GetTSType<PUB[K]>;
 } & {
 	[K in keyof PRIV]: GetTSType<PRIV[K]>;
 }
 
+/**
+ * A map of element tag names to prop configs
+ */
 export const propConfigs: Map<string, {
 	reflect?: PropConfigObject;
 	priv?: PropConfigObject;
@@ -1089,7 +1144,7 @@ export class Props {
 	 * Defines properties on this component
 	 * 
 	 * @template PUB - The public properties
-	 * @template PRIV - The private propertie
+	 * @template PRIV - The private properties
 	 * @template R - The return value
 	 * @template PP - The parent's properties
 	 * 
@@ -1162,6 +1217,13 @@ export class Props {
 			return props as Props & R & PP;
 		}
 
+	/**
+	 * A function that will be called when the passed element
+	 * is connected to the dom (`connectedCallback` is called).
+	 * This is only used by the library and has no other uses.
+	 * 
+	 * @param {HTMLElement} - The element that was connected
+	 */
 	static onConnect(element: HTMLElement) {
 		if (connectMap.has(element)) {
 			for (const listener of connectMap.get(element)!) {

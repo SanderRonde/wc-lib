@@ -1,3 +1,6 @@
+/**
+ * Functions related to color manipulation in the CSS
+ */
 export namespace Color {
 	/**
 	 * An interface representing a color by
@@ -34,6 +37,17 @@ export namespace Color {
 		a: 100
 	};
 
+	/**
+	 * Returns the color representation of a string, converting it from
+	 * an RGB, hex or regular string to an object with the r, g, b and a properties.
+	 * Returns black (aka { r: 0, g: 0, b: 0, a: 100 }) if something went wrong parsing
+	 * the color.
+	 * 
+	 * @param {string} color - The color of which to get the representation
+	 * 
+	 * @returns {RGBAColorRepresentation} - A representation of this color
+	 * in object-form.
+	 */
 	export function getColorRepresentation(color: string): RGBAColorRepresentation {
 		if (color.startsWith('#') && HEX_ALPHA_REGEX.exec(color)) {
 			const match = HEX_ALPHA_REGEX.exec(color);
@@ -86,7 +100,16 @@ export namespace Color {
 		return BLACK;
 	}
 
-	export function toStringColor(color: RGBAColorRepresentation|RGBColorRepresentation) {
+	/**
+	 * Turns a color that is in color representation back into
+	 * a css-usable rgb(r, g, b, a) string.
+	 * If an RGBColorRepresentation is passed, alpha is set to 100.
+	 * 
+	 * @param {RGBAColorRepresentation|RGBColorRepresentation} color - A color representation
+	 * 
+	 * @returns {string} - The color in rgb(r, g, b, a) format.
+	 */
+	export function toStringColor(color: RGBAColorRepresentation|RGBColorRepresentation): string {
 		return `rgba(${color.r}, ${color.g}, ${color.b}, ${
 			(() => {
 				if (typeof color.a === 'number') {

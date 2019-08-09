@@ -1,7 +1,7 @@
 /** 
  * Only the smallest amount of exports you need to 
  * build webcomponents with this library. Only
- * really needed if you don't use a treeshaker
+ * really needed if you don't use a tree-shaker
  **/
 
 export { config, ConfigurableWebComponent } from './lib/configurable.js';

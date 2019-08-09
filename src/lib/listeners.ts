@@ -29,6 +29,9 @@ function supportsPassive(): boolean {
 	return _supportsPassive;
 }
 
+/**
+ * Functions that are related to adding and removing listeners to elements
+ */
 export namespace Listeners {
 	type IDMap = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)>;
 	type IDMapArr = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)[]>;
@@ -225,7 +228,7 @@ export namespace Listeners {
 	 * 	listener that gets called when the event is fired
 	 * @param {boolean} [isNew] - A boolean that says whether
 	 * 	this element is new. If nothing is passed (or a non-boolean
-	 * 	type is passed), `isNewelement` is called
+	 * 	type is passed), `isNewElement` is called
 	 * @param {boolean | AddEventListenerOptions} [options] Optional
 	 * 	options that are passed to addEventListener
 	 * 

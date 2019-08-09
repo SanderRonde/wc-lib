@@ -1,5 +1,8 @@
 import { TemplateFn, CHANGE_TYPE, Renderer } from '../template-fn.js';
 
+/**
+ * Functions related to templates and manipulation of them
+ */
 export namespace Templates {
 	/**
 	 * Joins two templates' contents, running them all when the

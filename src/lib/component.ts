@@ -8,11 +8,18 @@ import { Listeners } from './listeners.js';
 import { WCLibError } from './shared.js';
 import { Props } from './props.js';
 
+/**
+ * Gets GA['selectors'] from the class generic type
+ */
 export type GetEls<GA extends {
 	selectors?: SelectorMap;
 }> = Required<GA>['selectors'] extends undefined ? 
 	{} : DefaultVal<Required<GA>['selectors'], SelectorMap>;
 
+/**
+ * The selector map type that is used to infer
+ * typed HTML and typed CSS
+ */
 export interface SelectorMap {
 	/**
 	 * All child elements of this component by ID
@@ -48,6 +55,9 @@ export interface SelectorMap {
 	ATTRIBUTES?: string;
 }
 
+/**
+ * An IDMap that is used as `component.$`
+ */
 export type IDMapFn<IDS extends SelectorMap> = {
 	/**
 	 * Query this component's root for given selector
@@ -116,6 +126,9 @@ class ComponentClass {
 	}
 }
 
+/**
+ * The parent/super type required by the `WebComponentMixin` mixin
+ */
 export type WebComponentSuper = Constructor<
 	HTMLElement &
 	Pick<WebComponentDefinerMixinInstance, '___definerClass'> &
@@ -127,7 +140,14 @@ export type WebComponentSuper = Constructor<
 		disconnectedCallback?(): void;
 	}>;
 
+/**
+ * An instance of the webcomponent mixin class
+ */
 export type WebComponentMixinInstance = InferInstance<WebComponentMixinClass>;
+
+/**
+ * The webcomponent mixin class
+ */
 export type WebComponentMixinClass = InferReturn<typeof WebComponentMixin>;
 
 /**
@@ -281,7 +301,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * 	listener that should be called when the event is fired. 
 		 * 	This listener is called with the name of the changed
 		 * 	property, the new value and the old value respectively
-		 * @param {boolean} [once] - Whther the listener should only
+		 * @param {boolean} [once] - Whether the listener should only
 		 * 	be called once
 		 */
 		public listenProp<P extends Props & { [key: string]: any; }>(
@@ -351,7 +371,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		 * @template R - The return type of the
 		 * 	event's listeners
 		 * 
-		 * @param {EV} event - The event's anme
+		 * @param {EV} event - The event's name
 		 * @param {E[EV]['args']} params - The parameters
 		 * 	passed to the listeners when they are
 		 * 	called
@@ -435,7 +455,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		}
 
 		/**
-		 * Gets the name of the curent theme
+		 * Gets the name of the current theme
 		 * 
 		 * @returns {string} The name of the current theme
 		 */

@@ -20,11 +20,21 @@ class CustomCSSClass {
 	}
 }
 
+/**
+ * An instance of the custom-css-manager's mixin's resulting class
+ */
 export type WebComponentCustomCSSManagerMixinInstance = InferInstance<WebComponentCustomCSSManagerMixinClass> & {
 	self: WebComponentCustomCSSManagerMixinClass;
 };
+
+/**
+ * The custom-css-manager's mixin's resulting class
+ */
 export type WebComponentCustomCSSManagerMixinClass = InferReturn<typeof WebComponentCustomCSSManagerMixin>;
 
+/**
+ * The type required as a parent/super by the custom-css-manager mixin
+ */
 export type WebComponentCustomCSSManagerMixinSuper = Constructor<
 	Pick<HTMLElement, 'setAttribute'|'hasAttribute'|'getAttribute'> &
 	Pick<WebComponentBaseMixinInstance, 'renderToDOM'> & 
@@ -34,6 +44,10 @@ export type WebComponentCustomCSSManagerMixinSuper = Constructor<
  * A mixin that, when applied, allows
  * for custom css to be passed to a component
  * after which it will be rendered
+ * 
+ * @template P
+ * 
+ * @param {P} superFn - The parent/super that this mixin extends
  */
 export const WebComponentCustomCSSManagerMixin = <P extends WebComponentCustomCSSManagerMixinSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponentCustomCSSManager, CustomCSSClass> = new WeakMap();

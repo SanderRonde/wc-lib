@@ -276,8 +276,19 @@ interface DefaultClass {
 	new(...args: any[]): {};
 }
 
+/**
+ * Turns a class instance into an object, removing
+ * the new() function in the process and preserving
+ * the static methods/props only
+ */
 export type ClassToObj<C> = Pick<C, keyof C>;
 
+/**
+ * Mixin function that can add a mixin to a class.
+ * Starts by calling the first arg with the base (HTMLElement)
+ * and then calls the next argument with the result of the previous
+ * argument
+ */
 export function mixin(): DefaultClass;
 export function mixin<M1, MM1>(mixin1: MixinFn<DefaultClass, M1, MM1>): M1 & {
 	new(...args: any[]): MM1;

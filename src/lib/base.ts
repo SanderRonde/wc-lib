@@ -16,6 +16,11 @@ interface CSSStyleSheet {
 	replaceSync(text: string): void;
 }
 
+/**
+ * A shadowroot with the `adoptedStyleSheets` property
+ * defined as it is undefined in the typescript definitions
+ * files as of version 3.5.1
+ */
 export interface ExtendedShadowRoot extends ShadowRoot {
 	adoptedStyleSheets: CSSStyleSheet[];
 }
@@ -249,11 +254,21 @@ class BaseClass {
 	public static __constructedCSSRendered: boolean = false;
 }
 
+/**
+ * An instance of the webcomponent base mixin
+ */
 export type WebComponentBaseMixinInstance = InferInstance<WebComponentBaseMixinClass> & {
 	self: WebComponentBaseMixinClass;
 };
+
+/**
+ * The webcomponent base mixin's class
+ */
 export type WebComponentBaseMixinClass = InferReturn<typeof WebComponentBaseMixin>;
 
+/**
+ * The parent (super) type required by the webcomponent base mixin
+ */
 export type WebComponentBaseMixinSuper = Constructor<
 		Pick<WebComponentDefinerMixinInstance, '___definerClass'> & HTMLElement
 	> & Pick<InferReturn<typeof WebComponentDefinerMixin>, 'define'|'is'>;
@@ -261,6 +276,10 @@ export type WebComponentBaseMixinSuper = Constructor<
 /**
  * A mixin that will add the ability to do
  * basic rendering of a component
+ * 
+ * @template P - The parent/super class
+ * 
+ * @param {P} superFn - The parent/super to extend
  */
 export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponentBase, BaseClass> = new WeakMap();

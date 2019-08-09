@@ -207,11 +207,21 @@ class HierarchyClass {
 	public globalPropsFns: GlobalPropsFunctions<any>|null = null;
 }
 
+/**
+ * An instance of the webcomponent hierarchy manager mixin's resulting class
+ */
 export type WebComponentHierarchyManagerMixinInstance = InferInstance<WebComponentHierarchyManagerMixinClass> & {
 	self: WebComponentHierarchyManagerMixinClass;
 };
+
+/**
+ * The webcomponent hierarchy manager mixin's resulting class
+ */
 export type WebComponentHierarchyManagerMixinClass = InferReturn<typeof WebComponentHierarchyManagerMixin>;
 
+/**
+ * The parent/super type required by the hierarchy manager mixin
+ */
 export type WebComponentHierarchyManagerMixinSuper = Constructor<
 	Pick<WebComponentListenableMixinInstance, 'listen'|'fire'> & HTMLElement & {
 		connectedCallback(): void;
@@ -224,6 +234,10 @@ export type WebComponentHierarchyManagerMixinSuper = Constructor<
  * finding out the parents and children of components
  * as well as finding out the root. It also adds
  * global properties support
+ * 
+ * @template P - The parent/super's type
+ * 
+ * @param {P} superFn - The parent/super
  */
 export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarchyManagerMixinSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponentHierarchyManager, HierarchyClass> = new WeakMap();

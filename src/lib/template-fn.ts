@@ -47,6 +47,12 @@ export type Templater<R> = {
 	(strings: TemplateStringsArray, ...values: any[]): R;
 };
 
+/**
+ * The type of a templater that handles both
+ * regular template literals and JSX elements.
+ * The template literals through calling it as a
+ * function and JSX elements through `templater.jsx(...)`
+ */
 export type JSXTemplater<R> = {
 	(strings: TemplateStringsArray, ...values: any[]): R;
 	jsx(tag: string|Constructor<any> & {
@@ -56,7 +62,11 @@ export type JSXTemplater<R> = {
 	}|null, ...children: (R|any)[]): R;
 };
 
-
+/**
+ * A result that should be returned by the template
+ * renderer. Should have some way to convert it to text
+ * which can be any of the below types.
+ */
 export type TemplateRenderResult = {
 	strings: string[]|TemplateStringsArray;
 	values: any[];
@@ -352,7 +362,7 @@ export class TemplateFn<C extends {} = WebComponent<any, any>, R extends Templat
 			}
 			if (this.changeOn & changeType ||
 				!templateMap.has(this)) {
-					//Change, rerender
+					//Change, re-render
 					const templateComponent = component as unknown as TemplateComponent;
 					const rendered = (this._template as TemplateRenderFunction<C, InferThemeVal<C>, R|TR>).call(
 						component, jsxAddedTemplate!, templateComponent.props, 

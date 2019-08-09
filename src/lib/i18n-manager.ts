@@ -142,17 +142,31 @@ class I18NClass<GA extends {
 	}
 }
 
+/**
+ * An instance of the webcomponent i18n manager mixin's resulting class
+ */
 export type WebComponentI18NManagerMixinInstance = InferInstance<WebComponentI18NManagerMixinClass> & {
 	self: WebComponentI18NManagerMixinClass;
 };
+
+/**
+ * The webcomponent i18n manager mixin's resulting class
+ */
 export type WebComponentI18NManagerMixinClass = InferReturn<typeof WebComponentI18NManagerMixin>;
 
+/**
+ * The parent/super type required by the i18n manager mixin
+ */
 export type WebComponentI18NManagerMixinSuper = Constructor<
 	Partial<Pick<WebComponentHierarchyManagerMixinInstance, 'globalProps'|'listenGP'>> & 
 	Pick<WebComponentBaseMixinInstance, 'renderToDOM'> & 
 	Partial<Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'>> & 
 	Partial<Pick<WebComponentThemeManagerMixinInstance, 'getThemeName'|'getTheme'|'setTheme'>>>;
 
+/**
+ * An interface implemented by the i18n manager. This is only used to fix some
+ * TS errors and should not really be used outside of that
+ */
 export interface WebComponentI18NManagerMixinLike {
 	getLang(): string;
 	setLang(lang: string): Promise<void>;
@@ -163,6 +177,10 @@ export interface WebComponentI18NManagerMixinLike {
 /**
  * A mixin that, when applied, adds i18n support in the
  * form of adding a `__` method
+ * 
+ * @template P - The parent/super's type
+ * 
+ * @param {P} superFn - The parent/super
  */
 export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMixinSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponentI18NManagerClass<any>, I18NClass> = new WeakMap();

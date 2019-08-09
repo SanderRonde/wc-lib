@@ -31,7 +31,6 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 			});
 			context('Basic Props Types', () => {
-				return;
 				context('General', () => {
 					context('Getting', () => {
 						it('can get a boolean value', () => {

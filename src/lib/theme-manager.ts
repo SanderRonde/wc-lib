@@ -1,5 +1,5 @@
+import { Constructor, InferInstance, InferReturn, DefaultValUnknown } from '../classes/types.js';
 import { GetEvents, WebComponentListenableMixinInstance, ListenerSet } from './listener.js';
-import { Constructor, InferInstance, InferReturn, DefaultVal } from '../classes/types.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { WebComponentBaseMixinInstance } from './base.js';
 import { EventListenerObj } from '../wclib.js';
@@ -312,7 +312,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
-		public setLang = <L extends string = DefaultVal<GA['langs'], string>>(lang: L): Promise<void> => {
+		public setLang = <L extends string = DefaultValUnknown<GA['langs'], string>>(lang: L): Promise<void> => {
 			// istanbul ignore next
 			if (!super.setLang) {
 				throw new Error('Not implemented');
@@ -324,13 +324,13 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		/**
 		 * Gets the currently active language
 		 */
-		public getLang = (): DefaultVal<GA['langs'], string>|string => {
+		public getLang = (): DefaultValUnknown<GA['langs'], string>|string => {
 			// istanbul ignore next
 			if (!super.getLang) {
 				throw new Error('Not implemented');
 			}
 			// istanbul ignore next
-			return super.getLang() as DefaultVal<GA['langs'], string>|string;
+			return super.getLang() as DefaultValUnknown<GA['langs'], string>|string;
 		}
 
 		/**
@@ -339,7 +339,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 
 		 * **Note:** Does not call the `options.returner` function before returning.
 		 * 
-		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {Extract<keyof GA['i18n'], string>} key - The key to search for in the messages file
 		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
 		 * 		that can be used as placeholders or something similar
 		 * 
@@ -366,7 +366,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * value that can display a placeholder or something of the sort
 		 * 
 		 * @template R - The return value of your returner function
-		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {Extract<keyof GA['i18n'], string>} key - The key to search for in the messages file
 		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
 		 * 		that can be used as placeholders or something similar
 		 * 

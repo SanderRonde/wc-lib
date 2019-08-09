@@ -1,4 +1,4 @@
-import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentThemeManagerMixinInstance } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentThemeManagerMixinInstance, DefaultValUnknown } from '../classes/types.js';
 import { GetEvents, ListenerSet, WebComponentListenableMixinInstance } from './listener.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { WebComponentBaseMixinInstance } from './base.js';
@@ -231,7 +231,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
-		public async setLang<L extends DefaultVal<GA['langs'], string>>(lang: L): Promise<void> {
+		public async setLang<L extends DefaultValUnknown<GA['langs'], string>>(lang: L): Promise<void> {
 			if (this.globalProps) {
 				this.globalProps<{
 					lang: string;
@@ -246,8 +246,8 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		/**
 		 * Gets the currently active language
 		 */
-		public getLang(): DefaultVal<GA['langs'], string>|string {
-			return I18NClass.lang! as DefaultVal<GA['langs'], string>|string;
+		public getLang(): DefaultValUnknown<GA['langs'], string>|string {
+			return I18NClass.lang! as DefaultValUnknown<GA['langs'], string>|string;
 		}
 		
 		/**
@@ -271,14 +271,14 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			/**
 			 * The default language to use. This is a simple string
 			 */
-			defaultLang: DefaultVal<GA['langs'], string>;
+			defaultLang: DefaultValUnknown<GA['langs'], string>;
 			/**
 			 * An optional override of the default `getMessage` function. This function
 			 * gets the message from the language file given the file, a key and some 
 			 * replacement values and returns a message string or a promise resolving to one. 
 			 * The default function returns `file[key]`
 			 */
-			getMessage?: (langFile: DefaultVal<GA['i18n'], any>, key: string, values: any[]) => string|Promise<string>;
+			getMessage?: (langFile: DefaultValUnknown<GA['i18n'], any>, key: string, values: any[]) => string|Promise<string>;
 			/**
 			 * A final step called before the `this.__` function returns. This is called with
 			 * a promise that resolves to a message as the first argument and a placeholder
@@ -304,7 +304,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * **Note:** Does not call the `options.returner` function before returning.
 		 * 
-		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {Extract<keyof GA['i18n'], string>} key - The key to search for in the messages file
 		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
 		 * 		that can be used as placeholders or something similar
 		 * 
@@ -326,7 +326,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * value that can display a placeholder or something of the sort
 		 * 
 		 * @template R - The return value of your returner function
-		 * @param {Extract<keyof DefaultVal<GA['i18n'], string>, string>} key - The key to search for in the messages file
+		 * @param {Extract<keyof GA['i18n'], string>} key - The key to search for in the messages file
 		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
 		 * 		that can be used as placeholders or something similar
 		 * 
@@ -451,7 +451,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @template R - The return type of the
 		 * 	event's listeners
 		 * 
-		 * @param {EV} event - The event's anme
+		 * @param {EV} event - The event's name
 		 * @param {E[EV]['args']} params - The parameters
 		 * 	passed to the listeners when they are
 		 * 	called
@@ -470,7 +470,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		}
 
 		/**
-		 * Gets the name of the curent theme
+		 * Gets the name of the current theme
 		 * 
 		 * @returns {string} The name of the current theme
 		 */

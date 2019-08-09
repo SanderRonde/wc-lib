@@ -33,18 +33,7 @@ export class ThemedComponent extends ConfigurableWebComponent<{
 			h2: HTMLHeadingElement;
 			button: HTMLButtonElement;
 		};
-		TOGGLES: {
-			TAGS: {
-				button: BUTTON_STATE;
-			};
-			IDS: {
-				light: BUTTON_STATE;
-				dark: BUTTON_STATE;
-			};
-			CLASSES: {
-				"theme-option": BUTTON_STATE;
-			}
-		}
+		TOGGLES: BUTTON_STATE;
 	}
 	themes: typeof theme;
 }> { 

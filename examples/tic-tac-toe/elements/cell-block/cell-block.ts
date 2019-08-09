@@ -28,11 +28,7 @@ export class CellBlock extends ConfigurableWebComponent<{
 		TAGS: {
 			div: HTMLDivElement;
 		};
-		TOGGLES: {
-			IDS: {
-				cell: CELL_CLASSES;
-			}
-		}
+		TOGGLES: CELL_CLASSES;
 	};
 	themes: typeof theme;
 }> {

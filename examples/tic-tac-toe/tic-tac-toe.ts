@@ -53,16 +53,7 @@ export class TicTacToe extends ConfigurableWebComponent<{
 			tr: HTMLTableRowElement;
 			td: HTMLTableCellElement;
 		};
-		TOGGLES: {
-			IDS: {
-				container: ACTIVITY_STATE;
-				"winner-banner": ACTIVITY_STATE;
-			};
-			CLASSES: {
-				language: ACTIVITY_STATE;
-				"theme-preview": ACTIVITY_STATE;
-			}
-		}
+		TOGGLES: ACTIVITY_STATE;
 	};
 	langs: typeof languages[Extract<keyof typeof languages, number>];
 	i18n: LangFile;

@@ -399,7 +399,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public setLang = <L extends string = DefaultValUnknown<GA['langs'], string>>(lang: L): Promise<void> => {
 			// istanbul ignore next
 			if (!super.setLang) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include I18N mixin');
 			}
 			return super.setLang(lang);
 		}
@@ -410,7 +410,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public getLang = (): DefaultValUnknown<GA['langs'], string>|string => {
 			// istanbul ignore next
 			if (!super.getLang) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include I18N mixin');
 			}
 			return super.getLang() as DefaultValUnknown<GA['langs'], string>|string;
 		}
@@ -430,7 +430,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public __prom = <I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string> => {
 			// istanbul ignore next
 			if (!super.__prom) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include I18N mixin');
 			}
 			return super.__prom(key, ...values);
 		}
@@ -456,7 +456,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public __ = <R, I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R => {
 			// istanbul ignore next
 			if (!super.__) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include I18N mixin');
 			}
 			return super.__(key, ...values);
 		}
@@ -469,7 +469,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public getThemeName = <N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> => {
 			// istanbul ignore next
 			if (!super.getThemeName) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include theming mixin');
 			}
 			return super.getThemeName();
 		}
@@ -484,7 +484,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public getTheme = <T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] => {
 			// istanbul ignore next
 			if (!super.getTheme) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include theming mixin');
 			}
 			return super.getTheme();
 		}
@@ -498,7 +498,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public setTheme = <N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) => {
 			// istanbul ignore next
 			if (!super.setTheme) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include theming mixin');
 			}
 			return super.setTheme(themeName);
 		}
@@ -517,7 +517,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 			element: HTMLElement): G => {
 				// istanbul ignore next
 				if (!super.registerChild) {
-					throw new Error('Not implemented');
+					throw new Error('Not implemented, please include hierarchy manager mixin');
 				}
 				// istanbul ignore next
 				return super.registerChild(element as any);
@@ -533,7 +533,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public globalProps = <G extends GA['globalProps'] = { [key: string]: any; }>(): GlobalPropsFunctions<DefaultVal<G, {[key: string]: any }>> => {
 			// istanbul ignore next
 			if (!super.globalProps) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include hierarchy manager mixin');
 			}
 			// istanbul ignore next
 			return super.globalProps();
@@ -549,7 +549,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public getRoot = <T extends GA['root'] = {}>(): T => {
 			// istanbul ignore next
 			if (!super.getRoot) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include hierarchy manager mixin');
 			}
 			// istanbul ignore next
 			return super.getRoot();
@@ -565,7 +565,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public getParent = <T extends GA['parent'] = {}>(): T|null => {
 			// istanbul ignore next
 			if (!super.getParent) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include hierarchy manager mixin');
 			}
 			// istanbul ignore next
 			return super.getParent();
@@ -591,7 +591,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 			once: boolean = false) => {
 				// istanbul ignore next
 				if (!super.listenGP) {
-					throw new Error('Not implemented');
+					throw new Error('Not implemented, please include hierarchy manager mixin');
 				}
 				// istanbul ignore next
 				return super.listenGP(event, listener, once);
@@ -612,7 +612,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 		public runGlobalFunction = <E extends {}, R = any>(fn: (element: E) => R): R[] => {
 			// istanbul ignore next
 			if (!super.runGlobalFunction) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include hierarchy manager mixin');
 			}
 			// istanbul ignore next
 			return super.runGlobalFunction(fn);

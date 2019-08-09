@@ -504,7 +504,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		public clearListener = <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
 			// istanbul ignore next
 			if (!super.clearListener) {
-				throw new Error('Not implemented');
+				throw new Error('Not implemented, please include listener mixin');
 			}
 			// istanbul ignore next
 			super.clearListener(event as any, listener);

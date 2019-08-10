@@ -129,10 +129,8 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @returns {string} The name of the current theme
 		 */
 		public getThemeName<N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> {
-			if (this.globalProps) {
-				return this.globalProps<{theme: string;}>().get('theme') as Extract<keyof N, string>;
-			}
-			return currentTheme || PrivateData.__defaultTheme;
+			return (this.globalProps && this.globalProps<{theme: string;}>().get('theme')) ||
+				currentTheme || PrivateData.__defaultTheme;
 		}
 
 		/**

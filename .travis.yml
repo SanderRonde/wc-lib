@@ -9,22 +9,16 @@ branches:
   - master
 stages:
 - test
-- name: deploy examples
-  if: branch = master
 
-jobs:
-  include:
-  - stage: test
-    install:
-    - yarn --ignore-engines
-    - npm install -g typescript
-    - npm install -g codecov
-    script:
-    - yarn $TEST
-    after_script:
-    - codecov -f coverage/lcov.info
-  - stage: deploy examples
-    script: yarn compile:examples
+install:
+- yarn --ignore-engines
+- npm install -g typescript
+- npm install -g codecov
+script:
+- yarn $TEST
+after_script:
+- codecov -f coverage/lcov.info
+- yarn compile:examples
 
 deploy:
   provider: pages

@@ -268,11 +268,9 @@ type InferThemeVal<C> = C extends {
 } ? T : void;
 
 function getTheme(component: TemplateComponent) {
-	try {
-		if ('getTheme' in component && component.getTheme) {
-			return component.getTheme();
-		}
-	} catch(e) { }
+	if ('getTheme' in component && component.getTheme) {
+		return component.getTheme();
+	}
 	return null;
 }
 

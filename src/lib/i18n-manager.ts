@@ -216,23 +216,19 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			super(...args);
 
 			const priv = i18nClass(this);
-			(() => {
-				if (this.listenGP) {
-					try {
-						this.listenGP<{
-							lang: string;
-						}, 'lang'>('globalPropChange', (prop, value) => {
-							if (prop === 'lang') {
-								priv.setLang(value!);
-							}
-						});
-						return;
-					} catch(e) { }
-				}
+			if (this.listenGP) {
+				this.listenGP<{
+					lang: string;
+				}, 'lang'>('globalPropChange', (prop, value) => {
+					if (prop === 'lang') {
+						priv.setLang(value!);
+					}
+				});
+			} else {
 				I18NClass.notifyOnLangChange((lang: string) => {
 					priv.setLang(lang);
 				});
-			})();
+			}
 			priv.setInitialLang();
 		}
 
@@ -242,19 +238,15 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
 		public async setLang<L extends DefaultValUnknown<GA['langs'], string>>(lang: L): Promise<void> {
-			try {
-				if (this.globalProps) {
-					this.globalProps<{
-						lang: string;
-					}>().set('lang', lang);
-					return;
-				}
-			} catch(e) {
-				
+			if (this.globalProps) {
+				this.globalProps<{
+					lang: string;
+				}>().set('lang', lang);
+			} else {
+				const priv = i18nClass(this);
+				await priv.setLang(lang);
+				await priv.notifyNewLang(lang);
 			}
-			const priv = i18nClass(this);
-			await priv.setLang(lang);
-			await priv.notifyNewLang(lang);
 		}
 
 		/**
@@ -427,13 +419,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	call this listener once (false by default)
 		 */
 		// istanbul ignore next
-		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
+		public listen = (super.listen ? <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
 			// istanbul ignore next
-			if (!super.listen) {
-				throw new Error('Not implemented, please include listener mixin');
-			}
-			super.listen(event as any, listener, once);
-		}
+			super.listen!(event as any, listener, once);
+		} : void 0)!;
 
 		/**
 		 * Clears all listeners on this component for
@@ -446,14 +435,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	specific listener to clear. If not passed, clears all
 		 * 	listeners for the event
 		 */
-		public clearListener = <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
+		public clearListener = (super.clearListener ? <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
 			// istanbul ignore next
-			if (!super.clearListener) {
-				throw new Error('Not implemented, please include listener mixin');
-			}
-			// istanbul ignore next
-			super.clearListener(event as any, listener);
-		}
+			super.clearListener!(event as any, listener);
+		} : void 0)!;
 
 		/**
 		 * Fires given event on this component
@@ -474,28 +459,20 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	return values of all triggered
 		 * 	listeners
 		 */
-		public fire = <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
+		public fire = (super.fire ? <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
 			// istanbul ignore next
-			if (!super.fire) {
-				throw new Error('Not implemented, please include listener mixin');
-			}
-			// istanbul ignore next
-			return super.fire(event as any, ...params);
-		}
+			return super.fire!(event as any, ...params);
+		} : void 0)!;
 
 		/**
 		 * Gets the name of the current theme
 		 * 
 		 * @returns {string} The name of the current theme
 		 */
-		public getThemeName = <N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> => {
+		public getThemeName = (super.getThemeName ? <N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> => {
 			// istanbul ignore next
-			if (!super.getThemeName) {
-				throw new Error('Not implemented, please include theming mixin');
-			}
-			// istanbul ignore next
-			return super.getThemeName();
-		}
+			return super.getThemeName!();
+		} : void 0)!;
 
 		/**
 		 * Gets the current theme's theme object
@@ -504,14 +481,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @returns {T[keyof T]} A theme instance type
 		 */
-		public getTheme = <T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] => {
+		public getTheme = (super.getTheme ? <T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] => {
 			// istanbul ignore next
-			if (!super.getTheme) {
-				throw new Error('Not implemented, please include theming mixin');
-			}
-			// istanbul ignore next
-			return super.getTheme();
-		}
+			return super.getTheme!();
+		} : void 0)!;
 
 		/**
 		 * Sets the theme of this component and any other
@@ -519,14 +492,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @template N - The theme name
 		 */
-		public setTheme = <N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) => {
+		public setTheme = (super.setTheme ? <N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) => {
 			// istanbul ignore next
-			if (!super.setTheme) {
-				throw new Error('Not implemented, please include theming mixin');
-			}
-			// istanbul ignore next
-			return super.setTheme(themeName);
-		}
+			return super.setTheme!(themeName);
+		} : void 0)!;
 
 		/**
 		 * Registers `element` as the child of this
@@ -538,15 +507,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @returns {G} The global properties
 		 */
-		public registerChild = <G extends GA['globalProps'] = { [key: string]: any; }>(
-			element: HTMLElement): G => {
-				// istanbul ignore next
-				if (!super.registerChild) {
-					throw new Error('Not implemented, please include hierarchy manager mixin');
-				}
-				// istanbul ignore next
-				return super.registerChild(element as any);
-			}
+		public registerChild = (super.registerChild ? <G extends GA['globalProps'] = { [key: string]: any; }>(element: HTMLElement): G => {
+			// istanbul ignore next
+			return super.registerChild!(element as any);
+		} : void 0)!;
 
 		/**
 		 * Gets the global properties functions
@@ -555,14 +519,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @returns {GlobalPropsFunctions<G>} Functions
 		 * 	that get and set global properties
 		 */
-		public globalProps = <G extends GA['globalProps'] = { [key: string]: any; }>(): GlobalPropsFunctions<DefaultVal<G, {[key: string]: any }>> => {
+		public globalProps = (super.globalProps ? <G extends GA['globalProps'] = { [key: string]: any; }>(): GlobalPropsFunctions<DefaultVal<G, {[key: string]: any }>> => {
 			// istanbul ignore next
-			if (!super.globalProps) {
-				throw new Error('Not implemented, please include hierarchy manager mixin');
-			}
-			// istanbul ignore next
-			return super.globalProps();
-		}
+			return super.globalProps!();
+		} : void 0)!;
 
 		/**
 		 * Gets the root node of the global hierarchy
@@ -571,14 +531,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @returns {T} The root
 		 */
-		public getRoot = <T extends GA['root'] = {}>(): T => {
+		public getRoot = (super.getRoot ? <T extends GA['root'] = {}>(): T => {
 			// istanbul ignore next
-			if (!super.getRoot) {
-				throw new Error('Not implemented, please include hierarchy manager mixin');
-			}
-			// istanbul ignore next
-			return super.getRoot();
-		}
+			return super.getRoot!();
+		} : void 0)!;
 
 		/**
 		 * Returns the parent of this component
@@ -587,14 +543,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @returns {T|null} - The component's parent or 
 		 * 	null if it has none
 		 */
-		public getParent = <T extends GA['parent'] = {}>(): T|null => {
+		public getParent = (super.getParent ? <T extends GA['parent'] = {}>(): T|null => {
 			// istanbul ignore next
-			if (!super.getParent) {
-				throw new Error('Not implemented, please include hierarchy manager mixin');
-			}
-			// istanbul ignore next
-			return super.getParent();
-		}
+			return super.getParent!();
+		} : void 0)!;
 
 		/**
 		 * Listeners for global property changes
@@ -609,18 +561,14 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @param {boolean} [once] - Whether to 
 		 * 	only fire this event once
 		 */
-		public listenGP = (<GP extends GA['globalProps'] = { [key: string]: any; }>(
+		public listenGP = (super.listenGP ? (<GP extends GA['globalProps'] = { [key: string]: any; }>(
 			event: 'globalPropChange', 
 			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
 			// istanbul ignore next
 			once: boolean = false) => {
 				// istanbul ignore next
-				if (!super.listenGP) {
-					throw new Error('Not implemented, please include hierarchy manager mixin');
-				}
-				// istanbul ignore next
-				return super.listenGP(event, listener, once);
-		}) as ListenGPType<GA>;
+				return super.listenGP!(event, listener, once);
+		}) as ListenGPType<GA> : void 0)!;
 
 		/**
 		 * Runs a function for every component in this
@@ -634,14 +582,10 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @returns {R[]} All return values in an array
 		 */
-		public runGlobalFunction = <E extends {}, R = any>(fn: (element: E) => R): R[] => {
+		public runGlobalFunction = (super.runGlobalFunction ? <E extends {}, R = any>(fn: (element: E) => R): R[] => {
 			// istanbul ignore next
-			if (!super.runGlobalFunction) {
-				throw new Error('Not implemented, please include hierarchy manager mixin');
-			}
-			// istanbul ignore next
-			return super.runGlobalFunction(fn);
-		}
+			return super.runGlobalFunction!(fn);
+		} : void 0)!;
 	}
 
 	return WebComponentI18NManagerClass;

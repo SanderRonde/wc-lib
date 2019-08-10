@@ -437,6 +437,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		public listenGP<GP extends GA['globalProps'] = { [key: string]: any; }>(
 			event: 'globalPropChange', 
 			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+			// istanbul ignore next
 			once: boolean = false) {
 				this.listen(event, listener, once);
 		}
@@ -464,6 +465,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * @param {boolean} [once] - Whether to only
 		 * 	call this listener once (false by default)
 		 */
+		// istanbul ignore next
 		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
 			// istanbul ignore next
 			super.listen(event as any, listener, once);
@@ -504,6 +506,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * 	specific listener to clear. If not passed, clears all
 		 * 	listeners for the event
 		 */
+		// istanbul ignore next
 		public clearListener = (super.clearListener ? <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
 			// istanbul ignore next
 			super.clearListener!(event as any, listener);

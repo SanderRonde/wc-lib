@@ -435,6 +435,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	specific listener to clear. If not passed, clears all
 		 * 	listeners for the event
 		 */
+		// istanbul ignore next
 		public clearListener = (super.clearListener ? <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
 			// istanbul ignore next
 			super.clearListener!(event as any, listener);
@@ -459,6 +460,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 	return values of all triggered
 		 * 	listeners
 		 */
+		// istanbul ignore next
 		public fire = (super.fire ? <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
 			// istanbul ignore next
 			return super.fire!(event as any, ...params);

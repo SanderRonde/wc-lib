@@ -272,6 +272,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 	specific listener to clear. If not passed, clears all
 		 * 	listeners for the event
 		 */
+		// istanbul ignore next
 		public clearListener = (super.clearListener ? <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
 			// istanbul ignore next
 			super.clearListener!(event as any, listener);
@@ -296,6 +297,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 	return values of all triggered
 		 * 	listeners
 		 */
+		// istanbul ignore next
 		public fire = (super.fire ? <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
 			// istanbul ignore next
 			return super.fire!(event as any, ...params);
@@ -306,6 +308,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
+		// istanbul ignore next
 		public setLang = (super.setLang ? <L extends string = DefaultValUnknown<GA['langs'], string>>(lang: L): Promise<void> => {
 			// istanbul ignore next
 			return super.setLang!(lang);
@@ -314,6 +317,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		/**
 		 * Gets the currently active language
 		 */
+		// istanbul ignore next
 		public getLang = (super.getLang ? (): DefaultValUnknown<GA['langs'], string>|string => {
 			// istanbul ignore next
 			return super.getLang!() as DefaultValUnknown<GA['langs'], string>|string;
@@ -331,6 +335,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 
 		 * @returns {Promise<string>} A promise that resolves to the found message
 		 */
+		// istanbul ignore next
 		public __prom = (super.__prom ? <I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string> => {
 			// istanbul ignore next
 			return super.__prom!(key, ...values);
@@ -354,6 +359,7 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * 
 		 * @returns {string|R} A promise that resolves to the found message
 		 */
+		// istanbul ignore next
 		public __ = (super.__ ? <R, I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R => {
 			// istanbul ignore next
 			return super.__!(key, ...values);

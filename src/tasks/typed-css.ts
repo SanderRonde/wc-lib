@@ -82,7 +82,6 @@ function evalExpr(expr: string) {
  * end when the file is served
  */
 export function inlineTypedCSS(text: string): string {
-	console.log(text);
 	const parts = findParts(text);
 	for (const part of parts) {		
 		// Slice the expression
@@ -92,9 +91,7 @@ export function inlineTypedCSS(text: string): string {
 		partExpr = partExpr.replace(/css\(.*?\)\./, 'css().');
 
 		text = text.replace(part, evalExpr(partExpr));
-		console.log(partExpr, evalExpr(partExpr), text);
 	}
-	console.log('');
 	return text;
 }
 

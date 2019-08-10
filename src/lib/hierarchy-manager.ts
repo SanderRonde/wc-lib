@@ -11,8 +11,8 @@ export interface ListenGPType<GA extends {
 	}
 }> {
 	<GP extends GA['globalProps'] = { [key: string]: any; }>(event: 'globalPropChange', 
-			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
-			once?: boolean): void;
+		listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+		once?: boolean): void;
 	<GP extends GA['globalProps'] = { [key: string]: any; }, K extends keyof GP = any>(event: 'globalPropChange', 
 		listener: (prop: K, newValue: GP[K], oldValue: GP[K]) => void,
 		once?: boolean): void;

@@ -216,19 +216,23 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			super(...args);
 
 			const priv = i18nClass(this);
-			if (this.listenGP) {
-				this.listenGP<{
-					lang: string;
-				}, 'lang'>('globalPropChange', (prop, value) => {
-					if (prop === 'lang') {
-						priv.setLang(value!);
-					}
-				});
-			} else {
+			(() => {
+				if (this.listenGP) {
+					try {
+						this.listenGP<{
+							lang: string;
+						}, 'lang'>('globalPropChange', (prop, value) => {
+							if (prop === 'lang') {
+								priv.setLang(value!);
+							}
+						});
+						return;
+					} catch(e) { }
+				}
 				I18NClass.notifyOnLangChange((lang: string) => {
 					priv.setLang(lang);
 				});
-			}
+			})();
 			priv.setInitialLang();
 		}
 

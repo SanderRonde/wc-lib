@@ -108,19 +108,23 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		constructor(...args: any[]) {
 			super(...args);
 
-			if (this.listenGP) {
-				this.listenGP<{
-					theme: string;
-				}, 'theme'>('globalPropChange', (prop) => {
-					if (prop === 'theme') {
-						getPrivate(this).__setTheme();
-					}
-				});
-			} else {
+			(() => {
+				if (this.listenGP) {
+					try {
+						this.listenGP<{
+							theme: string;
+						}, 'theme'>('globalPropChange', (prop) => {
+							if (prop === 'theme') {
+								getPrivate(this).__setTheme();
+							}
+						});
+						return;
+					} catch(e) { }
+				}
 				themeListeners.push(() => {
 					getPrivate(this).__setTheme();
 				});
-			}
+			})();
 		}
 
 		/**

@@ -78,6 +78,16 @@ context('Typed CSS Task', () => {
 			expect(inlineTypedCSS(str))
 				.to.be.equal(expected);
 		});
+		it('ignores complex expressions as keys', () => {
+			const str = `/* { \n { */${genStr('css().$[{}.x]')}`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal(str);
+		});
+		it('ignores complex expressions as arguments', () => {
+			const str = `/* { \n { */${genStr('css().$.a.attrFn({}.x)')}`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal(str);
+		});
 		it('replaces multiple different typed CSS strings', () => {
 			const str1 = `css().$.a`;
 			const str2 = `css().$.b`;
@@ -117,10 +127,10 @@ context('Typed CSS Task', () => {
 			expect(inlineTypedCSS(genStr(str)))
 				.to.be.equal(genExpected('#a.some-toggle'));
 		});
-		it('executes the entire block', () => {
+		it('replaces partial content of blocks', () => {
 			const str = `css().$.a`;
 			expect(inlineTypedCSS(genStr(`${str} + ' some-other-text'`)))
-				.to.be.equal(genExpected('#a' + ' some-other-text'));
+				.to.be.equal(genStr(`'#a' + ' some-other-text'`));
 		});
 		it('class value can be passed', () => {
 			const str = `css(SomeClassValue).$.a`;

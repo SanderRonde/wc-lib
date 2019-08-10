@@ -20,7 +20,9 @@
 		"buld/**"
 	],
 	"private": true,
-	"dependencies": {},
+	"dependencies": {
+		"typescript": "^3.5.3"
+	},
 	"devDependencies": {
 		"@types/fs-extra": "^7.0.0",
 		"@types/glob": "^7.1.1",
@@ -42,8 +44,7 @@
 		"lodash": "^4.17.13",
 		"nyc": "^14.1.1",
 		"remap-istanbul": "^0.13.0",
-		"ts-node": "^8.2.0",
-		"typescript": "^3.5.1"
+		"ts-node": "^8.2.0"
 	},
 	"peerDependencies": {
 		"lit-html": "^1.1.0"

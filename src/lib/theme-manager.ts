@@ -133,8 +133,12 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @returns {string} The name of the current theme
 		 */
 		public getThemeName<N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> {
-			return (this.globalProps && this.globalProps<{theme: string;}>().get('theme')) ||
-				currentTheme || PrivateData.__defaultTheme;
+			try {
+				if (this.globalProps) {
+					return this.globalProps<{theme: string;}>().get('theme') as Extract<keyof N, string>;
+				}
+			} catch(e) { }
+			return currentTheme || PrivateData.__defaultTheme;
 		}
 
 		/**
@@ -161,11 +165,11 @@ export const WebComponentThemeManagerMixin = <P extends WebComponentThemeManager
 		 * @template N - The theme name
 		 */
 		public setTheme<N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) {
-			if (this.globalProps) {
+			try {
 				this.globalProps<{theme: Extract<keyof N, string>;}>().set('theme', themeName);
-			} else {
-				changeTheme(themeName);
-			}
+				return;
+			} catch(e) { }
+			changeTheme(themeName);
 		}
 
 		/**

@@ -242,15 +242,19 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
 		public async setLang<L extends DefaultValUnknown<GA['langs'], string>>(lang: L): Promise<void> {
-			if (this.globalProps) {
-				this.globalProps<{
-					lang: string;
-				}>().set('lang', lang);
-			} else {
-				const priv = i18nClass(this);
-				await priv.setLang(lang);
-				await priv.notifyNewLang(lang);
+			try {
+				if (this.globalProps) {
+					this.globalProps<{
+						lang: string;
+					}>().set('lang', lang);
+					return;
+				}
+			} catch(e) {
+				
 			}
+			const priv = i18nClass(this);
+			await priv.setLang(lang);
+			await priv.notifyNewLang(lang);
 		}
 
 		/**

@@ -448,6 +448,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * @readonly
 		 */
 		get listenerMap(): ListenerSet<E> {
+			// istanbul ignore next
 			return super.listenerMap as ListenerSet<E>;
 		}
 
@@ -464,6 +465,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * 	call this listener once (false by default)
 		 */
 		public listen = <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
+			// istanbul ignore next
 			super.listen(event as any, listener, once);
 		}
 
@@ -487,6 +489,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * 	listeners
 		 */
 		public fire = <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
+			// istanbul ignore next
 			return super.fire(event as any, ...params);
 		}
 

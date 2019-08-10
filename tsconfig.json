@@ -2,7 +2,7 @@
     "compilerOptions": {
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
-        "module": "commonjs",
+        "module": "esnext",
         "moduleResolution": "node",
         "noImplicitAny": true,
         "noImplicitThis": true,
@@ -13,18 +13,17 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "target": "es6",
+        "jsx": "react",
+        "jsxFactory": "html.jsx",
         "noUnusedParameters": true,
         "experimentalDecorators": true,
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
-        "strictBindCallApply": true,
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true
+        "strictBindCallApply": true
 	},
     "compileOnSave": true,
     "allowJs": true,
     "include": [
-        "gulpfile.ts"
+        "./"
     ]
 }

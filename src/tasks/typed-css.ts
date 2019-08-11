@@ -83,6 +83,7 @@ class CSS {
 		const str = this._try(() => {
 			return this.instance.toString() as string;
 		});
+		// istanbul ignore next
 		if (this._lastError) {
 			return null;
 		}
@@ -103,18 +104,16 @@ function getCSSExpression(expr: ts.Expression): ts.CallExpression|null {
 }
 
 function getNodeComments(node: ts.Node) {
-	if (node.parent) {
-        const nodePos = node.pos;
-        const parentPos = node.parent.pos;
+	const nodePos = node.pos;
+	const parentPos = node.parent.pos;
 
-        if (node.parent.kind === ts.SyntaxKind.SourceFile || nodePos !== parentPos) {
-          	let comments = ts.getLeadingCommentRanges(
-				node.getSourceFile().getFullText(), nodePos);
+	if (node.parent.kind === ts.SyntaxKind.SourceFile || nodePos !== parentPos) {
+		let comments = ts.getLeadingCommentRanges(
+			node.getSourceFile().getFullText(), nodePos);
 
-			if (Array.isArray(comments)) {
-				return comments;
-			}
-        }
+		if (Array.isArray(comments)) {
+			return comments;
+		}
 	}
 	return undefined;
 }
@@ -136,6 +135,7 @@ function isIgnored(node: ts.Node) {
 		.filter((c, i, a) => a.indexOf(c) === i);
 
 	for (const comment of comments) {
+		// istanbul ignore next
 		if (usedComments.has(comment)) continue;
 
 		const { pos, end } = comment;
@@ -156,6 +156,7 @@ function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression
 function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression|ts.ElementAccessExpression): { str: string; lastNode: ts.Node }|null;
 function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression|ts.ElementAccessExpression,
 	noStr: boolean = false): { str: string; lastNode: ts.Node }|null|{toString(): any;} {
+		// istanbul ignore next
 		if (visited.has(node)) return null;
 		visited.add(node);
 		
@@ -197,9 +198,11 @@ function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression
 			try {
 				return css.toString();
 			} catch(e) {
+				// istanbul ignore next
 				return null;
 			}
 		})();
+		// istanbul ignore next
 		if (str === null) return null;
 
 		return {
@@ -224,6 +227,7 @@ function handleCSSExpression(node: ts.CallExpression, replacements: Replacement[
 
 function handleTaggedTemplate(node: ts.TaggedTemplateExpression, replacements: Replacement[]) {
 	// Iterate over all template spans and handle every part
+	// istanbul ignore next
 	if (!ts.isTemplateExpression(node.template)) return;
 	for (const span of node.template.templateSpans) {
 		// If the expression is just a css expression replace it entirely, if not
@@ -290,11 +294,17 @@ function applyReplacements(text: string, replacements: Replacement[]): string {
  * that have complex non-string and non-number parameters.
  * For example `css().id[import('x').y]` or `css().attrFn(obj.x}`
  * will not be replaced.
+ * 
+ * @param {string} text - The text in which to replace the calls
+ * 
+ * @returns {string} - The text with typed CSS inlined
  */
 export function inlineTypedCSS(text: string): string {
 	const ast = getAST(text);
 
+	// istanbul ignore next
 	if (!ast) {
+		// istanbul ignore next
 		throw new Error('Failed to create AST');
 	}
 

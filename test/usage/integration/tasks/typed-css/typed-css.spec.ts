@@ -137,5 +137,116 @@ context('Typed CSS Task', () => {
 			expect(inlineTypedCSS(genStr(str)))
 				.to.be.equal(genExpected('#a'));
 		});
+		it('handles string literals in arguments', () => {
+			const str = `css().$.a.attrFn('c', 'd')`;
+			expect(inlineTypedCSS(genStr(str)))
+				.to.be.equal(genExpected('#a[c="d"]'));
+		});
+		it('handles numeric literals in arguments', () => {
+			const str = `css().$.a.attrFn('c', 1)`;
+			expect(inlineTypedCSS(genStr(str)))
+				.to.be.equal(genExpected('#a[c="1"]'));
+		});
+		it('handles simple string addition in arguments', () => {
+			const str = `css().$.a.attrFn('c', 'd'+'e')`;
+			expect(inlineTypedCSS(genStr(str)))
+				.to.be.equal(genExpected('#a[c="de"]'));
+		});
+		it('handles simple number addition in arguments', () => {
+			const str = `css().$.a.attrFn('c', 1 + 2)`;
+			expect(inlineTypedCSS(genStr(str)))
+				.to.be.equal(genExpected('#a[c="3"]'));
+		});
+		it('handles string literals in element access', () => {
+			const str = `css().$['c']`;
+			expect(inlineTypedCSS(genStr(str)))
+				.to.be.equal(genExpected('#c'));
+		});
+		it('handles simple string addition in element access', () => {
+			const str = `css().$['a'+'b']`;
+			expect(inlineTypedCSS(genStr(str)))
+				.to.be.equal(genExpected('#ab'));
+		});
+		it('ignores binary expressions if one expression is not simple', () => {
+			{
+				const str = `css().$.a.attrFn('c', 'a' + {}.x)`;
+				const input = genStr(str);
+				expect(inlineTypedCSS(input))
+					.to.be.equal(input);
+			}
+			{
+				const str = `css().$.a.attrFn('c', {}.x + 'a')`;
+				const input = genStr(str);
+				expect(inlineTypedCSS(input))
+					.to.be.equal(input);
+			}
+		});
+		it('does not replace when property is not a function', () => {
+			const str = `css().$()`;
+			const input = genStr(str);
+			expect(inlineTypedCSS(input))
+				.to.be.equal(input);
+		});
+		it('does not replace when property does not exist', () => {
+			{
+				const str = `css().x.y`;
+				const input = genStr(str);
+				expect(inlineTypedCSS(input))
+					.to.be.equal(input);
+			}
+			{
+				const str = `css()['x']['y']`;
+				const input = genStr(str);
+				expect(inlineTypedCSS(input))
+					.to.be.equal(input);
+			}
+		});
+		it('can handle expressions as function arguments', () => {
+			const str = `css().$.a.orFn(css().$.b)`;
+			expect(inlineTypedCSS(genStr(str)))
+				.to.be.equal(genExpected('#a, #b'));
+		});
+		it('ignores lines with ignore-comment above them in function declaration', () => {
+			{
+				const str = `() => { \n// typed-css-ignore\nvar x = css().$.a\n }`;
+				expect(inlineTypedCSS(str))
+					.to.be.equal(str);
+			}
+			{
+				const str = `function y() { \n// typed-css-ignore\nvar x = css().$.a\n }`;
+				expect(inlineTypedCSS(str))
+					.to.be.equal(str);
+			}
+		});
+		it('ignores lines with ignore-comment above them in class declaration', () => {
+			const str = `class A { \n// typed-css-ignore\nx = css().$.a\n }`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal(str);
+		});
+		it('ignores lines with ignore-comment above them in root block', () => {
+			const str = `// typed-css-ignore\nvar x = css().$.a`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal(str);
+		});
+		it('ignores lines with ignore-comment above them in scope block', () => {
+			const str = `{ \n// typed-css-ignore\nvar x = css().$.a\n }`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal(str);
+		});
+		it('ignores lines with ignore-comment above them in loop', () => {
+			const str = `for (const a of b) { \n// typed-css-ignore\nvar x = css().$.a\n }`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal(str);
+		});
+		it('ignores lines with ignore-comment above them in if statement', () => {
+			const str = `if ('a' === 'b') { \n// typed-css-ignore\nvar x = css().$.a\n }`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal(str);
+		});
+		it('does not re-use comments', () => {
+			const str = `// typed-css-ignore\nvar x = css().$.a\nvar x = css().$.a`;
+			expect(inlineTypedCSS(str))
+				.to.be.equal('// typed-css-ignore\nvar x = css().$.a\nvar x =\'#a\'');
+		});
 	});
 });

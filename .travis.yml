@@ -16,9 +16,9 @@ install:
 - npm install -g codecov
 script:
 - yarn $TEST
+- yarn compile:examples
 after_script:
 - codecov -f coverage/lcov.info
-- yarn compile:examples
 
 deploy:
   provider: pages

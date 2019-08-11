@@ -25,4 +25,4 @@ export * from './lib/template-manager.js'
 export * from './lib/theme-manager.js'
 export * from './lib/util.js'
  
-export * from './tasks/typed-css.js';
+export * from './tasks/inline-typed-css.js';

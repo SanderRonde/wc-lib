@@ -1,34 +1,8 @@
-import { getAST } from "./get-ast";
+import { AST } from "./get-ast";
 import { css } from "../lib/css";
 import * as ts from 'typescript';
 
 const visited: WeakSet<ts.Node> = new WeakSet();
-
-interface Replacement {
-	start: number;
-	end: number;
-	str: string;
-	node: ts.Node;
-	inString: boolean;
-}
-
-function resolveStringLiteral(node: ts.Node): string|number|null {
-	if (ts.isStringLiteral(node)) {
-		return node.text;
-	} else if (ts.isNumericLiteral(node)) {
-		return ~~node.text;
-	} else if (ts.isBinaryExpression(node) && 
-		node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
-			const left = resolveStringLiteral(node.left);
-			if (left === null) return null;
-			const right = resolveStringLiteral(node.right);
-			if (right === null) return null;
-
-			return (left as any) + (right as any);
-		}
-	return null;
-}
-
 
 class CSS {
 	instance: any = css<any>();
@@ -47,7 +21,7 @@ class CSS {
 	callFn(args: ts.NodeArray<ts.Expression>) {
 		// No function to call
 		const basicArgs = args.map((arg) => {
-			let stringLiteral = resolveStringLiteral(arg);
+			let stringLiteral = AST.resolveStringLiteral(arg);
 			if (stringLiteral !== null) {
 				return stringLiteral;
 			} else {
@@ -103,52 +77,6 @@ function getCSSExpression(expr: ts.Expression): ts.CallExpression|null {
 	return getCSSExpression(expr.expression);
 }
 
-function getNodeComments(node: ts.Node) {
-	const nodePos = node.pos;
-	const parentPos = node.parent.pos;
-
-	if (node.parent.kind === ts.SyntaxKind.SourceFile || nodePos !== parentPos) {
-		let comments = ts.getLeadingCommentRanges(
-			node.getSourceFile().getFullText(), nodePos);
-
-		if (Array.isArray(comments)) {
-			return comments;
-		}
-	}
-	return undefined;
-}
-
-const usedComments: WeakSet<ts.CommentRange> = new WeakSet();
-function collectComments(node: ts.Node, comments: ts.CommentRange[]): ts.CommentRange[] {
-	if (ts.isFunctionLike(node)) return comments;
-	if (ts.isClassLike(node)) return comments;
-	if (ts.isSourceFile(node)) return comments;
-
-	comments.push(...getNodeComments(node) || []);
-
-	return collectComments(node.parent, comments);
-}
-
-function isIgnored(node: ts.Node) {
-	// Find the root block
-	const comments = collectComments(node, [])
-		.filter((c, i, a) => a.indexOf(c) === i);
-
-	for (const comment of comments) {
-		// istanbul ignore next
-		if (usedComments.has(comment)) continue;
-
-		const { pos, end } = comment;
-		const text = node.getSourceFile().text.substring(pos, end);
-		if (text.includes('typed-css-ignore')) {
-			usedComments.add(comment);
-			return true;
-		}
-	}
-
-	return false;
-}
-
 function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression|ts.ElementAccessExpression,
 	noStr: true): { toString(): any }|null;
 function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression|ts.ElementAccessExpression,
@@ -160,7 +88,7 @@ function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression
 		if (visited.has(node)) return null;
 		visited.add(node);
 		
-		if (isIgnored(node)) return null;
+		if (AST.isIgnored(node, 'typed-css-ignore')) return null;
 
 		let activeNode: ts.CallExpression|ts.PropertyAccessExpression|ts.ElementAccessExpression = node;
 
@@ -181,7 +109,7 @@ function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression
 					}
 				} else {
 					const stringLiteral = 
-						resolveStringLiteral(activeNode.argumentExpression);
+						AST.resolveStringLiteral(activeNode.argumentExpression);
 					if (stringLiteral === null || 
 						typeof stringLiteral === 'number') {
 							return null;
@@ -211,74 +139,6 @@ function decodeCSSExpression(node: ts.CallExpression|ts.PropertyAccessExpression
 		}
 	}
 
-function handleCSSExpression(node: ts.CallExpression, replacements: Replacement[]) {
-	const result = decodeCSSExpression(node);
-	if (result === null) return;
-
-	const { lastNode, str } = result;
-	replacements.push({
-		start: lastNode.pos,
-		end: lastNode.end,
-		node: lastNode,
-		str,
-		inString: false
-	});
-}
-
-function handleTaggedTemplate(node: ts.TaggedTemplateExpression, replacements: Replacement[]) {
-	// Iterate over all template spans and handle every part
-	// istanbul ignore next
-	if (!ts.isTemplateExpression(node.template)) return;
-	for (const span of node.template.templateSpans) {
-		// If the expression is just a css expression replace it entirely, if not
-		// just replace the text
-		const cssExpr = getCSSExpression(span.expression);
-
-		if (cssExpr) {
-			const result = decodeCSSExpression(cssExpr);
-			if (!result) continue;
-
-			const { lastNode, str } = result;
-			// Start it at 2 chars before the real start of this expression
-			// and end it at 1 after that to replace the template literal value
-			replacements.push({
-				start: lastNode.pos - 2,
-				end: lastNode.end + 1,
-				node: lastNode,
-				str,
-				inString: true
-			});
-		} else {
-			// If it's not just one expression, keep searching for
-			// css expression in its children
-			span.forEachChild(child => iterateChildren(child, replacements));
-		}
-	}
-}
-
-function iterateChildren(node: ts.Node, replacements: Replacement[]) {
-	if (ts.isCallExpression(node) && 
-		ts.isIdentifier(node.expression) && 
-		node.expression.escapedText === 'css') {
-			handleCSSExpression(node, replacements);
-			return;
-		}
-	
-	if (ts.isTaggedTemplateExpression(node)) {
-		handleTaggedTemplate(node, replacements);
-		return;
-	}
-
-	node.forEachChild(child => iterateChildren(child, replacements));
-}
-
-function applyReplacements(text: string, replacements: Replacement[]): string {
-	for (const { start, end, str, inString } of replacements.reverse()) {
-		text = `${text.slice(0, start)}${inString ? str : `'${str}'`}${text.slice(end)}`;
-	}
-	return text;
-}
-
 /**
  * Inlines typed CSS in passed string. Walks every
  * expression to change every instance of
@@ -300,7 +160,7 @@ function applyReplacements(text: string, replacements: Replacement[]): string {
  * @returns {string} - The text with typed CSS inlined
  */
 export function inlineTypedCSS(text: string): string {
-	const ast = getAST(text);
+	const ast = AST.getAST(text);
 
 	// istanbul ignore next
 	if (!ast) {
@@ -308,10 +168,24 @@ export function inlineTypedCSS(text: string): string {
 		throw new Error('Failed to create AST');
 	}
 
-	const replacements: Replacement[] = [];
-	ast.forEachChild(child => iterateChildren(child, replacements));
+	const replacements: AST.Replacement[] = [];
+	ast.forEachChild(child => AST.find({
+		node: child, 
+		replacements, 
+		isExpr(node) {
+			return ts.isCallExpression(node) &&
+				ts.isIdentifier(node.expression) &&
+				node.expression.escapedText === 'css';
+		},
+		decodeExpr(node) {
+			return decodeCSSExpression(node as any);
+		},
+		findExpr(node) {
+			return getCSSExpression(node);
+		}
+	}));
 
-	return applyReplacements(text, replacements);
+	return AST.applyReplacements(text, replacements);
 }
 
 /**

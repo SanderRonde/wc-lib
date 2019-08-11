@@ -475,6 +475,7 @@ namespace Watching {
 			deleteProperty(_obj, prop) {
 				if (Reflect.has(obj, prop)) {
 					const deleted = Reflect.deleteProperty(obj, prop);
+					// istanbul ignore next
 					if (deleted && ((typeof prop !== 'symbol' && (level.has(prop + '')) || level.has('*')))) {
 						onAccessed();
 					}

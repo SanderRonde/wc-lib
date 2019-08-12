@@ -18,7 +18,7 @@ script:
 - yarn "coverage:$TEST"
 - yarn compile:examples
 after_script:
-- codecov -f coverage/lcov.info -F $TEST
+- codecov -f coverage/lcov.info -F "$TEST"
 
 deploy:
   provider: pages

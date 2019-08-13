@@ -272,6 +272,7 @@ export const WebComponentDefinerMixin = (superFn) => {
          * 	not a dependency (which most definitions aren't)
          * 	True by default
          */
+        // istanbul ignore next
         static define(isDevelopment = false, isRoot = true) {
             if (isRoot && DefinerClass.finished) {
                 //Another root is being defined, clear last one

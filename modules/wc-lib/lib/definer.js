@@ -28,6 +28,10 @@ export class DefinerClass {
             connectedHooks: [],
             postRenderHooks: []
         };
+        /**
+         * Whether this component is in development mode
+         */
+        this.isDevelopment = false;
     }
     /**
      * Listen for the component's loading to be finished and sets
@@ -54,6 +58,13 @@ export class DefinerClass {
                 });
             }
         });
+    }
+    /**
+     * Sets development mode to true if it was set to true for this
+     * component's definition
+     */
+    setDevMode(component) {
+        this.isDevelopment = DefinerClass.devComponents.indexOf(component.tagName.toLowerCase()) > -1;
     }
     static __doSingleMount(component) {
         return new Promise((resolve) => {
@@ -161,6 +172,10 @@ export class DefinerClass {
  */
 DefinerClass.defined = [];
 /**
+ * All defined webcomponents
+ */
+DefinerClass.devComponents = [];
+/**
  * Whether defining has finished.
  * This is set to true when the first
  * call to .define() finishes so if
@@ -249,20 +264,26 @@ export const WebComponentDefinerMixin = (superFn) => {
          * Define this component and its dependencies as a webcomponent
          * so they can be used
          *
+         * @param {boolean} [isDevelopment] - Whether to enable
+         * 	development mode in which some additional checks
+         *  are performed at the cost of performance.
          * @param {boolean} [isRoot] - Set to true if this is
          * 	not a dependency (which most definitions aren't)
          * 	True by default
          */
-        static define(isRoot = true) {
+        static define(isDevelopment = false, isRoot = true) {
             if (isRoot && DefinerClass.finished) {
                 //Another root is being defined, clear last one
                 DefinerClass.finished = false;
                 DefinerClass.listeners = [];
             }
-            DefinerClass.checkProps(this);
+            if (isDevelopment) {
+                DefinerClass.devComponents.push(this.is);
+                DefinerClass.checkProps(this);
+            }
             if (this.dependencies && this.dependencies.length) {
                 for (const dependency of this.dependencies) {
-                    dependency && dependency.define(false);
+                    dependency && dependency.define(isDevelopment, false);
                 }
             }
             define(this.is, this);

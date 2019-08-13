@@ -738,7 +738,7 @@ export declare const WebComponentBaseMixin: <P extends WebComponentBaseMixinSupe
         focus(options?: FocusOptions | undefined): void;
         readonly style: CSSStyleDeclaration;
     }): boolean;
-    define: (isRoot?: boolean) => void;
+    define: (isDevelopment?: boolean, isRoot?: boolean) => void;
     is: string;
 } & P;
 export {};

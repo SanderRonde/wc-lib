@@ -939,10 +939,10 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
                         readonly style: CSSStyleDeclaration;
                     };
                     dependencies?: {
-                        define(isRoot?: boolean | undefined): void;
+                        define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
                     }[] | null | undefined;
                     is: string;
-                    define(isRoot?: boolean): void;
+                    define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
                 customCSS(): import("./template-fn.js").TemplateFnLike<CHANGE_TYPE> | import("./template-fn.js").TemplateFnLike<CHANGE_TYPE>[];
@@ -1478,10 +1478,10 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
                         readonly style: CSSStyleDeclaration;
                     };
                     dependencies?: {
-                        define(isRoot?: boolean | undefined): void;
+                        define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
                     }[] | null | undefined;
                     is: string;
-                    define(isRoot?: boolean): void;
+                    define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
                 customCSS(): import("./template-fn.js").TemplateFnLike<CHANGE_TYPE> | import("./template-fn.js").TemplateFnLike<CHANGE_TYPE>[];
@@ -1752,7 +1752,7 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
                 focus(options?: FocusOptions | undefined): void;
                 readonly style: CSSStyleDeclaration;
             }): boolean;
-            define: (isRoot?: boolean) => void;
+            define: (isDevelopment?: boolean, isRoot?: boolean) => void;
             is: string;
         } & Constructor<Pick<WebComponentDefinerMixinInstance, "___definerClass"> & HTMLElement> & Pick<{
             new (...args: any[]): {
@@ -2016,10 +2016,10 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
                 readonly style: CSSStyleDeclaration;
             };
             dependencies?: {
-                define(isRoot?: boolean | undefined): void;
+                define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
             }[] | null | undefined;
             is: string;
-            define(isRoot?: boolean): void;
+            define(isDevelopment?: boolean, isRoot?: boolean): void;
         } & Constructor<HTMLElement>, "define" | "is">;
     };
 } & P;

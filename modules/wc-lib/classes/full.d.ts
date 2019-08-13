@@ -596,10 +596,10 @@ export declare const FullWebComponent: {
                         readonly style: CSSStyleDeclaration;
                     };
                     dependencies?: {
-                        define(isRoot?: boolean | undefined): void;
+                        define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
                     }[] | null | undefined;
                     is: string;
-                    define(isRoot?: boolean): void;
+                    define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
                 customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
@@ -1135,10 +1135,10 @@ export declare const FullWebComponent: {
                         readonly style: CSSStyleDeclaration;
                     };
                     dependencies?: {
-                        define(isRoot?: boolean | undefined): void;
+                        define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
                     }[] | null | undefined;
                     is: string;
-                    define(isRoot?: boolean): void;
+                    define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
                 customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
@@ -1409,7 +1409,7 @@ export declare const FullWebComponent: {
                 focus(options?: FocusOptions | undefined): void;
                 readonly style: CSSStyleDeclaration;
             }): boolean;
-            define: (isRoot?: boolean) => void;
+            define: (isDevelopment?: boolean, isRoot?: boolean) => void;
             is: string;
         } & import("./types.js").Constructor<Pick<import("./types.js").WebComponentDefinerMixinInstance, "___definerClass"> & HTMLElement> & Pick<{
             new (...args: any[]): {
@@ -1673,10 +1673,10 @@ export declare const FullWebComponent: {
                 readonly style: CSSStyleDeclaration;
             };
             dependencies?: {
-                define(isRoot?: boolean | undefined): void;
+                define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
             }[] | null | undefined;
             is: string;
-            define(isRoot?: boolean): void;
+            define(isDevelopment?: boolean, isRoot?: boolean): void;
         } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
     };
 } & {
@@ -2648,10 +2648,10 @@ export declare const FullWebComponent: {
                 readonly style: CSSStyleDeclaration;
             };
             dependencies?: {
-                define(isRoot?: boolean | undefined): void;
+                define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
             }[] | null | undefined;
             is: string;
-            define(isRoot?: boolean): void;
+            define(isDevelopment?: boolean, isRoot?: boolean): void;
         } & {
             new (): HTMLElement;
             prototype: HTMLElement;
@@ -3190,10 +3190,10 @@ export declare const FullWebComponent: {
                 readonly style: CSSStyleDeclaration;
             };
             dependencies?: {
-                define(isRoot?: boolean | undefined): void;
+                define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
             }[] | null | undefined;
             is: string;
-            define(isRoot?: boolean): void;
+            define(isDevelopment?: boolean, isRoot?: boolean): void;
         } & {
             new (): HTMLElement;
             prototype: HTMLElement;
@@ -3467,7 +3467,7 @@ export declare const FullWebComponent: {
         focus(options?: FocusOptions | undefined): void;
         readonly style: CSSStyleDeclaration;
     }): boolean;
-    define: (isRoot?: boolean) => void;
+    define: (isDevelopment?: boolean, isRoot?: boolean) => void;
     is: string;
 } & {
     new (...args: any[]): {
@@ -3731,10 +3731,10 @@ export declare const FullWebComponent: {
         readonly style: CSSStyleDeclaration;
     };
     dependencies?: {
-        define(isRoot?: boolean | undefined): void;
+        define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
     }[] | null | undefined;
     is: string;
-    define(isRoot?: boolean): void;
+    define(isDevelopment?: boolean, isRoot?: boolean): void;
 } & {
     new (): HTMLElement;
     prototype: HTMLElement;

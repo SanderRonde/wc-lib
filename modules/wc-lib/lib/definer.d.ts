@@ -25,6 +25,10 @@ export declare class DefinerClass {
      */
     static defined: string[];
     /**
+     * All defined webcomponents
+     */
+    static devComponents: string[];
+    /**
      * Whether defining has finished.
      * This is set to true when the first
      * call to .define() finishes so if
@@ -40,6 +44,10 @@ export declare class DefinerClass {
         constructed: Promise<void>;
     }[];
     /**
+     * Whether this component is in development mode
+     */
+    isDevelopment: boolean;
+    /**
      * Listen for the component's loading to be finished and sets
      * isMounted and calls mounted. Should only be used by the library
      * itself
@@ -51,6 +59,11 @@ export declare class DefinerClass {
      * @returns {Promise<void>} A promise
      */
     static listenForFinished(component: WebComponentMixinInstance, isConstructed: Promise<void>): Promise<void>;
+    /**
+     * Sets development mode to true if it was set to true for this
+     * component's definition
+     */
+    setDevMode(component: HTMLElement): void;
     private static __doSingleMount;
     /**
      * Finish loading and call the listeners
@@ -395,7 +408,7 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
      * @readonly
      */
     dependencies?: {
-        define(isRoot?: boolean | undefined): void;
+        define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
     }[] | null | undefined;
     /**
      * The name of this component
@@ -407,10 +420,13 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
      * Define this component and its dependencies as a webcomponent
      * so they can be used
      *
+     * @param {boolean} [isDevelopment] - Whether to enable
+     * 	development mode in which some additional checks
+     *  are performed at the cost of performance.
      * @param {boolean} [isRoot] - Set to true if this is
      * 	not a dependency (which most definitions aren't)
      * 	True by default
      */
-    define(isRoot?: boolean): void;
+    define(isDevelopment?: boolean, isRoot?: boolean): void;
 } & P;
 //# sourceMappingURL=definer.d.ts.map

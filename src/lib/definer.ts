@@ -315,6 +315,7 @@ export const WebComponentDefinerMixin = <P extends WebComponentDefinerMixinSuper
 				});
 			});
 			DefinerClass.listenForFinished(this as any, isConnected);
+			this.___definerClass.setDevMode(this);
 		}
 
 		/**

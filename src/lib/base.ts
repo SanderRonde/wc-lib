@@ -198,16 +198,18 @@ class BaseClass {
 	private __sheetsMounted: boolean = false;
 	/* istanbul ignore next */
 	public renderConstructedCSS(change: CHANGE_TYPE) {
-		if (!this.__sheetsMounted) {
+		if (!this.__sheetsMounted && this.__cssArr!.length) {
 			this.__genConstructedCSS();
+			if (this.instance.__cssSheets!.length) {
 
-			// Mount them
-			this._self.root.adoptedStyleSheets = 
-				this.instance.__cssSheets!.map(s => s.sheet);
-			this.__sheetsMounted = true;
+				// Mount them
+				this._self.root.adoptedStyleSheets = 
+					this.instance.__cssSheets!.map(s => s.sheet);
+				this.__sheetsMounted = true;
 
-			// Force new render
-			change = CHANGE_TYPE.ALWAYS;
+				// Force new render
+				change = CHANGE_TYPE.ALWAYS;
+			}
 		}
 
 		if (!(change & CHANGE_TYPE.THEME)) {

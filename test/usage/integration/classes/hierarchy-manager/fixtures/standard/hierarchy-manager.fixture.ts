@@ -1,6 +1,6 @@
 import { RootElement } from "../../elements/root-element.js";
 
-RootElement.define();
+RootElement.define(true);
 
 export interface TestGlobalProperties {
 	a: string;

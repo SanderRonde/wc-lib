@@ -12,7 +12,7 @@ WebComponent.initTheme({
 	defaultTheme: 'nonexistent-theme'
 });
 
-TestElement.define();
-ThemedElementParent.define();
+TestElement.define(true);
+ThemedElementParent.define(true);
 
 window.noTheme = noTheme;

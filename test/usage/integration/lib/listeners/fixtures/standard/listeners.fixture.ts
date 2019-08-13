@@ -6,5 +6,5 @@ export interface ListenerWindow extends Window {
 }
 declare const window: ListenerWindow;
 
-TestElement.define();
+TestElement.define(true);
 window.Listeners = Listeners; 

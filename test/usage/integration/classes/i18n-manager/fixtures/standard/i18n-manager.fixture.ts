@@ -47,6 +47,6 @@ WebComponent.initI18N({
 });
 
 (window as any).WebComponent = WebComponent;
-TestElement.define();
-LangElement.define();
-RootElement.define();
+TestElement.define(true);
+LangElement.define(true);
+RootElement.define(true);

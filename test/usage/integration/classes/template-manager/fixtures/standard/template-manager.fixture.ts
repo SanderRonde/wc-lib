@@ -7,11 +7,11 @@ import { ComplexElement, WrongElementListen } from "../../elements/complex-eleme
 import { WebComponent } from "../../../../../../../build/es/wc-lib.js";
 import { TestElement } from "../../../elements/test-element.js";
 
-TestElement.define();
+TestElement.define(true);
 WebComponent.initComplexTemplateProvider({
 	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
 	AttributeCommitter, NodePart, isDirective, noChange
 });
 (window as any).ComplexElement = ComplexElement;
-ComplexElement.define();
-WrongElementListen.define();
+ComplexElement.define(true);
+WrongElementListen.define(true);

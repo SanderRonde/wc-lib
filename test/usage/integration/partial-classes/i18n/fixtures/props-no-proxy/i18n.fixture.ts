@@ -56,5 +56,5 @@ export class WatchedComponent extends I18NWebComponent {
 	})
 }
 
-ReflectProps.define();
-WatchedComponent.define();
+ReflectProps.define(true);
+WatchedComponent.define(true);

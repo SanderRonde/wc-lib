@@ -55,7 +55,7 @@ export interface TestWindow extends Window {
 }
 declare const window: TestWindow;
 window.TestElement = TestElement;
-TestElement.define();
+TestElement.define(true);
 
 export const usedThemes: {
 	[key: string]: TestTheme;
@@ -120,7 +120,7 @@ export class ThemedElement extends ThemingWebComponent<{
 export class ThemedElementParent extends ThemingWebComponent {
 
 }
-ThemedElementParent.define();
+ThemedElementParent.define(true);
 
 ThemingWebComponent.initTheme({
 	theme: usedThemes

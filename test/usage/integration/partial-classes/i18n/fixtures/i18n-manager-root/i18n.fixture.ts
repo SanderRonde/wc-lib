@@ -187,4 +187,4 @@ I18NWebComponent.initI18N({
 });
 
 (window as any).WebComponent = I18NWebComponent;
-RootElement.define();
+RootElement.define(true);

@@ -2,12 +2,12 @@ import { BasicMixin, SingleMixin, DoubleMixin, MultiMixin, SplitMixin, ManualMix
 import { ConfiguredElement } from "../../elements/configured-element.js";;
 import { ExtendedElement } from "../../elements/extended-element.js";
 
-ConfiguredElement.define();
-ExtendedElement.define();
+ConfiguredElement.define(true);
+ExtendedElement.define(true);
 
-BasicMixin.define();
-SingleMixin.define();
-DoubleMixin.define();
-MultiMixin.define();
-SplitMixin.define();
-ManualMixin.define();
+BasicMixin.define(true);
+SingleMixin.define(true);
+DoubleMixin.define(true);
+MultiMixin.define(true);
+SplitMixin.define(true);
+ManualMixin.define(true);

@@ -7,4 +7,4 @@ WebComponent.initI18N({
 });
 
 (window as any).WebComponent = WebComponent;
-LangElement.define();
+LangElement.define(true);

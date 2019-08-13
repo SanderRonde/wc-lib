@@ -306,21 +306,21 @@ const htmlElementTemplate = new TemplateFn<any>(() => {
 export class HTMLElementTemplate extends ComplexTemplatingWebComponent {
 }
 
-TestElement.define();
-ChangeNever.define();
-RenderTestElementNever.define();
-RenderTestElementProp.define();
-RenderTestElementTheme.define();
-RenderTestElementLang.define();
-RenderTestElementAlways.define();
-RenderTestElementPropTheme.define();
-RenderTestElementPropLang.define();
-RenderTestElementThemeLang.define();
-RenderTestElementAll.define();
-HTMLElementTemplate.define();
+TestElement.define(true);
+ChangeNever.define(true);
+RenderTestElementNever.define(true);
+RenderTestElementProp.define(true);
+RenderTestElementTheme.define(true);
+RenderTestElementLang.define(true);
+RenderTestElementAlways.define(true);
+RenderTestElementPropTheme.define(true);
+RenderTestElementPropLang.define(true);
+RenderTestElementThemeLang.define(true);
+RenderTestElementAll.define(true);
+HTMLElementTemplate.define(true);
 
-NoCSS.define();
-BindTest.define();
+NoCSS.define(true);
+BindTest.define(true);
 
 window.html = html;
 window.templates = {

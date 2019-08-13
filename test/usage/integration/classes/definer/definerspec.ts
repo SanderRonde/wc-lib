@@ -42,7 +42,7 @@ export function definerSpec(fixture: string) {
 				cy.window().then((window: TestParentWindow) => {
 					expect(window.customElements.get('parent-element'))
 						.to.be.undefined;
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(window.customElements.get('parent-element'))
 						.to.be.equal(window.ParentElement);
 				});
@@ -53,7 +53,7 @@ export function definerSpec(fixture: string) {
 						.to.be.undefined;
 					expect(window.customElements.get('test-element'))
 						.to.be.undefined;
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(window.customElements.get('parent-element'))
 						.to.be.equal(window.ParentElement);
 					expect(window.customElements.get('test-element'))
@@ -64,7 +64,7 @@ export function definerSpec(fixture: string) {
 				cy.window().then((window: TestParentWindow) => {
 					expect(window.customElements.get('parent-element'))
 						.to.be.undefined;
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(window.customElements.get('parent-element'))
 						.to.be.equal(window.ParentElement);
 					
@@ -87,7 +87,7 @@ export function definerSpec(fixture: string) {
 				cy.window().then((window: TestParentWindow) => {
 					expect(window.customElements.get('parent-element'))
 						.to.be.undefined;
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(window.customElements.get('parent-element'))
 						.to.be.equal(window.ParentElement);
 					
@@ -111,7 +111,7 @@ export function definerSpec(fixture: string) {
 				cy.window().then((window: TestParentWindow) => {
 					expect(window.customElements.get('parent-element'))
 						.to.be.undefined;
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(window.customElements.get('parent-element'))
 						.to.be.equal(window.ParentElement);
 					
@@ -140,7 +140,7 @@ export function definerSpec(fixture: string) {
 				cy.window().then((window: DefineMetaDataWindow & TestParentWindow) => {
 					expect(window.DefineMetadata).to.have.property('defined')
 						.to.be.equal(0, 'no elements are defined initially');
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(window.DefineMetadata).to.have.property('defined')
 						.to.be.equal(2, 'new elements were defined');
 				});
@@ -154,7 +154,7 @@ export function definerSpec(fixture: string) {
 					window.DefineMetadata.onDefine(listener);
 
 					expect(listener).to.not.be.called;
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(listener).to.be.calledTwice;
 				});
 			});
@@ -164,7 +164,7 @@ export function definerSpec(fixture: string) {
 					window.DefineMetadata.onReach(2, listener);
 
 					expect(listener).to.not.be.called;
-					window.ParentElement.define();
+					window.ParentElement.define(true);
 					expect(listener).to.be.calledOnce;
 				});
 			});

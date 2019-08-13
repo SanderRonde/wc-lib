@@ -11,6 +11,6 @@ WebComponent.initComplexTemplateProvider({
 	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
 	AttributeCommitter, NodePart, isDirective, noChange
 });
-TestElement.define();
-CustomCSSElement.define();
-WrongCustomCSSElement.define();
+TestElement.define(true);
+CustomCSSElement.define(true);
+WrongCustomCSSElement.define(true);

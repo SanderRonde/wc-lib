@@ -140,7 +140,7 @@ export class RootElement extends ComplexTemplatingWebComponent<{
 	});
 }
 
-RootElement.define();
+RootElement.define(true);
 
 export interface TestGlobalProperties {
 	a: string;

@@ -200,7 +200,7 @@ export class WrongElementListen extends ComplexTemplatingWebComponent {
 
 }
 
-TestElement.define();
+TestElement.define(true);
 (window as any).ComplexElement = ComplexElement;
-ComplexElement.define();
-WrongElementListen.define();
+ComplexElement.define(true);
+WrongElementListen.define(true);

@@ -78,7 +78,7 @@ export interface TestWindow extends Window {
 }
 declare const window: TestWindow;
 window.TestElement = TestElement;
-TestElement.define();
+TestElement.define(true);
 
 @config({
 	is: 'themed-element',
@@ -125,4 +125,4 @@ export class ThemedElement extends ThemingWebComponent<{
 export class ThemedElementParent extends ThemingWebComponent {
 
 }
-ThemedElementParent.define();
+ThemedElementParent.define(true);

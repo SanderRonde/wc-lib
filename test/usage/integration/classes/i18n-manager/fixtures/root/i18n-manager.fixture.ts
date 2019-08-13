@@ -45,4 +45,4 @@ WebComponent.initI18N({
 });
 
 (window as any).WebComponent = WebComponent;
-RootElement.define();
+RootElement.define(true);

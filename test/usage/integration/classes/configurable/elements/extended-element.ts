@@ -327,4 +327,4 @@ window.extended = {
 	}
 };
 
-MissingSelf.define();
+MissingSelf.define(true);

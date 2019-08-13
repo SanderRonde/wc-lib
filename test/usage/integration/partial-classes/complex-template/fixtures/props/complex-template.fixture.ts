@@ -693,12 +693,12 @@ export class NoReflectSelf extends ComplexTemplatingWebComponent {
 	});
 }
 
-PropsElement.define();
-EmptyProps.define();
-PrivProps.define();
-ReflectProps.define();
-MergedProps.define();
-UnmergedProps.define();
-InvalidDefineArg.define();
-OverriddenProp.define();
-NoReflectSelf.define();
+PropsElement.define(true);
+EmptyProps.define(true);
+PrivProps.define(true);
+ReflectProps.define(true);
+MergedProps.define(true);
+UnmergedProps.define(true);
+InvalidDefineArg.define(true);
+OverriddenProp.define(true);
+NoReflectSelf.define(true);

@@ -56,5 +56,5 @@ export class WatchedComponent extends ComplexTemplatingWebComponent {
 	})
 }
 
-ReflectProps.define();
-WatchedComponent.define();
+ReflectProps.define(true);
+WatchedComponent.define(true);

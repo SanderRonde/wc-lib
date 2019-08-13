@@ -10,4 +10,4 @@ WebComponent.initComplexTemplateProvider({
 	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
 	AttributeCommitter, NodePart, isDirective, noChange
 });
-TestElement.define();
+TestElement.define(true);

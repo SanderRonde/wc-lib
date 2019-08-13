@@ -7,5 +7,5 @@ WebComponent.initTheme({
 });
 WebComponent.setDefaultTheme(defaultTheme);
 
-TestElement.define();
-ThemedElementParent.define();
+TestElement.define(true);
+ThemedElementParent.define(true);

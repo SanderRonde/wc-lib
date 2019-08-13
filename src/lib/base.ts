@@ -103,13 +103,15 @@ class BaseClass {
 	}
 	
 	private get __cssArr(): TemplateFnLike<CHANGE_TYPE>[] {
-		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
-		return (this.instance.___cssArr = 
+		const instance = this.instance;
+		if (instance.___cssArr !== null) return instance.___cssArr;
+		return (instance.___cssArr = 
 			makeArray(this._self.self.css || []));
 	};
 	public get __privateCSS(): TemplateFnLike<CHANGE_TYPE>[] {
-		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;
-		return (this.instance.___privateCSS = 
+		const instance = this.instance;
+		if (instance.___privateCSS !== null) return instance.___privateCSS;
+		return (instance.___privateCSS = 
 			/* istanbul ignore next */
 			this.canUseConstructedCSS ? this.__cssArr.filter((template) => {
 				return !(template.changeOn === CHANGE_TYPE.THEME ||

@@ -329,6 +329,7 @@ export const WebComponentDefinerMixin = <P extends WebComponentDefinerMixinSuper
 		 * 	not a dependency (which most definitions aren't)
 		 * 	True by default
 		 */
+		// istanbul ignore next
 		static define(isDevelopment: boolean = false, isRoot: boolean = true) {
 			if (isRoot && DefinerClass.finished) {
 				//Another root is being defined, clear last one

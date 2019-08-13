@@ -83,16 +83,18 @@ class BaseClass {
         return classInstance;
     }
     get __cssArr() {
-        if (this.instance.___cssArr !== null)
-            return this.instance.___cssArr;
-        return (this.instance.___cssArr =
+        const instance = this.instance;
+        if (instance.___cssArr !== null)
+            return instance.___cssArr;
+        return (instance.___cssArr =
             makeArray(this._self.self.css || []));
     }
     ;
     get __privateCSS() {
-        if (this.instance.___privateCSS !== null)
-            return this.instance.___privateCSS;
-        return (this.instance.___privateCSS =
+        const instance = this.instance;
+        if (instance.___privateCSS !== null)
+            return instance.___privateCSS;
+        return (instance.___privateCSS =
             /* istanbul ignore next */
             this.canUseConstructedCSS ? this.__cssArr.filter((template) => {
                 return !(template.changeOn === 2 /* THEME */ ||
@@ -166,14 +168,18 @@ class BaseClass {
     }
     /* istanbul ignore next */
     renderConstructedCSS(change) {
+        if (!this.__cssArr.length)
+            return;
         if (!this.__sheetsMounted) {
             this.__genConstructedCSS();
-            // Mount them
-            this._self.root.adoptedStyleSheets =
-                this.instance.__cssSheets.map(s => s.sheet);
-            this.__sheetsMounted = true;
-            // Force new render
-            change = 11 /* ALWAYS */;
+            if (this.instance.__cssSheets.length) {
+                // Mount them
+                this._self.root.adoptedStyleSheets =
+                    this.instance.__cssSheets.map(s => s.sheet);
+                this.__sheetsMounted = true;
+                // Force new render
+                change = 11 /* ALWAYS */;
+            }
         }
         if (!(change & 2 /* THEME */)) {
             // Only render on theme or everything change

@@ -1,6 +1,6 @@
 import { expectPropertyExists, expectPrivatePropertyExists, expectMethodExists } from "../../../lib/assertions";
 import { TestElement, TestElementBase, RenderTestWindow, BindTest, ChangeNever } from "./elements/test-element";
-import { CHANGE_TYPE, TemplateFnLike } from "../../../../../build/es/wclib";
+import { CHANGE_TYPE, TemplateFnLike } from "../../../../../build/es/wc-lib";
 import { SLOW } from "../../../lib/timing.js";
 
 function assertTemplate(template: TemplateFnLike) {

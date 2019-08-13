@@ -3,7 +3,7 @@ import {
 	BooleanAttributePart, AttributeCommitter, 
 	NodePart, isDirective, noChange, directive, Part
 } from "../../node_modules/lit-html/lit-html.js";
-import { WebComponent } from "../../build/es/wclib.js";
+import { WebComponent } from "../../build/es/wc-lib.js";
 import { TicTacToe } from './tic-tac-toe.js';
 
 export const theme = {

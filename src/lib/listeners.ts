@@ -1,4 +1,4 @@
-import { EventListenerObj, SelectorMap } from "../wclib.js";
+import { EventListenerObj, SelectorMap } from "../wc-lib.js";
 import { WebComponent } from "../classes/full.js";
 
 let _supportsPassive: boolean | null = null;

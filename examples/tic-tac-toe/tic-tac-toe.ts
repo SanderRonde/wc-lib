@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, Props, config, ComplexType } from '../../build/es/wclib.js';
+import { ConfigurableWebComponent, Props, config, ComplexType } from '../../build/es/wc-lib.js';
 import { CellBlock } from './elements/cell-block/cell-block.js';
 import { TicTacToeHTML } from './tic-tac-toe.html.js';
 import { TicTacToeCSS } from './tic-tac-toe.css.js';

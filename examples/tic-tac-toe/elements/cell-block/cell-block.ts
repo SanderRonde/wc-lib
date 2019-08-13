@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, Props, config, PROP_TYPE } from '../../../../build/es/wclib.js';
+import { ConfigurableWebComponent, Props, config, PROP_TYPE } from '../../../../build/es/wc-lib.js';
 import { CellBlockHTML, CELL_CLASSES } from './cell-block.html.js';
 import { CellBlockCSS } from './cell-block.css.js';
 import { PLAYER } from '../../tic-tac-toe.js';

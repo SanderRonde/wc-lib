@@ -1,5 +1,5 @@
 {
-	"name": "wclib",
+	"name": "wc-lib",
 	"bin": {
 		"wclib": "./bin/bin.js",
 		"wc-lib": "./bin/bin.js"
@@ -10,9 +10,9 @@
 	},
 	"version": "1.0.0",
 	"description": "A webcomponent framework",
-	"main": "build/es/wclib.js",
-	"browser": "build/es/wclib.js",
-	"module": "build/cjs/wclib.js",
+	"main": "build/es/wc-lib.js",
+	"browser": "build/es/wc-lib.js",
+	"module": "build/cjs/wc-lib.js",
 	"author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
 	"license": "MIT",
 	"files": [

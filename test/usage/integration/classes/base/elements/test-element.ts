@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, WebComponent, bindToClass, Renderer } from '../../../../../../build/es/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, WebComponent, bindToClass, Renderer } from '../../../../../../build/es/wc-lib.js';
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
 
 export interface RenderTestWindow extends Window {

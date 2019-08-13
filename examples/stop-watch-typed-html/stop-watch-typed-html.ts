@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config, Listeners } from '../../build/es/wclib.js';
+import { ConfigurableWebComponent, config, Listeners } from '../../build/es/wc-lib.js';
 import { StopWatchTypedHTMLHTML } from './stop-watch-typed-html.html.js';
 import { StopWatchTypedHTMLCSS } from './stop-watch-typed-html.css.js';
 

@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent } from "../../../../../build/es/wclib";
+import { ConfigurableWebComponent } from "../../../../../build/es/wc-lib";
 import { expectMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "../elements/parent-element";
 import { TestElement } from "../elements/test-element";

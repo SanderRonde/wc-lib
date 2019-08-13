@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../build/es/wclib.js";
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../build/es/wc-lib.js";
 import { render } from "../../../../../../node_modules/lit-html/lit-html.js";
 
 export interface PropsElementWindow extends Window {

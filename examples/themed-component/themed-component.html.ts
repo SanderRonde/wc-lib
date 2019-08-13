@@ -1,5 +1,5 @@
 import { render, html } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../../build/es/wclib.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 import { ThemedComponent } from './themed-component.js';
 
 export const ThemedComponentHTML = new TemplateFn<ThemedComponent>(function () {

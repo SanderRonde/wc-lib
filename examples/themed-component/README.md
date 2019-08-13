@@ -16,7 +16,7 @@ Changing themes happens by calling `this.setTheme('themeName')` on the component
 
 ## Typed CSS
 
-**Note:** Use the typed CSS inliner in wclib/tasks/typed-css to inline typed CSS in your compiled code to prevent unneeded client-side work.
+**Note:** Use the typed CSS inliner in wc-lib/tasks/typed-css to inline typed CSS in your compiled code to prevent unneeded client-side work.
 
 This starts with defining all elements by their IDs, classes and tags. This can be done manually or by using the [html-typings](https://github.com/SanderRonde/html-typings) module. In this case toggles have also been defined. These are toggles that can be turned on or off. The `TOGGLES` key has 3 keys named "IDS", "TAGS" and "CLASSES". They basically mirror the regular selectors except they have a string as a value instead of an element. This string is the string that can be toggled on or off. You can also pass as const enum, which allows you to refer to that const enum when adding to or removing from the classlist. The `ATTRIBUTES` key is basically the same as the `TOGGLES` key except that it specifies possible attributes.
 

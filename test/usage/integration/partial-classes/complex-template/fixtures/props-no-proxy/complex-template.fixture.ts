@@ -1,5 +1,5 @@
 import { ComplexTemplatingWebComponent } from '../../../../../../../build/es/classes/partial.js';
-import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wclib.js';
+import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wc-lib.js';
 import { DeepObject } from '../../../../properties/props/elements/props-element.js';
 
 @config({

@@ -1,6 +1,6 @@
 import { directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
 import { RootElement } from '../../../hierarchy-manager/elements/root-element.js';
-import { WebComponent } from '../../../../../../../build/es/wclib.js';
+import { WebComponent } from '../../../../../../../build/es/wc-lib.js';
 
 interface LangFile {
 	test: {

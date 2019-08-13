@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, ComplexType, PROP_TYPE } from "../../../../../../build/es/wclib.js";
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, ComplexType, PROP_TYPE } from "../../../../../../build/es/wc-lib.js";
 import { render, html, directive, Part } from "../../../../../../node_modules/lit-html/lit-html.js";
 import { TestElement } from "../../elements/test-element.js";
 

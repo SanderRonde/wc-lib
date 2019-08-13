@@ -1,5 +1,5 @@
 import { ThemedElementParent, usedThemes, defaultTheme } from "../../elements/themed-element.js";
-import { WebComponent } from "../../../../../../../build/es/wclib.js";
+import { WebComponent } from "../../../../../../../build/es/wc-lib.js";
 import { TestElement } from "../../../elements/test-element.js";
 
 WebComponent.initTheme({

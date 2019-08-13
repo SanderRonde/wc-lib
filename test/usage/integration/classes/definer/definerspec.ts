@@ -2,7 +2,7 @@
 
 import { expectMethodExists, expectPropertyExists } from "../../../lib/assertions";
 import { TestParentWindow } from "../elements/parent-element";
-import { DefineMetadata } from "../../../../../build/es/wclib";
+import { DefineMetadata } from "../../../../../build/es/wc-lib";
 import { TestWindow } from "../elements/test-element";
 import { SLOW } from "../../../lib/timing.js";
 

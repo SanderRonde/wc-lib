@@ -1,6 +1,6 @@
 import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
 import { Constructor, InferInstance, InferReturn, JSXDefinition } from '../classes/types.js';
-import { TemplateFnLike, CHANGE_TYPE } from '../wclib.js';
+import { TemplateFnLike, CHANGE_TYPE } from '../wc-lib.js';
 
 /**
  * The property name for custom-css

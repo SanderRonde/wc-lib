@@ -1,5 +1,5 @@
 import { directive, Part, html, render } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE } from '../../../../../../../build/es/wclib.js';
+import { config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE } from '../../../../../../../build/es/wc-lib.js';
 import { I18NWebComponent } from '../../../../../../../build/es/classes/partial.js';
 
 interface LangFile {

@@ -1,5 +1,5 @@
 import { render } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../../build/es/wclib.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 import { JsxInput } from './jsx-input.js';
 import { JsxForm } from './jsx-form.js';
 

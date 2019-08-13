@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config } from '../../../../../../build/es/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config } from '../../../../../../build/es/wc-lib.js';
 import { render, html, directive, Part } from '../../../../../../node_modules/lit-html/lit-html.js';
 
 const awaitPromise = directive((key: string, value: Promise<any>|string) => (part: Part) => {

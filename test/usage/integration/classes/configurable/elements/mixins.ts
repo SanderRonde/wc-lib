@@ -1,4 +1,4 @@
-import { mixin, ConfigurableMixin, config, ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, ExtendableMixin } from "../../../../../../build/es/wclib.js";
+import { mixin, ConfigurableMixin, config, ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, ExtendableMixin } from "../../../../../../build/es/wc-lib.js";
 import { Constructor } from "../../../../../../build/es/classes/types.js";
 
 export interface TestMixinsWindow extends Window {

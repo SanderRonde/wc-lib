@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../build/es/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../build/es/wc-lib.js';
 import { TestGlobalProperties } from '../fixtures/standard/hierarchy-manager.fixture.js';
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
 import { ParentElement } from '../../elements/parent-element.js';

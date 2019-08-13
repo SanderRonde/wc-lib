@@ -1,5 +1,5 @@
 import { TestElement } from "../../../classes/elements/test-element";
-import { Mounting } from "../../../../../../build/es/wclib";
+import { Mounting } from "../../../../../../build/es/wc-lib";
 import { getFixture } from "../../../../lib/testing";
 import { SLOW } from "../../../../lib/timing";
 

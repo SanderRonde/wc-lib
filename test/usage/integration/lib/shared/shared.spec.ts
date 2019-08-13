@@ -1,4 +1,4 @@
-import { wait, classNames, WCLibError } from "../../../../../build/es/wclib";
+import { wait, classNames, WCLibError } from "../../../../../build/es/wc-lib";
 import { SLOW } from "../../../lib/timing";
 
 function genString() {
@@ -213,7 +213,7 @@ context('Shared', function() {
 					.filter(k => !!obj[k as keyof typeof obj]).join(' '));
 		});
 	});
-	context('WCLibError', () => {
+	context('wc-libError', () => {
 		it('can create an error', () => {
 			const component = {};
 			const msg = genString();

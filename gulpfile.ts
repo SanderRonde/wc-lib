@@ -173,14 +173,14 @@ gulp.task('prepareWebsite', gulp.parallel(function moveLitHTML() {
 				base: 'node_modules/lit-html/'
 			})
 			.pipe(gulp.dest('examples/modules/lit-html/'));
-	}, function moveWCLib() {
+	}, function movewclib() {
 		return gulp.src([
 				'**/*.*'
 			], {
 				cwd: 'build/es/',
 				base: 'build/es/'
 			})
-			.pipe(gulp.dest('examples/modules/wclib/'));
+			.pipe(gulp.dest('examples/modules/wc-lib/'));
 	}, function changeImports() {
 		return gulp.src([
 				'**/*.js',
@@ -192,6 +192,6 @@ gulp.task('prepareWebsite', gulp.parallel(function moveLitHTML() {
 			.pipe(replace(/\.\.\/\.\.\/node\_modules\/lit\-html/g, 
 				'../modules/lit-html'))
 			.pipe(replace(/\.\.\/\.\.\/build\/es/g, 
-				'../modules/wclib'))
+				'../modules/wc-lib'))
 			.pipe(gulp.dest('examples/'));
 	}));

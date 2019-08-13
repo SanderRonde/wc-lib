@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config } from '../../build/es/wclib.js';
+import { ConfigurableWebComponent, config } from '../../build/es/wc-lib.js';
 import { JsxFormHTML } from './jsx-form.html.js';
 import { JsxInput } from './jsx-input.js';
 

@@ -2,7 +2,7 @@ import { Constructor, InferInstance, InferReturn, DefaultValUnknown, DefaultVal 
 import { GetEvents, WebComponentListenableMixinInstance, ListenerSet } from './listener.js';
 import { WebComponentHierarchyManagerMixinInstance, GlobalPropsFunctions, ListenGPType } from './hierarchy-manager.js';
 import { WebComponentBaseMixinInstance } from './base.js';
-import { EventListenerObj } from '../wclib.js';
+import { EventListenerObj } from '../wc-lib.js';
 import { CHANGE_TYPE } from './template-fn.js';
 
 /**

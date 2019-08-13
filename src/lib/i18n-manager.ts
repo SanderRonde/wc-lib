@@ -2,7 +2,7 @@ import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentThemeM
 import { WebComponentHierarchyManagerMixinInstance, ListenGPType, GlobalPropsFunctions } from './hierarchy-manager.js';
 import { GetEvents, ListenerSet, WebComponentListenableMixinInstance } from './listener.js';
 import { WebComponentBaseMixinInstance } from './base.js';
-import { EventListenerObj } from '../wclib.js';
+import { EventListenerObj } from '../wc-lib.js';
 import { CHANGE_TYPE } from './template-fn.js';
 
 class I18NClass<GA extends {

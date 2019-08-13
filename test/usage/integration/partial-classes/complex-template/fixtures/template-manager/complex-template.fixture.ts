@@ -3,7 +3,7 @@ import {
 	BooleanAttributePart, AttributeCommitter, 
 	NodePart, isDirective, noChange 
 } from "../../../../../../../node_modules/lit-html/lit-html.js";
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wc-lib.js';
 import { render, html, directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
 import { ComplexTemplatingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 

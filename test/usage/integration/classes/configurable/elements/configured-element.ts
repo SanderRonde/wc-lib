@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, MixinFn, TemplateFnLike } from '../../../../../../build/es/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, MixinFn, TemplateFnLike } from '../../../../../../build/es/wc-lib.js';
 import { WebComponentDefinerMixinClass } from '../../../../../../build/es/classes/types.js';
 
 export interface TestConfiguredWindow extends Window {

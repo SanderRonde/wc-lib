@@ -200,7 +200,8 @@ class BaseClass {
 	private __sheetsMounted: boolean = false;
 	/* istanbul ignore next */
 	public renderConstructedCSS(change: CHANGE_TYPE) {
-		if (!this.__sheetsMounted && this.__cssArr!.length) {
+		if (!this.__cssArr!.length) return;
+		if (!this.__sheetsMounted) {
 			this.__genConstructedCSS();
 			if (this.instance.__cssSheets!.length) {
 

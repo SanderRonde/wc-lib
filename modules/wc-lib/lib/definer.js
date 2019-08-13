@@ -259,6 +259,7 @@ export const WebComponentDefinerMixin = (superFn) => {
                 });
             });
             DefinerClass.listenForFinished(this, isConnected);
+            this.___definerClass.setDevMode(this);
         }
         /**
          * Define this component and its dependencies as a webcomponent

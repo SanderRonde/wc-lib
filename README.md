@@ -13,7 +13,7 @@ The easiest way to get started is to use the command-line tool to generate a com
 
 ## Examples
 
-Check out the `/examples` directory for any example code.
+Check out the `/examples` directory for any example code or check them out [online](https://sanderronde.github.io/wclib/).
 
 ## Features
 

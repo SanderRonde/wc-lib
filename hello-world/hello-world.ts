@@ -1,5 +1,5 @@
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from '../../src/wclib.js';
-import { render, html } from '../../node_modules/lit-html/lit-html.js';
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from '../modules/wc-lib/wc-lib.js';
+import { render, html } from '../modules/lit-html/lit-html.js';
 
 @config({
 	is: 'hello-world',

@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '../../src/wclib.js';
+import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '../modules/wc-lib/wc-lib.js';
 import { StopWatchHTML } from './stop-watch.html.js';
 import { StopWatchCSS } from './stop-watch.css.js';
 

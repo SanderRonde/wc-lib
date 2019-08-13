@@ -1,11 +1,11 @@
 import { I18nComponent } from "./i18n-component.js";
-import { WebComponent } from "../../src/wclib.js";
+import { WebComponent } from "../modules/wc-lib/wc-lib.js";
 import { 
 	directive, Part, 
 	TemplateResult, PropertyCommitter, EventPart, 
 	BooleanAttributePart, AttributeCommitter, 
 	NodePart, isDirective, noChange  
-} from "../../node_modules/lit-html/lit-html.js";
+} from "../modules/lit-html/lit-html.js";
 
 // This format is completely up to you as it uses your
 // getMessage function to return a value. Common

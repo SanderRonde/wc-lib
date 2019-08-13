@@ -1,5 +1,5 @@
-import { TemplateFn, css } from '../../src/wclib.js';
-import { render } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, css } from '../modules/wc-lib/wc-lib.js';
+import { render } from '../modules/lit-html/lit-html.js';
 export const TicTacToeCSS = new TemplateFn(function (html, _, theme) {
     return html `<style>
 		${css(this).class["vertical-centerer"].or.class["horizontal-centerer"]} {

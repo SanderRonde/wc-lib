@@ -2,8 +2,8 @@ import {
 	TemplateResult, PropertyCommitter, EventPart, 
 	BooleanAttributePart, AttributeCommitter, 
 	NodePart, isDirective, noChange, directive, Part
-} from "../../node_modules/lit-html/lit-html.js";
-import { WebComponent } from "../../src/wclib.js";
+} from "../modules/lit-html/lit-html.js";
+import { WebComponent } from "../modules/wc-lib/wc-lib.js";
 import { TicTacToe } from './tic-tac-toe.js';
 
 export const theme = {

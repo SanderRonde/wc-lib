@@ -1,5 +1,5 @@
-import { render } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn } from '../../src/wclib.js';
+import { render } from '../modules/lit-html/lit-html.js';
+import { TemplateFn } from '../modules/wc-lib/wc-lib.js';
 import { JsxInput } from './jsx-input.js';
 export const JsxFormHTML = new TemplateFn(function (html) {
     return (html.jsx("div", { id: "form" },

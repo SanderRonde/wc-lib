@@ -1,5 +1,5 @@
-import { render, html } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../../src/wclib.js';
+import { render, html } from '../modules/lit-html/lit-html.js';
+import { TemplateFn, CHANGE_TYPE } from '../modules/wc-lib/wc-lib.js';
 import { I18nComponent } from './i18n-component.js';
 
 export const I18nComponentHTML = new TemplateFn<I18nComponent>(function () {

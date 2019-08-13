@@ -1,5 +1,5 @@
-import { render } from '../../../../node_modules/lit-html/lit-html.js';
-import { TemplateFn } from '../../../../src/wclib.js';
+import { render } from '../../../modules/lit-html/lit-html.js';
+import { TemplateFn } from '../../../modules/wc-lib/wc-lib.js';
 export const CellBlockHTML = new TemplateFn(function (html, props) {
     return html `
 		<div id="cell" class="${{

@@ -2,9 +2,9 @@ import {
 	TemplateResult, PropertyCommitter, EventPart, 
 	BooleanAttributePart, AttributeCommitter, 
 	NodePart, isDirective, noChange 
-} from "../../node_modules/lit-html/lit-html.js";
+} from "../modules/lit-html/lit-html.js";
 import { ThemedComponent } from "./themed-component.js";
-import { WebComponent } from "../../src/wclib.js";
+import { WebComponent } from "../modules/wc-lib/wc-lib.js";
 
 export const theme = {
 	// Theme can contain any values that are valid in CSS

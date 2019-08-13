@@ -182,7 +182,6 @@ class HierarchyClass {
 	}
 
 	public clearNonExistentChildren() {
-		this.__assertInitialized();
 		const nodeChildren = Array.prototype.slice.apply(this._self.children) as HTMLElement[];
 		for (const child of this.children.values()) {
 			/* istanbul ignore next */
@@ -222,23 +221,6 @@ class HierarchyClass {
 
 		for (const child of this.children) {
 			this._getGetPrivate()(child).__propagateDown(fn, results);
-		}
-	}
-
-	private _initialized: boolean = false;
-	private _initialize() {
-		this.registerToParent();
-		if (this.isRoot) {
-			this.globalProperties = {
-				...this.getGlobalProperties()
-			}
-		}
-		this._initialized = true;
-	}
-
-	public __assertInitialized() {
-		if (!this._initialized) {
-			this._initialize();
 		}
 	}
 
@@ -318,6 +300,22 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		}
 
 		/**
+		 * Called when the component is mounted to the dom
+		 */
+		connectedCallback() {
+			super.connectedCallback();
+			const priv = hierarchyClass(this);
+			priv.isRoot = this.hasAttribute('_root');
+			priv.globalProperties = {};
+			priv.registerToParent();
+			if (priv.isRoot) {
+				priv.globalProperties = {
+					...priv.getGlobalProperties()
+				};	
+			}
+		}
+
+		/**
 		 * Registers `element` as the child of this
 		 * component
 		 * 
@@ -344,7 +342,6 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 */
 		public globalProps<G extends GA['globalProps'] = { [key: string]: any; }>(): GlobalPropsFunctions<DefaultVal<G, {[key: string]: any }>> {
 			const priv = hierarchyClass(this);
-			priv.__assertInitialized();
 			if (priv.globalPropsFns) {
 				return priv.globalPropsFns!;
 			}
@@ -385,7 +382,6 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 */
 		public getRoot<T extends GA['root'] = {}>(): T {
 			const priv = hierarchyClass(this);
-			priv.__assertInitialized();
 			if (priv.isRoot) {
 				return <T><any>this;
 			}
@@ -405,7 +401,6 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * @returns {R[]} All return values in an array
 		 */
 		public runGlobalFunction<E extends {}, R = any>(fn: (element: E) => R): R[] {
-			hierarchyClass(this).__assertInitialized();
 			return hierarchyClass(this).propagateThroughTree(fn as any);
 		}
 
@@ -417,7 +412,6 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 		 * 	null if it has none
 		 */
 		public getParent<T extends GA['parent'] = {}>(): T|null {
-			hierarchyClass(this).__assertInitialized();
 			return hierarchyClass(this).__getParent() as T;
 		}
 
@@ -446,7 +440,7 @@ export const WebComponentHierarchyManagerMixin = <P extends WebComponentHierarch
 			// istanbul ignore next
 			once: boolean = false) {
 				this.listen(event, listener, once);
-			}
+		}
 
 		/**
 		 * A map that maps every event name to

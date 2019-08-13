@@ -163,3 +163,35 @@ gulp.task('removeIstanbulIgnoresSource', () => {
 		.pipe(replace(/(\n\s+)?\/\*(\s*)istanbul(.*?)\*\//g, ''))
 		.pipe(gulp.dest('src/'));
 });
+
+// Prepares the examples for hosting on gh-pages
+gulp.task('prepareWebsite', gulp.parallel(function moveLitHTML() {
+		return gulp.src([
+				'**/*.*'
+			], {
+				cwd: 'node_modules/lit-html/',
+				base: 'node_modules/lit-html/'
+			})
+			.pipe(gulp.dest('examples/modules/lit-html/'));
+	}, function moveWCLib() {
+		return gulp.src([
+				'**/*.*'
+			], {
+				cwd: 'build/es/',
+				base: 'build/es/'
+			})
+			.pipe(gulp.dest('examples/modules/wclib/'));
+	}, function changeImports() {
+		return gulp.src([
+				'**/*.js',
+				'**/*.ts'
+			], {
+				cwd: 'examples',
+				base: 'examples'
+			})
+			.pipe(replace(/\.\.\/\.\.\/node\_modules\/lit\-html/g, 
+				'../modules/lit-html'))
+			.pipe(replace(/\.\.\/\.\.\/build\/es/g, 
+				'../modules/wclib'))
+			.pipe(gulp.dest('examples/'));
+	}));

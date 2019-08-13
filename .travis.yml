@@ -17,6 +17,7 @@ install:
 script:
 - yarn "coverage:$TEST"
 - yarn compile:examples
+- gulp prepareWebsite
 after_script:
 - codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')
 

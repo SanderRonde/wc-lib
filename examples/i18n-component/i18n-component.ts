@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from '../../src/wclib.js';
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from '../../build/es/wclib.js';
 import { render } from '../../node_modules/lit-html/lit-html.js';
 import { I18nComponentHTML } from './i18n-component.html.js';
 import { LangFile } from './index.js';

@@ -1,5 +1,5 @@
 import { I18nComponent } from "./i18n-component.js";
-import { WebComponent } from "../../src/wclib.js";
+import { WebComponent } from "../../build/es/wclib.js";
 import { 
 	directive, Part, 
 	TemplateResult, PropertyCommitter, EventPart, 

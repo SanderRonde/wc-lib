@@ -1,4 +1,4 @@
-import { TemplateFn, CHANGE_TYPE, css } from '../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, css } from '../../build/es/wclib.js';
 import { render } from '../../node_modules/lit-html/lit-html.js';
 import { TicTacToe } from './tic-tac-toe.js';
 

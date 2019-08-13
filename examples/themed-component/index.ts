@@ -4,7 +4,7 @@ import {
 	NodePart, isDirective, noChange 
 } from "../../node_modules/lit-html/lit-html.js";
 import { ThemedComponent } from "./themed-component.js";
-import { WebComponent } from "../../src/wclib.js";
+import { WebComponent } from "../../build/es/wclib.js";
 
 export const theme = {
 	// Theme can contain any values that are valid in CSS

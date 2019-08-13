@@ -1,6 +1,6 @@
 import { render } from '../../node_modules/lit-html/lit-html.js';
 import { StopWatchTypedHTML } from './stop-watch-typed-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wclib.js';
 
 export const StopWatchTypedHTMLHTML = new TemplateFn<StopWatchTypedHTML>(function (html, props) {
 	return html`

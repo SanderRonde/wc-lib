@@ -4,6 +4,12 @@ import * as glob from 'glob';
 import * as gulp from 'gulp';
 import * as path from 'path';
 
+declare class Promise<T> {
+	constructor(handlers: (resolve: (value: T) => any, reject: (err: any) => any) => any);
+	then(callback: (value: T) => any): this;
+	static all<T>(promises: T[]): Promise<T[]>;
+}
+
 const ISTANBUL_IGNORE_NEXT = '/* istanbul ignore next */';
 const typescriptInsertedData = [[
 	'var __decorate = (this && this.__decorate)',
@@ -84,7 +90,7 @@ function istanbulIgnoreTypescript(file: string) {
 	const newLines = [...lines];
 	for (let i = blocks.length - 1; i >= 0; i--) {
 		const { start } = blocks[i];
-		if (!newLines[Math.max(start - 1, 0)].includes(ISTANBUL_IGNORE_NEXT)) {
+		if (newLines[Math.max(start - 1, 0)].indexOf(ISTANBUL_IGNORE_NEXT) === -1) {
 			newLines.splice(start, 0, ISTANBUL_IGNORE_NEXT);
 		}
 	}

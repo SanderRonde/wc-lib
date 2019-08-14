@@ -121,28 +121,34 @@ function globProm(pattern: string, options?: any): Promise<string[]> {
 	]);
 }
 
-gulp.task('istanbulIgnoreTypescript', async () => {
-	return Promise.all((await globProm('src/**/*.js')).map(async (filePath) => {
-		const content = await fs.readFile(filePath, {
-			encoding: 'utf8'
+gulp.task('istanbulIgnoreTypescript', () => {
+	return new Promise((resolve) => {
+		globProm('src/**/*.js').then((filePaths) => {
+			Promise.all(filePaths.map((filePath) => {
+				return fs.readFile(filePath, {
+					encoding: 'utf8'
+				}).then((content) => {
+					return fs.writeFile(filePath, istanbulIgnoreTypescript(content), {
+						encoding: 'utf8'
+					})
+				});
+			})).then(resolve);
 		});
-		await fs.writeFile(filePath, istanbulIgnoreTypescript(content), {
-			encoding: 'utf8'
-		})
-	}));
+	});
 });
 
 gulp.task('patchCypressIstanbul', async () => {
 	const filePath = path.join(__dirname,
 		'node_modules/cypress-istanbul/task.js');
-	const file = await fs.readFile(filePath, {
-			encoding: 'utf8'
-		});
-	await fs.writeFile(filePath, file.replace(
-		/console.log\('wrote coverage file %s', nycFilename\)/g,
-		''), {
-			encoding: 'utf8'
-		});
+	return fs.readFile(filePath, {
+		encoding: 'utf8'
+	}).then((file) => {
+		return fs.writeFile(filePath, file.replace(
+			/console.log\('wrote coverage file %s', nycFilename\)/g,
+			''), {
+				encoding: 'utf8'
+			});
+	});
 });
 
 // Removes istanbul ignores from the compiled JS

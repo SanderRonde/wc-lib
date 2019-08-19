@@ -106,19 +106,85 @@ declare const complex: unique symbol;
 export declare function ComplexType<T>(): ComplexType<T>;
 declare type DefinePropTypes = PROP_TYPE | ComplexType<any>;
 interface DefineTypeConfig {
+    /**
+     * The type of this property. Can either by a PROP_TYPE:
+     * PROP_TYPE.STRING, PROP_TYPE.NUMBER or PROP_TYPE.BOOL
+     * or it can be a complex type passed through ComplexType<TYPE>().
+     * ComplexType should be used for any values that do not fit
+     * the regular prop type
+     */
     type: DefinePropTypes;
 }
 /**
  * The type of a property's config object
  */
 export interface DefinePropTypeConfig extends DefineTypeConfig {
+    /**
+     * Watch this property for changes. In objects, setting this to true
+     * means that any of its keys are watched for changes (see watchProperties)
+     *
+     * NOTE: This uses Proxy to watch objects. This does mean that
+     * after setting this property to an object, getting that same
+     * property will return a proxy of it (which is not strictly equal)
+     * If you do not want this or have environments that do not yet
+     * support window.Proxy, turn this off for objects
+     */
     watch?: boolean;
+    /**
+     * The default value of this component. Should be of the same
+     * type as this prop's value (obviously). Will be undefined if not set
+     */
     defaultValue?: GetTSType<this['type']>;
+    /**
+     * A synonym for defaultValue
+     */
     value?: GetTSType<this['type']>;
+    /**
+     * The properties to watch if this is an object. These can contain
+     * asterisks and can go multiple properties deep. ** will watch any
+     * properties, even newly defined ones.
+     * For example:
+     * 	['x'] only watched property x,
+     *  ['*.y'] watches the y property of any object values in this object
+     *  ['z.*'] watches any property of the z object
+     */
     watchProperties?: string[];
+    /**
+     * The exact type of this property. This is not actually used and
+     * is only used for typing.
+     * Say you have a property that can have the values 'text', 'password'
+     * or 'tel' (such as the html input element). This would mean that
+     * the type is a string (PROP_TYPE.STRING). This does however not fully
+     * express the restrictions. Doing
+     * { type: PROP_TYPE.STRING, exactType: '' as 'text'|'password'|'tel' }
+     * Will apply these restrictions and set the type accordingly
+     */
     exactType?: any;
+    /**
+     * Coerces the value to given type if its value is falsy.
+     * String values are coerced to '', bools are coerced to false
+     * and numbers are coerced to 0
+     */
     coerce?: boolean;
+    /**
+     * Only relevant for type=PROP_TYPE.BOOL
+     * This only sets a boolean value to true if the property was set to
+     * the string "true". Normally any string that is not equal
+     * to the string "false" will be taken as a true value.
+     * 	 * For example, if strict=false
+     * <my-component bool_1="a" bool_2="false" bool_3="" bool_4="true">
+     * bool_1, bool_3 and bool_4 are true while bool_2 is false (and any
+     * other bools are false as well since no value was supplied)
+     * 	 * For example, if strict=true
+     * <my-component bool_1="a" bool_2="false" bool_3="" bool_4="true">
+     * bool_4 is true and the rest is false
+     */
     strict?: boolean;
+    /**
+     * Whether to reflect this property to the component itself.
+     * For example, if set to true and the property is called "value",
+     * accessing component.value will return the value of that property.
+     */
     reflectToSelf?: boolean;
 }
 /**

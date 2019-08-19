@@ -276,7 +276,7 @@ export const WebComponentBaseMixin = (superFn) => {
         /**
          * Gets this component's custom CSS templates
          *
-         * @returns {TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]} The
+         * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
          * 	custom CSS templates
          */
         /* istanbul ignore next */

@@ -76,10 +76,10 @@ export declare const WebComponentBaseMixin: <P extends WebComponentBaseMixinSupe
         /**
          * Gets this component's custom CSS templates
          *
-         * @returns {TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]} The
+         * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
          * 	custom CSS templates
          */
-        customCSS(): TemplateFnLike<CHANGE_TYPE> | TemplateFnLike<CHANGE_TYPE>[];
+        customCSS(): TemplateFnLike<number> | TemplateFnLike<number>[];
         /**
          * The root of this component's DOM
          *
@@ -392,13 +392,13 @@ export declare const WebComponentBaseMixin: <P extends WebComponentBaseMixinSupe
      *
      * @readonly
      */
-    html: TemplateFnLike<CHANGE_TYPE> | null;
+    html: TemplateFnLike<number> | null;
     /**
      * The template(s) that will render this component's css
      *
      * @readonly
      */
-    css: TemplateFnLike<CHANGE_TYPE> | TemplateFnLike<CHANGE_TYPE>[] | null;
+    css: TemplateFnLike<number> | TemplateFnLike<number>[] | null;
     /**
      * Checks whether the constructed CSS should be changed. This function can be
      * overridden to allow for a custom checker. Since constructed CSS
@@ -427,10 +427,10 @@ export declare const WebComponentBaseMixin: <P extends WebComponentBaseMixinSupe
         /**
          * Gets this component's custom CSS templates
          *
-         * @returns {TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]} The
+         * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
          * 	custom CSS templates
          */
-        customCSS(): TemplateFnLike<CHANGE_TYPE> | TemplateFnLike<CHANGE_TYPE>[];
+        customCSS(): TemplateFnLike<number> | TemplateFnLike<number>[];
         /**
          * The root of this component's DOM
          *

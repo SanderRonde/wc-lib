@@ -945,7 +945,7 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("./template-fn.js").TemplateFnLike<CHANGE_TYPE> | import("./template-fn.js").TemplateFnLike<CHANGE_TYPE>[];
+                customCSS(): import("./template-fn.js").TemplateFnLike<number> | import("./template-fn.js").TemplateFnLike<number>[];
                 readonly root: import("./base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("../classes/types.js").JSXDefinition<any, {}>;
@@ -1213,8 +1213,8 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
                 focus(options?: FocusOptions | undefined): void;
                 readonly style: CSSStyleDeclaration;
             };
-            html: import("./template-fn.js").TemplateFnLike<CHANGE_TYPE> | null;
-            css: import("./template-fn.js").TemplateFnLike<CHANGE_TYPE> | import("./template-fn.js").TemplateFnLike<CHANGE_TYPE>[] | null;
+            html: import("./template-fn.js").TemplateFnLike<number> | null;
+            css: import("./template-fn.js").TemplateFnLike<number> | import("./template-fn.js").TemplateFnLike<number>[] | null;
             __constructedCSSChanged(_element: {
                 readonly self: any & Constructor<Pick<WebComponentDefinerMixinInstance, "___definerClass"> & HTMLElement> & Pick<{
                     new (...args: any[]): {
@@ -1484,7 +1484,7 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("./template-fn.js").TemplateFnLike<CHANGE_TYPE> | import("./template-fn.js").TemplateFnLike<CHANGE_TYPE>[];
+                customCSS(): import("./template-fn.js").TemplateFnLike<number> | import("./template-fn.js").TemplateFnLike<number>[];
                 readonly root: import("./base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("../classes/types.js").JSXDefinition<any, {}>;

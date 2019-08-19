@@ -595,7 +595,7 @@ declare const BasicWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -863,8 +863,8 @@ declare const BasicWebComponent_base: {
                 focus(options?: FocusOptions | undefined): void;
                 readonly style: CSSStyleDeclaration;
             };
-            html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-            css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+            html: import("../wc-lib.js").TemplateFnLike<number> | null;
+            css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
             __constructedCSSChanged(_element: {
                 readonly self: any & import("./types.js").Constructor<Pick<import("../lib/definer.js").WebComponentDefinerMixinInstance, "___definerClass"> & HTMLElement> & Pick<{
                     new (...args: any[]): {
@@ -1134,7 +1134,7 @@ declare const BasicWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -1954,7 +1954,7 @@ declare const BasicWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -2222,8 +2222,8 @@ declare const BasicWebComponent_base: {
         focus(options?: FocusOptions | undefined): void;
         readonly style: CSSStyleDeclaration;
     };
-    html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-    css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+    html: import("../wc-lib.js").TemplateFnLike<number> | null;
+    css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
     __constructedCSSChanged(_element: {
         readonly self: any & {
             new (...args: any[]): {
@@ -2496,7 +2496,7 @@ declare const BasicWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -3642,7 +3642,7 @@ declare const ThemingWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -3910,8 +3910,8 @@ declare const ThemingWebComponent_base: {
                 focus(options?: FocusOptions | undefined): void;
                 readonly style: CSSStyleDeclaration;
             };
-            html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-            css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+            html: import("../wc-lib.js").TemplateFnLike<number> | null;
+            css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
             __constructedCSSChanged(_element: {
                 readonly self: any & import("./types.js").Constructor<Pick<import("../lib/definer.js").WebComponentDefinerMixinInstance, "___definerClass"> & HTMLElement> & Pick<{
                     new (...args: any[]): {
@@ -4181,7 +4181,7 @@ declare const ThemingWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -5063,7 +5063,7 @@ declare const ThemingWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -5331,8 +5331,8 @@ declare const ThemingWebComponent_base: {
         focus(options?: FocusOptions | undefined): void;
         readonly style: CSSStyleDeclaration;
     };
-    html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-    css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+    html: import("../wc-lib.js").TemplateFnLike<number> | null;
+    css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
     __constructedCSSChanged(_element: {
         readonly self: any & {
             new (...args: any[]): {
@@ -5605,7 +5605,7 @@ declare const ThemingWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -6756,7 +6756,7 @@ declare const I18NWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -7024,8 +7024,8 @@ declare const I18NWebComponent_base: {
                 focus(options?: FocusOptions | undefined): void;
                 readonly style: CSSStyleDeclaration;
             };
-            html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-            css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+            html: import("../wc-lib.js").TemplateFnLike<number> | null;
+            css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
             __constructedCSSChanged(_element: {
                 readonly self: any & import("./types.js").Constructor<Pick<import("../lib/definer.js").WebComponentDefinerMixinInstance, "___definerClass"> & HTMLElement> & Pick<{
                     new (...args: any[]): {
@@ -7295,7 +7295,7 @@ declare const I18NWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -8176,7 +8176,7 @@ declare const I18NWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -8444,8 +8444,8 @@ declare const I18NWebComponent_base: {
         focus(options?: FocusOptions | undefined): void;
         readonly style: CSSStyleDeclaration;
     };
-    html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-    css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+    html: import("../wc-lib.js").TemplateFnLike<number> | null;
+    css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
     __constructedCSSChanged(_element: {
         readonly self: any & {
             new (...args: any[]): {
@@ -8718,7 +8718,7 @@ declare const I18NWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -9869,7 +9869,7 @@ declare const ComplexTemplatingWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -10137,8 +10137,8 @@ declare const ComplexTemplatingWebComponent_base: {
                 focus(options?: FocusOptions | undefined): void;
                 readonly style: CSSStyleDeclaration;
             };
-            html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-            css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+            html: import("../wc-lib.js").TemplateFnLike<number> | null;
+            css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
             __constructedCSSChanged(_element: {
                 readonly self: any & import("./types.js").Constructor<Pick<import("../lib/definer.js").WebComponentDefinerMixinInstance, "___definerClass"> & HTMLElement> & Pick<{
                     new (...args: any[]): {
@@ -10408,7 +10408,7 @@ declare const ComplexTemplatingWebComponent_base: {
                     define(isDevelopment?: boolean, isRoot?: boolean): void;
                 } & import("./types.js").Constructor<HTMLElement>, "define" | "is">;
                 __hasCustomCSS(): boolean;
-                customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+                customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
                 readonly root: import("../lib/base.js").ExtendedShadowRoot;
                 props: any;
                 readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -11790,7 +11790,7 @@ declare const ComplexTemplatingWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;
@@ -12058,8 +12058,8 @@ declare const ComplexTemplatingWebComponent_base: {
         focus(options?: FocusOptions | undefined): void;
         readonly style: CSSStyleDeclaration;
     };
-    html: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | null;
-    css: import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[] | null;
+    html: import("../wc-lib.js").TemplateFnLike<number> | null;
+    css: import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[] | null;
     __constructedCSSChanged(_element: {
         readonly self: any & {
             new (...args: any[]): {
@@ -12332,7 +12332,7 @@ declare const ComplexTemplatingWebComponent_base: {
             prototype: HTMLElement;
         };
         __hasCustomCSS(): boolean;
-        customCSS(): import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE> | import("../wc-lib.js").TemplateFnLike<import("../wc-lib.js").CHANGE_TYPE>[];
+        customCSS(): import("../wc-lib.js").TemplateFnLike<number> | import("../wc-lib.js").TemplateFnLike<number>[];
         readonly root: import("../lib/base.js").ExtendedShadowRoot;
         props: any;
         readonly jsxProps: import("./types.js").JSXDefinition<any, {}>;

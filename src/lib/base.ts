@@ -302,7 +302,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * 
 		 * @readonly
 		 */
-		public static html: TemplateFnLike<CHANGE_TYPE>|null;
+		public static html: TemplateFnLike<CHANGE_TYPE|number>|null;
 
 		/**
 		 * The element's constructor
@@ -319,7 +319,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * 
 		 * @readonly
 		 */
-		public static css: TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]|null;
+		public static css: TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]|null;
 
 		/**
 		 * A function signaling whether this component has custom CSS applied to it
@@ -334,11 +334,11 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		/**
 		 * Gets this component's custom CSS templates
 		 * 
-		 * @returns {TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]} The
+		 * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
 		 * 	custom CSS templates
 		 */
 		/* istanbul ignore next */
-		public customCSS(): TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[] {
+		public customCSS(): TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[] {
 			return [];
 		}
 

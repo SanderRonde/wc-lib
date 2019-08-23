@@ -10,8 +10,8 @@ export declare const refPrefix = "___complex_ref";
  *
  * @template R - The return value
  *
- * @param {HTMLElement & { getParentRef(ref: string): any; }} element - The
- * 	element from which to get the property
+ * @param {HTMLElementAttributes & { getParentRef(ref: string): any; }} element - The
+ * 	element of which to get the property
  * @param {string} name - The name of the property
  * @param {boolean} strict - Whether to use strict mode.
  * 	If true, boolean type values are only true
@@ -21,19 +21,19 @@ export declare const refPrefix = "___complex_ref";
  *
  * @returns {boolean|string|number|undefined|R} The value
  */
-export declare function getter<R>(element: HTMLElement & {
+export declare function getter<R>(element: HTMLElementAttributes & {
     getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string' | 'number' | 'bool' | typeof complex): boolean | string | number | undefined | R;
-export declare function getter(element: HTMLElement & {
+export declare function getter(element: HTMLElementAttributes & {
     getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'bool'): boolean;
-export declare function getter(element: HTMLElement & {
+export declare function getter(element: HTMLElementAttributes & {
     getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string'): string | undefined;
-export declare function getter(element: HTMLElement & {
+export declare function getter(element: HTMLElementAttributes & {
     getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'number'): number | undefined;
-export declare function getter<R>(element: HTMLElement & {
+export declare function getter<R>(element: HTMLElementAttributes & {
     getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: typeof complex): R | undefined;
 /**
@@ -223,10 +223,11 @@ export declare function awaitConnected(el: HTMLElement): Promise<void>;
  * 	was called)
  */
 export declare function hookIntoConnect(el: HTMLElement, fn: () => any): Promise<void>;
+declare type HTMLElementAttributes = Pick<HTMLElement, 'setAttribute' | 'removeAttribute' | 'hasAttribute' | 'getAttribute' | 'tagName'>;
 /**
  * The type that can be passed to `Props.define(xxx, { })`
  */
-export interface PropComponent extends HTMLElement {
+export interface PropComponent extends HTMLElementAttributes {
     renderToDOM(changeType: number): void;
     getParentRef?(ref: string): any;
     isMounted: boolean;

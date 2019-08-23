@@ -670,7 +670,8 @@ var PropsDefiner;
                             this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), defaultValue, watch, watchProperties);
                         }
                         if (reflectToAttr) {
-                            setter(this._rep.setAttr, this._rep.removeAttr, propName, defaultValue, type);
+                            setter(this._rep.setAttr, this._rep.removeAttr, propName, this._rep.propValues[mapKey] !== undefined ?
+                                this._rep.propValues[mapKey] : defaultValue, type);
                         }
                     });
                 }

@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType } from '../../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wc-lib.js';
 import { render, html, directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { ComplexTemplatingWebComponent } from "../../../../../../../src/classes/partial.js";
+import { ComplexTemplatingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`
@@ -19,22 +19,25 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends ComplexTemplatingWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
-	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
-	};
-}, {
-	test: {
-		args: [number, number];
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -59,11 +62,10 @@ window.TestElement = TestElement;
 	}, CHANGE_TYPE.NEVER, render)
 })
 export class EventTriggeringElement extends ComplexTemplatingWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	ev: {
-		args: [number];
+	events: {
+		ev: {
+			args: [number];
+		}
 	}
 }> { }
 
@@ -198,7 +200,7 @@ export class WrongElementListen extends ComplexTemplatingWebComponent {
 
 }
 
-TestElement.define();
+TestElement.define(true);
 (window as any).ComplexElement = ComplexElement;
-ComplexElement.define();
-WrongElementListen.define();
+ComplexElement.define(true);
+WrongElementListen.define(true);

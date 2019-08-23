@@ -1,3 +1,4 @@
+import { EventListenerObj, SelectorMap } from "../wc-lib.js";
 import { WebComponent } from "../classes/full.js";
 
 let _supportsPassive: boolean | null = null;
@@ -28,6 +29,9 @@ function supportsPassive(): boolean {
 	return _supportsPassive;
 }
 
+/**
+ * Functions that are related to adding and removing listeners to elements
+ */
 export namespace Listeners {
 	type IDMap = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)>;
 	type IDMapArr = Map<string, ((this: any, ev: HTMLElementEventMap[keyof HTMLElementEventMap]) => any)[]>;
@@ -35,23 +39,26 @@ export namespace Listeners {
 		self: IDMapArr;
 		selfUnique: IDMap;
 		identifiers: Map<string, {
-			element: HTMLElement;
+			element: HTMLElement|SVGElement;
 			map: IDMap;
 		}>;
 		elements: Map<string, {
-			element: HTMLElement;
+			element: HTMLElement|SVGElement;
 			map: IDMap;
 		}>;
 	}> = new WeakMap();
-	function doListen<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
+	function doListen<GA extends {
+		i18n?: any;
+		langs?: string;
+		events?: EventListenerObj;
+		selectors?: SelectorMap;
+		root?: any;
+		parent?: any;
+		globalProps?: {
+			[key: string]: any;
 		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, type: 'element' | 'identifier', 
-		element: HTMLElement, id: string, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
+	}, E extends EventListenerObj, ELS extends SelectorMap, T extends WebComponent<GA, E, ELS>, K extends keyof HTMLElementEventMap>(base: T, type: 'element' | 'identifier', 
+		element: HTMLElement|SVGElement, id: string, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		options?: boolean | AddEventListenerOptions) {
 			const boundListener = listener.bind(base);
 			if (!listenedToElements.has(base as any)) {
@@ -112,11 +119,7 @@ export namespace Listeners {
 	 * from the old element. Only allows a single listener
 	 * per event-base-id combination
 	 * 
-	 * @template I - An object that maps an event name
-	 * 	to the event listener's arguments
-	 * 	and return type
 	 * @template T - The base component
-	 * @template K - The event's name
 	 * 
 	 * @param {T} base - The base component
 	 * @param {keyof T['$']} id - The id of the element
@@ -130,17 +133,12 @@ export namespace Listeners {
 	 * @returns {() => void} A function that, when called, removes
 	 * 	this listener
 	 */
-	export function listen<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
+	export function listen<T extends {
+		$: any;
+	}, K extends keyof HTMLElementEventMap>(base: T, 
 		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		options?: boolean | AddEventListenerOptions): () => void {
-			const element: HTMLElement = (base.$ as any)[id];
+			const element: HTMLElement|SVGElement = (base.$ as any)[id];
 			return doListen(base as any, 'element', element, id as string, event, listener, options);
 		}
 
@@ -157,14 +155,10 @@ export namespace Listeners {
 	 * is not listened to twice. Only allows a single listener
 	 * per event-base-identifier combination
 	 * 
-	 * @template I - An object that maps an event name
-	 * 	to the event listener's arguments
-	 * 	and return type
 	 * @template T - The base component
-	 * @template K - The event's name
 	 * 
 	 * @param {T} base - The base component
-	 * @param {HTMLElement} element - The element to listen to
+	 * @param {HTMLElement|SVGElement} element - The element to listen to
 	 * @param {string} identifier - A unique identifier for
 	 * 	this base component that is mapped to this 
 	 * 	listener call
@@ -177,26 +171,19 @@ export namespace Listeners {
 	 * @returns {() => void} A function that, when called, removes
 	 * 	this listener
 	 */
-	export function listenWithIdentifier<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
-		element: HTMLElement, identifier: string, event: K, 
+	export function listenWithIdentifier<T, K extends keyof HTMLElementEventMap>(base: T, 
+		element: HTMLElement|SVGElement, identifier: string, event: K, 
 		listener: (this: T, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): () => void {
 			return doListen(base as any, 'identifier', element, identifier, event, listener, options);
 		}
 	const defaultContext = {};
-	const usedElements: WeakMap<any, WeakSet<HTMLElement>> = new WeakMap();
+	const usedElements: WeakMap<any, WeakSet<HTMLElement|SVGElement>> = new WeakMap();
 
 	/**
 	 * Checks whether this element is new, meaning it's the first time
 	 * it's seen on the page by this function
 	 * 
-	 * @param {HTMLElement} element - The element to check
+	 * @param {HTMLElement|SVGElement} element - The element to check
 	 * @param {Object} [context] - A context in which to store
 	 * 	this element. For example if you want to check if the
 	 * 	element is new on the page use the default context. If
@@ -207,7 +194,7 @@ export namespace Listeners {
 	 * @returns {boolean} Whether this element is new in the
 	 * 	given context
 	 */
-	export function isNewElement(element: HTMLElement, context: Object = defaultContext): boolean {
+	export function isNewElement(element: HTMLElement|SVGElement, context: Object = defaultContext): boolean {
 		if (!element)
 			return false;
 		if (!usedElements.has(context)) {
@@ -246,24 +233,19 @@ export namespace Listeners {
 	 * 	listener that gets called when the event is fired
 	 * @param {boolean} [isNew] - A boolean that says whether
 	 * 	this element is new. If nothing is passed (or a non-boolean
-	 * 	type is passed), `isNewelement` is called
+	 * 	type is passed), `isNewElement` is called
 	 * @param {boolean | AddEventListenerOptions} [options] Optional
 	 * 	options that are passed to addEventListener
 	 * 
 	 * @returns {() => void} A function that, when called, removes
 	 * 	this listener
 	 */
-	export function listenIfNew<I extends {
-		IDS: {
-			[key: string]: HTMLElement|SVGElement;
-		};
-		CLASSES: {
-			[key: string]: HTMLElement|SVGElement;
-		}
-	}, T extends WebComponent<I>, K extends keyof HTMLElementEventMap>(base: T, 
+	export function listenIfNew<T extends {
+		$: any;
+	}, K extends keyof HTMLElementEventMap>(base: T, 
 		id: keyof T['$'], event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any, 
 		isNew?: boolean, options?: boolean | AddEventListenerOptions): () => void {
-			const element: HTMLElement = (base.$ as any)[id];
+			const element: HTMLElement|SVGElement = (base.$ as any)[id];
 			const isElementNew = (() => {
 				if (typeof isNew === 'boolean') {
 					return isNew;
@@ -345,7 +327,7 @@ export namespace Listeners {
 	 * 	listener that is fired when the 
 	 * 	event is fired
 	 */
-	export function listenToComponent<T extends WebComponent<any>, K extends keyof HTMLElementEventMap>(
+	export function listenToComponent<T extends HTMLElement|SVGElement, K extends keyof HTMLElementEventMap>(
 		base: T, event: K, listener: (this: T, ev: HTMLElementEventMap[K]) => any) {
 			const boundListener = listener.bind(base);
 			if (!listenedToElements.has(base)) {
@@ -377,7 +359,7 @@ export namespace Listeners {
 				selfEventMap.set(event, listeners);
 			}
 		}
-	function removeListeners(element: HTMLElement, map: IDMap|IDMapArr) {
+	function removeListeners(element: HTMLElement|SVGElement, map: IDMap|IDMapArr) {
 		for (const [ event, listeners ] of map.entries()) {
 			for (const listener of Array.isArray(listeners) ? listeners : [listeners]) {
 				element.removeEventListener(event, listener);
@@ -389,10 +371,10 @@ export namespace Listeners {
 	/**
 	 * Removes all event listeners on the component
 	 * 
-	 * @param {WebComponent} base - The component
+	 * @param {any} base - The component
 	 * 	from which to remove all listeners
 	 */
-	export function removeAllElementListeners(base: WebComponent) {
+	export function removeAllElementListeners(base: any) {
 		if (!listenedToElements.has(base)) {
 			return;
 		}

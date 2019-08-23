@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, WebComponent, bindToClass, Renderer } from '../../../../../../src/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, WebComponent, bindToClass, Renderer } from '../../../../../../build/es/wc-lib.js';
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
 
 export interface RenderTestWindow extends Window {
@@ -44,10 +44,7 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	return html`<style> * {color: red; } </style>`;
 }, CHANGE_TYPE.NEVER, render);
 
-export class TestElementBase extends ConfigurableWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}> {
+export class TestElementBase extends ConfigurableWebComponent {
 	props = Props.define(this, {
 		reflect: {
 			x: {
@@ -309,21 +306,21 @@ const htmlElementTemplate = new TemplateFn<any>(() => {
 export class HTMLElementTemplate extends ConfigurableWebComponent {
 }
 
-TestElement.define();
-ChangeNever.define();
-RenderTestElementNever.define();
-RenderTestElementProp.define();
-RenderTestElementTheme.define();
-RenderTestElementLang.define();
-RenderTestElementAlways.define();
-RenderTestElementPropTheme.define();
-RenderTestElementPropLang.define();
-RenderTestElementThemeLang.define();
-RenderTestElementAll.define();
-HTMLElementTemplate.define();
+TestElement.define(true);
+ChangeNever.define(true);
+RenderTestElementNever.define(true);
+RenderTestElementProp.define(true);
+RenderTestElementTheme.define(true);
+RenderTestElementLang.define(true);
+RenderTestElementAlways.define(true);
+RenderTestElementPropTheme.define(true);
+RenderTestElementPropLang.define(true);
+RenderTestElementThemeLang.define(true);
+RenderTestElementAll.define(true);
+HTMLElementTemplate.define(true);
 
-NoCSS.define();
-BindTest.define();
+NoCSS.define(true);
+BindTest.define(true);
 
 window.html = html;
 window.templates = {

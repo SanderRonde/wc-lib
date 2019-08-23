@@ -1,7 +1,7 @@
 import { ComplexElement, EventTriggeringElement, BooleanElement, ComplexReceiverElement } from "./elements/complex-element";
 import { TestElement, TestWindow } from "../elements/test-element";
 import { expectMethodExists } from "../../../lib/assertions.js";
-import { CHANGE_TYPE } from "../../../../../src/wclib";
+import { CHANGE_TYPE } from "../../../../../build/es/wc-lib";
 import { SLOW } from "../../../lib/timing.js";
 export function templateManagerSpec(fixtures: {
 	standard: string;

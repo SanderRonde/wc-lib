@@ -1,22 +1,33 @@
 import { WebComponent } from "../../classes/full.js";
 
-export function waitForMountedCallback(el: WebComponent): Promise<() => void> {
-	const realEl = el as WebComponent;
+/**
+ * Waits for the component to have a mounted callback
+ * function. It waits for `el.mounted` to be a function
+ * instead of undefined.
+ * 
+ * @param {{ mounted: () => void }} el - The element to watch
+ */
+export function waitForMountedCallback(el: {
+	mounted: () => void;
+}): Promise<() => void> {
 	return new Promise<() => void>(async (resolve) => {
 		/* istanbul ignore next */
-		if (realEl.mounted) {
-			resolve(realEl.mounted);
+		if (el.mounted) {
+			resolve(el.mounted);
 		} else {
 			const interval = window.setInterval(() => {
-				if (realEl.mounted) {
+				if (el.mounted) {
 					window.clearInterval(interval);
-					resolve(realEl.mounted);
+					resolve(el.mounted);
 				}
 			}, 50);
 		}
 	});
 }
 
+/**
+ * Functions related to listening for mounting of components
+ */
 export namespace Mounting {
 	/**
 	 * Waits for given component to be mounted to the DOM.

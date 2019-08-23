@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/SanderRonde/wc-lib.svg?branch=master)](https://travis-ci.org/SanderRonde/wc-lib)
-[![Coverage Status](https://coveralls.io/repos/github/SanderRonde/wc-lib/badge.svg)](https://coveralls.io/github/SanderRonde/wc-lib)
+[![codecov](https://codecov.io/gh/SanderRonde/wc-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/SanderRonde/wc-lib)
 
 # Wc-lib
 
@@ -13,7 +13,7 @@ The easiest way to get started is to use the command-line tool to generate a com
 
 ## Examples
 
-Check out the `/examples` directory for any example code.
+Check out the `/examples` directory for any example code or check them out [online](https://sanderronde.github.io/wc-lib/).
 
 ## Features
 

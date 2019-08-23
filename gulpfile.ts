@@ -4,6 +4,12 @@ import * as glob from 'glob';
 import * as gulp from 'gulp';
 import * as path from 'path';
 
+declare class Promise<T> {
+	constructor(handlers: (resolve: (value: T) => any, reject: (err: any) => any) => any);
+	then(callback: (value: T) => any): this;
+	static all<T>(promises: T[]): Promise<T[]>;
+}
+
 const ISTANBUL_IGNORE_NEXT = '/* istanbul ignore next */';
 const typescriptInsertedData = [[
 	'var __decorate = (this && this.__decorate)',
@@ -84,7 +90,7 @@ function istanbulIgnoreTypescript(file: string) {
 	const newLines = [...lines];
 	for (let i = blocks.length - 1; i >= 0; i--) {
 		const { start } = blocks[i];
-		if (!newLines[Math.max(start - 1, 0)].includes(ISTANBUL_IGNORE_NEXT)) {
+		if (newLines[Math.max(start - 1, 0)].indexOf(ISTANBUL_IGNORE_NEXT) === -1) {
 			newLines.splice(start, 0, ISTANBUL_IGNORE_NEXT);
 		}
 	}
@@ -99,7 +105,7 @@ gulp.task('replaceTestImports', () => {
 			cwd: './test',
 			base: './test'
 		})
-		.pipe(replace('/src/', '/instrumented/'))
+		.pipe(replace('/build/es/', '/instrumented/'))
 		.pipe(gulp.dest('test'));
 });
 
@@ -115,28 +121,34 @@ function globProm(pattern: string, options?: any): Promise<string[]> {
 	]);
 }
 
-gulp.task('istanbulIgnoreTypescript', async () => {
-	return Promise.all((await globProm('src/**/*.js')).map(async (filePath) => {
-		const content = await fs.readFile(filePath, {
-			encoding: 'utf8'
+gulp.task('istanbulIgnoreTypescript', () => {
+	return new Promise((resolve) => {
+		globProm('src/**/*.js').then((filePaths) => {
+			Promise.all(filePaths.map((filePath) => {
+				return fs.readFile(filePath, {
+					encoding: 'utf8'
+				}).then((content) => {
+					return fs.writeFile(filePath, istanbulIgnoreTypescript(content), {
+						encoding: 'utf8'
+					})
+				});
+			})).then(resolve);
 		});
-		await fs.writeFile(filePath, istanbulIgnoreTypescript(content), {
-			encoding: 'utf8'
-		})
-	}));
+	});
 });
 
 gulp.task('patchCypressIstanbul', async () => {
 	const filePath = path.join(__dirname,
 		'node_modules/cypress-istanbul/task.js');
-	const file = await fs.readFile(filePath, {
-			encoding: 'utf8'
-		});
-	await fs.writeFile(filePath, file.replace(
-		/console.log\('wrote coverage file %s', nycFilename\)/g,
-		''), {
-			encoding: 'utf8'
-		});
+	return fs.readFile(filePath, {
+		encoding: 'utf8'
+	}).then((file) => {
+		return fs.writeFile(filePath, file.replace(
+			/console.log\('wrote coverage file %s', nycFilename\)/g,
+			''), {
+				encoding: 'utf8'
+			});
+	});
 });
 
 // Removes istanbul ignores from the compiled JS
@@ -163,3 +175,35 @@ gulp.task('removeIstanbulIgnoresSource', () => {
 		.pipe(replace(/(\n\s+)?\/\*(\s*)istanbul(.*?)\*\//g, ''))
 		.pipe(gulp.dest('src/'));
 });
+
+// Prepares the examples for hosting on gh-pages
+gulp.task('prepareWebsite', gulp.parallel(function moveLitHTML() {
+		return gulp.src([
+				'**/*.*'
+			], {
+				cwd: 'node_modules/lit-html/',
+				base: 'node_modules/lit-html/'
+			})
+			.pipe(gulp.dest('examples/modules/lit-html/'));
+	}, function movewclib() {
+		return gulp.src([
+				'**/*.*'
+			], {
+				cwd: 'build/es/',
+				base: 'build/es/'
+			})
+			.pipe(gulp.dest('examples/modules/wc-lib/'));
+	}, function changeImports() {
+		return gulp.src([
+				'**/*.js',
+				'**/*.ts'
+			], {
+				cwd: 'examples',
+				base: 'examples'
+			})
+			.pipe(replace(/\.\.\/\.\.\/node\_modules\/lit\-html/g, 
+				'../modules/lit-html'))
+			.pipe(replace(/\.\.\/\.\.\/build\/es/g, 
+				'../modules/wc-lib'))
+			.pipe(gulp.dest('examples/'));
+	}));

@@ -1,4 +1,4 @@
-import { Color } from "../../../../../../src/wclib";
+import { Color } from "../../../../../../build/es/wc-lib";
 import { SLOW } from "../../../../lib/timing";
 
 function genNum() {

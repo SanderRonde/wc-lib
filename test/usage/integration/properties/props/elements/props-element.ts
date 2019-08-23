@@ -1,8 +1,9 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../src/wclib.js";
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../build/es/wc-lib.js";
 import { render } from "../../../../../../node_modules/lit-html/lit-html.js";
 
 export interface PropsElementWindow extends Window {
 	accessSymbol: typeof accessSymbol;
+	ChildEl: typeof ChildEl;
 }
 
 declare const window: PropsElementWindow;
@@ -51,9 +52,46 @@ interface SymbolKeys {
 	[accessSymbol]: string;
 }
 
+
+
+@config({
+	is: 'child-el',
+	html: new TemplateFn<ChildEl>(function (html) {
+		ChildEl.onRender(this.props);
+		return html``;
+	}, CHANGE_TYPE.PROP, render)
+})
+export class ChildEl extends ConfigurableWebComponent {
+	props = Props.define(this, {
+		reflect: {
+			noVal: {
+				type: ComplexType<{}>(),
+				defaultValue: { a: 'b' }
+			},
+			ref: {
+				type: ComplexType<{}>(),
+				defaultValue: { c: 'd' }
+			},
+			noref: {
+				type: ComplexType<{}>(),
+				defaultValue: { e: 'f' }
+			},
+		}
+	})
+
+	static onRender(_props: any) { }
+
+	connectedCallback() {
+		super.connectedCallback();
+	}
+}
+
+window.ChildEl = ChildEl;
+
+
 @config({
 	is: 'props-element',
-	html: new TemplateFn<PropsElement>(function (html) {
+	html: new TemplateFn<PropsElement>(function (html, props) {
 		return html`
 			<obj-el id="ref" #complex="${{
 				a: 'b',
@@ -67,10 +105,23 @@ interface SymbolKeys {
 				a: 'b',
 				c: 'd'
 			}) + 'padding'}"></obj-el>
+			${(() => {
+				switch (props.childElIndex) {
+					case 0:
+						return html`<child-el></child-el>`;
+					case 1:
+						return html`<child-el #ref="${{e: 'f'}}"></child-el>`;
+					case 2:
+						return html`<child-el noref="${JSON.stringify({g: 'h'})}"></child-el>`;
+					default: 
+						return html``;
+				}
+			})()}
 		`;
 	}, CHANGE_TYPE.PROP, render),
 	dependencies: [
-		ObjEl
+		ObjEl,
+		ChildEl
 	]
 })
 export class PropsElement extends ConfigurableWebComponent {
@@ -83,6 +134,11 @@ export class PropsElement extends ConfigurableWebComponent {
 			casingtest2: {
 				type: PROP_TYPE.BOOL,
 				value: true
+			},
+
+			childElIndex: {
+				type: PROP_TYPE.NUMBER,
+				value: -1
 			},
 
 			bool: PROP_TYPE.BOOL,
@@ -422,6 +478,10 @@ export class PropsElement extends ConfigurableWebComponent {
 			}
 		}
 	});
+
+	forceChildElRender(index: number) {
+		this.props.childElIndex = index;
+	}
 };
 
 @config({

@@ -27,7 +27,7 @@ const usedThemes: {
 	}
 };
 const defaultTheme: keyof typeof usedThemes = 'first';
-interface ThemeGlobalProps {
+export interface ThemeGlobalProps {
 	theme: keyof typeof usedThemes;
 }
 function getDefaultThemedElements() {
@@ -161,7 +161,7 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 							it(name, () => {
 								test(() => {
 									return cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
-										el.globalProps<ThemeGlobalProps>().set('theme', 'second');
+										el.globalProps().set('theme', 'second');
 									});
 								});
 							});

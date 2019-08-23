@@ -1,5 +1,4 @@
-import { ConfigurableWebComponent } from "../../../../../src/wclib";
-import { TestGlobalProperties } from "./fixtures/standard/hierarchy-manager.fixture";
+import { ConfigurableWebComponent } from "../../../../../build/es/wc-lib";
 import { expectMethodExists } from "../../../lib/assertions";
 import { ParentElement } from "../elements/parent-element";
 import { TestElement } from "../elements/test-element";
@@ -28,7 +27,7 @@ function getAllElements() {
 		});
 }
 function assertDefaultProps(element: RootElement | TestElement | ParentElement) {
-	const props = element.globalProps<TestGlobalProperties>();
+	const props = element.globalProps();
 	expect(props.all).to.be.deep.equal({
 		a: 'b',
 		c: 'd'
@@ -88,7 +87,7 @@ export function hierarchyManagerspec(fixture: string) {
 		context('Global Properties', () => {
 			afterEach(() => {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
-					const props = root.globalProps<TestGlobalProperties>();
+					const props = root.globalProps();
 					props.set('a', 'b');
 					props.set('c', 'd');
 				});
@@ -107,7 +106,7 @@ export function hierarchyManagerspec(fixture: string) {
 			});
 			it('allows setting of global props', () => {
 				cy.get('root-element').then(([root]: JQuery<RootElement>) => {
-					const props = root.globalProps<TestGlobalProperties>();
+					const props = root.globalProps();
 					assertDefaultProps(root);
 					props.set('a', 'e');
 					expect(props.get('a')).to.be.equal('e', 'prop was changed');
@@ -118,16 +117,16 @@ export function hierarchyManagerspec(fixture: string) {
 			it('propagates prop changes to children', () => {
 				getAllElements().then((elements) => {
 					cy.get('root-element').then(([root]: JQuery<RootElement>) => {
-						const props = root.globalProps<TestGlobalProperties>();
+						const props = root.globalProps();
 						assertDefaultProps(root);
 						props.set('a', 'e');
 						for (const element of elements) {
-							expect(element.globalProps<TestGlobalProperties>().get('a'))
+							expect(element.globalProps().get('a'))
 								.to.be.equal('e', 'prop was changed');
 						}
 						props.set('a', 'b');
 						for (const element of elements) {
-							expect(element.globalProps<TestGlobalProperties>().get('a'))
+							expect(element.globalProps().get('a'))
 								.to.be.equal('b', 'prop was changed');
 						}
 					});
@@ -136,19 +135,19 @@ export function hierarchyManagerspec(fixture: string) {
 			it('allows children to change properties as well', () => {
 				getAllElements().then((elements) => {
 					cy.get('root-element').then(([root]: JQuery<RootElement>) => {
-						const props = root.globalProps<TestGlobalProperties>();
+						const props = root.globalProps();
 						assertDefaultProps(root);
 						for (let i = 0; i < elements.length; i++) {
-							const props = elements[i].globalProps<TestGlobalProperties>();
+							const props = elements[i].globalProps();
 							props.set('a', i + '');
 							for (const element of elements) {
-								expect(element.globalProps<TestGlobalProperties>().get('a'))
+								expect(element.globalProps().get('a'))
 									.to.be.equal(i + '', 'prop was changed');
 							}
 						}
 						props.set('a', 'b');
 						for (const element of elements) {
-							expect(element.globalProps<TestGlobalProperties>().get('a'))
+							expect(element.globalProps().get('a'))
 								.to.be.equal('b', 'prop was changed back');
 						}
 					});
@@ -158,27 +157,27 @@ export function hierarchyManagerspec(fixture: string) {
 				it('allows for listening for global property changes', () => {
 					cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 						expect(() => {
-							root.listenGP<TestGlobalProperties>('globalPropChange', () => { });
+							root.listenGP('globalPropChange', () => { });
 						}, 'listening does not throw').to.not.throw;
 					});
 				});
 				it('fires the listener when a property is changed', () => {
 					cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 						const listener = cy.spy() as any;
-						root.listenGP<TestGlobalProperties>('globalPropChange', listener);
-						root.globalProps<TestGlobalProperties>().set('a', 'e');
+						root.listenGP('globalPropChange', listener);
+						root.globalProps().set('a', 'e');
 						expect(listener).to.be.calledOnce;
-						root.globalProps<TestGlobalProperties>().set('a', 'b');
+						root.globalProps().set('a', 'b');
 						expect(listener).to.be.calledTwice;
 					});
 				});
 				it('only fires the listener once if once is set to true', () => {
 					cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 						const listener = cy.spy() as any;
-						root.listenGP<TestGlobalProperties>('globalPropChange', listener, true);
-						root.globalProps<TestGlobalProperties>().set('a', 'e');
+						root.listenGP('globalPropChange', listener, true);
+						root.globalProps().set('a', 'e');
 						expect(listener).to.be.calledOnce;
-						root.globalProps<TestGlobalProperties>().set('a', 'b');
+						root.globalProps().set('a', 'b');
 						expect(listener).to.be.calledOnce;
 					});
 				});
@@ -193,8 +192,8 @@ export function hierarchyManagerspec(fixture: string) {
 							expect(newVal).to.be.equal('e', 'value was changed to e');
 							expect(oldVal).to.be.equal('b', 'old value was b');
 						});
-						root.listenGP<TestGlobalProperties>('globalPropChange', listener as any);
-						root.globalProps<TestGlobalProperties>().set('a', 'e');
+						root.listenGP('globalPropChange', listener as any);
+						root.globalProps().set('a', 'e');
 						expect(listener).to.be.calledOnce;
 					});
 				});

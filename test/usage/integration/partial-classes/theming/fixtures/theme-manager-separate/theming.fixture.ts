@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../build/es/wc-lib.js';
 import { render, html } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { ThemingWebComponent } from "../../../../../../../src/classes/partial.js";
+import { ThemingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 import { TestTheme } from "../../../../classes/theme-manager/themeManagerspec.js";
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
@@ -20,22 +20,25 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends ThemingWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
-	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
-	};
-}, {
-	test: {
-		args: [number, number];
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -52,7 +55,7 @@ export interface TestWindow extends Window {
 }
 declare const window: TestWindow;
 window.TestElement = TestElement;
-TestElement.define();
+TestElement.define(true);
 
 export const usedThemes: {
 	[key: string]: TestTheme;
@@ -80,7 +83,7 @@ export const defaultTheme = 'first';
 			<div class="text2">test2</div>
 		`;
 	}, CHANGE_TYPE.NEVER, render),
-	css: new TemplateFn<ThemedElement, TestTheme>((_html, _prop, theme) => {
+	css: new TemplateFn<ThemedElement>((_html, _prop, theme) => {
 		return html`<style>
 				.text {
 					color: ${theme.color1};
@@ -92,7 +95,9 @@ export const defaultTheme = 'first';
 			</style>`
 	}, CHANGE_TYPE.THEME, render)
 })
-export class ThemedElement extends ThemingWebComponent {
+export class ThemedElement extends ThemingWebComponent<{
+	themes: typeof usedThemes;
+}> {
 
 }
 
@@ -115,7 +120,7 @@ export class ThemedElement extends ThemingWebComponent {
 export class ThemedElementParent extends ThemingWebComponent {
 
 }
-ThemedElementParent.define();
+ThemedElementParent.define(true);
 
 ThemingWebComponent.initTheme({
 	theme: usedThemes

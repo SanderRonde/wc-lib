@@ -1,6 +1,6 @@
 import { directive, Part, html, render } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { config, TemplateFn, CHANGE_TYPE } from '../../../../../../../src/wclib.js';
-import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
+import { config, TemplateFn, CHANGE_TYPE } from '../../../../../../../build/es/wc-lib.js';
+import { I18NWebComponent } from '../../../../../../../build/es/classes/partial.js';
 
 const awaitPromise = directive((key: string, value: Promise<any>|string) => (part: Part) => {
 	if (typeof value === 'string') {
@@ -52,7 +52,14 @@ const placeholder = directive((key: string, value: Promise<any>|string) => (part
 	}, CHANGE_TYPE.LANG, render),
 	css: null
 })
-export class LangElement extends I18NWebComponent { }
+export class LangElement extends I18NWebComponent<{
+	langs: 'en'|'nl';
+	i18n: {
+		test: string;
+		nonexistent: string;
+		values: string;
+	}
+}> { }
 
 I18NWebComponent.initI18N({
 	urlFormat: '/test/usage/fixtures/i18n/$LANG$.json',
@@ -60,4 +67,4 @@ I18NWebComponent.initI18N({
 });
 
 (window as any).WebComponent = I18NWebComponent;
-LangElement.define();
+LangElement.define(true);

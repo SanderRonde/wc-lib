@@ -18,6 +18,18 @@ export type InferReturn<F> = F extends (...args: any[]) => infer R ? R : void;
 export type InferInstance<F> = F extends new(...args: any[]) => infer R ? R : void;
 
 /**
+ * Returns a different type if type is undefined
+ */
+export type DefaultVal<V, D = {}> = V extends undefined ? D : 
+	V;
+
+/**
+ * Returns a different type if type is undefined or unknown
+ */
+export type DefaultValUnknown<V, D = {}> = V extends undefined ? D : 
+V extends unknown ? D : V;
+
+/**
  * Infers props of a component from passed component['props']
  */
 type InferProps<C extends {
@@ -76,6 +88,15 @@ export type JSXDefinition<C extends {
 		class?: string|ClassNamesArg|ClassNamesArg[];
 		"custom-css"?: TemplateFnLike;
 	};
+
+/**
+ * Intrinsic properties that can be used by the complex
+ * templater to turn JSX props into (for example) listeners.
+ */
+export interface JSXIntrinsicProps {
+	__listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
+	"@"?: Partial<EventsToAttr<HTMLElementEventMap>>;
+}
 
 export {  
 	WebComponentBaseMixinInstance,

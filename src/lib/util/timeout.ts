@@ -1,5 +1,8 @@
 import { wait } from '../shared.js';
 
+/**
+ * Functions related to timeouts
+ */
 export namespace Timeout {
 	const timeouts: WeakMap<any, Map<string, NodeJS.Timer>> = new WeakMap();
 	/**

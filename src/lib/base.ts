@@ -1,6 +1,6 @@
 import { WebComponentDefinerMixin, WebComponentDefinerMixinInstance } from './definer.js';
 import { Constructor, InferInstance, InferReturn, JSXDefinition } from '../classes/types.js';
-import { TemplateFnLike, CHANGE_TYPE } from '../wclib.js';
+import { TemplateFnLike, CHANGE_TYPE } from '../wc-lib.js';
 
 /**
  * The property name for custom-css
@@ -16,6 +16,11 @@ interface CSSStyleSheet {
 	replaceSync(text: string): void;
 }
 
+/**
+ * A shadowroot with the `adoptedStyleSheets` property
+ * defined as it is undefined in the typescript definitions
+ * files as of version 3.5.1
+ */
 export interface ExtendedShadowRoot extends ShadowRoot {
 	adoptedStyleSheets: CSSStyleSheet[];
 }
@@ -98,13 +103,15 @@ class BaseClass {
 	}
 	
 	private get __cssArr(): TemplateFnLike<CHANGE_TYPE>[] {
-		if (this.instance.___cssArr !== null) return this.instance.___cssArr;
-		return (this.instance.___cssArr = 
+		const instance = this.instance;
+		if (instance.___cssArr !== null) return instance.___cssArr;
+		return (instance.___cssArr = 
 			makeArray(this._self.self.css || []));
 	};
 	public get __privateCSS(): TemplateFnLike<CHANGE_TYPE>[] {
-		if (this.instance.___privateCSS !== null) return this.instance.___privateCSS;
-		return (this.instance.___privateCSS = 
+		const instance = this.instance;
+		if (instance.___privateCSS !== null) return instance.___privateCSS;
+		return (instance.___privateCSS = 
 			/* istanbul ignore next */
 			this.canUseConstructedCSS ? this.__cssArr.filter((template) => {
 				return !(template.changeOn === CHANGE_TYPE.THEME ||
@@ -193,16 +200,19 @@ class BaseClass {
 	private __sheetsMounted: boolean = false;
 	/* istanbul ignore next */
 	public renderConstructedCSS(change: CHANGE_TYPE) {
+		if (!this.__cssArr!.length) return;
 		if (!this.__sheetsMounted) {
 			this.__genConstructedCSS();
+			if (this.instance.__cssSheets!.length) {
 
-			// Mount them
-			this._self.root.adoptedStyleSheets = 
-				this.instance.__cssSheets!.map(s => s.sheet);
-			this.__sheetsMounted = true;
+				// Mount them
+				this._self.root.adoptedStyleSheets = 
+					this.instance.__cssSheets!.map(s => s.sheet);
+				this.__sheetsMounted = true;
 
-			// Force new render
-			change = CHANGE_TYPE.ALWAYS;
+				// Force new render
+				change = CHANGE_TYPE.ALWAYS;
+			}
 		}
 
 		if (!(change & CHANGE_TYPE.THEME)) {
@@ -249,11 +259,21 @@ class BaseClass {
 	public static __constructedCSSRendered: boolean = false;
 }
 
+/**
+ * An instance of the webcomponent base mixin
+ */
 export type WebComponentBaseMixinInstance = InferInstance<WebComponentBaseMixinClass> & {
 	self: WebComponentBaseMixinClass;
 };
+
+/**
+ * The webcomponent base mixin's class
+ */
 export type WebComponentBaseMixinClass = InferReturn<typeof WebComponentBaseMixin>;
 
+/**
+ * The parent (super) type required by the webcomponent base mixin
+ */
 export type WebComponentBaseMixinSuper = Constructor<
 		Pick<WebComponentDefinerMixinInstance, '___definerClass'> & HTMLElement
 	> & Pick<InferReturn<typeof WebComponentDefinerMixin>, 'define'|'is'>;
@@ -261,6 +281,10 @@ export type WebComponentBaseMixinSuper = Constructor<
 /**
  * A mixin that will add the ability to do
  * basic rendering of a component
+ * 
+ * @template P - The parent/super class
+ * 
+ * @param {P} superFn - The parent/super to extend
  */
 export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponentBase, BaseClass> = new WeakMap();
@@ -278,7 +302,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * 
 		 * @readonly
 		 */
-		public static html: TemplateFnLike<CHANGE_TYPE>|null;
+		public static html: TemplateFnLike<CHANGE_TYPE|number>|null;
 
 		/**
 		 * The element's constructor
@@ -295,7 +319,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		 * 
 		 * @readonly
 		 */
-		public static css: TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]|null;
+		public static css: TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]|null;
 
 		/**
 		 * A function signaling whether this component has custom CSS applied to it
@@ -310,11 +334,11 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(supe
 		/**
 		 * Gets this component's custom CSS templates
 		 * 
-		 * @returns {TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[]} The
+		 * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
 		 * 	custom CSS templates
 		 */
 		/* istanbul ignore next */
-		public customCSS(): TemplateFnLike<CHANGE_TYPE>|TemplateFnLike<CHANGE_TYPE>[] {
+		public customCSS(): TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[] {
 			return [];
 		}
 

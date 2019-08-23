@@ -1,9 +1,14 @@
-import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
-import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal, WebComponentThemeManagerMixinInstance, DefaultValUnknown } from '../classes/types.js';
+import { WebComponentHierarchyManagerMixinInstance, ListenGPType, GlobalPropsFunctions } from './hierarchy-manager.js';
+import { GetEvents, ListenerSet, WebComponentListenableMixinInstance } from './listener.js';
 import { WebComponentBaseMixinInstance } from './base.js';
+import { EventListenerObj } from '../wc-lib.js';
 import { CHANGE_TYPE } from './template-fn.js';
 
-class I18NClass {
+class I18NClass<GA extends {
+	i18n?: any;
+	langs?: string;
+} = {}> {
 	public static urlFormat: string = '/i18n/';
 	public static getMessage: (langFile: any, key: string, values: any[]) => string|Promise<string> = 
 		(file: {
@@ -26,22 +31,22 @@ class I18NClass {
 	public static defaultLang: string|null = null;
 	public static returner: (promise: Promise<string>, content: string) => any =
 		(_, c) => c
-	private _elementLang: string|null = null;
+	private _elementLang: DefaultVal<GA['langs'], string>|null = null;
 	private static _listeners: ((newLang: string) => void)[] = [];
 
 	constructor(private _self: WebComponentI18NManagerMixinInstance) { }
 
 	public setInitialLang() {
-		this.setLang(I18NClass.__loadingLang!, true);
+		this.setLang(I18NClass.__loadingLang! as DefaultVal<GA['langs'], string>, true);
 	}
 
-	public async notifyNewLang(lang: string) {
+	public async notifyNewLang(lang: DefaultVal<GA['langs'], string>) {
 		for (const listener of I18NClass._listeners) {
 			listener(lang);
 		}
 	}
 
-	public async setLang(lang: string, delayRender: boolean = false) {
+	public async setLang(lang: DefaultVal<GA['langs'], string>, delayRender: boolean = false) {
 		if (I18NClass.__loadingLang !== lang) {
 			I18NClass.__loadingLang = lang;
 			await I18NClass.__loadLang(lang);
@@ -137,30 +142,76 @@ class I18NClass {
 	}
 }
 
+/**
+ * An instance of the webcomponent i18n manager mixin's resulting class
+ */
 export type WebComponentI18NManagerMixinInstance = InferInstance<WebComponentI18NManagerMixinClass> & {
 	self: WebComponentI18NManagerMixinClass;
 };
+
+/**
+ * The webcomponent i18n manager mixin's resulting class
+ */
 export type WebComponentI18NManagerMixinClass = InferReturn<typeof WebComponentI18NManagerMixin>;
 
+/**
+ * The parent/super type required by the i18n manager mixin
+ */
 export type WebComponentI18NManagerMixinSuper = Constructor<
 	Partial<Pick<WebComponentHierarchyManagerMixinInstance, 'globalProps'|'listenGP'>> & 
-	Pick<WebComponentBaseMixinInstance, 'renderToDOM'>>;
+	Pick<WebComponentBaseMixinInstance, 'renderToDOM'> & 
+	Partial<Pick<WebComponentListenableMixinInstance, 'listen'|'fire'|'clearListener'|'listenerMap'>> & 
+	Partial<Pick<WebComponentThemeManagerMixinInstance, 'getThemeName'|'getTheme'|'setTheme'>> & 
+	Partial<Pick<WebComponentHierarchyManagerMixinInstance, 'registerChild'|'globalProps'|'getRoot'|'getParent'|'listenGP'|'runGlobalFunction'>>>;
+
+/**
+ * An interface implemented by the i18n manager. This is only used to fix some
+ * TS errors and should not really be used outside of that
+ */
+export interface WebComponentI18NManagerMixinLike {
+	getLang(): string;
+	setLang(lang: string): Promise<void>;
+	__<R, I extends any = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R;
+	__prom<I extends any = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string>;
+}
 
 /**
  * A mixin that, when applied, adds i18n support in the
  * form of adding a `__` method
+ * 
+ * @template P - The parent/super's type
+ * 
+ * @param {P} superFn - The parent/super
  */
 export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMixinSuper>(superFn: P) => {
-	const privateMap: WeakMap<WebComponentI18NManagerClass, I18NClass> = new WeakMap();
-	function i18nClass(self: WebComponentI18NManagerClass): I18NClass {
+	const privateMap: WeakMap<WebComponentI18NManagerClass<any>, I18NClass> = new WeakMap();
+	function i18nClass(self: WebComponentI18NManagerClass<any>): I18NClass {
 		if (privateMap.has(self)) return privateMap.get(self)!;
 		return privateMap.set(self, new I18NClass(self as any)).get(self)!;
 	}
 
+	// Explanation for ts-ignore:
+	// Will show a warning regarding using generics in mixins
+	// This issue is tracked in the typescript repo's issues with numbers
+	// #26154 #24122 (among others)
+
 	/**
 	 * The class that manages all i18n (internationalization) functions
 	 */
-	class WebComponentI18NManagerClass extends superFn {
+	//@ts-ignore
+	class WebComponentI18NManagerClass<GA extends {
+		i18n?: any;
+		langs?: string;
+		events?: EventListenerObj;
+		themes?: {
+			[key: string]: any;
+		};
+		root?: any;
+		parent?: any;
+		globalProps?: {
+			[key: string]: any;
+		}
+	} = {}, E extends EventListenerObj = GetEvents<GA>> extends superFn implements WebComponentI18NManagerMixinLike {
 		constructor(...args: any[]) {
 			super(...args);
 
@@ -186,7 +237,7 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * @param {string} lang - The language to set it to, a regular string
 		 */
-		public async setLang<L extends string>(lang: L): Promise<void> {
+		public async setLang<L extends DefaultValUnknown<GA['langs'], string>>(lang: L): Promise<void> {
 			if (this.globalProps) {
 				this.globalProps<{
 					lang: string;
@@ -201,14 +252,17 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		/**
 		 * Gets the currently active language
 		 */
-		public getLang(): string {
-			return I18NClass.lang!;
+		public getLang(): DefaultValUnknown<GA['langs'], string>|string {
+			return I18NClass.lang! as DefaultValUnknown<GA['langs'], string>|string;
 		}
 		
 		/**
 		 * Initializes i18n with a few important settings
 		 */
-		public static initI18N({
+		public static initI18N<GA extends {
+			i18n?: any;
+			langs?: string;
+		} = {}>({
 			urlFormat,
 			defaultLang,
 			getMessage,
@@ -223,14 +277,14 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			/**
 			 * The default language to use. This is a simple string
 			 */
-			defaultLang: string;
+			defaultLang: DefaultValUnknown<GA['langs'], string>;
 			/**
 			 * An optional override of the default `getMessage` function. This function
 			 * gets the message from the language file given the file, a key and some 
 			 * replacement values and returns a message string or a promise resolving to one. 
 			 * The default function returns `file[key]`
 			 */
-			getMessage?: (langFile: any, key: string, values: any[]) => string|Promise<string>;
+			getMessage?: (langFile: DefaultValUnknown<GA['i18n'], any>, key: string, values: any[]) => string|Promise<string>;
 			/**
 			 * A final step called before the `this.__` function returns. This is called with
 			 * a promise that resolves to a message as the first argument and a placeholder
@@ -256,13 +310,13 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * 
 		 * **Note:** Does not call the `options.returner` function before returning.
 		 * 
-		 * @param {string} key - The key to search for in the messages file
+		 * @param {Extract<keyof GA['i18n'], string>} key - The key to search for in the messages file
 		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
 		 * 		that can be used as placeholders or something similar
 		 * 
 		 * @returns {Promise<string>} A promise that resolves to the found message
 		 */
-		public __prom(key: string, ...values: any[]): Promise<string> {
+		public __prom<I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): Promise<string> {
 			return WebComponentI18NManagerClass.__prom(key, ...values);
 		}
 
@@ -278,13 +332,13 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		 * value that can display a placeholder or something of the sort
 		 * 
 		 * @template R - The return value of your returner function
-		 * @param {string} key - The key to search for in the messages file
+		 * @param {Extract<keyof GA['i18n'], string>} key - The key to search for in the messages file
 		 * @param {any[]} [values] - Optional values passed to the `getMessage` function
 		 * 		that can be used as placeholders or something similar
 		 * 
 		 * @returns {string|R} A promise that resolves to the found message
 		 */
-		public __<R>(key: string, ...values: any[]): string|R {
+		public __<R, I extends GA['i18n'] = { [key: string]: any; }>(key: Extract<keyof I, string>, ...values: any[]): string|R {
 			return WebComponentI18NManagerClass.__(key, ...values);
 		}
 
@@ -341,6 +395,200 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		public static get langReady() {
 			return I18NClass.loadCurrentLang();
 		}
+
+		/**
+		 * A map that maps every event name to
+		 * a set containing all of its listeners
+		 * 
+		 * @readonly
+		 */
+		get listenerMap(): ListenerSet<E> {
+			return super.listenerMap as ListenerSet<E>;
+		}
+
+		/**
+		 * Listens for given event and fires
+		 * the listener when it's triggered
+		 * 
+		 * @template EV - The event's name
+		 * 
+		 * @param {EV} event - The event's name
+		 * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
+		 * 	listener called when the event is fired
+		 * @param {boolean} [once] - Whether to only
+		 * 	call this listener once (false by default)
+		 */
+		// istanbul ignore next
+		public listen = (super.listen ? <EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once: boolean = false) => {
+			// istanbul ignore next
+			super.listen!(event as any, listener, once);
+		} : void 0)!;
+
+		/**
+		 * Clears all listeners on this component for
+		 * given event
+		 * 
+		 * @template EV - The name of the event
+		 * 
+		 * @param {EV} event - The name of the event to clear
+		 * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
+		 * 	specific listener to clear. If not passed, clears all
+		 * 	listeners for the event
+		 */
+		// istanbul ignore next
+		public clearListener = (super.clearListener ? <EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']) => {
+			// istanbul ignore next
+			super.clearListener!(event as any, listener);
+		} : void 0)!;
+
+		/**
+		 * Fires given event on this component
+		 * with given params, returning an array
+		 * containing the return values of all
+		 * triggered listeners
+		 * 
+		 * @template EV - The event's name
+		 * @template R - The return type of the
+		 * 	event's listeners
+		 * 
+		 * @param {EV} event - The event's name
+		 * @param {E[EV]['args']} params - The parameters
+		 * 	passed to the listeners when they are
+		 * 	called
+		 * 
+		 * @returns {R[]} An array containing the
+		 * 	return values of all triggered
+		 * 	listeners
+		 */
+		// istanbul ignore next
+		public fire = (super.fire ? <EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[] => {
+			// istanbul ignore next
+			return super.fire!(event as any, ...params);
+		} : void 0)!;
+
+		/**
+		 * Gets the name of the current theme
+		 * 
+		 * @returns {string} The name of the current theme
+		 */
+		public getThemeName = (super.getThemeName ? <N extends GA['themes'] = { [key: string]: any }>(): Extract<keyof N, string> => {
+			// istanbul ignore next
+			return super.getThemeName!();
+		} : void 0)!;
+
+		/**
+		 * Gets the current theme's theme object
+		 * 
+		 * @template T - The themes type
+		 * 
+		 * @returns {T[keyof T]} A theme instance type
+		 */
+		public getTheme = (super.getTheme ? <T extends GA['themes'] = { [key: string]: any }>(): T[keyof T] => {
+			// istanbul ignore next
+			return super.getTheme!();
+		} : void 0)!;
+
+		/**
+		 * Sets the theme of this component and any other
+		 * component in its hierarchy to the passed theme
+		 * 
+		 * @template N - The theme name
+		 */
+		public setTheme = (super.setTheme ? <N extends GA['themes'] = { [key: string]: any }>(themeName: Extract<keyof N, string>) => {
+			// istanbul ignore next
+			return super.setTheme!(themeName);
+		} : void 0)!;
+
+		/**
+		 * Registers `element` as the child of this
+		 * component
+		 * 
+		 * @template G - Global properties
+		 * @param {HTMLElement} element - The
+		 * 	component that is registered as the child of this one
+		 * 
+		 * @returns {G} The global properties
+		 */
+		public registerChild = (super.registerChild ? <G extends GA['globalProps'] = { [key: string]: any; }>(element: HTMLElement): G => {
+			// istanbul ignore next
+			return super.registerChild!(element as any);
+		} : void 0)!;
+
+		/**
+		 * Gets the global properties functions
+		 * 
+		 * @template G - The global properties
+		 * @returns {GlobalPropsFunctions<G>} Functions
+		 * 	that get and set global properties
+		 */
+		public globalProps = (super.globalProps ? <G extends GA['globalProps'] = { [key: string]: any; }>(): GlobalPropsFunctions<DefaultVal<G, {[key: string]: any }>> => {
+			// istanbul ignore next
+			return super.globalProps!();
+		} : void 0)!;
+
+		/**
+		 * Gets the root node of the global hierarchy
+		 * 
+		 * @template T - The type of the root
+		 * 
+		 * @returns {T} The root
+		 */
+		public getRoot = (super.getRoot ? <T extends GA['root'] = {}>(): T => {
+			// istanbul ignore next
+			return super.getRoot!();
+		} : void 0)!;
+
+		/**
+		 * Returns the parent of this component
+		 * 
+		 * @template T - The parent's type
+		 * @returns {T|null} - The component's parent or 
+		 * 	null if it has none
+		 */
+		public getParent = (super.getParent ? <T extends GA['parent'] = {}>(): T|null => {
+			// istanbul ignore next
+			return super.getParent!();
+		} : void 0)!;
+
+		/**
+		 * Listeners for global property changes
+		 * 
+		 * @template GP - The global properties
+		 * 
+		 * @param {'globalPropChange'} event - The
+		 * 	event to listen for
+		 * @param {(prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void} listener - 
+		 * 	The listener that is called when the
+		 * 	event is fired
+		 * @param {boolean} [once] - Whether to 
+		 * 	only fire this event once
+		 */
+		public listenGP = (super.listenGP ? (<GP extends GA['globalProps'] = { [key: string]: any; }>(
+			event: 'globalPropChange', 
+			listener: (prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void,
+			// istanbul ignore next
+			once: boolean = false) => {
+				// istanbul ignore next
+				return super.listenGP!(event, listener, once);
+		}) as ListenGPType<GA> : void 0)!;
+
+		/**
+		 * Runs a function for every component in this
+		 * global hierarchy
+		 * 
+		 * @template R - The return type of given function
+		 * @template E - The components on the page's base types
+		 * 
+		 * @param {(element: WebComponentHierarchyManager) => R} fn - The
+		 * 	function that is ran on every component
+		 * 
+		 * @returns {R[]} All return values in an array
+		 */
+		public runGlobalFunction = (super.runGlobalFunction ? <E extends {}, R = any>(fn: (element: E) => R): R[] => {
+			// istanbul ignore next
+			return super.runGlobalFunction!(fn);
+		} : void 0)!;
 	}
+
 	return WebComponentI18NManagerClass;
 }

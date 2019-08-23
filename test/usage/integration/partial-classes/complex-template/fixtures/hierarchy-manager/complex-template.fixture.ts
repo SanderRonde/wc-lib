@@ -1,5 +1,5 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../src/wclib.js';
-import { ComplexTemplatingWebComponent } from '../../../../../../../src/classes/partial.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../build/es/wc-lib.js';
+import { ComplexTemplatingWebComponent } from '../../../../../../../build/es/classes/partial.js';
 import { render, html } from '../../../../../../../node_modules/lit-html/lit-html.js';
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
@@ -19,21 +19,24 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends ComplexTemplatingWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
-	};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
 	}
 }> {
 	props = Props.define(this, {
@@ -72,15 +75,14 @@ const ParentElementCSS = new TemplateFn<ParentElement>(() => {
 	]
 })
 export class ParentElement extends ComplexTemplatingWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
 	}
 }> {
 	props = Props.define(this, {
@@ -118,15 +120,14 @@ const RootElementCSS = new TemplateFn<RootElement>(() => {
 	]
 })
 export class RootElement extends ComplexTemplatingWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
 	}
 }> {
 	props = Props.define(this, {
@@ -139,7 +140,7 @@ export class RootElement extends ComplexTemplatingWebComponent<{
 	});
 }
 
-RootElement.define();
+RootElement.define(true);
 
 export interface TestGlobalProperties {
 	a: string;

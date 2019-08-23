@@ -1,4 +1,5 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../src/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../build/es/wc-lib.js';
+import { TestGlobalProperties } from '../hierarchy-manager/fixtures/standard/hierarchy-manager.fixture.js';
 import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
@@ -18,22 +19,26 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends ConfigurableWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
-	};
-}, {
-	test: {
-		args: [number, number];
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
 	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	globalProps: TestGlobalProperties;
 }> {
 	props = Props.define(this, {
 		reflect: {

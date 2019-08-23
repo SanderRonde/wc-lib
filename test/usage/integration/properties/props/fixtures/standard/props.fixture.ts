@@ -4,7 +4,7 @@ import {
 	NodePart, isDirective, noChange 
 } from "../../../../../../../node_modules/lit-html/lit-html.js";
 import { PropsElement, EmptyProps, PrivProps, ReflectProps, MergedProps, UnmergedProps, InvalidDefineArg, OverriddenProp, NoReflectSelf } from '../../elements/props-element.js';
-import { WebComponent } from '../../../../../../../src/wclib.js';
+import { WebComponent } from '../../../../../../../build/es/wc-lib.js';
 
 
 WebComponent.initComplexTemplateProvider({
@@ -12,12 +12,12 @@ WebComponent.initComplexTemplateProvider({
 	AttributeCommitter, NodePart, isDirective, noChange
 });
 
-PropsElement.define();
-EmptyProps.define();
-PrivProps.define();
-ReflectProps.define();
-MergedProps.define();
-UnmergedProps.define();
-InvalidDefineArg.define();
-OverriddenProp.define();
-NoReflectSelf.define();
+PropsElement.define(true);
+EmptyProps.define(true);
+PrivProps.define(true);
+ReflectProps.define(true);
+MergedProps.define(true);
+UnmergedProps.define(true);
+InvalidDefineArg.define(true);
+OverriddenProp.define(true);
+NoReflectSelf.define(true);

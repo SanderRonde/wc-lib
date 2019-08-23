@@ -11,6 +11,11 @@ function define(name: string, component: any) {
 	window.customElements.define(name, component);
 }
 
+/**
+ * A definer class that has some functions that 
+ * allow you to keep track of how many components
+ * are defined etc.
+ */
 export class DefinerClass {
 	/**
 	 * Any internal properties that are only used by the framework
@@ -33,11 +38,44 @@ export class DefinerClass {
 	 */
 	public static defined: string[] = [];
 
+	/**
+	 * All defined webcomponents
+	 */
+	public static devComponents: string[] = [];
+
+	/**
+	 * Whether defining has finished.
+	 * This is set to true when the first
+	 * call to .define() finishes so if
+	 * you have multiple ones, this is unreliable
+	 */
 	public static finished: boolean = false;
+
+	/**
+	 * Listeners that listen for loading to
+	 * be finished
+	 */
 	public static listeners: {
 		component: WebComponentMixinInstance;
 		constructed: Promise<void>;
 	}[] = [];
+
+	/**
+	 * Whether this component is in development mode
+	 */
+	public isDevelopment: boolean = false;
+
+	/**
+	 * Listen for the component's loading to be finished and sets
+	 * isMounted and calls mounted. Should only be used by the library 
+	 * itself
+	 * 
+	 * @param {WebComponentMixinInstance} component - The component
+	 * @param {Promise<void>} isConstructed - A promise to wait for
+	 * before resolving
+	 * 
+	 * @returns {Promise<void>} A promise
+	 */
 	public static async listenForFinished(component: WebComponentMixinInstance, isConstructed: Promise<void>) {
 		if (this.finished) {
 			await isConstructed;
@@ -49,6 +87,14 @@ export class DefinerClass {
 				constructed: isConstructed
 			});
 		}
+	}
+
+	/**
+	 * Sets development mode to true if it was set to true for this
+	 * component's definition
+	 */
+	public setDevMode(component: HTMLElement) {
+		this.isDevelopment = DefinerClass.devComponents.indexOf(component.tagName.toLowerCase()) > -1;
 	}
 
 	private static __doSingleMount(component: WebComponentMixinInstance) {
@@ -67,6 +113,9 @@ export class DefinerClass {
 		});
 	}
 
+	/**
+	 * Finish loading and call the listeners
+	 */
 	public static async finishLoad() {
 		this.finished = true;
 		if (window.requestAnimationFrame || window.webkitRequestAnimationFrame) {
@@ -100,6 +149,11 @@ export class DefinerClass {
 		return true;
 	}
 
+	/**
+	 * Check a component's properties and validate them
+	 * 
+	 * @param {WebComponentBaseMixinClass} component - The component to validate
+	 */
 	public static checkProps(component: WebComponentBaseMixinClass) {
 		if (!component.is) {
 			throw new WCLibError(component, 'Component is missing static is property');
@@ -147,19 +201,43 @@ export class DefinerClass {
 	}
 }
 
+/**
+ * Metadata about defining. Allows you to listen
+ * for the number of definitions
+ */
 export class DefineMetadata {
+	/**
+	 * The amount of defined components
+	 */
 	public static defined: number = 0;
 	private static _listeners: ((amount: number) => any)[] = [];
 
+	/**
+	 * Increment the amount of defined components
+	 */
 	public static increment() {
 		this.defined++;
 		this._listeners.forEach(l => l(this.defined));
 	}
 
+	/**
+	 * Add a listener that is called when a component
+	 * is defined
+	 * 
+	 * @param {(amount: number) => any} listener - The listener.
+	 * 	Gets the amount of defined components as the first argument
+	 */
 	public static onDefine(listener: (amount: number) => any) {
 		this._listeners.push(listener);
 	}
 
+	/**
+	 * Calls the listener when given amount has been reached (
+	 * that many components have been defined).
+	 * 
+	 * @param {number} amount - The amount to wait for
+	 * @param {(amount: number) => any} listener - The listener to call
+	 */
 	public static onReach(amount: number, listener: (amount: number) => any) {
 		this._listeners.push((currentAmount) => {
 			if (currentAmount === amount) {
@@ -169,16 +247,30 @@ export class DefineMetadata {
 	}
 }
 
+/**
+ * An instance of the webcomponent definer mixin's resulting class
+ */
 export type WebComponentDefinerMixinInstance = InferInstance<WebComponentDefinerMixinClass> & {
 	self: WebComponentDefinerMixinClass;
 };
+
+/**
+ * The webcomponent definer mixin's resulting class
+ */
 export type WebComponentDefinerMixinClass = InferReturn<typeof WebComponentDefinerMixin>;
 
+/**
+ * The parent/super type required by the definer mixin (the HTMLElement class)
+ */
 export type WebComponentDefinerMixinSuper = Constructor<HTMLElement>;
 
 /**
  * A mixin that will add the ability to define a component
  * and its dependencies by calling .define on it
+ * 
+ * @template P
+ * 
+ * @param {P} superFn - The parent/super to extend from
  */
 export const WebComponentDefinerMixin = <P extends WebComponentDefinerMixinSuper>(superFn: P) => {
 	/**
@@ -205,7 +297,7 @@ export const WebComponentDefinerMixin = <P extends WebComponentDefinerMixinSuper
 		 * @readonly
 		 */
 		public static dependencies?: ({
-			define(isRoot?: boolean): void;
+			define(isDevelopment?: boolean, isRoot?: boolean): void;
 		})[]|null = [];
 		/**
 		 * The name of this component
@@ -223,27 +315,35 @@ export const WebComponentDefinerMixin = <P extends WebComponentDefinerMixinSuper
 				});
 			});
 			DefinerClass.listenForFinished(this as any, isConnected);
+			this.___definerClass.setDevMode(this);
 		}
 
 		/**
 		 * Define this component and its dependencies as a webcomponent
 		 * so they can be used
 		 * 
+		 * @param {boolean} [isDevelopment] - Whether to enable
+		 * 	development mode in which some additional checks
+		 *  are performed at the cost of performance.
 		 * @param {boolean} [isRoot] - Set to true if this is
 		 * 	not a dependency (which most definitions aren't)
 		 * 	True by default
 		 */
-		static define(isRoot: boolean = true) {
+		// istanbul ignore next
+		static define(isDevelopment: boolean = false, isRoot: boolean = true) {
 			if (isRoot && DefinerClass.finished) {
 				//Another root is being defined, clear last one
 				DefinerClass.finished = false;
 				DefinerClass.listeners = [];
 			}
+			if (isDevelopment) {
+				DefinerClass.devComponents.push(this.is);
+				DefinerClass.checkProps(this as unknown as WebComponentBaseMixinClass);
+			}
 
-			DefinerClass.checkProps(this as unknown as WebComponentBaseMixinClass);
 			if (this.dependencies && this.dependencies.length) {
 				for (const dependency of this.dependencies) {
-					dependency && dependency.define(false);
+					dependency && dependency.define(isDevelopment, false);
 				}
 			}
 			define(this.is, this);

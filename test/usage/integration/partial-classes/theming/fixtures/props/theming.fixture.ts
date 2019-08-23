@@ -1,9 +1,10 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../src/wclib.js";
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../../build/es/wc-lib.js";
 import { render, html } from "../../../../../../../node_modules/lit-html/lit-html.js";
-import { ThemingWebComponent } from "../../../../../../../src/classes/partial.js";
+import { ThemingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 
 export interface PropsElementWindow extends Window {
 	accessSymbol: typeof accessSymbol;
+	ChildEl: typeof ChildEl;
 }
 
 declare const window: PropsElementWindow;
@@ -52,9 +53,45 @@ interface SymbolKeys {
 	[accessSymbol]: string;
 }
 
+
+
+@config({
+	is: 'child-el',
+	html: new TemplateFn<ChildEl>(function () {
+		ChildEl.onRender(this.props);
+		return html``;
+	}, CHANGE_TYPE.PROP, render)
+})
+export class ChildEl extends ThemingWebComponent {
+	props = Props.define(this, {
+		reflect: {
+			noVal: {
+				type: ComplexType<{}>(),
+				defaultValue: { a: 'b' }
+			},
+			ref: {
+				type: ComplexType<{}>(),
+				defaultValue: { c: 'd' }
+			},
+			noref: {
+				type: ComplexType<{}>(),
+				defaultValue: { e: 'f' }
+			},
+		}
+	})
+
+	static onRender(_props: any) { }
+
+	connectedCallback() {
+		super.connectedCallback();
+	}
+}
+
+window.ChildEl = ChildEl;
+
 @config({
 	is: 'props-element',
-	html: new TemplateFn<PropsElement>(function () {
+	html: new TemplateFn<PropsElement>(function (_, props) {
 		return html`
 			<obj-el id="ref"></obj-el>
 			<obj-el id="json" complex="${JSON.stringify({
@@ -65,10 +102,23 @@ interface SymbolKeys {
 				a: 'b',
 				c: 'd'
 			}) + 'padding'}"></obj-el>
+			${(() => {
+				switch (props.childElIndex) {
+					case 0:
+						return html`<child-el></child-el>`;
+					case 1:
+						return html`<child-el #ref="${{e: 'f'}}"></child-el>`;
+					case 2:
+						return html`<child-el noref="${JSON.stringify({g: 'h'})}"></child-el>`;
+					default: 
+						return html``;
+				}
+			})()}
 		`;
 	}, CHANGE_TYPE.PROP, render),
 	dependencies: [
-		ObjEl
+		ObjEl,
+		ChildEl
 	]
 })
 export class PropsElement extends ThemingWebComponent {
@@ -81,6 +131,11 @@ export class PropsElement extends ThemingWebComponent {
 			casingtest2: {
 				type: PROP_TYPE.BOOL,
 				value: true
+			},
+			
+			childElIndex: {
+				type: PROP_TYPE.NUMBER,
+				value: -1
 			},
 
 			bool: PROP_TYPE.BOOL,
@@ -420,6 +475,10 @@ export class PropsElement extends ThemingWebComponent {
 			}
 		}
 	});
+
+	forceChildElRender(index: number) {
+		this.props.childElIndex = index;
+	}
 };
 
 @config({
@@ -633,12 +692,12 @@ export class NoReflectSelf extends ThemingWebComponent {
 	});
 }
 
-PropsElement.define();
-EmptyProps.define();
-PrivProps.define();
-ReflectProps.define();
-MergedProps.define();
-UnmergedProps.define();
-InvalidDefineArg.define();
-OverriddenProp.define();
-NoReflectSelf.define();
+PropsElement.define(true);
+EmptyProps.define(true);
+PrivProps.define(true);
+ReflectProps.define(true);
+MergedProps.define(true);
+UnmergedProps.define(true);
+InvalidDefineArg.define(true);
+OverriddenProp.define(true);
+NoReflectSelf.define(true);

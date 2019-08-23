@@ -1,4 +1,3 @@
-import { WebComponent } from '../classes/full.js';
 import { CHANGE_TYPE } from './template-fn.js';
 
 /**
@@ -143,6 +142,7 @@ export function setter(setAttrFn: (key: string, val: string) => void,
 				try {
 					setAttrFn(name, encodeURIComponent(JSON.stringify(strVal)));
 				} catch(e) {
+					// istanbul ignore next
 					setAttrFn(name, encodeURIComponent('_'));
 				}
 			} else {
@@ -222,6 +222,11 @@ export const enum PROP_TYPE {
 	 */
 	BOOL = 'bool'
 }
+
+/**
+ * A complex type for a property where the passed
+ * template value is the actual type
+ */
 export type ComplexType<T> = typeof complex & {
 	__data: T;
 };
@@ -244,16 +249,86 @@ export function ComplexType<T>(): ComplexType<T> {
 
 type DefinePropTypes = PROP_TYPE|ComplexType<any>;
 interface DefineTypeConfig {
+	/**
+	 * The type of this property. Can either by a PROP_TYPE:
+	 * PROP_TYPE.STRING, PROP_TYPE.NUMBER or PROP_TYPE.BOOL
+	 * or it can be a complex type passed through ComplexType<TYPE>().
+	 * ComplexType should be used for any values that do not fit 
+	 * the regular prop type
+	 */
 	type: DefinePropTypes;
 }
+
+/**
+ * The type of a property's config object
+ */
 export interface DefinePropTypeConfig extends DefineTypeConfig {
+	/**
+	 * Watch this property for changes. In objects, setting this to true
+	 * means that any of its keys are watched for changes (see watchProperties)
+	 *
+	 * NOTE: This uses Proxy to watch objects. This does mean that
+	 * after setting this property to an object, getting that same
+	 * property will return a proxy of it (which is not strictly equal)
+	 * If you do not want this or have environments that do not yet
+	 * support window.Proxy, turn this off for objects
+	 */
 	watch?: boolean;
+	/**
+	 * The default value of this component. Should be of the same
+	 * type as this prop's value (obviously). Will be undefined if not set
+	 */
 	defaultValue?: GetTSType<this['type']>;
+	/**
+	 * A synonym for defaultValue
+	 */
 	value?: GetTSType<this['type']>;
+	/**
+	 * The properties to watch if this is an object. These can contain
+	 * asterisks and can go multiple properties deep. ** will watch any
+	 * properties, even newly defined ones.
+	 * For example: 
+	 * 	['x'] only watched property x,
+	 *  ['*.y'] watches the y property of any object values in this object
+	 *  ['z.*'] watches any property of the z object
+	 */
 	watchProperties?: string[];
+	/**
+ 	 * The exact type of this property. This is not actually used and
+	 * is only used for typing.
+	 * Say you have a property that can have the values 'text', 'password'
+	 * or 'tel' (such as the html input element). This would mean that
+	 * the type is a string (PROP_TYPE.STRING). This does however not fully
+	 * express the restrictions. Doing
+	 * { type: PROP_TYPE.STRING, exactType: '' as 'text'|'password'|'tel' }
+	 * Will apply these restrictions and set the type accordingly
+	 */
 	exactType?: any;
+	/**
+	 * Coerces the value to given type if its value is falsy.
+	 * String values are coerced to '', bools are coerced to false
+	 * and numbers are coerced to 0
+	 */
 	coerce?: boolean;
+	/**
+	 * Only relevant for type=PROP_TYPE.BOOL
+	 * This only sets a boolean value to true if the property was set to
+	 * the string "true". Normally any string that is not equal
+	 * to the string "false" will be taken as a true value.
+	 * 	 * For example, if strict=false
+	 * <my-component bool_1="a" bool_2="false" bool_3="" bool_4="true">
+	 * bool_1, bool_3 and bool_4 are true while bool_2 is false (and any
+	 * other bools are false as well since no value was supplied)
+	 * 	 * For example, if strict=true
+	 * <my-component bool_1="a" bool_2="false" bool_3="" bool_4="true">
+	 * bool_4 is true and the rest is false
+	 */
 	strict?: boolean;
+	/**
+	 * Whether to reflect this property to the component itself.
+	 * For example, if set to true and the property is called "value",
+	 * accessing component.value will return the value of that property.
+	 */
 	reflectToSelf?: boolean;
 }
 
@@ -466,6 +541,7 @@ namespace Watching {
 			deleteProperty(_obj, prop) {
 				if (Reflect.has(obj, prop)) {
 					const deleted = Reflect.deleteProperty(obj, prop);
+					// istanbul ignore next
 					if (deleted && ((typeof prop !== 'symbol' && (level.has(prop + '')) || level.has('*')))) {
 						onAccessed();
 					}
@@ -540,7 +616,17 @@ function dashesToCasing(name: string) {
 	return newStr;
 }
 
-export function casingToDashes(name: string) {
+/**
+ * Converts casing to dashes
+ * 
+ * **Example:**
+ * "camelCasedName" -> "camel-cased-name"
+ * 
+ * @param {string} name - The name/string to convert
+ * 
+ * @returns {string} - The hyphen/dashes-cased string
+ */
+export function casingToDashes(name: string): string {
 	if (!/[A-Z]/.test(name)) return name;
 
 	let newStr = '';
@@ -570,7 +656,17 @@ function getCoerced(initial: any, mapType: DefinePropTypes) {
 const connectMap = new WeakMap<HTMLElement, any>();
 const connectedElements = new WeakSet<HTMLElement>();
 
-export async function awaitConnected(el: WebComponent): Promise<void> {
+/**
+ * Waits for the element to be connected to the DOM
+ * (`connectedCallback` was called)
+ * 
+ * @param {HTMLElement} el - The element for which
+ * to wait for it to be connected to the DOM.
+ * 
+ * @returns {Promise<void>} - A promise that resolves when
+ * 	the element has been connected
+ */
+export async function awaitConnected(el: HTMLElement): Promise<void> {
 	/* istanbul ignore next */
     if (connectedElements.has(el)) return;
     await new Promise(async (resolve) => {
@@ -580,9 +676,23 @@ export async function awaitConnected(el: WebComponent): Promise<void> {
     });
 }
 
-export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<void> {
+/**
+ * Hooks into the `connectedCallback` function of the element
+ * and runs the passed function in it
+ * 
+ * @param {HTMLElement} el - The element for which to
+ * hook into its `connectedCallback`
+ * @param {() => any} fn - A function to call 
+ * in the `connectedCallback`
+ * 
+ * @returns {Promise<void>} - A promise that resolves when
+ * 	the function has been called (aka `connectedCallback`
+ * 	was called)
+ */
+export async function hookIntoConnect(el: HTMLElement, fn: () => any): Promise<void> {
+	// istanbul ignore next
     if (connectedElements.has(el)) {
-        fn(); 
+		fn(); 
         return;
     }
     await new Promise(async (resolve) => {
@@ -598,6 +708,10 @@ export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<
 
 type HTMLElementAttributes = Pick<HTMLElement, 
 	'setAttribute'|'removeAttribute'|'hasAttribute'|'getAttribute'|'tagName'>;
+
+/**
+ * The type that can be passed to `Props.define(xxx, { })`
+ */
 export interface PropComponent extends HTMLElementAttributes {
 	renderToDOM(changeType: number): void;
 	getParentRef?(ref: string): any;
@@ -970,16 +1084,18 @@ namespace PropsDefiner {
 					defaultValue, mapKey, watch, watchProperties,
 					propName, type, reflectToAttr
 				} = this.config;
-				if (defaultValue !== undefined && this._rep.propValues[mapKey] === undefined) {
-					this._rep.propValues[mapKey] = Watching.watchValue(
-						createQueueRenderFn(this._rep.component), 
-						defaultValue as any, watch, watchProperties);
-					if (reflectToAttr) {
-						await hookIntoConnect(this._rep.component as any, () => {
+				if (defaultValue !== undefined) {
+					await hookIntoConnect(this._rep.component as any, () => {
+						if (this._rep.propValues[mapKey] === undefined) {
+							this._rep.propValues[mapKey] = Watching.watchValue(
+								createQueueRenderFn(this._rep.component), 
+								defaultValue as any, watch, watchProperties);
+						}
+						if (reflectToAttr) {
 							setter(this._rep.setAttr, this._rep.removeAttr, propName, 
 								defaultValue, type);
-						});
-					}
+						}
+					});
 				} else if (type === complex && reflectToAttr) {
 					await hookIntoConnect(this._rep.component as any, () => {
 						setter(this._rep.setAttr, this._rep.removeAttr, propName,
@@ -1001,12 +1117,26 @@ namespace PropsDefiner {
 			properties.forEach(property => property.setReflect());
 			properties.forEach(property => property.setPropAccessors());
 			await Promise.all(properties.map(async (property) => {
-				if (property.config.type === complex) {
-					await property.assignComplexType();
-				} else {
+				/**
+				 * If type is simple, check for values first and then assign default value
+				 * 
+				 * If type is complex, there are two cases
+				 * 		If the value is a ref it should wait for that ref
+				 * 			to resolve through its parent and in the meantime
+				 * 			assign a default value
+				 *		If the value is not a ref it should assign it
+				 * 			and otherwise do the default
+				 * 		If there is no value, the default should be assigned
+				 */
+				if (property.config.type !== complex) {
 					property.assignSimpleType();
+					return property.doDefaultAssign();
 				}
-				return property.doDefaultAssign();
+
+				return Promise.all([
+					property.assignComplexType(),
+					property.doDefaultAssign()
+				]);
 			}));
 		}
 
@@ -1050,16 +1180,27 @@ namespace PropsDefiner {
 		}
 }
 
+/**
+ * The type of a prop config object. This is the value
+ * that is passed to the `reflect` and `priv` keys
+ */
 export type PropConfigObject = {
 	[key: string]: DefinePropTypes|DefinePropTypeConfig;
 };
 
+/**
+ * The return type given the two prop config objects (
+ * the public one and the private one))
+ */
 export type PropReturn<PUB extends PropConfigObject, PRIV extends PropConfigObject> = {
 	[K in keyof PUB]: GetTSType<PUB[K]>;
 } & {
 	[K in keyof PRIV]: GetTSType<PRIV[K]>;
 }
 
+/**
+ * A map of element tag names to prop configs
+ */
 export const propConfigs: Map<string, {
 	reflect?: PropConfigObject;
 	priv?: PropConfigObject;
@@ -1073,7 +1214,7 @@ export class Props {
 	 * Defines properties on this component
 	 * 
 	 * @template PUB - The public properties
-	 * @template PRIV - The private propertie
+	 * @template PRIV - The private properties
 	 * @template R - The return value
 	 * @template PP - The parent's properties
 	 * 
@@ -1146,6 +1287,13 @@ export class Props {
 			return props as Props & R & PP;
 		}
 
+	/**
+	 * A function that will be called when the passed element
+	 * is connected to the dom (`connectedCallback` is called).
+	 * This is only used by the library and has no other uses.
+	 * 
+	 * @param {HTMLElement} - The element that was connected
+	 */
 	static onConnect(element: HTMLElement) {
 		if (connectMap.has(element)) {
 			for (const listener of connectMap.get(element)!) {

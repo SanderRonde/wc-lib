@@ -1,6 +1,6 @@
 import { directive, Part, html, render } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE } from '../../../../../../../src/wclib.js';
-import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
+import { config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE } from '../../../../../../../build/es/wc-lib.js';
+import { I18NWebComponent } from '../../../../../../../build/es/classes/partial.js';
 
 interface LangFile {
 	test: {
@@ -33,22 +33,25 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends I18NWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
-	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
-	};
-}, {
-	test: {
-		args: [number, number];
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -90,16 +93,15 @@ const ParentElementCSS = new TemplateFn<ParentElement>(() => {
 	]
 })
 export class ParentElement extends I18NWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -136,16 +138,15 @@ const RootElementCSS = new TemplateFn<RootElement>(() => {
 	]
 })
 export class RootElement extends I18NWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -186,4 +187,4 @@ I18NWebComponent.initI18N({
 });
 
 (window as any).WebComponent = I18NWebComponent;
-RootElement.define();
+RootElement.define(true);

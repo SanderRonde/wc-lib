@@ -1,5 +1,5 @@
-import { ComplexTemplatingWebComponent } from '../../../../../../../src/classes/partial.js';
-import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../src/wclib.js';
+import { ComplexTemplatingWebComponent } from '../../../../../../../build/es/classes/partial.js';
+import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wc-lib.js';
 import { DeepObject } from '../../../../properties/props/elements/props-element.js';
 
 @config({
@@ -56,5 +56,5 @@ export class WatchedComponent extends ComplexTemplatingWebComponent {
 	})
 }
 
-ReflectProps.define();
-WatchedComponent.define();
+ReflectProps.define(true);
+WatchedComponent.define(true);

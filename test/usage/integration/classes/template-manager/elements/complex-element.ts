@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, ComplexType, PROP_TYPE } from "../../../../../../src/wclib.js";
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, ComplexType, PROP_TYPE } from "../../../../../../build/es/wc-lib.js";
 import { render, html, directive, Part } from "../../../../../../node_modules/lit-html/lit-html.js";
 import { TestElement } from "../../elements/test-element.js";
 
@@ -9,11 +9,10 @@ import { TestElement } from "../../elements/test-element.js";
 	}, CHANGE_TYPE.NEVER, render)
 })
 export class EventTriggeringElement extends ConfigurableWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	ev: {
-		args: [number];
+	events: {
+		ev: {
+			args: [number];
+		}
 	}
 }> { }
 

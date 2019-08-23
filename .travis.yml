@@ -9,27 +9,41 @@ branches:
   - master
 stages:
 - test
+
 install:
 - yarn --ignore-engines
 - npm install -g typescript
 - npm install -g codecov
 script:
-- yarn $TEST
+- yarn "coverage:$TEST"
+- yarn compile:examples
+- gulp prepareWebsite
 after_script:
-- codecov -f coverage/lcov.info
+- codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  on:
+    branch: master
+  local_dir: examples/
+
 notifications:
   email:
     on_success: change
     on_failure: change
 env:
   matrix:
-  - TEST=coverage:classes
-  - TEST=coverage:lib
-  - TEST=coverage:properties
-  - TEST=coverage:partial-classes-basic
-  - TEST=coverage:partial-classes-complex-template
-  - TEST=coverage:partial-classes-i18n
-  - TEST=coverage:partial-classes-theming
+  - TEST=classes
+  - TEST=lib
+  - TEST=properties
+  - TEST=partial-classes-basic
+  - TEST=partial-classes-complex-template
+  - TEST=partial-classes-i18n
+  - TEST=partial-classes-theming
+  - TEST=tasks
   global:
   - secure: gk0qwWSGXiPnRo5V7C7xeim+ieuqBCXyA+6Lt0bbLgE9bI9XbBMz3UHvXL/25A+WqpWnM9WQGSUqpz8wGOSTGpLEYYpjr41CTJZeO64iwH0wbhdE8BGxB53Er4pkIQJ55CeUB5hIeWGzHWWT6SU1GNnw1MedhGKF0JfA2APP6a6GV+6skl2Bo+bba1F0jCmICHVahd6NgVGm5c6Pk0Ql/tcPZln5FGNGWmvtm4/l6MT9WEWrV+Xe4/Aegpx8EoF5h5s1ENzSDo9sOQoI1htVJ1Zbdg9R7ysd/UJKPrJUI0G/a1DbDSVdUhw+TrYl6v77R/brV93Llr56zHBtUk02/SNNG69LGnAJHZKbP2xUKqUOQmdU8wi0kCisw5HdWyNvK2I+D6ajiv12GGaMwYEOYuL/OXQ+0cTUSpE8MNIvwQxATVPP24VwK03FQpSeFlO+HN1tr7Qqbn/eIPHiBEW3x0SzaayEH2NAxPV+t1LcHc53POWvDPqSRcDUCllcUiJXb+35uoZb3256e0f2evCZxpgTY91VAPEwr9I3vpkEQSMBSQASuNTZPaPf4Fh7Nkwf04E6Ch5yTOSfS0xJr8hMcBknKLG5J2b7AHqlS1uu6cDhkyjf6Crp/WFNhmXjiKyQEyp3Z9f30eqz6fvIIlNpXyTqGQnwQXcLoXH/b9BHfR4=
 addons:

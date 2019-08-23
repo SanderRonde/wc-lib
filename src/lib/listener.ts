@@ -1,4 +1,12 @@
-import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
+import { Constructor, InferInstance, InferReturn, DefaultVal } from '../classes/types.js';
+
+/**
+ * Returns type['events']
+ */
+export type GetEvents<GA extends {
+	events?: EventListenerObj;
+}> = Required<GA>['events'] extends undefined ? 
+	{} : DefaultVal<Required<GA>['events'], EventListenerObj>;
 
 /**
  * An object that maps an event name
@@ -35,10 +43,13 @@ export type ListenerSet<E extends EventListenerObj> = {
  * listening and firing of events on this
  * component
  * 
- * @template E - An object map of events to its args and return value. See
+ * @template GA - An object containing an "events" key that contains
+ * 	an object map of events to its args and return value. See
  * 	`WebComponentListenable` for more info
  */
-class ListenableClass<E extends EventListenerObj> {
+class ListenableClass<GA extends {
+	events?: EventListenerObj;
+} = {}, E extends EventListenerObj = GetEvents<GA>> {
 	/**
 	 * A map that maps every event name to
 	 * a set containing all of its listeners
@@ -108,21 +119,37 @@ class ListenableClass<E extends EventListenerObj> {
 	}
 }
 
+/**
+ * An instance of the webcomponent listenable mixin's resulting class
+ */
 export type WebComponentListenableMixinInstance = InferInstance<WebComponentListenableMixinClass> & {
 	self: WebComponentListenableMixinClass;
 };
+
+/**
+ * The webcomponent listenable mixin's resulting class
+ */
 export type WebComponentListenableMixinClass = InferReturn<typeof WebComponentListenableMixin>;
 
+/**
+ * The parent/super type required by the listenable mixin
+ */
 export type WebComponentListenableMixinSuper = Constructor<{}>;
 
 /**
  * A mixin that, when applied, allows for listening
  * to and firing of events on a component or any other
  * class
+ * 
+ * @template P - The parent/super's type
+ * 
+ * @param {P} superFn - The parent/super
  */
 export const WebComponentListenableMixin = <P extends WebComponentListenableMixinSuper>(superFn: P) => {
-	const privateMap: WeakMap<WebComponentListenable<any>, ListenableClass<any>> = new WeakMap();
-	function listenableClass<E extends EventListenerObj>(self: WebComponentListenable<E>): ListenableClass<E> {
+	const privateMap: WeakMap<WebComponentListenable<any, any>, ListenableClass<any, any>> = new WeakMap();
+	function listenableClass<GA extends {
+		events?: EventListenerObj;
+	} = {}, E extends EventListenerObj = GetEvents<GA>>(self: WebComponentListenable<GA, E>): ListenableClass<GA, E> {
 		if (privateMap.has(self)) return privateMap.get(self)!;
 		return privateMap.set(self, new ListenableClass()).get(self)!;
 	}
@@ -137,7 +164,9 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 	 * and firing of events
 	 */
 	//@ts-ignore
-	class WebComponentListenable<E extends EventListenerObj = {}> extends superFn {
+	class WebComponentListenable<GA extends {
+		events?: EventListenerObj;
+	} = {}, E extends EventListenerObj = GetEvents<GA>> extends superFn {
 		constructor(...args: any[]) {
             super(...args);
 		}
@@ -201,7 +230,7 @@ export const WebComponentListenableMixin = <P extends WebComponentListenableMixi
 		 * @template R - The return type of the
 		 * 	event's listeners
 		 * 
-		 * @param {EV} event - The event's anme
+		 * @param {EV} event - The event's name
 		 * @param {E[EV]['args']} params - The parameters
 		 * 	passed to the listeners when they are
 		 * 	called

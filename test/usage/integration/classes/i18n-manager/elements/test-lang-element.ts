@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config } from '../../../../../../src/wclib.js';
+import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config } from '../../../../../../build/es/wc-lib.js';
 import { render, html, directive, Part } from '../../../../../../node_modules/lit-html/lit-html.js';
 
 const awaitPromise = directive((key: string, value: Promise<any>|string) => (part: Part) => {
@@ -51,4 +51,11 @@ const placeholder = directive((key: string, value: Promise<any>|string) => (part
 	}, CHANGE_TYPE.LANG, render),
 	css: null
 })
-export class LangElement extends ConfigurableWebComponent { }
+export class LangElement extends ConfigurableWebComponent<{
+	langs: 'en'|'nl';
+	i18n: {
+		test: string;
+		nonexistent: string;
+		values: string;
+	}
+}> { }

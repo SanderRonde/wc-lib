@@ -41,5 +41,6 @@ export * from './lib/util.js';
 export {
 	noTheme
 } from './lib/theme-manager.js';
+export { css } from './lib/css.js';
 
 export { WebComponent } from './classes/full.js';

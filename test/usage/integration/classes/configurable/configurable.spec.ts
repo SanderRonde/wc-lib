@@ -147,70 +147,77 @@ context('Configurable Component', function() {
 			it('throws an error when .is is missing', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.MissingIs.define();
+						window.configured.wrongClasses.MissingIs.define(true);
 					}).to.throw('Component is missing static is property');
 				});
 			});
 			it('throws an error when .is is not a string', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.NonStringIs.define();
+						window.configured.wrongClasses.NonStringIs.define(true);
 					}).to.throw('Component name is not a string');
+				});
+			});
+			it('does throw WCLibError if development mode is false', () => {
+				cy.window().then((window: TestConfiguredWindow) => {
+					expect(() => {
+						window.configured.wrongClasses.NonStringIs.define(false);
+					}).to.not.throw('Component name is not a string');
 				});
 			});
 			it('throws an error when .is contains no dash', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.NoDashIs.define();
+						window.configured.wrongClasses.NoDashIs.define(true);
 					}).to.throw('Webcomponent names need to contain a dash "-"');
 				});
 			});
 			it('throws an error when .is contains an uppercase letter', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.UppercaseIs.define();
+						window.configured.wrongClasses.UppercaseIs.define(true);
 					}).to.throw('Webcomponent names can not contain uppercase ASCII characters.');
 				});
 			});
 			it('throws an error when .is starts with a number', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.NumberIs.define();
+						window.configured.wrongClasses.NumberIs.define(true);
 					}).to.throw('Webcomponent names can not start with a digit.');
 				});
 			});
 			it('throws an error when .is starts with a dash/hyphen', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.DashIs.define();
+						window.configured.wrongClasses.DashIs.define(true);
 					}).to.throw('Webcomponent names can not start with a hyphen.');
 				});
 			});
 			it('throws an error when .html is missing', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.MissingHTML.define();
+						window.configured.wrongClasses.MissingHTML.define(true);
 					}).to.throw('Component is missing static html property (set to null to suppress)');
 				});
 			});
 			it('does not throw an error if .html is set to null', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.UnsetHTML.define();
+						window.configured.wrongClasses.UnsetHTML.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('does not throw an error if .html is set to a template that returns null', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.UnsetHTML2.define();
+						window.configured.wrongClasses.UnsetHTML2.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('throws an error when .html is set to a non-template', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.NonTemplateHTML.define();
+						window.configured.wrongClasses.NonTemplateHTML.define(true);
 					}).to.throw('Component\'s html template should be an ' +
 						'instance of the TemplateFn class');
 				});
@@ -218,7 +225,7 @@ context('Configurable Component', function() {
 			it('throws an error when .html is falsy', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.FalsyTemplateHTML.define();
+						window.configured.wrongClasses.FalsyTemplateHTML.define(true);
 					}).to.throw('Component\'s html template should be an ' +
 						'instance of the TemplateFn class');
 				});
@@ -226,21 +233,21 @@ context('Configurable Component', function() {
 			it('does not throw an error if template is a templateFn-like', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.TemplateLikeHTML.define();
+						window.configured.wrongClasses.TemplateLikeHTML.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('does not throw an error if .css is missing', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.MissingCSS.define();
+						window.configured.wrongClasses.MissingCSS.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('throws an error if .css is a non-template', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.NonTemplateCSS.define();
+						window.configured.wrongClasses.NonTemplateCSS.define(true);
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');
@@ -249,7 +256,7 @@ context('Configurable Component', function() {
 			it('throws an error when .css is an array of non-templates', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.WrongArrayCSS.define();
+						window.configured.wrongClasses.WrongArrayCSS.define(true);
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');
@@ -258,7 +265,7 @@ context('Configurable Component', function() {
 			it('throws an error when .css is an array falsy values', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.FalsyArrayCSS.define();
+						window.configured.wrongClasses.FalsyArrayCSS.define(true);
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');
@@ -267,7 +274,7 @@ context('Configurable Component', function() {
 			it('does not throw an error when .css is set to an array of templates', () => {
 				cy.window().then((window: TestConfiguredWindow) => {
 					expect(() => {
-						window.configured.wrongClasses.ArrayCSS.define();
+						window.configured.wrongClasses.ArrayCSS.define(true);
 					}).to.not.throw;
 				});
 			});
@@ -276,70 +283,77 @@ context('Configurable Component', function() {
 			it('throws an error when .is is missing', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.MissingIs.define();
+						window.extended.wrongClasses.MissingIs.define(true);
 					}).to.throw('Component is missing static is property');
 				});
 			});
 			it('throws an error when .is is not a string', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.NonStringIs.define();
+						window.extended.wrongClasses.NonStringIs.define(true);
 					}).to.throw('Component name is not a string');
+				});
+			});
+			it('does throw WCLibError if development mode is false', () => {
+				cy.window().then((window: TestExtendedWindow) => {
+					expect(() => {
+						window.extended.wrongClasses.NonStringIs.define(false);
+					}).to.not.throw('Component name is not a string');
 				});
 			});
 			it('throws an error when .is contains no dash', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.NoDashIs.define();
+						window.extended.wrongClasses.NoDashIs.define(true);
 					}).to.throw('Webcomponent names need to contain a dash "-"');
 				});
 			});
 			it('throws an error when .is contains an uppercase letter', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.UppercaseIs.define();
+						window.extended.wrongClasses.UppercaseIs.define(true);
 					}).to.throw('Webcomponent names can not contain uppercase ASCII characters.');
 				});
 			});
 			it('throws an error when .is starts with a number', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.NumberIs.define();
+						window.extended.wrongClasses.NumberIs.define(true);
 					}).to.throw('Webcomponent names can not start with a digit.');
 				});
 			});
 			it('throws an error when .is starts with a dash/hyphen', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.DashIs.define();
+						window.extended.wrongClasses.DashIs.define(true);
 					}).to.throw('Webcomponent names can not start with a hyphen.');
 				});
 			});
 			it('throws an error when .html is missing', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.MissingHTML.define();
+						window.extended.wrongClasses.MissingHTML.define(true);
 					}).to.throw('Component is missing static html property (set to null to suppress)');
 				});
 			});
 			it('does not throw an error if .html is set to null', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.UnsetHTML.define();
+						window.extended.wrongClasses.UnsetHTML.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('does not throw an error if .html is set to a template that returns null', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.UnsetHTML2.define();
+						window.extended.wrongClasses.UnsetHTML2.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('throws an error when .html is set to a non-template', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.NonTemplateHTML.define();
+						window.extended.wrongClasses.NonTemplateHTML.define(true);
 					}).to.throw('Component\'s html template should be an ' +
 						'instance of the TemplateFn class');
 				});
@@ -347,7 +361,7 @@ context('Configurable Component', function() {
 			it('throws an error when .html is falsy', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.FalsyTemplateHTML.define();
+						window.extended.wrongClasses.FalsyTemplateHTML.define(true);
 					}).to.throw('Component\'s html template should be an ' +
 						'instance of the TemplateFn class');
 				});
@@ -355,21 +369,21 @@ context('Configurable Component', function() {
 			it('does not throw an error if template is a templateFn-like', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.TemplateLikeHTML.define();
+						window.extended.wrongClasses.TemplateLikeHTML.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('does not throw an error if .css is missing', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.MissingCSS.define();
+						window.extended.wrongClasses.MissingCSS.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('throws an error if .css is a non-template', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.NonTemplateCSS.define();
+						window.extended.wrongClasses.NonTemplateCSS.define(true);
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');
@@ -378,7 +392,7 @@ context('Configurable Component', function() {
 			it('throws an error when .css is an array of non-templates', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.WrongArrayCSS.define();
+						window.extended.wrongClasses.WrongArrayCSS.define(true);
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');
@@ -387,14 +401,14 @@ context('Configurable Component', function() {
 			it('does not throw an error when .css is set to an array of templates', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.ArrayCSS.define();
+						window.extended.wrongClasses.ArrayCSS.define(true);
 					}).to.not.throw;
 				});
 			});
 			it('throws an error when .css is an array falsy values', () => {
 				cy.window().then((window: TestExtendedWindow) => {
 					expect(() => {
-						window.extended.wrongClasses.FalsyArrayCSS.define();
+						window.extended.wrongClasses.FalsyArrayCSS.define(true);
 					}).to.throw(
 						'Component\'s css template should be an instance of ' +
 						'the TemplateFn class or an array of them');
@@ -504,14 +518,14 @@ context('Configurable Component', function() {
 		it('throws an error if @config is not called on a mixin', () => {
 			cy.window().then((window: TestMixinsWindow) => {
 				expect(() => {
-					window.mixins.UnConfiguredMixin.define();
+					window.mixins.UnConfiguredMixin.define(true);
 				}).to.throw('Component is missing static is property');
 			});
 		});
 		it('throws an error if an extendable component is missing properties', () => {
 			cy.window().then((window: TestMixinsWindow) => {
 				expect(() => {
-					window.mixins.UnextendedMixin.define();
+					window.mixins.UnextendedMixin.define(true);
 				}).to.throw('Component is missing static is property');
 			});
 		});

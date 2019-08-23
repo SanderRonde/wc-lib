@@ -185,18 +185,18 @@ async function create(options: {
 	console.log(green(`${name}\\`), green(checkmark()));
 
 	const wclib = (() => {
-		const wclibArg = options['wclib-path'];
+		const wclibArg = options['wc-lib-path'];
 		if (typeof wclibArg === 'boolean') {
-			console.log('Please pass a path after the wclib param');
+			console.log('Please pass a path after the wc-lib param');
 			process.exit(1);
-			return 'wclib';
+			return 'wc-lib';
 		}
-		return wclibArg || 'wclib';
+		return wclibArg || 'wc-lib';
 	})();
 	const litHTML = (() => {
 		const litHTMLArg = options['lit-html-path'];
 		if (typeof litHTMLArg === 'boolean') {
-			console.log('Please pass a path after the wclib param');
+			console.log('Please pass a path after the wc-lib param');
 			process.exit(1);
 			return 'lit-html';
 		}
@@ -219,13 +219,13 @@ async function create(options: {
 export async function main() {
 	const { options, keywords: [ mainCmd ] } = parseArgs();
 	if (options.h || options.help) {
-		console.log('Usage: wclib command-name [options]');
+		console.log('Usage: wc-lib command-name [options]');
 		console.log('\n');
 		console.log('Main command can be any of the following (options lised below them):');
 		console.log('\tcreate - Creates a new component in the current folder');
 		console.log('\t\t--name\t\tThe name of the new component');
 		console.log('\t\t-q\t\tAdd code for a local querymap');
-		console.log('\t\t--wclib-path\tThe path to the wclib installation (relative to cwd)');
+		console.log('\t\t--wc-lib-path\tThe path to the wc-lib installation (relative to cwd)');
 		console.log('\t\t--lit-html-path\tThe path to the lit-html installation (relative to cwd)');
 		process.exit(0);
 	}

@@ -1,4 +1,4 @@
-import { WebComponent } from '../../../../../../../src/wclib.js';
+import { WebComponent } from '../../../../../../../build/es/wc-lib.js';
 import { LangElement } from '../../elements/test-lang-element.js';
 
 WebComponent.initI18N({
@@ -7,4 +7,4 @@ WebComponent.initI18N({
 });
 
 (window as any).WebComponent = WebComponent;
-LangElement.define();
+LangElement.define(true);

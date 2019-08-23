@@ -64,7 +64,16 @@ export function classNames(...args: ClassNamesArg[]): string {
 	return classes.join(' ');
 }
 
+/**
+ * The type of a webcomponent error. Contains
+ * the relevant component as a property
+ */
 export class WCLibError extends Error {
+	/**
+	 * @param {any} component - The component on which
+	 * 	the error occurred.
+	 * @param {string} message - The actual message
+	 */
 	constructor(public component: any, message: string) {
 		super(`${message} (see error.component)`);
 	}

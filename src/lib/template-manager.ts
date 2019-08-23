@@ -219,13 +219,18 @@ declare class PartLike {
   	commit(): void;
 }
 
-declare class CommiterLike {
+declare class CommitterLike {
 	constructor(...args: any[]);
 	
 	readonly parts: ReadonlyArray<PartLike>;
 	commit(): void;
 }
 
+/**
+ * An interface which functions should
+ * be implemented by the template-result that
+ * lit-html should return.
+ */
 export interface TemplateResultLike {
 	getHTML(): string
 	getTemplateElement(): HTMLTemplateElement;
@@ -237,57 +242,69 @@ export interface TemplateResultLike {
  * 
  * All values can be imported by calling
  * ```js
- import { TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange }
+ import { 
+	    TemplateResult, PropertyCommitter, EventPart, 
+	    BooleanAttributePart, AttributeCommitter, NodePart, 
+	    isDirective, noChange 
+}
  ```
  */
 export interface LitHTMLConfig {
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { TemplateResult } from 'lit-html'```
+	 ```js
+	 import { TemplateResult } from 'lit-html'
+	 ```
 	 */
 	TemplateResult: Constructor<TemplateResultLike>;
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { PropertyCommitter } from 'lit-html'```
+	 ```js
+	 import { PropertyCommitter } from 'lit-html'
+	 ```
 	 */
-	PropertyCommitter: typeof CommiterLike;
+	PropertyCommitter: typeof CommitterLike;
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { EventPart } from 'lit-html'```
+	 ```js
+	 import { EventPart } from 'lit-html'
+	 ```
 	 */
 	EventPart: typeof PartLike;
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { BooleanAttributePart } from 'lit-html'```
+	 ```js
+	 import { BooleanAttributePart } from 'lit-html'
+	 ```
 	 */
 	BooleanAttributePart: typeof PartLike;
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { AttributeCommitter } from 'lit-html'```
+	 ```js
+	 import { AttributeCommitter } from 'lit-html'
+	 ```
 	 */
-	AttributeCommitter: typeof CommiterLike;
+	AttributeCommitter: typeof CommitterLike;
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { NodePart } from 'lit-html'```
+	 ```js
+	 import { NodePart } from 'lit-html'
+	 ```
 	 */
 	NodePart: typeof PartLike;
 
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { isDirective } from 'lit-html'```
+	 ```js
+	 import { isDirective } from 'lit-html'
+	 ```
 	 */
 	isDirective: (value: any) => boolean;
 	/**
 	 * can be imported by calling
-	 * ```js
-	 import { noChange } from 'lit-html'```
+	 ```js
+	 import { noChange } from 'lit-html'
+	 ```
 	 */
 	noChange: any;
 	
@@ -344,11 +361,21 @@ class TemplateClass {
 
 type ComplexValue = TemplateFnLike|Function|Object;
 
+/**
+ * An instance of the template manager mixin's resulting class
+ */
 export type WebComponentTemplateManagerMixinInstance = InferInstance<WebComponentTemplateManagerMixinClass> & {
 	self: WebComponentTemplateManagerMixinClass;
 };
+
+/**
+ * The template manager mixin's resulting class
+ */
 export type WebComponentTemplateManagerMixinClass = InferReturn<typeof WebComponentTemplateManagerMixin>;
 
+/**
+ * The parent/super type required by the template manager mixin
+ */
 export type WebComponentTemplateManagerMixinSuper = Constructor<HTMLElement &
 	Pick<WebComponentHierarchyManagerMixinInstance, 'getParent'> & 
 	Partial<Pick<WebComponentListenableMixinInstance, 'listen'|'clearListener'>>>;
@@ -356,6 +383,10 @@ export type WebComponentTemplateManagerMixinSuper = Constructor<HTMLElement &
 /**
  * A mixin that, when applied, adds the `generateHTMLTemplate`
  * method that can generate complex template literal HTML
+ * 
+ * @template P - The parent/super's type
+ * 
+ * @param {P} superFn - The parent/super
  */
 export const WebComponentTemplateManagerMixin = <P extends WebComponentTemplateManagerMixinSuper>(superFn: P) => {
 	const privateMap: WeakMap<WebComponentTemplateManager, TemplateClass> = new WeakMap();

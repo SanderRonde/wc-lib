@@ -1,22 +1,20 @@
-import { ConfigurableWebComponent, Props, config, PROP_TYPE, CHANGE_TYPE, TemplateFn } from '../../src/wclib';
-import { render } from 'lit-html';
+import { ConfigurableWebComponent, Props, config, PROP_TYPE, CHANGE_TYPE, TemplateFn } from '../../build/es/wc-lib.js';
+import { render } from '../../node_modules/lit-html/lit-html.js';
+import { JSXIntrinsicProps } from '../../build/es/classes/types';
 
 declare global {
 	namespace JSX {
+		interface IntrinsicAttributes extends JSXIntrinsicProps { }
 		interface IntrinsicElements {
 			div: {
 				id?: string;
 			}
 			h2: {};
 			input: {
-				"@"?: {
-					"change": (event: Event) => any;
-					"focus": (event: FocusEvent) => any;
-					"blur": (event: Event) => any;
-				};
 				id?: string;
 				value?: string;
-				type?: 'text'|'password'|'tel'|'number'
+				type?: 'text'|'password'|'tel'|'number';
+				class?: string;
 			}
 		}
 	}
@@ -39,19 +37,22 @@ declare global {
 					"change": this.onChange,
 					"focus": this.onFocus,
 					"blur": this.onBlur
-				}}} type={props.type} value={props.placeholder} id="input"></input>
+				}}} class="placeholder" type="text" value={props.placeholder} id="input"></input>
 			</div>
 		)
-	}, CHANGE_TYPE.NEVER, render)
+	}, CHANGE_TYPE.PROP, render)
 })
 export class JsxInput extends ConfigurableWebComponent<{
-	IDS: {
-		input: HTMLInputElement;
-	}
-}, {
-	change: {
-		args: [string, string]
-	}
+	selectors: {
+		IDS: {
+			input: HTMLInputElement;
+		}
+	};
+	events: {
+		change: {
+			args: [string, string]
+		}
+	};
 }> {
 	private _lastVal: string = '';
 
@@ -85,6 +86,7 @@ export class JsxInput extends ConfigurableWebComponent<{
 	onFocus() {
 		if (this.$.input.value === this.props.placeholder) {
 			this.$.input.classList.remove('placeholder');
+			this.$.input.type = this.props.type;
 			this.$.input.value = '';
 		}
 	}
@@ -93,6 +95,7 @@ export class JsxInput extends ConfigurableWebComponent<{
 		if (this.$.input.value === '') {
 			this.$.input.classList.add('placeholder');
 			this.$.input.value = this.props.placeholder;
+			this.$.input.type = 'text';
 		}
 	}
 }

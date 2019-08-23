@@ -1,5 +1,5 @@
 {
-	"name": "wclib",
+	"name": "wc-lib",
 	"bin": {
 		"wclib": "./bin/bin.js",
 		"wc-lib": "./bin/bin.js"
@@ -10,9 +10,9 @@
 	},
 	"version": "1.0.0",
 	"description": "A webcomponent framework",
-	"main": "build/es/wclib.js",
-	"browser": "build/es/wclib.js",
-	"module": "build/cjs/wclib.js",
+	"main": "build/es/wc-lib.js",
+	"browser": "build/es/wc-lib.js",
+	"module": "build/cjs/wc-lib.js",
 	"author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
 	"license": "MIT",
 	"files": [
@@ -20,17 +20,19 @@
 		"buld/**"
 	],
 	"private": true,
-	"dependencies": { },
+	"dependencies": {
+		"typescript": "^3.5.3"
+	},
 	"devDependencies": {
+		"@types/fs-extra": "^7.0.0",
 		"@types/glob": "^7.1.1",
 		"@types/gulp": "^4.0.6",
 		"@types/gulp-replace": "^0.0.31",
-		"@types/fs-extra": "^7.0.0",
 		"@types/http-server": "^0.10.0",
 		"@types/node": "^11.13.7",
 		"chai": "^4.2.0",
 		"chai-jquery": "^2.1.0",
-		"cypress": "^3.4.0",
+		"cypress": "^3.4.1",
 		"fs-extra": "^8.0.1",
 		"glob": "^7.1.4",
 		"gulp": "^4.0.2",
@@ -42,8 +44,7 @@
 		"lodash": "^4.17.13",
 		"nyc": "^14.1.1",
 		"remap-istanbul": "^0.13.0",
-		"ts-node": "^8.2.0",
-		"typescript": "^3.5.1"
+		"ts-node": "^8.2.0"
 	},
 	"peerDependencies": {
 		"lit-html": "^1.1.0"
@@ -52,7 +53,8 @@
 		"compile": "tsc -p src/tsconfig.cjs.json && tsc -p src/tsconfig.json",
 		"compile:test": "tsc -p test/tsconfig.cjs.json && tsc -p test/tsconfig.json",
 		"compile:bin": "tsc -p bin/tsconfig.json",
-		"compile:all": "npm run compile:test && npm run compile && npm run compile:bin",
+		"compile:all": "npm run compile && npm run compile:test && npm run compile:bin",
+		"compile:examples": "tsc -p examples/tsconfig.json",
 		"install": "npm run compile && npm run compile:bin && tsc gulpfile.ts && gulp removeIstanbulIgnoresCompiled && node -e \"require('fs').unlink('gulpfile.js', () => {})\"",
 		"cypress": "node test/usage/test.js",
 		"cypress:report": "npm run cypress && npm run coverage:remap",
@@ -64,9 +66,11 @@
 		"set-cypress:partial-class-i18n": "node scripts/set-specs.js test/usage/integration/partial-classes/i18n",
 		"set-cypress:partial-class-theming": "node scripts/set-specs.js test/usage/integration/partial-classes/theming",
 		"set-cypress:properties": "node scripts/set-specs.js test/usage/integration/properties",
+		"set-cypress:tasks": "node scripts/set-specs.js test/usage/integration/tasks",
 		"test": "npm run compile:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",
-		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument src/ instrumented/ && gulp replaceTestImports",
+		"examples": "npm run compile:all && npm run compile:examples && npm run serve",
+		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument build/es/ instrumented/ && gulp replaceTestImports",
 		"coverage:remap:lcov": "remap-istanbul -i .nyc_output/out.json -t lcovonly -o coverage/lcov.info",
 		"coverage:remap:html": "remap-istanbul -i .nyc_output/out.json -t html -o coverage/",
 		"coverage:remap": "tsc -p src/tsconfig.sourcemap.json && npm run coverage:remap:html && npm run coverage:remap:lcov",
@@ -80,6 +84,7 @@
 		"coverage:partial-classes-i18n": "npm run set-cypress:partial-class-i18n && npm run coverage:current-cypress",
 		"coverage:partial-classes-theming": "npm run set-cypress:partial-class-theming && npm run coverage:current-cypress",
 		"coverage:properties": "npm run set-cypress:properties && npm run coverage:current-cypress",
+		"coverage:tasks": "npm run set-cypress:tasks && npm run coverage:current-cypress",
 		"prepublishOnly": "gulp removeIstanbulIgnoresSource"
 	}
 }

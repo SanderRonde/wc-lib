@@ -1,8 +1,8 @@
 import { FullWebComponent, WebComponent } from '../classes/full.js';
 import { WebComponentDefinerMixinClass } from './definer.js';
-import { EventListenerObj } from './listener.js';
+import { EventListenerObj, GetEvents } from './listener.js';
+import { SelectorMap, GetEls } from './component.js';
 import { TemplateFnLike } from './template-fn.js';
-import { SelectorMap } from './component.js';
 
 /**
  * A configurable web component. This is the basic
@@ -14,11 +14,20 @@ import { SelectorMap } from './component.js';
  * @template E - An object map of events to its args and return value. See
  * 	`WebComponentListenable` for more info
  */
-export class ConfigurableWebComponent<ELS extends SelectorMap = {
-	IDS: {};
-	CLASSES: {};
-	TAGS: {};
-}, E extends EventListenerObj = {}> extends FullWebComponent<ELS, E> {
+export class ConfigurableWebComponent<GA extends {
+	i18n?: any;
+	langs?: string;
+	events?: EventListenerObj;
+	themes?: {
+		[key: string]: any;
+	};
+	selectors?: SelectorMap;
+	root?: any;
+	parent?: any;
+	globalProps?: {
+		[key: string]: any;
+	}
+} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
 	/**
 	 * The render method that will render this component's HTML
 	 * 
@@ -98,17 +107,20 @@ export interface WebComponentConfiguration {
  * from `ConfigurableWebComponent` and decorated
  * with `@configure`.
  */
-export declare class ConfiguredComponent<ELS extends {
-	IDS: {
-		[key: string]: HTMLElement|SVGElement;
+export declare class ConfiguredComponent<GA extends {
+	i18n?: any;
+	langs?: string;
+	events?: EventListenerObj;
+	themes?: {
+		[key: string]: any;
 	};
-	CLASSES: {
-		[key: string]: HTMLElement|SVGElement;
+	selectors?: SelectorMap;
+	root?: any;
+	parent?: any;
+	globalProps?: {
+		[key: string]: any;
 	}
-} = {
-	IDS: {};
-	CLASSES: {}
-}, E extends EventListenerObj = {}> extends FullWebComponent<ELS, E> {
+} = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>> extends FullWebComponent<GA, E, ELS> {
 	constructor();
 
 	/**
@@ -247,16 +259,9 @@ export function config(config: WebComponentConfiguration) {
 		mixins = [],
 		dependencies = []
 	} = config;
-	return <ELS extends {
-	IDS: {
-		[key: string]: HTMLElement|SVGElement;
-	};
-	CLASSES: {
-		[key: string]: HTMLElement|SVGElement;
-	}
-}, T, E extends EventListenerObj = {}>(target: T): T => {
+	return <T, GA extends { i18n?: any; langs?: string; events?: EventListenerObj; themes?: {[key: string]: any; };selectors?: SelectorMap; } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(target: T): T => {
 		const targetComponent = <any>target as typeof ConfigurableWebComponent;
-		class WebComponentConfig extends targetComponent<ELS, E> {
+		class WebComponentConfig extends targetComponent<GA, E, ELS> {
 			static is = is;
 			/* istanbul ignore next */
 			static dependencies = [...targetComponent.dependencies || [], ...dependencies]
@@ -281,8 +286,19 @@ interface DefaultClass {
 	new(...args: any[]): {};
 }
 
+/**
+ * Turns a class instance into an object, removing
+ * the new() function in the process and preserving
+ * the static methods/props only
+ */
 export type ClassToObj<C> = Pick<C, keyof C>;
 
+/**
+ * Mixin function that can add a mixin to a class.
+ * Starts by calling the first arg with the base (HTMLElement)
+ * and then calls the next argument with the result of the previous
+ * argument
+ */
 export function mixin(): DefaultClass;
 export function mixin<M1, MM1>(mixin1: MixinFn<DefaultClass, M1, MM1>): M1 & {
 	new(...args: any[]): MM1;

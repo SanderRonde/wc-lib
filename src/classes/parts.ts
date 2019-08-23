@@ -12,6 +12,10 @@ interface ExtendedProcess extends NodeJS.Process {
 	HTMLElement: typeof HTMLElement;
 }
 
+/**
+ * The base element from which every webcomponent is extended.
+ * This will always be HTMLElement regardless of the environment
+ */
 export const elementBase: typeof HTMLElement = (() => {
 	/* istanbul ignore else */
 	if (typeof HTMLElement !== 'undefined') {

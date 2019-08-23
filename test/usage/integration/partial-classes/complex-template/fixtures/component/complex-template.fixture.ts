@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../build/es/wc-lib.js';
 import { render, html } from "../../../../../../../node_modules/lit-html/lit-html.js";
-import { ComplexTemplatingWebComponent } from "../../../../../../../src/classes/partial.js";
+import { ComplexTemplatingWebComponent } from "../../../../../../../build/es/classes/partial.js";
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`
@@ -19,22 +19,25 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends ComplexTemplatingWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
 	};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -51,7 +54,7 @@ export interface TestWindow extends Window {
 }
 declare const window: TestWindow;
 window.TestElement = TestElement;
-TestElement.define();
+TestElement.define(true);
 
 
 @config({
@@ -97,4 +100,4 @@ export class LifecycleElement extends ComplexTemplatingWebComponent {
 		this.lifeCycleCalls.unmounted++;
 	}
 }
-LifecycleElement.define();
+LifecycleElement.define(true);

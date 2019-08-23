@@ -1,6 +1,6 @@
-import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../src/wclib.js';
+import { config, Props, PROP_TYPE, ComplexType } from '../../../../../../../build/es/wc-lib.js';
 import { DeepObject } from '../../../../properties/props/elements/props-element.js';
-import { BasicWebComponent } from '../../../../../../../src/classes/partial.js';
+import { BasicWebComponent } from '../../../../../../../build/es/classes/partial.js';
 
 @config({
 	is: 'reflect-props',
@@ -56,5 +56,5 @@ export class WatchedComponent extends BasicWebComponent {
 	})
 }
 
-ReflectProps.define();
-WatchedComponent.define();
+ReflectProps.define(true);
+WatchedComponent.define(true);

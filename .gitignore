@@ -69,3 +69,5 @@ instrumented/
 .vscode
 bin/**/*.js
 cypress.json
+examples/**/*.js
+examples/modules/

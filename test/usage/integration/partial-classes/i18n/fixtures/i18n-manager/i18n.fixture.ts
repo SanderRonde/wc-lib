@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../src/wclib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../../build/es/wc-lib.js';
 import { render, html, directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { I18NWebComponent } from '../../../../../../../src/classes/partial.js';
+import { I18NWebComponent } from '../../../../../../../build/es/classes/partial.js';
 
 const awaitPromise = directive((key: string, value: Promise<any>|string) => (part: Part) => {
 	if (typeof value === 'string') {
@@ -52,7 +52,14 @@ const placeholder = directive((key: string, value: Promise<any>|string) => (part
 	}, CHANGE_TYPE.LANG, render),
 	css: null
 })
-export class LangElement extends I18NWebComponent { }
+export class LangElement extends I18NWebComponent<{
+	langs: 'en'|'nl';
+	i18n: {
+		test: string;
+		nonexistent: string;
+		values: string;
+	}
+}> { }
 
 const TestElementHTML = new TemplateFn<TestElement>((_, props) => {
 	return html`
@@ -71,22 +78,25 @@ const TestElementCSS = new TemplateFn<TestElement>(() => {
 	css: TestElementCSS
 })
 export class TestElement extends I18NWebComponent<{
-	IDS: {
-		divId: HTMLDivElement;
-		headerId: HTMLHeadingElement;
-	};
-	CLASSES: {
-		divClass: HTMLDivElement;
-		headerClass: HTMLHeadingElement;
-	};
-}, {
-	test: {
-		args: [number, number];
+	selectors: {
+		IDS: {
+			divId: HTMLDivElement;
+			headerId: HTMLHeadingElement;
+		};
+		CLASSES: {
+			divClass: HTMLDivElement;
+			headerClass: HTMLHeadingElement;
+		};
 	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -128,16 +138,15 @@ const ParentElementCSS = new TemplateFn<ParentElement>(() => {
 	]
 })
 export class ParentElement extends I18NWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -174,16 +183,15 @@ const RootElementCSS = new TemplateFn<RootElement>(() => {
 	]
 })
 export class RootElement extends I18NWebComponent<{
-	IDS: {};
-	CLASSES: {};
-}, {
-	test: {
-		args: [number, number];
-	}
-	test2: {
-		args: [];
-		returnType: number;
-	}
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	};
 }> {
 	props = Props.define(this, {
 		reflect: {
@@ -238,6 +246,6 @@ I18NWebComponent.initI18N({
 });
 
 (window as any).WebComponent = I18NWebComponent;
-TestElement.define();
-LangElement.define();
-RootElement.define();
+TestElement.define(true);
+LangElement.define(true);
+RootElement.define(true);

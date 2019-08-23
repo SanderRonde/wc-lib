@@ -1,6 +1,6 @@
 import { directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
 import { RootElement } from '../../../hierarchy-manager/elements/root-element.js';
-import { WebComponent } from '../../../../../../../src/wclib.js';
+import { WebComponent } from '../../../../../../../build/es/wc-lib.js';
 import { LangElement } from '../../elements/test-lang-element.js';
 import { TestElement } from "../../../elements/test-element.js";
 
@@ -47,6 +47,6 @@ WebComponent.initI18N({
 });
 
 (window as any).WebComponent = WebComponent;
-TestElement.define();
-LangElement.define();
-RootElement.define();
+TestElement.define(true);
+LangElement.define(true);
+RootElement.define(true);

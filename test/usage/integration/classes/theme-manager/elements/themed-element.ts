@@ -1,6 +1,6 @@
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from "../../../../../../src/wclib.js";
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE } from "../../../../../../build/es/wc-lib.js";
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { TestTheme } from "../themeManagerspec";
+import { TestTheme, ThemeGlobalProps } from "../themeManagerspec";
 
 export const usedThemes: {
 	[key: string]: TestTheme;
@@ -28,7 +28,7 @@ export const defaultTheme = 'first';
 			<div class="text2">test2</div>
 		`;
 	}, CHANGE_TYPE.NEVER, render),
-	css: new TemplateFn<ThemedElement, TestTheme>((_html, _prop, theme) => {
+	css: new TemplateFn<ThemedElement>((_html, _prop, theme) => {
 		return html`<style>
 				.text {
 					color: ${theme.color1};
@@ -40,7 +40,9 @@ export const defaultTheme = 'first';
 			</style>`
 	}, CHANGE_TYPE.THEME, render)
 })
-export class ThemedElement extends ConfigurableWebComponent {
+export class ThemedElement extends ConfigurableWebComponent<{
+	themes: typeof usedThemes;
+}> {
 
 }
 
@@ -60,6 +62,8 @@ export class ThemedElement extends ConfigurableWebComponent {
 		ThemedElement
 	]
 })
-export class ThemedElementParent extends ConfigurableWebComponent {
+export class ThemedElementParent extends ConfigurableWebComponent<{
+	globalProps: ThemeGlobalProps;
+}> {
 
 }

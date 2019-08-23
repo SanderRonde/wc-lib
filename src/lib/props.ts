@@ -66,8 +66,8 @@ function getterWithVal<R>(component: {
  * 
  * @template R - The return value
  * 
- * @param {HTMLElement & { getParentRef(ref: string): any; }} element - The	
- * 	element from which to get the property
+ * @param {HTMLElementAttributes & { getParentRef(ref: string): any; }} element - The	
+ * 	element of which to get the property
  * @param {string} name - The name of the property
  * @param {boolean} strict - Whether to use strict mode.
  * 	If true, boolean type values are only true
@@ -77,22 +77,22 @@ function getterWithVal<R>(component: {
  * 
  * @returns {boolean|string|number|undefined|R} The value
  */
-export function getter<R>(element: HTMLElement & {
+export function getter<R>(element: HTMLElementAttributes & {
 	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R;
-export function getter(element: HTMLElement & {
+export function getter(element: HTMLElementAttributes & {
 	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'bool'): boolean;
-export function getter(element: HTMLElement & {
+export function getter(element: HTMLElementAttributes & {
 	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string'): string|undefined;
-export function getter(element: HTMLElement & {
+export function getter(element: HTMLElementAttributes & {
 	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'number'): number|undefined;
-export function getter<R>(element: HTMLElement & {
+export function getter<R>(element: HTMLElementAttributes & {
 	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: typeof complex): R|undefined;
-export function getter<R>(element: HTMLElement & {
+export function getter<R>(element: HTMLElementAttributes & {
 	getParentRef?(ref: string): any;
 }, name: string, strict: boolean, type: 'string'|'number'|'bool'|typeof complex): boolean|string|number|undefined|R {
 	return getterWithVal(element, element.getAttribute(name), strict, type);
@@ -596,7 +596,9 @@ export async function hookIntoConnect(el: WebComponent, fn: () => any): Promise<
     });
 }
 
-export interface PropComponent extends HTMLElement {
+type HTMLElementAttributes = Pick<HTMLElement, 
+	'setAttribute'|'removeAttribute'|'hasAttribute'|'getAttribute'|'tagName'>;
+export interface PropComponent extends HTMLElementAttributes {
 	renderToDOM(changeType: number): void;
 	getParentRef?(ref: string): any;
 	isMounted: boolean;

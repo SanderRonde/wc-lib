@@ -231,7 +231,7 @@ export interface PropComponent extends HTMLElementAttributes {
     renderToDOM(changeType: number): void;
     getParentRef?(ref: string): any;
     isMounted: boolean;
-    fire<EV extends keyof DEFAULT_EVENTS, R extends DEFAULT_EVENTS[EV]['returnType']>(event: EV | any, ...params: DEFAULT_EVENTS[EV]['args'] | any): R[];
+    fire<EV extends keyof PROP_EVENTS, R extends PROP_EVENTS[EV]['returnType']>(event: EV | any, ...params: PROP_EVENTS[EV]['args'] | any): R[];
     self: {
         mixins?: any[];
     } | any;
@@ -343,7 +343,10 @@ export declare class Props {
      */
     static onConnect(element: HTMLElement): void;
 }
-declare type DEFAULT_EVENTS = {
+/**
+ * Events that the props can trigger
+ */
+export declare type PROP_EVENTS = {
     beforePropChange: {
         args: [string, any, any];
         returnType: void;

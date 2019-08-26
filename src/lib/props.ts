@@ -1093,8 +1093,7 @@ namespace PropsDefiner {
 						}
 						if (reflectToAttr) {
 							setter(this._rep.setAttr, this._rep.removeAttr, propName, 
-								this._rep.propValues[mapKey] !== undefined ? 
-									this._rep.propValues[mapKey] : defaultValue, type);
+								this._rep.propValues[mapKey], type as any);
 						}
 					});
 				} else if (type === complex && reflectToAttr) {

@@ -991,7 +991,7 @@ namespace PropsDefiner {
 
 			private _setReflect() {
 				const _this = this;
-				const { mapKey, key } = this.config;
+				const { mapKey } = this.config;
 
 				if (mapKey in this._rep.component) return;
 				Object.defineProperty(this._rep.component, mapKey, {
@@ -1000,13 +1000,8 @@ namespace PropsDefiner {
 					},
 					set(value) {
 						const props = _this._props as SimpleReturnType<R, P>;
-						const prevVal = props[mapKey];
-						_this._rep.component.fire('beforePropChange', key, value, prevVal);
-
 						if (props[mapKey] === value) return;
-
 						props[mapKey] = value;
-						_this._rep.component.fire('propChange', key, value, prevVal);
 					}
 				});
 			}

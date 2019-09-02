@@ -164,18 +164,6 @@ gulp.task('removeIstanbulIgnoresCompiled', () => {
 		.pipe(gulp.dest('build/'));
 });
 
-// Removes istanbul ignores from the uncompiled TS. Should only be done before packaging
-gulp.task('removeIstanbulIgnoresSource', () => {
-	return gulp.src([
-			'**/*.ts'
-		], {
-			cwd: 'src/',
-			base: 'src/'
-		})
-		.pipe(replace(/(\n\s+)?\/\*(\s*)istanbul(.*?)\*\//g, ''))
-		.pipe(gulp.dest('src/'));
-});
-
 // Prepares the examples for hosting on gh-pages
 gulp.task('prepareWebsite', gulp.parallel(function moveLitHTML() {
 		return gulp.src([

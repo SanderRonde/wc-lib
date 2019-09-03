@@ -1768,7 +1768,8 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				it('can have an empty props object', () => {
 					cy.get('empty-props')
 						.then(([el]: JQuery<EmptyProps>) => {
-							expect(Object.getOwnPropertyNames(el.props)).to.have.length(0);
+							expect(Object.getOwnPropertyNames(el.props)
+								.filter(n => n !== '__config')).to.have.length(0);
 							expect(el.attributes).to.have.length(0);
 						});
 				});

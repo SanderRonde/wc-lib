@@ -74,7 +74,7 @@ This library is largely built around typescript support and being 100% sure your
 
 #### Properties
 
-The property system for example, allows you to define properties on an element along with types that are then enforced. This way you know for sure that you're accessing the right properties.
+The property system for example, allows you to define properties on an element along with types that are then enforced. This way you know for sure that you're accessing the right properties. (See [below](#props) for full list)
 
 #### Typed events
 
@@ -112,8 +112,110 @@ html`<style>
 </style>`;
 ```
 
-If any of these elements were to be removed from your HTML, you'd notice the type error and you could remove the offending CSS rule. You could also pass in enums. This can be great when combined with toggled classes. Say for example, that you have some code that applies a `hover` style to some button element. You could instead apply `STATES.HOVER`, after which you pass the `STATES` enum to the toggle types, which allows you to pick `hover` as a togglable state. This way your CSS can reference your code, adding even more type safety. It also has the benefit of removing the possibility of any typos in your CSS which can be a huge cause of frustration.
+If any of these elements were to be removed from your HTML, you'd notice the type error and you could remove the offending CSS rule. You could also pass in enums. This can be great when combined with toggled classes. Say for example, that you have some code that applies a `hover` style to some button element. You could instead apply `STATES.HOVER`, after which you pass the `STATES` enum to the toggle types, which allows you to pick `hover` as a togglable state. This way your CSS can reference your code, adding even more type safety. It also has the benefit of removing the possibility of any typos in your CSS which can be a huge cause of frustration. See [below](#Typed-CSS) for full custom css documentation.
 
+
+## Reference
+
+### Props
+
+A property takes a single type (for example `PROP_TYPE.STRING`) or a config object. The config object is described below.
+
+```ts
+{
+	// Watch this property for changes. In objects, setting this to true
+	// means that any of its keys are watched for changes (see watchProperties)
+	//
+	// NOTE: This uses Proxy to watch objects. This does mean that
+	// after setting this property to an object, getting that same
+	// property will return a proxy of it (which is not strictly equal)
+	// If you do not want this or have environments that do not yet
+	// support window.Proxy, turn this off for objects
+	watch?: boolean = true;
+	// The type of this property. Can either by a PROP_TYPE:
+	// PROP_TYPE.STRING, PROP_TYPE.NUMBER or PROP_TYPE.BOOL
+	// or it can be a complex type passed through ComplexType<TYPE>().
+	// ComplexType should be used for any values that do not fit 
+	// the regular prop type
+	type: PROP_TYPE|ComplexType<any>;
+	// The default value of this component. Should be of the same
+	// type as this prop's value (obviously). Will be undefined if not set
+	defaultValue?: this.type;
+	// A synonym for defaultValue
+	value?: this.type;
+	// The properties to watch if this is an object. These can contain
+	// asterisks and can go multiple properties deep. ** will watch any
+	// properties, even newly defined ones.
+	// For example: 
+	// 	['x'] only watched property x,
+	//  ['*.y'] watches the y property of any object values in this object
+	//  ['z.*'] watches any property of the z object
+	watchProperties?: string[] = [];
+	// The exact type of this property. This is not actually used and
+	// is only used for typing.
+	// Say you have a property that can have the values 'text', 'password'
+	// or 'tel' (such as the html input element). This would mean that
+	// the type is a string (PROP_TYPE.STRING). This does however not fully
+	// express the restrictions. Doing
+	// { type: PROP_TYPE.STRING, exactType: '' as 'text'|'password'|'tel' }
+	// Will apply these restrictions and set the type accordingly
+	exactType?: any;
+	// Coerces the value to given type if its value is falsy.
+	// String values are coerced to '', bools are coerced to false
+	// and numbers are coerced to 0
+	coerce?: boolean = false;
+	// Only relevant for type=PROP_TYPE.BOOL
+	// This only sets a boolean value to true if the property was set to
+	// the string "true". Normally any string that is not equal
+	// to the string "false" will be taken as a true value.
+	//
+	// For example, if strict=false
+	// <my-component bool_1="a" bool_2="false" bool_3="" bool_4="true">
+	// bool_1, bool_3 and bool_4 are true while bool_2 is false (and any
+	// other bools are false as well since no value was supplied)
+	//
+	// For example, if strict=true
+	// <my-component bool_1="a" bool_2="false" bool_3="" bool_4="true">
+	// bool_4 is true and the rest is false
+	strict?: boolean = false;
+	// Whether to reflect this property to the component itself.
+	// For example, if set to true and the property is called "value",
+	// accessing component.value will return the value of that property.
+	reflectToSelf?: boolean = true;
+	// If true, the type of this property is assumed to be defined
+	// even if no default value was provided. This is basically
+	// the equivalent of doing `this.props.x!` in typescript.
+	// This value is not actually used in any way except for typing.
+	isDefined?: boolean = false;
+	// 
+	// Whether this parameter is required. False by default.
+	// Currently only affects the JSX typings.
+	// This value is not actually used in any way except for typing.
+	// 
+	required?: boolean = false;
+}
+```
+
+### Typed-CSS
+
+The `css()` function itself can be called in two ways. Either with or without a parameter. If called with a parameter (which should be a component instance), the types are inferred from that parameter. If called without one, you should pass the type of that component as a generic argument (for example `css<MyComponent>()`) instead to make sure types can be inferred.
+
+This function returns a class which we'll call `CSS` that can be chained off of. It has a few properties.
+* The `$`, `i` and `id` properties contain objects with the ID keys (previously passed through step one of Typed CSS) as its keys. 
+* The `class` and `c` properties do the same except with class keys.
+* The `tag` and `t` do the same but with tags.
+
+These each return another class which we'll call a `CSSSelector` with different properties. 
+* The `and` property returns a class map. For example `css(this).$.x.and.y` resolves to `#x.y`. This returns another `CSSSelector` (and as such can be chained).
+* The `or` property returns another `CSS` class. For example `css(this).$.x.or.$.y` resolves to `#x, #y`.
+* The `orFn` method can be called with another `CSSSelector` in order to merge them. For example `css(this).$.x.orFn(css(this).$.y)` resolves to `#x, #y` as well.
+* The `toggle` property returns an object with all possible toggle values as keys. For example `css(this).$.x.toggle.y` resolves to `#x.y`.
+* The `toggleFn` method takes a variable number of arguments where the arguments must all be possible toggle values. For example `css(this).$.x.toggleFn('y', 'z')` resolves to `#x.y.z`.
+* The `attr` property returns an object with all possible attribute values as keys. For example `css(this).$.x.attr.y` resolves to `#x[y]`. Note that this way you can not set values
+* The `attrFn` method takes an attribute as a key and an optional value for it. For example `css(this).$.x.attrFn('y', 'z')` resolves to `#x[y="z"]`.
+* The `toString` method will convert the whole thing to a valid CSS selector. This is done implicitly in the templates and is not something you have to think about but it can be handy to debug it.
+
+**Note**: If at any time you see a question mark as a suggestion instead of something else you expected, you've probably done something wrong.
 
 ## License
 

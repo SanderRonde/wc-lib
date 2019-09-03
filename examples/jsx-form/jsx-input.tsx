@@ -60,7 +60,7 @@ export class JsxInput extends ConfigurableWebComponent<{
 		reflect: {
 			name: {
 				type: PROP_TYPE.STRING,
-				value: 'name',
+				value: 'name'
 			},
 			placeholder: {
 				type: PROP_TYPE.STRING,
@@ -69,7 +69,7 @@ export class JsxInput extends ConfigurableWebComponent<{
 			type: {
 				type: PROP_TYPE.STRING,
 				exactType: '' as 'text'|'password'|'tel'|'number',
-				value: 'text'
+				required: true
 			}
 		}
 	});

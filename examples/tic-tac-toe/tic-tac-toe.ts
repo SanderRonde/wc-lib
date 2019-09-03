@@ -130,7 +130,7 @@ export class TicTacToe extends ConfigurableWebComponent<{
 
 	cellClick(cell: CellBlock) {
 		if (this._frozen) return;
-		this.props.board[cell.props.y!][cell.props.x!] = 
+		this.props.board[cell.props.y][cell.props.x] = 
 			this._turn === PLAYER.X ? PLAYER.X : PLAYER.O;
 		this._turn = this._turn === PLAYER.X ? 
 			PLAYER.O : PLAYER.X;

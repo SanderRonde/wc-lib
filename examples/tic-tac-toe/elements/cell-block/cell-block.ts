@@ -34,8 +34,14 @@ export class CellBlock extends ConfigurableWebComponent<{
 }> {
 	props = Props.define(this, {
 		reflect: {
-			x: PROP_TYPE.NUMBER,
-			y: PROP_TYPE.NUMBER,
+			x: {
+				type: PROP_TYPE.NUMBER,
+				isDefined: true
+			},
+			y: {
+				type: PROP_TYPE.NUMBER,
+				isDefined: true
+			},
 			state: {
 				type: PROP_TYPE.STRING,
 				value: PLAYER.NONE,

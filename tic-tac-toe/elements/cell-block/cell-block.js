@@ -12,8 +12,14 @@ let CellBlock = class CellBlock extends ConfigurableWebComponent {
         super(...arguments);
         this.props = Props.define(this, {
             reflect: {
-                x: "number" /* NUMBER */,
-                y: "number" /* NUMBER */,
+                x: {
+                    type: "number" /* NUMBER */,
+                    isDefined: true
+                },
+                y: {
+                    type: "number" /* NUMBER */,
+                    isDefined: true
+                },
                 state: {
                     type: "string" /* STRING */,
                     value: "" /* NONE */,

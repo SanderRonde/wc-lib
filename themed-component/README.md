@@ -24,21 +24,4 @@ You can see an example of the actual typed CSS in `themed-component.css.ts`. It 
 
 # css() reference
 
-The `css()` function itself can be called in two ways. Either with or without a parameter. If called with a parameter (which should be a component instance), the types are inferred from that parameter. If called without one, you should pass the type of that component as a generic argument (for example `css<MyComponent>()`) instead to make sure types can be inferred.
-
-This function returns a class which we'll call `CSS` that can be chained off of. It has a few properties.
-* The `$`, `i` and `id` properties contain objects with the ID keys (previously passed through step one of Typed CSS) as its keys. 
-* The `class` and `c` properties do the same except with class keys.
-* The `tag` and `t` do the same but with tags.
-
-These each return another class which we'll call a `CSSSelector` with different properties. 
-* The `and` property returns a class map. For example `css(this).$.x.and.y` resolves to `#x.y`. This returns another `CSSSelector` (and as such can be chained).
-* The `or` property returns another `CSS` class. For example `css(this).$.x.or.$.y` resolves to `#x, #y`.
-* The `orFn` method can be called with another `CSSSelector` in order to merge them. For example `css(this).$.x.orFn(css(this).$.y)` resolves to `#x, #y` as well.
-* The `toggle` property returns an object with all possible toggle values as keys. For example `css(this).$.x.toggle.y` resolves to `#x.y`.
-* The `toggleFn` method takes a variable number of arguments where the arguments must all be possible toggle values. For example `css(this).$.x.toggleFn('y', 'z')` resolves to `#x.y.z`.
-* The `attr` property returns an object with all possible attribute values as keys. For example `css(this).$.x.attr.y` resolves to `#x[y]`. Note that this way you can not set values
-* The `attrFn` method takes an attribute as a key and an optional value for it. For example `css(this).$.x.attrFn('y', 'z')` resolves to `#x[y="z"]`.
-* The `toString` method will convert the whole thing to a valid CSS selector. This is done implicitly in the templates and is not something you have to think about but it can be handy to debug it.
-
-**Note**: If at any time you see a question mark instead of something else you expected, you've probably done something wrong.
+See `README.md` in the root of the project for details.

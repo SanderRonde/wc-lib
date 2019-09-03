@@ -14,7 +14,7 @@ let JsxInput = class JsxInput extends ConfigurableWebComponent {
             reflect: {
                 name: {
                     type: "string" /* STRING */,
-                    value: 'name',
+                    value: 'name'
                 },
                 placeholder: {
                     type: "string" /* STRING */,
@@ -23,7 +23,7 @@ let JsxInput = class JsxInput extends ConfigurableWebComponent {
                 type: {
                     type: "string" /* STRING */,
                     exactType: '',
-                    value: 'text'
+                    required: true
                 }
             }
         });

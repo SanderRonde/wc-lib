@@ -187,7 +187,10 @@ type IsUnassigned<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> =
 				V extends PreDefined ? false : true :
 					false : false;
 
-type GetTSType<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> = 
+/**
+ * Gets the type of an individual property based on its config
+ */
+export type GetTSType<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> = 
 	V extends PROP_TYPE.BOOL ? boolean : 
 	V extends PROP_TYPE.NUMBER ? number : 
 	V extends PROP_TYPE.STRING ? string : 
@@ -249,7 +252,11 @@ export function ComplexType<T>(): ComplexType<T> {
 	return complex as ComplexType<T>;
 }
 
-type DefinePropTypes = PROP_TYPE|ComplexType<any>;
+/**
+ * A simple prop config that uses a type
+ */
+export type DefinePropTypes = PROP_TYPE|ComplexType<any>;
+
 interface DefineTypeConfig {
 	/**
 	 * The type of this property. Can either by a PROP_TYPE:
@@ -339,6 +346,12 @@ export interface DefinePropTypeConfig extends DefineTypeConfig {
 	 * This value is not actually used in any way except for typing.
 	 */
 	isDefined?: boolean;
+	/**
+	 * Whether this parameter is required. False by default.
+	 * Currently only affects the JSX typings.
+	 * This value is not actually used in any way except for typing.
+	 */
+	required?: boolean;
 }
 
 function getDefinePropConfig(value: DefinePropTypes|DefinePropTypeConfig): DefinePropTypeConfig {
@@ -769,7 +782,7 @@ type SimpleReturnType<R extends PropTypeConfig, P extends PropTypeConfig> = {
 	[K in keyof P]: GetTSType<P[K]>;
 } & {
 	[K in keyof R]: GetTSType<R[K]>;
-};
+} & Props<any>;
 
 namespace PropsDefiner {
 	type KeyPart<C extends PropTypeConfig, B extends boolean> = {
@@ -934,7 +947,7 @@ namespace PropsDefiner {
 		composite: boolean;
 	}> = new WeakMap();
 
-	interface PropConfig<R,P> extends Omit<Required<DefinePropTypeConfig>, 'value'|'exactType'|'isDefined'> {
+	interface PropConfig<R,P> extends Omit<Required<DefinePropTypeConfig>, 'value'|'exactType'|'isDefined'|'required'> {
 		mapKey: Extract<keyof P|keyof R, string>;
 		key: string;
 		reflectToAttr: boolean;
@@ -1165,7 +1178,7 @@ namespace PropsDefiner {
 		}
 
 	export async function joinProps<R extends PropTypeConfig, P extends PropTypeConfig, PP extends PropReturn<any, any>>(
-		previousProps: PP, config: {
+		previousProps: PP & Props<any>, config: {
 			reflect?: R;
 			priv?: P;
 		}) {
@@ -1213,7 +1226,15 @@ export const propConfigs: Map<string, {
 /**
  * A class used to define properties for components
  */
-export class Props {
+export class Props<C extends {
+	reflect?: any;
+	priv?: any;
+}|undefined = any> {
+	// Keep this unused private value so typescript doesn't
+	// optimise it away, breaking the config inference (InferPropConfig)
+	// @ts-ignore
+	constructor(private __config: C) {}
+
 	/**
 	 * Defines properties on this component
 	 * 
@@ -1234,40 +1255,40 @@ export class Props {
 	 * 	this component
 	 */
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props?: {
+		element: PropComponent, config?: {
 			reflect: PUB;
 			priv: PRIV;
-		}): Props & ReturnType<PUB, PRIV>;
+		}): Props<typeof config> & ReturnType<PUB, PRIV>;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props?: {
+		element: PropComponent, config?: {
 			priv: PRIV;
-		}): Props & ReturnType<{}, PRIV>;
+		}): Props<typeof config> & ReturnType<{}, PRIV>;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props?: {
+		element: PropComponent, config?: {
 			reflect: PUB;
-		}): Props & ReturnType<PUB, {}>;
+		}): Props<typeof config> & ReturnType<PUB, {}>;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(
-		element: PropComponent, props?: { }): Props;
+		element: PropComponent, config?: { }): Props<typeof config>;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: PropComponent, props: {
+		element: PropComponent, config: {
 			reflect: PUB;
 			priv: PRIV;
-		}, parentProps: PP): ReturnType<PUB, PRIV> & PP;
+		}, parentProps: PP): Props<typeof config> & ReturnType<PUB, PRIV> & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: PropComponent, props: {
+		element: PropComponent, config: {
 			priv: PRIV;
-		}, parentProps: PP): ReturnType<{}, PRIV> & PP;
+		}, parentProps: PP): Props<typeof config> & ReturnType<{}, PRIV> & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: PropComponent, props: {
+		element: PropComponent, config: {
 			reflect: PUB;
-		}, parentProps: PP): Props & ReturnType<PUB, {}> & PP;
+		}, parentProps: PP): Props<typeof config> & ReturnType<PUB, {}> & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
-		element: PropComponent, props: { }, parentProps: PP): Props & PP;
+		element: PropComponent, config: { }, parentProps: PP): Props<typeof config> & PP;
 	static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(
 		element: PropComponent, config: {
 			reflect?: PUB;
 			priv?: PRIV;
-		} = {}, parentProps: PP = (element as any).props): Props & R & PP {
+		} = {}, parentProps: PP = (element as any).props): Props<typeof config> & R & PP {
 			const tag = element.tagName.toLowerCase();
 			if (propConfigs.has(tag)) {
 				propConfigs.set(tag, {...propConfigs.get(tag)!, ...config});
@@ -1283,12 +1304,12 @@ export class Props {
 				}
 
 				PropsDefiner.joinProps(parentProps, config);
-				return parentProps as Props & R & PP;
+				return parentProps as Props<typeof config> & R & PP;
 			}
 
-			const props = new Props();
-			PropsDefiner.define(props as Props & Partial<R>, element, config);
-			return props as Props & R & PP;
+			const props = new Props(config);
+			PropsDefiner.define(props as Props<typeof config> & Partial<R>, element, config);
+			return props as Props<typeof config> & R & PP;
 		}
 
 	/**

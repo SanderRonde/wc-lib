@@ -163,6 +163,8 @@ type PreDefined = {
 	value: any;
 }|{
 	defaultValue: any;
+}|{
+	isDefined: true;
 }
 
 type IsUnassigned<V extends PROP_TYPE|ComplexType<any>|DefinePropTypeConfig> = 
@@ -330,6 +332,13 @@ export interface DefinePropTypeConfig extends DefineTypeConfig {
 	 * accessing component.value will return the value of that property.
 	 */
 	reflectToSelf?: boolean;
+	/**
+	 * If true, the type of this property is assumed to be defined
+	 * even if no default value was provided. This is basically
+	 * the equivalent of doing `this.props.x!` in typescript.
+	 * This value is not actually used in any way except for typing.
+	 */
+	isDefined?: boolean;
 }
 
 function getDefinePropConfig(value: DefinePropTypes|DefinePropTypeConfig): DefinePropTypeConfig {
@@ -925,7 +934,7 @@ namespace PropsDefiner {
 		composite: boolean;
 	}> = new WeakMap();
 
-	interface PropConfig<R,P> extends Omit<Required<DefinePropTypeConfig>, 'value'|'exactType'> {
+	interface PropConfig<R,P> extends Omit<Required<DefinePropTypeConfig>, 'value'|'exactType'|'isDefined'> {
 		mapKey: Extract<keyof P|keyof R, string>;
 		key: string;
 		reflectToAttr: boolean;

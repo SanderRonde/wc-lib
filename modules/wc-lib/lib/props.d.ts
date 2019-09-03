@@ -65,9 +65,14 @@ declare type PreDefined = {
     value: any;
 } | {
     defaultValue: any;
+} | {
+    isDefined: true;
 };
 declare type IsUnassigned<V extends PROP_TYPE | ComplexType<any> | DefinePropTypeConfig> = V extends PROP_TYPE.BOOL ? true : V extends PROP_TYPE.NUMBER ? true : V extends PROP_TYPE.STRING ? true : V extends ComplexType<any> ? true : V extends DefineTypeConfig ? V extends ExactTypeHaver ? false : V['type'] extends PROP_TYPE.BOOL ? V extends Coerced ? false : V extends PreDefined ? false : true : V['type'] extends PROP_TYPE.NUMBER ? V extends Coerced ? false : V extends PreDefined ? false : true : V['type'] extends PROP_TYPE.STRING ? V extends Coerced ? false : V extends PreDefined ? false : true : V['type'] extends ComplexType<any> ? V extends PreDefined ? false : true : false : false;
-declare type GetTSType<V extends PROP_TYPE | ComplexType<any> | DefinePropTypeConfig> = V extends PROP_TYPE.BOOL ? boolean : V extends PROP_TYPE.NUMBER ? number : V extends PROP_TYPE.STRING ? string : V extends ComplexType<infer R> ? R : V extends DefineTypeConfig ? V extends ExactTypeHaver ? V['exactType'] : V['type'] extends PROP_TYPE.BOOL ? V extends Coerced ? boolean : V extends PreDefined ? boolean : boolean : V['type'] extends PROP_TYPE.NUMBER ? V extends Coerced ? number : V extends PreDefined ? number : number : V['type'] extends PROP_TYPE.STRING ? V extends Coerced ? string : V extends PreDefined ? string : string : V['type'] extends ComplexType<infer R> ? V extends PreDefined ? R : R : void : void;
+/**
+ * Gets the type of an individual property based on its config
+ */
+export declare type GetTSType<V extends PROP_TYPE | ComplexType<any> | DefinePropTypeConfig> = V extends PROP_TYPE.BOOL ? boolean : V extends PROP_TYPE.NUMBER ? number : V extends PROP_TYPE.STRING ? string : V extends ComplexType<infer R> ? R : V extends DefineTypeConfig ? V extends ExactTypeHaver ? V['exactType'] : V['type'] extends PROP_TYPE.BOOL ? V extends Coerced ? boolean : V extends PreDefined ? boolean : boolean : V['type'] extends PROP_TYPE.NUMBER ? V extends Coerced ? number : V extends PreDefined ? number : number : V['type'] extends PROP_TYPE.STRING ? V extends Coerced ? string : V extends PreDefined ? string : string : V['type'] extends ComplexType<infer R> ? V extends PreDefined ? R : R : void : void;
 /**
  * Basic property types for properties
  */
@@ -104,7 +109,10 @@ declare const complex: unique symbol;
  * 	complex types
  */
 export declare function ComplexType<T>(): ComplexType<T>;
-declare type DefinePropTypes = PROP_TYPE | ComplexType<any>;
+/**
+ * A simple prop config that uses a type
+ */
+export declare type DefinePropTypes = PROP_TYPE | ComplexType<any>;
 interface DefineTypeConfig {
     /**
      * The type of this property. Can either by a PROP_TYPE:
@@ -186,6 +194,19 @@ export interface DefinePropTypeConfig extends DefineTypeConfig {
      * accessing component.value will return the value of that property.
      */
     reflectToSelf?: boolean;
+    /**
+     * If true, the type of this property is assumed to be defined
+     * even if no default value was provided. This is basically
+     * the equivalent of doing `this.props.x!` in typescript.
+     * This value is not actually used in any way except for typing.
+     */
+    isDefined?: boolean;
+    /**
+     * Whether this parameter is required. False by default.
+     * Currently only affects the JSX typings.
+     * This value is not actually used in any way except for typing.
+     */
+    required?: boolean;
 }
 /**
  * Converts casing to dashes
@@ -292,7 +313,12 @@ export declare const propConfigs: Map<string, {
 /**
  * A class used to define properties for components
  */
-export declare class Props {
+export declare class Props<C extends {
+    reflect?: any;
+    priv?: any;
+} | undefined = any> {
+    private __config;
+    constructor(__config: C);
     /**
      * Defines properties on this component
      *
@@ -312,28 +338,28 @@ export declare class Props {
      * @returns {Props & R} The properties for
      * 	this component
      */
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, props?: {
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, config?: {
         reflect: PUB;
         priv: PRIV;
-    }): Props & ReturnType<PUB, PRIV>;
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, props?: {
+    }): Props<typeof config> & ReturnType<PUB, PRIV>;
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, config?: {
         priv: PRIV;
-    }): Props & ReturnType<{}, PRIV>;
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, props?: {
+    }): Props<typeof config> & ReturnType<{}, PRIV>;
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, config?: {
         reflect: PUB;
-    }): Props & ReturnType<PUB, {}>;
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, props?: {}): Props;
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, props: {
+    }): Props<typeof config> & ReturnType<PUB, {}>;
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>>(element: PropComponent, config?: {}): Props<typeof config>;
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, config: {
         reflect: PUB;
         priv: PRIV;
-    }, parentProps: PP): ReturnType<PUB, PRIV> & PP;
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, props: {
+    }, parentProps: PP): Props<typeof config> & ReturnType<PUB, PRIV> & PP;
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, config: {
         priv: PRIV;
-    }, parentProps: PP): ReturnType<{}, PRIV> & PP;
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, props: {
+    }, parentProps: PP): Props<typeof config> & ReturnType<{}, PRIV> & PP;
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, config: {
         reflect: PUB;
-    }, parentProps: PP): Props & ReturnType<PUB, {}> & PP;
-    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, props: {}, parentProps: PP): Props & PP;
+    }, parentProps: PP): Props<typeof config> & ReturnType<PUB, {}> & PP;
+    static define<PUB extends PropConfigObject, PRIV extends PropConfigObject, R extends PropReturn<PUB, PRIV>, PP extends PropReturn<any, any>>(element: PropComponent, config: {}, parentProps: PP): Props<typeof config> & PP;
     /**
      * A function that will be called when the passed element
      * is connected to the dom (`connectedCallback` is called).

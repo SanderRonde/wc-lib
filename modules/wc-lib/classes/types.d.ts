@@ -1,3 +1,4 @@
+import { Props, PropConfigObject, DefinePropTypes, DefinePropTypeConfig, GetTSType } from '../lib/props.js';
 import { ListenerSet, EventListenerObj } from '../lib/listener.js';
 import { TemplateFnLike } from '../lib/template-fn.js';
 import { ClassNamesArg } from '../lib/shared.js';
@@ -24,15 +25,37 @@ export declare type DefaultValUnknown<V, D = {}> = V extends undefined ? D : V e
 /**
  * Infers props of a component from passed component['props']
  */
-declare type InferProps<C extends {
+export declare type InferProps<C extends {
     props: any;
 }> = {
     [K in keyof C['props']]: C['props'][K];
 };
 /**
+ * Infers the property config of a component from
+ * passed component['props']
+ */
+export declare type InferPropConfig<C extends {
+    props: Props<{
+        reflect?: PropConfigObject;
+        priv?: PropConfigObject;
+    }>;
+}> = C['props'] extends Props<infer P> ? NonNullable<P> : void;
+declare type GetReflectPropConfig<C extends {
+    reflect?: PropConfigObject;
+    priv?: PropConfigObject;
+} | void> = C extends {
+    reflect: any;
+} ? C['reflect'] : PropConfigObject;
+declare type GetPrivPropConfig<C extends {
+    reflect?: PropConfigObject;
+    priv?: PropConfigObject;
+} | void> = C extends {
+    priv: any;
+} ? C['priv'] : PropConfigObject;
+/**
  * Infers the events listener object from the passed component
  */
-declare type InferEvents<C> = C extends {
+export declare type InferEvents<C> = C extends {
     listenerMap: ListenerSet<infer E>;
 } ? E : {};
 /**
@@ -46,6 +69,37 @@ declare type EventsToAttr<E> = {
  */
 declare type CustomEventsToAttr<E extends EventListenerObj> = {
     [EV in keyof E]: (...args: E[EV]["args"]) => E[EV]["returnType"];
+};
+declare type _Remove<A extends {
+    [key: string]: any;
+}, B> = {
+    [K in keyof A]: A[K] extends B ? never : K;
+}[keyof A];
+declare type RemoveType<A extends {
+    [key: string]: any;
+}, B> = {
+    [K in _Remove<A, B>]: A[K];
+};
+declare type IsPropRequired<P extends DefinePropTypes | DefinePropTypeConfig> = P extends DefinePropTypes ? false : P extends {
+    required: true;
+} ? true : false;
+declare type RequiredProps<R extends PropConfigObject, P extends PropConfigObject> = {
+    [K in keyof RemoveType<{
+        [K2 in keyof R]: IsPropRequired<R[K2]>;
+    }, false>]: GetTSType<R[K]>;
+} & {
+    [K in keyof RemoveType<{
+        [K2 in keyof P]: IsPropRequired<P[K2]>;
+    }, false>]: GetTSType<P[K]>;
+};
+declare type OptionalProps<R extends PropConfigObject, P extends PropConfigObject> = {
+    [K in keyof Omit<R, keyof RemoveType<{
+        [K2 in keyof R]: IsPropRequired<R[K2]>;
+    }, false>>]: GetTSType<R[K]>;
+} & {
+    [K in keyof Omit<P, keyof RemoveType<{
+        [K2 in keyof P]: IsPropRequired<P[K2]>;
+    }, false>>]: GetTSType<P[K]>;
 };
 /**
  * Generates definitions for passed component. Use this to create a JSX.IntrinsicElements interface.
@@ -61,8 +115,11 @@ declare type CustomEventsToAttr<E extends EventListenerObj> = {
  ```
  */
 export declare type JSXDefinition<C extends {
-    props: any;
-}, ATTR = {}> = ATTR & Partial<InferProps<C>> & {
+    props: Props<{
+        reflect?: PropConfigObject;
+        priv?: PropConfigObject;
+    }>;
+}, ATTR = {}> = ATTR & Partial<OptionalProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>>> & Partial<RequiredProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>>> & {
     __listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
     "@"?: Partial<EventsToAttr<HTMLElementEventMap>>;
     __component_listeners?: Partial<CustomEventsToAttr<InferEvents<C>>>;

@@ -201,7 +201,7 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
          * @param {boolean} [once] - Whether the listener should only
          * 	be called once
          */
-        listenProp<P extends Props & {
+        listenProp<P extends Props<any> & {
             [key: string]: any;
         }>(event: "beforePropChange" | "propChange", listener: (key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void, once?: boolean | undefined): void;
         /**
@@ -219,7 +219,7 @@ export declare const WebComponentMixin: <P extends Constructor<HTMLElement & Pic
          * @param {boolean} [once] - Whether the listener should only
          * 	be called once
          */
-        listenProp<P extends Props & {
+        listenProp<P extends Props<any> & {
             [key: string]: any;
         }, PK extends keyof P>(event: "beforePropChange" | "propChange", listener: (key: PK, newValue: P[PK], oldValue: P[PK]) => void, once?: boolean | undefined): void;
         /**

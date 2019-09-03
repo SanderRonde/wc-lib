@@ -33,10 +33,10 @@ export declare const FullWebComponent: {
         layoutMounted(): void;
         mounted(): void;
         unmounted(): void;
-        listenProp<P extends import("../wc-lib.js").Props & {
+        listenProp<P extends import("../wc-lib.js").Props<any> & {
             [key: string]: any;
         }>(event: "beforePropChange" | "propChange", listener: (key: keyof P, newValue: P[keyof P], oldValue: P[keyof P]) => void, once?: boolean | undefined): void;
-        listenProp<P extends import("../wc-lib.js").Props & {
+        listenProp<P extends import("../wc-lib.js").Props<any> & {
             [key: string]: any;
         }, PK extends keyof P>(event: "beforePropChange" | "propChange", listener: (key: PK, newValue: P[PK], oldValue: P[PK]) => void, once?: boolean | undefined): void;
         readonly listenerMap: import("../lib/listener.js").ListenerSet<E>;

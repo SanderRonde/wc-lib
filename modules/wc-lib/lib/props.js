@@ -748,6 +748,12 @@ export const propConfigs = new Map();
  * A class used to define properties for components
  */
 export class Props {
+    // Keep this unused private value so typescript doesn't
+    // optimise it away, breaking the config inference (InferPropConfig)
+    // @ts-ignore
+    constructor(__config) {
+        this.__config = __config;
+    }
     static define(element, config = {}, parentProps = element.props) {
         const tag = element.tagName.toLowerCase();
         if (propConfigs.has(tag)) {
@@ -765,7 +771,7 @@ export class Props {
             PropsDefiner.joinProps(parentProps, config);
             return parentProps;
         }
-        const props = new Props();
+        const props = new Props(config);
         PropsDefiner.define(props, element, config);
         return props;
     }

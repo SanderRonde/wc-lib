@@ -255,13 +255,14 @@ export declare const WebComponentI18NManagerMixin: <P extends Constructor<Partia
     initI18N<GA extends {
         i18n?: any;
         langs?: string | undefined;
-    } = {}>({ urlFormat, defaultLang, getMessage, returner }: {
+    } = {}>(config: ({
         /**
          * The format of the language URLs where $LANG$ is replaced with the language.
          * For example if the language is `en` and the `urlFormat` is
          * "/_locales/$LANG$.json" it would fetch it from "/_locales/en.json"
          */
         urlFormat: string;
+    } & {
         /**
          * The default language to use. This is a simple string
          */
@@ -281,7 +282,37 @@ export declare const WebComponentI18NManagerMixin: <P extends Constructor<Partia
          * constructs to your templates instead of simple promises
          */
         returner?: ((messagePromise: Promise<string>, placeHolder: string) => any) | undefined;
-    }): void;
+    }) | ({
+        /**
+         * The language files to be used where the name is the language
+         * and the value is the language file.
+         */
+        langFiles: {
+            [key: string]: DefaultValUnknown<GA["i18n"], {
+                [key: string]: any;
+            }>;
+        };
+    } & {
+        /**
+         * The default language to use. This is a simple string
+         */
+        defaultLang: DefaultValUnknown<GA["langs"], string>;
+        /**
+         * An optional override of the default `getMessage` function. This function
+         * gets the message from the language file given the file, a key and some
+         * replacement values and returns a message string or a promise resolving to one.
+         * The default function returns `file[key]`
+         */
+        getMessage?: ((langFile: DefaultValUnknown<GA["i18n"], any>, key: string, values: any[]) => string | Promise<string>) | undefined;
+        /**
+         * A final step called before the `this.__` function returns. This is called with
+         * a promise that resolves to a message as the first argument and a placeholder
+         * as the second argument. The placeholder is of the form "{{key}}".
+         * This can be used as a way to return lit-html directives or similar
+         * constructs to your templates instead of simple promises
+         */
+        returner?: ((messagePromise: Promise<string>, placeHolder: string) => any) | undefined;
+    })): void;
     /**
      * Returns a promise that resolves to the message. You will generally
      * want to use this inside the class itself since it resolves to a simple promise.

@@ -2010,12 +2010,23 @@ export declare const FullWebComponent: {
     initI18N<GA extends {
         i18n?: any;
         langs?: string | undefined;
-    } = {}>({ urlFormat, defaultLang, getMessage, returner }: {
+    } = {}>(config: ({
         urlFormat: string;
+    } & {
         defaultLang: import("./types.js").DefaultValUnknown<GA["langs"], string>;
         getMessage?: ((langFile: import("./types.js").DefaultValUnknown<GA["i18n"], any>, key: string, values: any[]) => string | Promise<string>) | undefined;
         returner?: ((messagePromise: Promise<string>, placeHolder: string) => any) | undefined;
-    }): void;
+    }) | ({
+        langFiles: {
+            [key: string]: import("./types.js").DefaultValUnknown<GA["i18n"], {
+                [key: string]: any;
+            }>;
+        };
+    } & {
+        defaultLang: import("./types.js").DefaultValUnknown<GA["langs"], string>;
+        getMessage?: ((langFile: import("./types.js").DefaultValUnknown<GA["i18n"], any>, key: string, values: any[]) => string | Promise<string>) | undefined;
+        returner?: ((messagePromise: Promise<string>, placeHolder: string) => any) | undefined;
+    })): void;
     __prom(key: string, ...values: any[]): Promise<string>;
     __<R>(key: string, ...values: any[]): string | R;
     readonly langReady: Promise<any>;

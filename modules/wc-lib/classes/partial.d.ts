@@ -7885,12 +7885,23 @@ declare const I18NWebComponent_base: {
     initI18N<GA_1 extends {
         i18n?: any;
         langs?: string | undefined;
-    } = {}>({ urlFormat, defaultLang, getMessage, returner }: {
+    } = {}>(config: ({
         urlFormat: string;
+    } & {
         defaultLang: import("./types.js").DefaultValUnknown<GA_1["langs"], string>;
         getMessage?: ((langFile: import("./types.js").DefaultValUnknown<GA_1["i18n"], any>, key: string, values: any[]) => string | Promise<string>) | undefined;
         returner?: ((messagePromise: Promise<string>, placeHolder: string) => any) | undefined;
-    }): void;
+    }) | ({
+        langFiles: {
+            [key: string]: import("./types.js").DefaultValUnknown<GA_1["i18n"], {
+                [key: string]: any;
+            }>;
+        };
+    } & {
+        defaultLang: import("./types.js").DefaultValUnknown<GA_1["langs"], string>;
+        getMessage?: ((langFile: import("./types.js").DefaultValUnknown<GA_1["i18n"], any>, key: string, values: any[]) => string | Promise<string>) | undefined;
+        returner?: ((messagePromise: Promise<string>, placeHolder: string) => any) | undefined;
+    })): void;
     __prom(key: string, ...values: any[]): Promise<string>;
     __<R>(key: string, ...values: any[]): string | R;
     readonly langReady: Promise<any>;

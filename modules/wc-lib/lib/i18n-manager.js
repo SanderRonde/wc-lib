@@ -75,7 +75,8 @@ class I18NClass {
     }
     static __loadLang(lang) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (lang in this.__langPromises)
+            if (lang in this.__langPromises ||
+                lang in this.langFiles)
                 return;
             const prom = new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
                 const text = yield this.__fetch(this.urlFormat.replace(/\$LANG\$/g, lang));
@@ -366,8 +367,14 @@ export const WebComponentI18NManagerMixin = (superFn) => {
         /**
          * Initializes i18n with a few important settings
          */
-        static initI18N({ urlFormat, defaultLang, getMessage, returner }) {
-            I18NClass.urlFormat = urlFormat;
+        static initI18N(config) {
+            const { defaultLang, getMessage, returner } = config;
+            if ('urlFormat' in config) {
+                I18NClass.urlFormat = config.urlFormat;
+            }
+            else if ('langFiles' in config) {
+                I18NClass.langFiles = config.langFiles;
+            }
             if (getMessage) {
                 I18NClass.getMessage = getMessage;
             }

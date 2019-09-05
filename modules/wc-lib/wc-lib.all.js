@@ -2,7 +2,7 @@
  * All exports this library has to offer
  */
 export * from './classes/full.js';
-export * from './classes/partial';
+export * from './classes/partial.js';
 export * from './classes/parts.js';
 export * from './lib/base.js';
 export * from './lib/component.js';

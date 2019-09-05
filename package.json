@@ -66,7 +66,7 @@
 		"set-cypress:partial-class-theming": "node scripts/set-specs.js test/usage/integration/partial-classes/theming",
 		"set-cypress:properties": "node scripts/set-specs.js test/usage/integration/properties",
 		"set-cypress:tasks": "node scripts/set-specs.js test/usage/integration/tasks",
-		"test": "npm run compile:all && npm run cypress",
+		"test": "npm run compile:all && npm run set-cypress:all && npm run cypress",
 		"serve": "http-server -c-1 -p 1251 .",
 		"examples": "npm run compile:all && npm run compile:examples && npm run serve",
 		"coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument build/es/ instrumented/ && gulp replaceTestImports",

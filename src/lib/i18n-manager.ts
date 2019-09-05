@@ -262,18 +262,24 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 		public static initI18N<GA extends {
 			i18n?: any;
 			langs?: string;
-		} = {}>({
-			urlFormat,
-			defaultLang,
-			getMessage,
-			returner
-		}: {
+		} = {}>(config: ({
 			/**
 			 * The format of the language URLs where $LANG$ is replaced with the language.
 			 * For example if the language is `en` and the `urlFormat` is 
 			 * "/_locales/$LANG$.json" it would fetch it from "/_locales/en.json"
 			 */
 			urlFormat: string;
+		}|{
+			/**
+			 * The language files to be used where the name is the language
+			 * and the value is the language file.
+			 */
+			langFiles: {
+				[key: string]: DefaultValUnknown<GA['i18n'], {
+					[key: string]: any;
+				}>;
+			}
+		}) & {
 			/**
 			 * The default language to use. This is a simple string
 			 */
@@ -294,7 +300,12 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			 */
 			returner?: (messagePromise: Promise<string>, placeHolder: string) => any;
 		}) {
-			I18NClass.urlFormat = urlFormat;
+			const { defaultLang, getMessage, returner } = config;
+			if ('urlFormat' in config) {
+				I18NClass.urlFormat = config.urlFormat;
+			} else if ('langFiles' in config) {
+				I18NClass.langFiles = config.langFiles;
+			}
 			if (getMessage) {
 				I18NClass.getMessage = getMessage;
 			}

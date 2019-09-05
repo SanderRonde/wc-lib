@@ -3,7 +3,7 @@
  */
 
 export * from './classes/full.js';
-export * from './classes/partial';
+export * from './classes/partial.js';
 export * from './classes/parts.js';
 export * from './classes/types.js';
 

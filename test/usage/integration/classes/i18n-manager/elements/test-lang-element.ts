@@ -1,4 +1,4 @@
-import { TemplateFn, CHANGE_TYPE, config } from '../../../../../../build/es/wc-lib.all.js';
+import { TemplateFn, CHANGE_TYPE, config, ConfigurableWebComponent } from '../../../../../../build/es/wc-lib.js';
 import { render, html, directive, Part } from '../../../../../../node_modules/lit-html/lit-html.js';
 
 const awaitPromise = directive((key: string, value: Promise<any>|string) => (part: Part) => {
@@ -28,10 +28,19 @@ const placeholder = directive((key: string, value: Promise<any>|string) => (part
 	});
 });
 
-export const LangElement = (superFn: any) => {
+export declare class LangElement extends ConfigurableWebComponent<{
+	langs: 'en'|'nl';
+	i18n: {
+		test: string;
+		nonexistent: string;
+		values: string;
+	}
+}> { }
+
+export const LangElementFactory = (superFn: any) => {
 	@config({
 		is: 'lang-element',
-		html: new TemplateFn<LangElement>(function() {
+		html: new TemplateFn<_LangElement>(function() {
 			return html`
 				<div id="placeholdertest">${placeholder('test', this.__prom('test'))}</div>
 				<div id="promiseTest">${awaitPromise('test', this.__prom('test'))}</div>
@@ -52,7 +61,7 @@ export const LangElement = (superFn: any) => {
 		}, CHANGE_TYPE.LANG, render),
 		css: null
 	})
-	class LangElement extends superFn<{
+	class _LangElement extends superFn<{
 		langs: 'en'|'nl';
 		i18n: {
 			test: string;
@@ -60,5 +69,5 @@ export const LangElement = (superFn: any) => {
 			values: string;
 		}
 	}> { }
-	return LangElement;
+	return _LangElement as typeof LangElement;
 }

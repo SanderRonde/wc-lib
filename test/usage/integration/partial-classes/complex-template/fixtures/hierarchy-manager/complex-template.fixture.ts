@@ -1,7 +1,7 @@
 import { ComplexTemplatingWebComponent } from '../../../../../../../build/es/classes/partial.js';
-import { RootElement } from '../../../../classes/hierarchy-manager/elements/root-element.js';
+import { RootElementFactory } from '../../../../classes/hierarchy-manager/elements/root-element.js';
 
-RootElement(ComplexTemplatingWebComponent).define(true);
+RootElementFactory(ComplexTemplatingWebComponent).define(true);
 
 export interface TestGlobalProperties {
 	a: string;

@@ -1,6 +1,6 @@
 import { WebComponentI18NManagerMixinClass } from '../../../../../../../build/es/classes/types.js';
 import { directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { RootElement } from '../../../hierarchy-manager/elements/root-element.js';
+import { RootElementFactory } from '../../../hierarchy-manager/elements/root-element.js';
 
 export function i18nManagerRootFixtureFactory(base: WebComponentI18NManagerMixinClass) {
 	interface LangFile {
@@ -46,5 +46,5 @@ export function i18nManagerRootFixtureFactory(base: WebComponentI18NManagerMixin
 	});
 
 	(window as any).WebComponent = base;
-	RootElement(base).define(true);
+	RootElementFactory(base).define(true);
 }

@@ -1,5 +1,5 @@
 import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ComplexType, ConfigurableMixin, mixin } from "../../../../../../build/es/wc-lib.js";
-import { render } from "../../../../../../node_modules/lit-html/lit-html.js";
+import { render, html as litHTML } from "../../../../../../node_modules/lit-html/lit-html.js";
 
 export interface PropsElementWindow extends Window {
 	accessSymbol: typeof accessSymbol;
@@ -41,7 +41,7 @@ export declare class ChildEl extends ConfigurableWebComponent {
 	static onRender(_props: any): void;
 }
 
-export declare class _PropsElement extends ConfigurableWebComponent {
+export declare class PropsElement extends ConfigurableWebComponent {
 	props: {
 		casingTest: boolean;
 		casingtest2: boolean;
@@ -83,11 +83,11 @@ export declare class _PropsElement extends ConfigurableWebComponent {
 	forceChildElRender(index: number): void;
 }
 
-export declare class _EmptyProps extends ConfigurableWebComponent {
+export declare class EmptyProps extends ConfigurableWebComponent {
 	props: {  };
 }
 
-export declare class _PrivProps extends ConfigurableWebComponent {
+export declare class PrivProps extends ConfigurableWebComponent {
 	props: {
 		bool: boolean;
 		string: string;
@@ -95,7 +95,7 @@ export declare class _PrivProps extends ConfigurableWebComponent {
 	};
 }
 
-export declare class _ReflectProps extends ConfigurableWebComponent {
+export declare class ReflectProps extends ConfigurableWebComponent {
 	props: {
 		bool: boolean;
 		string: string;
@@ -103,7 +103,7 @@ export declare class _ReflectProps extends ConfigurableWebComponent {
 	};
 }
 
-export declare class _MergedProps extends ConfigurableWebComponent {
+export declare class MergedProps extends ConfigurableWebComponent {
 	props: {
 		bool: boolean;
 		string: string;
@@ -116,7 +116,7 @@ export declare class _MergedProps extends ConfigurableWebComponent {
 	setSuperPropsExtending(): void;
 }
 
-export declare class _UnmergedProps extends ConfigurableWebComponent {
+export declare class UnmergedProps extends ConfigurableWebComponent {
 	props: {
 		bool: boolean;
 		string: string;
@@ -124,19 +124,19 @@ export declare class _UnmergedProps extends ConfigurableWebComponent {
 	};
 }
 
-export declare class _InvalidDefineArg extends ConfigurableWebComponent {
+export declare class InvalidDefineArg extends ConfigurableWebComponent {
 	props: {
 		mergedBool: boolean;
 	};
 }
 
-export declare class _WatchedComponent extends ConfigurableWebComponent {
+export declare class WatchedComponent extends ConfigurableWebComponent {
 	props: {
 		watched: DeepObject;
 	};
 }
 
-export declare class _OverriddenProp extends ConfigurableWebComponent {
+export declare class OverriddenProp extends ConfigurableWebComponent {
 	props: {
 		bool: boolean;
 		string: string;
@@ -144,7 +144,7 @@ export declare class _OverriddenProp extends ConfigurableWebComponent {
 	};
 }
 
-export declare class _NoReflectSelf extends ConfigurableWebComponent {
+export declare class NoReflectSelf extends ConfigurableWebComponent {
 	props: {
 		bool: boolean;
 		string: string;
@@ -159,10 +159,11 @@ interface SymbolKeys {
 	[accessSymbol]: string;
 }
 
-export function PropsElementFixtureFactory(base: any) {
+export function PropsElementFixtureFactory(base: any, supportsTemplates: boolean) {
 	@config({
 		is: 'obj-el',
-		html: new TemplateFn<ObjEl>((html) => {
+		html: new TemplateFn<ObjEl>((passedHTML) => {
+			const html = supportsTemplates ? passedHTML : litHTML;
 			return html``;
 		}, CHANGE_TYPE.NEVER, render)
 	})
@@ -176,7 +177,8 @@ export function PropsElementFixtureFactory(base: any) {
 
 	@config({
 		is: 'child-el',
-		html: new TemplateFn<ChildEl>(function (html) {
+		html: new TemplateFn<ChildEl>(function (passedHTML) {
+			const html = supportsTemplates ? passedHTML : litHTML;
 			ChildEl.onRender(this.props);
 			return html``;
 		}, CHANGE_TYPE.PROP, render)
@@ -211,12 +213,16 @@ export function PropsElementFixtureFactory(base: any) {
 
 	@config({
 		is: 'props-element',
-		html: new TemplateFn<PropsElement>(function (html, props) {
+		html: new TemplateFn<_PropsElement>(function (passedHTML, props) {
+			const html = supportsTemplates ? passedHTML : litHTML;
 			return html`
+				${supportsTemplates ? html`
 				<obj-el id="ref" #complex="${{
 					a: 'b',
 					c: 'd'
-				}}"></obj-el>
+				}}"></obj-el>` : html`
+					<obj-el id="ref"></obj-el>`
+				}
 				<obj-el id="json" complex="${JSON.stringify({
 					a: 'b',
 					c: 'd'
@@ -244,7 +250,7 @@ export function PropsElementFixtureFactory(base: any) {
 			ChildEl as any
 		]
 	})
-	class PropsElement extends ConfigurableWebComponent {
+	class _PropsElement extends ConfigurableWebComponent {
 		props = Props.define(this, {
 			reflect: {
 				casingTest: {
@@ -608,7 +614,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'empty-props',
 		html: null
 	})
-	class EmptyProps extends ConfigurableWebComponent {
+	class _EmptyProps extends ConfigurableWebComponent {
 		props = Props.define(this);
 	}
 
@@ -616,7 +622,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'priv-props',
 		html: null
 	})
-	class PrivProps extends ConfigurableWebComponent {
+	class _PrivProps extends ConfigurableWebComponent {
 		props = Props.define(this, {
 			priv:  {
 				bool: {
@@ -639,7 +645,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'reflect-props',
 		html: null
 	})
-	class ReflectProps extends ConfigurableWebComponent {
+	class _ReflectProps extends ConfigurableWebComponent {
 		props = Props.define(this, {
 			reflect: {
 				bool: {
@@ -687,7 +693,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'merged-props',
 		html: null
 	})
-	class MergedProps extends mixin(ConfigurableMixin, PropMixin) {
+	class _MergedProps extends mixin(ConfigurableMixin, PropMixin) {
 		props = Props.define(this, {
 			reflect: {
 				mergedBool: {
@@ -712,7 +718,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'empty-props',
 		html: null
 	})
-	class UnmergedProps extends mixin(ConfigurableMixin, PropMixin) {
+	class _UnmergedProps extends mixin(ConfigurableMixin, PropMixin) {
 		props = Props.define(this) as any;
 	}
 
@@ -720,7 +726,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'invalid-define-arg',
 		html: null
 	})
-	class InvalidDefineArg extends ConfigurableWebComponent {
+	class _InvalidDefineArg extends ConfigurableWebComponent {
 		props = Props.define(this, {
 			reflect: {
 				mergedBool: {
@@ -735,7 +741,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'watched-component',
 		html: null
 	})
-	class WatchedComponent extends ConfigurableWebComponent {
+	class _WatchedComponent extends ConfigurableWebComponent {
 		props = Props.define(this, {
 			reflect: {
 				watched: {
@@ -766,7 +772,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'overridden-component',
 		html: null
 	})
-	class OverriddenProp extends ConfigurableWebComponent {
+	class _OverriddenProp extends ConfigurableWebComponent {
 		bool: string = 'str';
 
 		props = Props.define(this, {
@@ -791,7 +797,7 @@ export function PropsElementFixtureFactory(base: any) {
 		is: 'no-reflect-self',
 		html: null
 	})
-	class NoReflectSelf extends ConfigurableWebComponent {
+	class _NoReflectSelf extends ConfigurableWebComponent {
 		props = Props.define(this, {
 			reflect: {
 				bool: {
@@ -814,15 +820,15 @@ export function PropsElementFixtureFactory(base: any) {
 	}
 
 	return {
-		PropsElement: PropsElement as typeof _PropsElement,
-		EmptyProps: EmptyProps as typeof _EmptyProps,
-		PrivProps: PrivProps as typeof _PrivProps,
-		ReflectProps: ReflectProps as typeof _ReflectProps,
-		MergedProps: MergedProps as typeof _MergedProps,
-		UnmergedProps: UnmergedProps as typeof _UnmergedProps,
-		WatchedComponent: WatchedComponent as typeof _WatchedComponent,
-		InvalidDefineArg: InvalidDefineArg as typeof _InvalidDefineArg,
-		OverriddenProp: OverriddenProp as typeof _OverriddenProp,
-		NoReflectSelf: NoReflectSelf as typeof _NoReflectSelf
+		PropsElement: _PropsElement as typeof PropsElement,
+		EmptyProps: _EmptyProps as typeof EmptyProps,
+		PrivProps: _PrivProps as typeof PrivProps,
+		ReflectProps: _ReflectProps as typeof ReflectProps,
+		MergedProps: _MergedProps as typeof MergedProps,
+		UnmergedProps: _UnmergedProps as typeof UnmergedProps,
+		WatchedComponent: _WatchedComponent as typeof WatchedComponent,
+		InvalidDefineArg: _InvalidDefineArg as typeof InvalidDefineArg,
+		OverriddenProp: _OverriddenProp as typeof OverriddenProp,
+		NoReflectSelf: _NoReflectSelf as typeof NoReflectSelf
 	}
 }

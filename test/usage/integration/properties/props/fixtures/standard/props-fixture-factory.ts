@@ -5,17 +5,19 @@ import {
 } from "../../../../../../../node_modules/lit-html/lit-html.js";
 import { PropsElementFixtureFactory } from '../../elements/props-element.js';
 
-export function propsFixtureFactory(base: any) {
-	base.initComplexTemplateProvider({
-		TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
-		AttributeCommitter, NodePart, isDirective, noChange
-	});
+export function propsFixtureFactory(base: any, supportsTemplates: boolean) {
+	if (supportsTemplates) {
+		base.initComplexTemplateProvider({
+			TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
+			AttributeCommitter, NodePart, isDirective, noChange
+		});
+	}
 	
 	const { 
 		PropsElement, EmptyProps, PrivProps, 
 		ReflectProps, MergedProps, UnmergedProps, 
 		InvalidDefineArg, OverriddenProp, NoReflectSelf 
-	} = PropsElementFixtureFactory(base);
+	} = PropsElementFixtureFactory(base, supportsTemplates);
 	PropsElement.define(true);
 	EmptyProps.define(true);
 	PrivProps.define(true);

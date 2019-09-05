@@ -1,10 +1,26 @@
-import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE, ConfigurableWebComponent } from '../../../../../../build/es/wc-lib.js';
 import { TestGlobalProperties } from '../fixtures/standard/hierarchy-manager.fixture.js';
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { ParentElement } from '../../elements/parent-element.js';
-import { TestElement } from '../../elements/test-element.js';
+import { ParentElementFactory } from '../../elements/parent-element-factory.js';
+import { TestElementFactory } from '../../elements/test-element-factory.js';
 
-export const RootElement = (superFn: any) => {
+export declare class RootElement extends ConfigurableWebComponent<{
+	events: {
+		test: {
+			args: [number, number];
+		}
+		test2: {
+			args: [];
+			returnType: number;
+		}
+	}
+	root: RootElement;
+	globalProps: TestGlobalProperties;
+}> {
+	props: { x: number };
+}
+
+export const RootElementFactory = (superFn: any) => {
 	const RootElementHTML = new TemplateFn<RootElement>(() => {
 		return html`
 			<test-element></test-element>
@@ -23,11 +39,11 @@ export const RootElement = (superFn: any) => {
 		html: RootElementHTML,
 		css: RootElementCSS,
 		dependencies: [
-			ParentElement,
-			TestElement
-		]
+			ParentElementFactory(superFn),
+			TestElementFactory(superFn)
+		] as any
 	})
-	class RootElement extends superFn<{
+	class _RootElement extends superFn<{
 		events: {
 			test: {
 				args: [number, number];
@@ -49,5 +65,5 @@ export const RootElement = (superFn: any) => {
 			}
 		});
 	}
-	return RootElement;
+	return _RootElement as unknown as typeof RootElement;
 }

@@ -1,4 +1,4 @@
-import { Templates, CHANGE_TYPE, TemplateFn } from "../../../../../../build/es/wc-lib";
+import { Templates, CHANGE_TYPE, TemplateFn } from "../../../../../../build/es/wc-lib.js";
 import { SLOW } from "../../../../lib/timing";
 import { getFixture } from "../../../../lib/testing";
 import { TestElement } from "../../../classes/base/elements/test-element";

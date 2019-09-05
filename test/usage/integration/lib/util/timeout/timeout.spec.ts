@@ -1,4 +1,4 @@
-import { Timeout } from "../../../../../../build/es/wc-lib";
+import { Timeout } from "../../../../../../build/es/wc-lib.js";
 import { SLOW } from "../../../../lib/timing";
 
 context('Timeout', function() {

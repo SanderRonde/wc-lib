@@ -20,25 +20,24 @@ export const usedThemes: {
 };
 export const defaultTheme = 'first';
 
-export declare class _ThemedElement extends ConfigurableWebComponent<{
+export declare class ThemedElement extends ConfigurableWebComponent<{
 	themes: typeof usedThemes;
 }> { }
 
-export declare class _ThemedElementParent extends ConfigurableWebComponent<{
+export declare class ThemedElementParent extends ConfigurableWebComponent<{
 	globalProps: ThemeGlobalProps;
 }> { }
 
-export const ThemedElement = (base: any) => {
-
+export const ThemedElementFactory = (base: any) => {
 	@config({
 		is: 'themed-element',
-		html: new TemplateFn<ThemedElement>(() => {
+		html: new TemplateFn<_ThemedElement>(() => {
 			return html`
 				<div class="text">test</div>
 				<div class="text2">test2</div>
 			`;
 		}, CHANGE_TYPE.NEVER, render),
-		css: new TemplateFn<ThemedElement>((_html, _prop, theme) => {
+		css: new TemplateFn<_ThemedElement>((_html, _prop, theme) => {
 			return html`<style>
 					.text {
 						color: ${(theme as unknown as TestTheme).color1};
@@ -50,7 +49,7 @@ export const ThemedElement = (base: any) => {
 				</style>`
 		}, CHANGE_TYPE.THEME, render)
 	})
-	class ThemedElement extends base<{
+	class _ThemedElement extends base<{
 		themes: typeof usedThemes;
 	}> {
 
@@ -58,7 +57,7 @@ export const ThemedElement = (base: any) => {
 
 	@config({
 		is: 'themed-element-parent',
-		html: new TemplateFn<ThemedElementParent>(() => {
+		html: new TemplateFn<_ThemedElementParent>(() => {
 			return html`
 				<themed-element></themed-element>
 				<themed-element></themed-element>
@@ -69,17 +68,17 @@ export const ThemedElement = (base: any) => {
 		}, CHANGE_TYPE.NEVER, render),
 		css: null,
 		dependencies: [
-			ThemedElement
+			_ThemedElement
 		] as any
 	})
-	class ThemedElementParent extends base<{
+	class _ThemedElementParent extends base<{
 		globalProps: ThemeGlobalProps;
 	}> {
 
 	}
 
 	return {
-		ThemedElement: ThemedElement as typeof _ThemedElement,
-		ThemedElementParent: ThemedElementParent as typeof _ThemedElementParent
+		ThemedElement: _ThemedElement as typeof ThemedElement,
+		ThemedElementParent: _ThemedElementParent as typeof ThemedElementParent
 	}
 }

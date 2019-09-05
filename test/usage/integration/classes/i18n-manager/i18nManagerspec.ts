@@ -1,10 +1,11 @@
 import { expectMethodExists, expectPropertyExists, expectPromise } from "../../../lib/assertions";
 import { RootElement } from "../hierarchy-manager/elements/root-element";
 import { TestWindow, TestElement } from "../elements/test-element";
-import { LangElement } from "./elements/test-lang-element";
+import { WebComponent } from "../../../../../build/es/wc-lib.js";
 import { ParentElement } from "../elements/parent-element";
-import { WebComponent } from "../../../../../build/es/wc-lib";
+import { LangElement } from "./elements/test-lang-element";
 import { SLOW } from "../../../lib/timing.js";
+
 interface I18NTestWindow extends Window {
 	WebComponent: typeof WebComponent;
 }
@@ -34,6 +35,7 @@ export function i18nManagerSpec(fixtures: {
 	standard: string;
 	root: string;
 	defaults: string;
+	i18nFiles: string;
 }, globalProps: boolean = true) {
 	context('I18n-Manager', function () {
 		this.slow(SLOW);
@@ -101,17 +103,37 @@ export function i18nManagerSpec(fixtures: {
 			});
 		}
 		context('Setting/Getting', () => {
-			it('returns the currently active language on #getLang call', () => {
-				cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-					expect(el.getLang()).to.be.equal('en', 'uses the default language');
-				});
-			});
-			it('changes the current language on #setLang call', () => {
-				cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-					expect(el.getLang()).to.be.equal('en', 'uses the default language');
-					el.setLang('nl');
-					expect(el.getLang()).to.be.equal('nl', 'uses the new language');
-				});
+			['direct', 'url'].map((fixtureName) => {
+				context(fixtureName === 'direct' ? 
+					'Direct passing' : 'Getting from URL', () => {
+						before(() => {
+							cy.visit(fixtureName === 'direct' ?
+								fixtures.i18nFiles : fixtures.standard, {
+									onBeforeLoad(win) {
+										delete win.fetch;
+									}
+								});
+						});
+						it('returns the currently active language on #getLang call', () => {
+							cy.get('#lang').then(([el]: JQuery<LangElement>) => {
+								expect(el.getLang()).to.be.equal('en', 'uses the default language');
+							});
+						});
+						it('changes the current language on #setLang call', () => {
+							cy.get('#lang').then(([el]: JQuery<LangElement>) => {
+								expect(el.getLang()).to.be.equal('en', 'uses the default language');
+								el.setLang('nl');
+								expect(el.getLang()).to.be.equal('nl', 'uses the new language');
+							});
+						});
+						after(() => {
+							cy.visit(fixtures.standard, {
+								onBeforeLoad(win) {
+									delete win.fetch;
+								}
+							});
+						});
+					});
 			});
 			if (globalProps) {
 				it('can set the language by setting prop_lang on the root', () => {
@@ -189,7 +211,7 @@ export function i18nManagerSpec(fixtures: {
 				});
 			});
 		});
-		context('Server Offline', () => {
+		context('Server Offline (from URL)', () => {
 			beforeEach(() => {
 				cy.fixture('i18n/en.json').as('i18n-en');
 				cy.fixture('i18n/nl.json').as('i18n-nl');
@@ -227,95 +249,138 @@ export function i18nManagerSpec(fixtures: {
 				});
 			});
 		});
-		context('Server Online', () => {
-			context('From Template', () => {
-				it('uses placeholders initially', () => {
-					cy.get('#lang')
-						.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
-						.shadowContains('{{test}}');
-					cy.get('#lang')
-						.shadowFind('#nonexistent')
-						.shadowContains('{{nonexistent}}');
-					cy.get('#lang')
-						.shadowFind('#returnerValues, #placeholderValues')
-						.shadowContains('{{values}}');
-				});
-				it('replaces the values after the XHR has loaded', () => {
-					setupServerStub();
-					cy.wait('@getLangEn');
-					cy.get('#lang')
-						.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
-						.shadowContains('english');
-					cy.get('#lang')
-						.shadowFind('#nonexistent')
-						.shadowContains('not found');
-					cy.get('#lang')
-						.shadowFind('#returnerValues, #placeholderValues')
-						.shadowContains('test 1 2 3 value');
-				});
-				it('replaces the values again if the language changes', () => {
-					setupServerStub();
-					cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-						el.setLang('nl');
-						cy.wait('@getLangNl');
+		context('Server Online / Passed Directly', () => {
+			['url', 'direct'].map((fixtureName) => {
+				const contextName = fixtureName === 'direct' ? 
+					'Direct passing' : 'Getting from URL';
+				const usesXHR = fixtureName === 'url';
+				context(contextName, () => {
+					before(() => {
+						if (usesXHR) {
+							cy.fixture('i18n/en.json').as('i18n-en');
+							cy.fixture('i18n/nl.json').as('i18n-nl');
+							cy.server({
+								status: 404
+							});
+							cy.route('test/usage/fixtures/i18n/en.json', '@i18n-en').as('getLangEn');
+							cy.route('test/usage/fixtures/i18n/nl.json', '@i18n-nl').as('getLangNl');
+						}
+
+						cy.visit(fixtureName === 'url' ? fixtures.standard :
+							fixtures.i18nFiles, {
+								onBeforeLoad(win) {
+									delete win.fetch;
+								}
+							});
 					});
-					cy.get('#lang')
-						.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
-						.shadowContains('dutch');
-					cy.get('#lang')
-						.shadowFind('#nonexistent')
-						.shadowContains('not found');
-					cy.get('#lang')
-						.shadowFind('#returnerValues, #placeholderValues')
-						.shadowContains('test 1 2 3 waarde');
-				});
-				it('applies messages as values', () => {
-					setupServerStub();
-					cy.wait('@getLangEn');
-					cy.get('#lang')
-						.shadowFind('#msgAsValue')
-						.shadowContains('test english 2 english value');
-				});
-			});
-			context('Methods', () => {
-				it('returns a promise that resolves to the value when calling #__prom', () => {
-					cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-						const prom = el.__prom('test');
-						expectPromise(prom);
-						prom.then((value) => {
-							expect(value).to.be.equal('english', 'promise resolves to message value');
+					context('From Template', () => {
+						if (usesXHR) {
+							it('uses placeholders initially', () => {
+								cy.get('#lang')
+									.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
+									.shadowContains('{{test}}');
+								cy.get('#lang')
+									.shadowFind('#nonexistent')
+									.shadowContains('{{nonexistent}}');
+								cy.get('#lang')
+									.shadowFind('#returnerValues, #placeholderValues')
+									.shadowContains('{{values}}');
+							});
+						}
+						it('replaces the values after the XHR has loaded', () => {
+							if (usesXHR) {
+								setupServerStub();
+								cy.wait('@getLangEn');
+							}
+							cy.get('#lang')
+								.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
+								.shadowContains('english');
+							cy.get('#lang')
+								.shadowFind('#nonexistent')
+								.shadowContains('not found');
+							cy.get('#lang')
+								.shadowFind('#returnerValues, #placeholderValues')
+								.shadowContains('test 1 2 3 value');
+						});
+						it('replaces the values again if the language changes', () => {
+							if (usesXHR) {
+								setupServerStub();
+							}
+							cy.get('#lang').then(([el]: JQuery<LangElement>) => {
+								el.setLang('nl');
+								if (usesXHR) {
+									cy.wait('@getLangNl');
+								}
+							});
+							cy.get('#lang')
+								.shadowFind('#placeholdertest, #promiseTest, #returnerTest')
+								.shadowContains('dutch');
+							cy.get('#lang')
+								.shadowFind('#nonexistent')
+								.shadowContains('not found');
+							cy.get('#lang')
+								.shadowFind('#returnerValues, #placeholderValues')
+								.shadowContains('test 1 2 3 waarde');
+						});
+						it('applies messages as values', () => {
+							cy.reload();
+							if (usesXHR) {
+								setupServerStub();
+								cy.wait('@getLangEn');
+							}
+							cy.get('#lang')
+								.shadowFind('#msgAsValue')
+								.shadowContains('test english 2 english value');
 						});
 					});
-				});
-				it('returns whatever options.returner returns when calling #__', () => {
-					cy.get('#lang').then(([el]: JQuery<LangElement>) => {
-						const returned = el.__<(() => void) & {
-							___marker: boolean;
-						}>('test');
-						expect(returned, 'marker exists')
-							.to.have.property('___marker', true, 'marker exists');
-					});
-				});
-				it('returns a promise that resolves to the value when calling ' +
-					'WebComponent.__prom', () => {
-						cy.window().then((window: I18NTestWindow) => {
-							const prom = window.WebComponent.__prom('test');
-							expectPromise(prom);
-							prom.then((value) => {
-								expect(value).to.be.equal('english', 'promise resolves to message value');
+					context('Methods', () => {
+						it('returns a promise that resolves to the value when calling #__prom', () => {
+							cy.get('#lang').then(([el]: JQuery<LangElement>) => {
+								const prom = el.__prom('test');
+								expectPromise(prom);
+								prom.then((value) => {
+									expect(value).to.be.equal('english', 'promise resolves to message value');
+								});
 							});
 						});
-					});
-				it('returns whatever options.returner returns when calling ' +
-					'WebComponent.__', () => {
-						cy.window().then((window: I18NTestWindow) => {
-							const returned = window.WebComponent.__<(() => void) & {
-								___marker: boolean;
-							}>('test');
-							expect(returned, 'marker exists')
-								.to.have.property('___marker', true, 'marker exists');
+						it('returns whatever options.returner returns when calling #__', () => {
+							cy.get('#lang').then(([el]: JQuery<LangElement>) => {
+								const returned = el.__<(() => void) & {
+									___marker: boolean;
+								}>('test');
+								expect(returned, 'marker exists')
+									.to.have.property('___marker', true, 'marker exists');
+							});
 						});
+						it('returns a promise that resolves to the value when calling ' +
+							'WebComponent.__prom', () => {
+								cy.window().then((window: I18NTestWindow) => {
+									const prom = window.WebComponent.__prom('test');
+									expectPromise(prom);
+									prom.then((value) => {
+										expect(value).to.be.equal('english', 'promise resolves to message value');
+									});
+								});
+							});
+						it('returns whatever options.returner returns when calling ' +
+							'WebComponent.__', () => {
+								cy.window().then((window: I18NTestWindow) => {
+									const returned = window.WebComponent.__<(() => void) & {
+										___marker: boolean;
+									}>('test');
+									expect(returned, 'marker exists')
+										.to.have.property('___marker', true, 'marker exists');
+								});
+							});
 					});
+				});
+				after(() => {
+					cy.visit(fixtures.standard, {
+						onBeforeLoad(win) {
+							delete win.fetch;
+						}
+					});
+				});
 			});
 		});
 		context('Default init values', () => {

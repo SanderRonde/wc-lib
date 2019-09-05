@@ -1,5 +1,5 @@
 import { WebComponentI18NManagerMixinClass } from '../../../../../../../build/es/classes/types.js';
-import { LangElement } from '../../elements/test-lang-element.js';
+import { LangElementFactory } from '../../elements/test-lang-element.js';
 
 export function i18nManagerDefaultsFixtureFactory(base: WebComponentI18NManagerMixinClass) {
 	base.initI18N({
@@ -8,5 +8,5 @@ export function i18nManagerDefaultsFixtureFactory(base: WebComponentI18NManagerM
 	});
 
 	(window as any).WebComponent = base;
-	LangElement(base).define(true);
+	LangElementFactory(base).define(true);
 }

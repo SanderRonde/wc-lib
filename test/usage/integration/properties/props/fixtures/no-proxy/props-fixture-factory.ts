@@ -5,15 +5,17 @@ import {
 } from "../../../../../../../node_modules/lit-html/lit-html.js";
 import { PropsElementFixtureFactory } from '../../elements/props-element.js';
 
-export function propsNoProxyFixtureFactory(base: any) {
-	base.initComplexTemplateProvider({
-		TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
-		AttributeCommitter, NodePart, isDirective, noChange
-	});
+export function propsNoProxyFixtureFactory(base: any, supportsTemplates: boolean) {
+	if (supportsTemplates) {
+		base.initComplexTemplateProvider({
+			TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart,
+			AttributeCommitter, NodePart, isDirective, noChange
+		});
+	}
 	
 	const { 
 		ReflectProps, WatchedComponent
-	} = PropsElementFixtureFactory(base);
+	} = PropsElementFixtureFactory(base, supportsTemplates);
 	ReflectProps.define(true);
 	WatchedComponent.define(true);
 }

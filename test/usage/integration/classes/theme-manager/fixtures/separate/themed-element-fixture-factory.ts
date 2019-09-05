@@ -1,14 +1,13 @@
-import { ThemedElement, usedThemes, defaultTheme } from "../../elements/themed-element.js";
-import { WebComponent } from "../../../../../../../build/es/wc-lib.js";
+import { ThemedElementFactory, usedThemes, defaultTheme } from "../../elements/themed-element.js";
 import { TestElementFactory } from "../../../elements/test-element-factory.js";
 
 export function themedElementSeparateFixtureFactory(base: any) {
-	WebComponent.initTheme({
+	base.initTheme({
 		theme: usedThemes
 	});
-	WebComponent.setDefaultTheme(defaultTheme);
+	base.setDefaultTheme(defaultTheme);
 
-	const { ThemedElementParent } = ThemedElement(base);
+	const { ThemedElementParent } = ThemedElementFactory(base);
 	TestElementFactory(base).define(true);
 	ThemedElementParent.define(true);
 }

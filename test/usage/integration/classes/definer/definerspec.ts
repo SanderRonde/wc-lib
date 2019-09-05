@@ -1,8 +1,8 @@
 /// <reference types="Cypress" />
 
 import { expectMethodExists, expectPropertyExists } from "../../../lib/assertions";
+import { DefineMetadata } from "../../../../../build/es/wc-lib.js";
 import { TestParentWindow } from "../elements/parent-element";
-import { DefineMetadata } from "../../../../../build/es/wc-lib";
 import { TestWindow } from "../elements/test-element";
 import { SLOW } from "../../../lib/timing.js";
 

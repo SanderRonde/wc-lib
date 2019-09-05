@@ -1,5 +1,5 @@
-import { Color } from "../../../../../../build/es/wc-lib";
-import { SLOW } from "../../../../lib/timing";
+import { Color } from "../../../../../../build/es/wc-lib.js";
+import { SLOW } from "../../../../lib/timing.js";
 
 function genNum() {
 	return Math.floor(Math.random() * 255);

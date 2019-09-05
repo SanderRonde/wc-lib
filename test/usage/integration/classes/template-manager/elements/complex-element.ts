@@ -11,19 +11,19 @@ export declare class EventTriggeringElement extends ConfigurableWebComponent<{
 }> {}
 
 export declare class ComplexReceiverElement extends ConfigurableWebComponent {
-	props: { parent: _ComplexElement };
+	props: { parent: ComplexElement };
 }
 
 export declare class BooleanElement extends ConfigurableWebComponent {
 	props: { bool: boolean };
 }
 
-export declare class _ComplexElement extends ConfigurableWebComponent {
+export declare class ComplexElement extends ConfigurableWebComponent {
 	clickHandler(_arg?: any): void;
 	customClickHandler(_num: number): void;
 }
 
-export declare class _WrongElementListen extends ConfigurableWebComponent {}
+export declare class WrongElementListen extends ConfigurableWebComponent {}
 
 export function complexElementFactory(base: any) {
 	@config({
@@ -49,7 +49,7 @@ export function complexElementFactory(base: any) {
 	class ComplexReceiverElement extends ConfigurableWebComponent {
 		props = Props.define(this, {
 			reflect: {
-				parent: ComplexType<ComplexElement>()
+				parent: ComplexType<_ComplexElement>()
 			}
 		})
 	}
@@ -85,7 +85,7 @@ export function complexElementFactory(base: any) {
 
 	@config({
 		is: 'complex-element',
-		html: new TemplateFn<ComplexElement>(function (html) {
+		html: new TemplateFn<_ComplexElement>(function (html) {
 			return html`
 				<test-element id="eventTest" @click="${() => {
 					// Done so the function can be stubbed
@@ -148,7 +148,7 @@ export function complexElementFactory(base: any) {
 			BooleanElement
 		] as any
 	})
-	class ComplexElement extends ConfigurableWebComponent {
+	class _ComplexElement extends ConfigurableWebComponent {
 		clickHandler(_arg?: any) { 
 			// Will be stubbed
 		}
@@ -161,18 +161,18 @@ export function complexElementFactory(base: any) {
 
 	@config({
 		is: 'wrong-element-listen',
-		html: new TemplateFn<WrongElementListen>((html) => {
+		html: new TemplateFn<_WrongElementListen>((html) => {
 			return html`
 				<div id="customEventDirective" @@ev="${(() => {})}"></div>
 				`;
 		}, CHANGE_TYPE.PROP, render)
 	})
-	class WrongElementListen extends ConfigurableWebComponent {
+	class _WrongElementListen extends ConfigurableWebComponent {
 
 	}
 
 	return {
-		ComplexElement: ComplexElement as typeof _ComplexElement,
-		WrongElementListen: WrongElementListen as typeof _WrongElementListen
+		ComplexElement: _ComplexElement as typeof ComplexElement,
+		WrongElementListen: _WrongElementListen as typeof WrongElementListen
 	}
 }

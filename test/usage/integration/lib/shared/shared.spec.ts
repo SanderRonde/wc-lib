@@ -1,4 +1,4 @@
-import { wait, classNames, WCLibError } from "../../../../../build/es/wc-lib";
+import { wait, classNames, WCLibError } from "../../../../../build/es/wc-lib.js";
 import { SLOW } from "../../../lib/timing";
 
 function genString() {

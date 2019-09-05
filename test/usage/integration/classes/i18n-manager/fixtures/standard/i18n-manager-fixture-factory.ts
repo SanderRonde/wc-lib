@@ -1,8 +1,8 @@
-import { WebComponentI18NManagerMixinClass } from '../../../../../../../build/es/wc-lib.all.js';
+import { WebComponentI18NManagerMixinClass } from '../../../../../../../build/es/classes/types.js';
 import { directive, Part } from '../../../../../../../node_modules/lit-html/lit-html.js';
-import { RootElement } from '../../../hierarchy-manager/elements/root-element.js';
+import { RootElementFactory } from '../../../hierarchy-manager/elements/root-element.js';
 import { TestElementFactory } from '../../../elements/test-element-factory.js';
-import { LangElement } from '../../elements/test-lang-element.js';
+import { LangElementFactory } from '../../elements/test-lang-element.js';
 
 export function i18nManagerStandardFixtureFactory(base: WebComponentI18NManagerMixinClass) {
 
@@ -50,6 +50,6 @@ export function i18nManagerStandardFixtureFactory(base: WebComponentI18NManagerM
 
 	(window as any).WebComponent = base;
 	TestElementFactory(base as any).define(true);
-	LangElement(base).define(true);
-	RootElement(base).define(true);
+	LangElementFactory(base).define(true);
+	RootElementFactory(base).define(true);
 }

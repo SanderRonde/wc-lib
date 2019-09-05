@@ -1,4 +1,4 @@
-import { _ThemedElement, _ThemedElementParent } from "./elements/themed-element.js";
+import { ThemedElement, ThemedElementParent } from "./elements/themed-element.js";
 import { ThemeManagerWindow } from "./fixtures/invalid/theme-manager.fixture.js";
 import { TestElement, TestWindow } from "../elements/test-element";
 import { expectMethodExists } from "../../../lib/assertions.js";
@@ -31,7 +31,7 @@ export interface ThemeGlobalProps {
 	theme: keyof typeof usedThemes;
 }
 function getDefaultThemedElements() {
-	return cy.get('themed-element-parent').then((themeParent: JQuery<_ThemedElementParent>) => {
+	return cy.get('themed-element-parent').then((themeParent: JQuery<ThemedElementParent>) => {
 		return getDeepThemedElements().then((deepThemed) => {
 			return [...themeParent, ...deepThemed];
 		});
@@ -39,7 +39,7 @@ function getDefaultThemedElements() {
 }
 function getDeepThemedElements() {
 	return cy.get('themed-element-parent')
-		.shadowFind('themed-element').then((themedDeep: JQuery<_ThemedElement>) => {
+		.shadowFind('themed-element').then((themedDeep: JQuery<ThemedElement>) => {
 			return [...themedDeep];
 		});
 }
@@ -117,12 +117,12 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 				if (globalProps) {
 					it('uses the different theme name when a global theme prop is set', () => {
 						cy.visit(standardFixture);
-						cy.get('themed-element[id=different]').then(([el]: JQuery<_ThemedElement>) => {
+						cy.get('themed-element[id=different]').then(([el]: JQuery<ThemedElement>) => {
 							expect(el.getThemeName()).to.be.equal('second', 'uses different theme name');
 						});
 					});
 					it('uses the different theme when a global theme prop is set', () => {
-						cy.get('themed-element[id=different]').then(([el]: JQuery<_ThemedElement>) => {
+						cy.get('themed-element[id=different]').then(([el]: JQuery<ThemedElement>) => {
 							expect(el.getTheme()).to.be.deep.equal(usedThemes['second'], 'uses different theme');
 						});
 					});
@@ -153,14 +153,14 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 					context('global prop change', () => {
 						beforeEach(() => {
 							// Change theme to default
-							cy.get('#default').then(([el]: JQuery<_ThemedElementParent>) => {
+							cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
 								el.setTheme('first');
 							});
 						});
 						tests.forEach(({ name, test }) => {
 							it(name, () => {
 								test(() => {
-									return cy.get('#default').then(([el]: JQuery<_ThemedElementParent>) => {
+									return cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
 										el.globalProps().set('theme', 'second');
 									});
 								});
@@ -171,14 +171,14 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 				context('#setTheme', () => {
 					beforeEach(() => {
 						// Change theme to default
-						cy.get('#default').then(([el]: JQuery<_ThemedElementParent>) => {
+						cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
 							el.setTheme('first');
 						});
 					});
 					tests.forEach(({ name, test }) => {
 						it(name, () => {
 							test(() => {
-								return cy.get('#default').then(([el]: JQuery<_ThemedElementParent>) => {
+								return cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
 									el.setTheme('second');
 								});
 							});
@@ -257,7 +257,7 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 								if (!supportsAdoptedStylesheets)
 									return;
 								getDeepThemedElements().then((elements) => {
-									cy.get('#separate').then((separate: JQuery<_ThemedElement>) => {
+									cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
 										for (const element of [...elements, ...separate]) {
 											expect(window.getComputedStyle(element.$('.text')!).color)
 												.to.be.equal(usedThemes[defaultTheme].color1, 'color1 is used');
@@ -267,7 +267,7 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 
 										doChange().then(() => {
 											getDeepThemedElements().then((elements) => {
-												cy.get('#separate').then((separate: JQuery<_ThemedElement>) => {
+												cy.get('#separate').then((separate: JQuery<ThemedElement>) => {
 													for (const element of [...elements, ...separate]) {
 														expect(window.getComputedStyle(element.$('.text')!).color)
 															.to.be.equal(usedThemes['second'].color1, 'color1 is used');

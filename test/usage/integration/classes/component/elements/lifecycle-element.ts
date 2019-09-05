@@ -1,14 +1,24 @@
-import { config, TemplateFn, CHANGE_TYPE } from "../../../../../../build/es/wc-lib.js";
+import { config, TemplateFn, CHANGE_TYPE, ConfigurableWebComponent } from "../../../../../../build/es/wc-lib.js";
 import { render, html } from '../../../../../../node_modules/lit-html/lit-html.js';
 
-export const LifecycleElement = (base: any) => {
+export declare class LifecycleElement extends ConfigurableWebComponent {
+	lifeCycleCalls: {
+		connected: number;
+		disconnected: number;
+		layoutMounted: number;
+		mounted: number;
+		unmounted: number;
+	}
+}
+
+export const LifecycleElementFactory = (base: any) => {
 	@config({
 		is: 'lifecycle-element',
-		html: new TemplateFn<LifecycleElement>(() => {
+		html: new TemplateFn<_LifecycleElement>(() => {
 			return html`<div></div>`;
 		}, CHANGE_TYPE.NEVER, render) as any
 	})
-	class LifecycleElement extends base {
+	class _LifecycleElement extends base {
 		lifeCycleCalls: {
 			connected: number;
 			disconnected: number;
@@ -45,5 +55,5 @@ export const LifecycleElement = (base: any) => {
 			this.lifeCycleCalls.unmounted++;
 		}
 	}
-	return LifecycleElement;
+	return _LifecycleElement as typeof LifecycleElement;
 }

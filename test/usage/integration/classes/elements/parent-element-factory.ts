@@ -1,7 +1,7 @@
 import { ConfigurableWebComponent, TemplateFn, CHANGE_TYPE, config, Props, PROP_TYPE } from '../../../../../build/es/wc-lib.js';
 import { TestGlobalProperties } from '../hierarchy-manager/fixtures/standard/hierarchy-manager.fixture.js';
 import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
-import { TestElement } from './test-element.js';
+import { TestElementFactory } from './test-element-factory.js';
 
 declare class ParentElement extends ConfigurableWebComponent<{
 	events: {
@@ -40,7 +40,7 @@ export const ParentElementFactory = (base: any) => {
 		html: ParentElementHTML,
 		css: ParentElementCSS,
 		dependencies: [
-			TestElement
+			TestElementFactory(base)
 		]
 	})
 	class ParentElement extends base {
@@ -55,4 +55,5 @@ export const ParentElementFactory = (base: any) => {
 	}
 
 	window.ParentElement = ParentElement as any;
+	return ParentElement;
 }

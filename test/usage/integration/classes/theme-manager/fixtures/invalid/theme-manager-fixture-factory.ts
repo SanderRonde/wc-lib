@@ -1,4 +1,4 @@
-import { ThemedElement, usedThemes } from "../../elements/themed-element.js";
+import { ThemedElementFactory, usedThemes } from "../../elements/themed-element.js";
 import { WebComponent, noTheme } from "../../../../../../../build/es/wc-lib.js";
 import { TestElementFactory } from "../../../elements/test-element-factory.js";
 
@@ -13,7 +13,7 @@ export function themeManagerInvalidFixtureFactory(base: any) {
 		defaultTheme: 'nonexistent-theme'
 	});
 
-	const { ThemedElementParent } = ThemedElement(base);
+	const { ThemedElementParent } = ThemedElementFactory(base);
 	TestElementFactory(base).define(true);
 	ThemedElementParent.define(true);
 

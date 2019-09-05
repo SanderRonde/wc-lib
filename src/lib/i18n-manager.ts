@@ -97,7 +97,8 @@ class I18NClass<GA extends {
 	}
 
 	private static async __loadLang(lang: string) {
-		if (lang in this.__langPromises) return;
+		if (lang in this.__langPromises ||
+			lang in this.langFiles) return;
 		const prom = new Promise<{
 			[key: string]: string;
 		}>(async (resolve) => {

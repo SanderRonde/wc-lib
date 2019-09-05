@@ -16,6 +16,7 @@ context('I18N', function() {
 	i18nManagerSpec({
 		standard: getPartialClassFixture('i18n', 'i18n-manager'),
 		root: getPartialClassFixture('i18n', 'i18n-manager-root'),
-		defaults: getPartialClassFixture('i18n', 'i18n-manager-defaults')
+		defaults: getPartialClassFixture('i18n', 'i18n-manager-defaults'),
+		i18nFiles: getPartialClassFixture('i18n', 'i18n-i18n-files')
 	}, false);
 });

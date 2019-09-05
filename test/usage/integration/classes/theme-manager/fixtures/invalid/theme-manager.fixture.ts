@@ -1,18 +1,6 @@
-import { ThemedElementParent, usedThemes } from "../../elements/themed-element.js";
-import { WebComponent, noTheme } from "../../../../../../../build/es/wc-lib.js";
-import { TestElement } from "../../../elements/test-element.js";
+import { ThemeManagerWindow, themeManagerInvalidFixtureFactory } from "./theme-manager-fixture-factory.js";
+import { ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib.js";
 
-export interface ThemeManagerWindow extends Window {
-	noTheme: typeof noTheme;
-}
-declare const window: ThemeManagerWindow;
+themeManagerInvalidFixtureFactory(ConfigurableWebComponent);
 
-WebComponent.initTheme({
-	theme: usedThemes,
-	defaultTheme: 'nonexistent-theme'
-});
-
-TestElement.define(true);
-ThemedElementParent.define(true);
-
-window.noTheme = noTheme;
+export { ThemeManagerWindow };

@@ -1,4 +1,4 @@
-import { PropsElement, ObjEl, EmptyProps, PrivProps, MergedProps, PropsElementWindow, ReflectProps, OverriddenProp } from "./elements/props-element";
+import { _PropsElement, ObjEl, _EmptyProps, _PrivProps, _MergedProps, PropsElementWindow, _ReflectProps, _OverriddenProp } from "./elements/props-element";
 import { SLOW } from "../../../lib/timing";
 
 
@@ -13,7 +13,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 			context('Casing', () => {
 				it('converts capital letters to dashes', () => {
 					cy.get('props-element')
-						.then(([el]: JQuery<PropsElement>) => {
+						.then(([el]: JQuery<_PropsElement>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('casingTest')
 								.to.be.equal(true);
@@ -22,7 +22,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 				it('does not introduce unneeded dashes', () => {
 					cy.get('props-element')
-						.then(([el]: JQuery<PropsElement>) => {
+						.then(([el]: JQuery<_PropsElement>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('casingtest2')
 								.to.be.equal(true);
@@ -35,7 +35,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					context('Getting', () => {
 						it('can get a boolean value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('boolDefault')
 										.to.be.equal(true);
@@ -43,7 +43,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can get a string value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('stringDefault')
 										.to.be.equal('test');
@@ -51,7 +51,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can get a number value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('numberDefault')
 										.to.be.equal(10);
@@ -61,7 +61,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					context('Setting', () => {
 						it('can set a boolean value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('bool')
 										.to.be.equal(undefined);
@@ -73,7 +73,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can set a string value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('string')
 										.to.be.equal(undefined);
@@ -85,7 +85,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can set a number value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('number')
 										.to.be.equal(undefined);
@@ -97,7 +97,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('reflects changes to the attribute', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('string')
 										.to.be.equal(undefined);
@@ -112,7 +112,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					context('Getting from Component', () => {
 						it('can get a boolean value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el)
 										.to.have.property('boolDefault')
 										.to.be.equal(true);
@@ -124,7 +124,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can get a string value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el)
 										.to.have.property('stringDefault')
 										.to.be.equal('test');
@@ -136,7 +136,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can get a number value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el)
 										.to.have.property('numberDefault')
 										.to.be.equal(10);
@@ -148,7 +148,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can be disabled for bools', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									el.props.noReflectBool = true;
 									expect(el)
 										.to.not.have.property('noReflectBool');
@@ -156,7 +156,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can be disabled for strings', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									el.props.noReflectString = 'test';
 									expect(el)
 										.to.not.have.property('noReflectString');
@@ -164,7 +164,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can be disabled for numbers', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									el.props.noReflectNumber = 10;
 									expect(el)
 										.to.not.have.property('noReflectNumber');
@@ -174,7 +174,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					context('Removing', () => {
 						it('can remove a boolean', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('boolDefault')
@@ -190,7 +190,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can remove a string', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('stringDefault')
@@ -206,7 +206,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can remove a number', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('numberDefault')
@@ -222,7 +222,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call the update function when the value was already undefined', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('numberDefault')
@@ -243,7 +243,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call the update function when the attribute is removed twice', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('numberDefault')
@@ -268,7 +268,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						context('Enabled', () => {
 							it('reflects props to the attributes', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<PrivProps>) => {
+									.then(([el]: JQuery<_PrivProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -277,7 +277,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('updates the attribute when the prop is set', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<PrivProps>) => {
+									.then(([el]: JQuery<_PrivProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -288,7 +288,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('updates the prop when the attribute is set', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<PrivProps>) => {
+									.then(([el]: JQuery<_PrivProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('number')
 											.to.be.equal(1);
@@ -302,7 +302,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('updates the self-reflected value when the attribute is set', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<PrivProps>) => {
+									.then(([el]: JQuery<_PrivProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -320,7 +320,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('unsets the value when removeAttribute is called', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<PrivProps>) => {
+									.then(([el]: JQuery<_PrivProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -338,7 +338,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						context('Disabled', () => {
 							it('does not reflect values to the attributes', () => {
 								cy.get('priv-props')
-									.then(([el]: JQuery<PrivProps>) => {
+									.then(([el]: JQuery<_PrivProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -347,7 +347,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('does not set the attribute when a prop is set', () => {
 								cy.get('priv-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -358,7 +358,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('does not set the attribute when the reflected prop is changed', () => {
 								cy.get('priv-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -369,7 +369,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('ignores removeAttribute', () => {
 								cy.get('priv-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -383,7 +383,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('can still get the value through reflection to the component', () => {
 								cy.get('priv-props')
-									.then(([el]: JQuery<PrivProps>) => {
+									.then(([el]: JQuery<_PrivProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -397,7 +397,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						context('Enabled', () => {
 							it('reflects values to the component', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -407,7 +407,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('updates the reflected value when the props are changed', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -418,7 +418,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('calls update function when the value has been changed', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										const stub = cy.stub(el, 'renderToDOM');
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
@@ -431,7 +431,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('does not call update function when the value has not been changed', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										const stub = cy.stub(el, 'renderToDOM');
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
@@ -444,7 +444,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('updates the reflected value when the attribute is changed', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -455,7 +455,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('can set the props through the reflected value', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -469,7 +469,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('updates the attribute when setting the reflected value', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -482,7 +482,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('does not override already defined properties if they are defined before props', () => {
 								cy.get('overridden-component')
-									.then(([el]: JQuery<OverriddenProp>) => {
+									.then(([el]: JQuery<_OverriddenProp>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.a('boolean')
@@ -496,7 +496,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						context('Disabled', () => {
 							it('does not reflect values of the component', () => {
 								cy.get('no-reflect-self')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -505,7 +505,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('does not set the reflected value when a prop is set', () => {
 								cy.get('no-reflect-self')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
 											.to.be.equal(true);
@@ -516,7 +516,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('does not set the reflected value when the attribute is changed', () => {
 								cy.get('no-reflect-self')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										expect(el).to.have.property('props')
 											.to.have.property('string')
 											.to.be.equal('test');
@@ -531,7 +531,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				context('Default Values', () => {
 					it('can get a boolean value', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('boolDefault')
 									.to.be.equal(true);
@@ -539,7 +539,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('can get a string value', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('stringDefault')
 									.to.be.equal('test');
@@ -547,7 +547,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('can get a number value', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('numberDefault')
 									.to.be.equal(10);
@@ -557,7 +557,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				context('Strict', () => {
 					it('sets the value to false if anything other than "false" is passed', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('boolStrict')
 									.to.be.equal(false);
@@ -569,7 +569,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('sets the value to true if "true" is passed', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('boolStrict')
 									.to.be.equal(false);
@@ -583,7 +583,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				context('Coerce', () => {
 					it('booleans can be coerced', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('boolCoerced')
 									.to.be.equal(false);
@@ -599,7 +599,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('strings can be coerced', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('stringCoerced')
 									.to.be.equal('');
@@ -615,7 +615,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('numbers can be coerced', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('numberCoerced')
 									.to.be.equal(0);
@@ -631,7 +631,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('coerced values can be removed', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('stringCoerced')
 									.to.be.equal('');
@@ -648,7 +648,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('non-basic types are not coerced', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el).to.have.property('props')
 									.to.have.property('complexCoerced')
 									.to.be.equal(undefined);
@@ -672,7 +672,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				context('Watching', () => {
 					it('calls renderToDOM when a watched property changes value', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								const stub = cy.stub(el, 'renderToDOM');
 								expect(el).to.have.property('props')
 									.to.have.property('boolDefault')
@@ -683,7 +683,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('does not call renderToDOM if the property does not change value', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								const stub = cy.stub(el, 'renderToDOM');
 								expect(el).to.have.property('props')
 									.to.have.property('boolDefault')
@@ -696,7 +696,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				context('No Watching', () => {
 					it('does not call renderToDOM on props value change if watching is disabled', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								const stub = cy.stub(el, 'renderToDOM');
 								expect(el).to.have.property('props')
 									.to.have.property('boolNoWatch')
@@ -710,7 +710,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('does not call renderToDOM on setAttribute value change if watching is disabled', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								const stub = cy.stub(el, 'renderToDOM');
 								expect(el).to.have.property('props')
 									.to.have.property('boolNoWatch')
@@ -724,7 +724,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('does not call renderToDOM on reflected change if watching is disabled', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								const stub = cy.stub(el, 'renderToDOM');
 								expect(el).to.have.property('props')
 									.to.have.property('boolNoWatch')
@@ -738,7 +738,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					});
 					it('does not call renderToDOM on value removal if watching is disabled', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								const stub = cy.stub(el, 'renderToDOM');
 								expect(el).to.have.property('props')
 									.to.have.property('boolNoWatch')
@@ -754,7 +754,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				context('Default Values', () => {
 					it('can be assigned a default value', () => {
 						cy.get('props-element')
-							.then(([el]: JQuery<PropsElement>) => {
+							.then(([el]: JQuery<_PropsElement>) => {
 								expect(el)
 									.to.have.property('props')
 									.to.have.property('complexDefault')
@@ -774,7 +774,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 								expect(props.noVal).to.have.property('a', 'b');
 							});
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									el.forceChildElRender(0);
 									cy.wrap(stub).should('be.called');
 								});
@@ -790,7 +790,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 									calls++;
 								});
 								cy.get('props-element')
-									.then(([el]: JQuery<PropsElement>) => {
+									.then(([el]: JQuery<_PropsElement>) => {
 										el.forceChildElRender(1);
 										cy.wrap(stub).should('be.called');
 									});
@@ -806,7 +806,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 								calls++;
 							});
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									el.forceChildElRender(2);
 									cy.wrap(stub).should('be.called');
 								});
@@ -904,7 +904,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					context('Properties', () => {
 						it('can watch object properties', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('props')
@@ -919,7 +919,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('still watches properties if "watch" is set to false', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('props')
@@ -934,7 +934,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches deletions', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('props')
@@ -949,7 +949,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call the update function when a property that does not exist is deleted', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('props')
@@ -964,7 +964,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('ignores changing object proprerties that are not watched', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('props')
@@ -979,7 +979,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('ignores object changes that don\'t change the value', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									expect(el)
 										.to.have.property('props')
@@ -994,7 +994,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can watch array index changes', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchedArr[1] = 10;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1005,7 +1005,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call render when the value does not change', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchedArr[1] = 2;
 									cy.wrap(stub).should('not.be.called').then(() => {
@@ -1016,7 +1016,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not attempt to create a proxy when the default value is null', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('nullObj')
 										.to.be.equal(null);
@@ -1055,7 +1055,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							});
 							it('will still call update when Proxy is not supported and a basic value is changed', () => {
 								cy.get('reflect-props')
-									.then(([el]: JQuery<ReflectProps>) => {
+									.then(([el]: JQuery<_ReflectProps>) => {
 										const stub = cy.stub(el, 'renderToDOM');
 										expect(el).to.have.property('props')
 											.to.have.property('bool')
@@ -1069,7 +1069,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					context('Nested', () => {
 						it('can watch simple object changes', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObj.a = { a: 'd', c: 'b' };
 									cy.wrap(stub).should('not.be.called').then(() => {
@@ -1086,7 +1086,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches root object changes', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.a = 'b';
 									cy.wrap(stub).should('be.calledOnce');
@@ -1094,7 +1094,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('ignores deleted properties that are not watched', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									delete el.props.watchNestedObjProp.c.e;
 									cy.wrap(stub).should('not.be.called');
@@ -1102,7 +1102,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('on an object does not call the update function when a value is not watched', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.b = 'b';
 									cy.wrap(stub).should('not.be.called').then(() => {
@@ -1113,7 +1113,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches deep changes on objects', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.b.c = 2;
 									cy.wrap(stub).should('be.called');
@@ -1121,7 +1121,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('on an object does not call the update function when a deep change is not watched', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.b.d = 2;
 									cy.wrap(stub).should('not.be.called');
@@ -1130,7 +1130,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches pre-set symbol accesses on an object', () => {
 							cy.window().then((window: PropsElementWindow) => {
 								cy.get('props-element')
-									.then(([el]: JQuery<PropsElement>) => {
+									.then(([el]: JQuery<_PropsElement>) => {
 										const stub = cy.stub(el, 'renderToDOM');
 										el.props.watchAnyObj[window.accessSymbol] = 'b';
 										cy.wrap(stub).should('be.calledOnce');
@@ -1140,7 +1140,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('on an object does not call the update function when the value of a symbol key did not change', () => {
 							cy.window().then((window: PropsElementWindow) => {
 								cy.get('props-element')
-									.then(([el]: JQuery<PropsElement>) => {
+									.then(([el]: JQuery<_PropsElement>) => {
 										const stub = cy.stub(el, 'renderToDOM');
 										el.props.watchAnyObj[window.accessSymbol] = 'a';
 										cy.wrap(stub).should('not.be.called');
@@ -1149,7 +1149,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches newly set symbol accesses on an object', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									const newSymbol = Symbol('newSymbol');
 									(el.props.watchAnyObj as any)[newSymbol] = 'b';
@@ -1162,7 +1162,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches the removal of a symbol key on an object', () => {
 							cy.window().then((window: PropsElementWindow) => {
 								cy.get('props-element')
-									.then(([el]: JQuery<PropsElement>) => {
+									.then(([el]: JQuery<_PropsElement>) => {
 										const stub = cy.stub(el, 'renderToDOM');
 										delete el.props.watchAnyObj[window.accessSymbol];
 										cy.wrap(stub).should('be.calledOnce');
@@ -1171,7 +1171,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not proxy null or undefined values on an object', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('watchAnyObj')
 										.to.have.property('g')
@@ -1185,7 +1185,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches *.x changes on an object', () => {
 							// Here *.x is *.d
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.a.d = 2;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1200,7 +1200,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches x.* changes on an object', () => {
 							// Here x.* is d.*
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.d.c = 5;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1215,7 +1215,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches x.*.y changes on an object', () => {
 							// Here x.*.y is a.*.d
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.a.b.d = 5;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1230,7 +1230,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches nested * changes on an object', () => {
 							// Here x.*.y is a.*.d
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.f.f.f = 5;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1252,7 +1252,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							// not be found. As such '*.d' needs to be "merged"
 							// with 'a'
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedObjProp.a.d = 5;
 									cy.wrap(stub).should('be.calledOnce');
@@ -1260,7 +1260,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can watch simple array element changes', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].a = { a: 'd', c: 'b' };
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1277,7 +1277,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches root array changes', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0] = 'b';
 									cy.wrap(stub).should('be.calledOnce');
@@ -1285,7 +1285,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('on an array does not call the update function when a value is not watched', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].b = 'b';
 									cy.wrap(stub).should('not.be.called').then(() => {
@@ -1296,7 +1296,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches deep changes on arrays', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].b.c = 2;
 									cy.wrap(stub).should('be.called');
@@ -1304,7 +1304,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('on an array does not call the update function when a deep change is not watched', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].b.d = 2;
 									cy.wrap(stub).should('not.be.called');
@@ -1312,7 +1312,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches newly set symbol accesses on an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									const newSymbol = Symbol('newSymbol');
 									(el.props.watchAnyArr as any)[newSymbol] = 'b';
@@ -1324,7 +1324,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('on an array does not call the update function when the value of a symbol key did not change', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									const newSymbol = Symbol('newSymbol');
 									(el.props.watchAnyArr as any)[newSymbol] = 'b';
@@ -1336,7 +1336,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches the removal of a symbol key on an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									const newSymbol = Symbol('newSymbol');
 									(el.props.watchAnyArr as any)[newSymbol] = 'b';
@@ -1349,7 +1349,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches *.*.x changes on an array', () => {
 							// Here *.*.x is *.*.d
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].a.d = 2;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1364,7 +1364,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches *.x.* changes on an object', () => {
 							// Here *.x.* is *.d.*
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].d.c = 5;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1379,7 +1379,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						it('watches *.x.*.y changes on an array', () => {
 							// Here *.x.*.y is *.a.*.d
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].a.b.d = 5;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1393,7 +1393,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches nested * changes on an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].f.f.f = 5;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1415,7 +1415,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 							// not be found. As such '*.d' needs to be "merged"
 							// with 'a'
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrProp[0].a.d = 5;
 									cy.wrap(stub).should('be.calledOnce');
@@ -1423,7 +1423,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can watch specific indices on an array as well', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrIndices[3] = 5;
 									cy.wrap(stub).should('be.calledOnce');
@@ -1431,7 +1431,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can watch nested paths starting at indices on an array as well', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrIndices[0].a = 5;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1442,7 +1442,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call the update function when indices are not watched', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchNestedArrIndices[2] = 5;
 									cy.wrap(stub).should('not.be.called');
@@ -1450,7 +1450,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('can watch an array index inside of an object index inside of an array index', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchMultipleNested[0].a[1] = 5;
 									cy.wrap(stub).should('be.calledOnce');
@@ -1458,7 +1458,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call update on a different multiple nested property', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.watchMultipleNested[0].a[2] = 5;
 									cy.wrap(stub).should('not.be.called');
@@ -1468,7 +1468,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 					context('Deep', () => {
 						it('does not try to create a proxy on a null or undefined object', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchObj.d = null;
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1479,7 +1479,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches the initial properties of an object', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchObj.a.a = 'c';
 									cy.wrap(stub).should('be.calledOnce').then(() => {
@@ -1493,7 +1493,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('calls the update function when a new property is added', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchObj.d = 'c';
 									cy.wrap(stub).should('be.calledOnce');
@@ -1501,7 +1501,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('calls the update function when a property is deleted', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									delete el.props.deepWatchObj.a;
 									cy.wrap(stub).should('be.calledOnce');
@@ -1509,7 +1509,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call the update function when a property that does not exist is deleted', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									delete el.props.deepWatchObj.d;
 									cy.wrap(stub).should('not.be.called');
@@ -1517,7 +1517,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches newly added properties of an object', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchObj.d = {
 										a: 'b',
@@ -1531,7 +1531,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches the initial indices of an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr[0] = {
 										a: {
@@ -1554,7 +1554,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not call the update function when the values do not change', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr[0] = el.props.deepWatchArr[0];
 									cy.wrap(stub).should('not.be.called');
@@ -1562,7 +1562,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('calls the update function when items are added into an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr[2] = {
 										a: {
@@ -1585,7 +1585,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('calls the update function when items are pushed into an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr.push({
 										a: {
@@ -1608,7 +1608,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('calls the update function when an item is deleted from an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									delete el.props.deepWatchArr[1];
 									cy.wrap(stub).should('be.calledOnce');
@@ -1616,7 +1616,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('calls the update function when an item is spliced from an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr.splice(1, 1);
 									cy.wrap(stub).should('be.calledOnce');
@@ -1624,7 +1624,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('calls the update function when splice replaces an item', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr.splice(1, 1, {
 										a: {
@@ -1647,7 +1647,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches a nested object inside an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr[0].a.a = 'c';
 									cy.wrap(stub).should('be.calledOnce');
@@ -1655,7 +1655,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches newly added properties inside the array\'s elements', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr[0].d = {
 										a: 'b',
@@ -1669,7 +1669,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches newly added arrays inside of objects', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchObj.d = [{
 										a: 'b',
@@ -1686,7 +1686,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches newly added objects inside of arrays', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									el.props.deepWatchArr.push({
 										a: {
@@ -1712,7 +1712,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('does not attempt to proxy null or undefined values', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									expect(el).to.have.property('props')
 										.to.have.property('watchAnyArr')
 										.to.have.property('1')
@@ -1725,7 +1725,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches newly set symbol accesses on an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									const newSymbol = Symbol('newSymbol');
 									(el.props.deepWatchArr as any)[newSymbol] = 'b';
@@ -1737,7 +1737,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('on an array does not call the update function when the value of a symbol key did not change', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									const newSymbol = Symbol('newSymbol');
 									(el.props.deepWatchArr as any)[newSymbol] = 'b';
@@ -1749,7 +1749,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 						});
 						it('watches the removal of a symbol key on an array', () => {
 							cy.get('props-element')
-								.then(([el]: JQuery<PropsElement>) => {
+								.then(([el]: JQuery<_PropsElement>) => {
 									const stub = cy.stub(el, 'renderToDOM');
 									const newSymbol = Symbol('newSymbol');
 									(el.props.deepWatchArr as any)[newSymbol] = 'b';
@@ -1767,7 +1767,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 			context('Config', () => {
 				it('can have an empty props object', () => {
 					cy.get('empty-props')
-						.then(([el]: JQuery<EmptyProps>) => {
+						.then(([el]: JQuery<_EmptyProps>) => {
 							expect(Object.getOwnPropertyNames(el.props)
 								.filter(n => n !== '__config')).to.have.length(0);
 							expect(el.attributes).to.have.length(0);
@@ -1775,7 +1775,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 				it('can consist of a private config', () => {
 					cy.get('priv-props')
-						.then(([el]: JQuery<PrivProps>) => {
+						.then(([el]: JQuery<_PrivProps>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('bool');
 							expect(el).to.have.property('props')
@@ -1787,7 +1787,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 				it('can consist of a public config', () => {
 					cy.get('reflect-props')
-						.then(([el]: JQuery<PrivProps>) => {
+						.then(([el]: JQuery<_PrivProps>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('bool');
 							expect(el).to.have.property('props')
@@ -1803,7 +1803,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 			context('Mixin', () => {
 				it('can inherit props from a mixin', () => {
 					cy.get('merged-props')
-						.then(([el]: JQuery<MergedProps>) => {
+						.then(([el]: JQuery<_MergedProps>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('bool');
 							expect(el).to.have.property('props')
@@ -1820,7 +1820,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 				it('can change the extending class\'s props when the super changes its own props', () => {
 					cy.get('merged-props')
-						.then(([el]: JQuery<MergedProps>) => {
+						.then(([el]: JQuery<_MergedProps>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('bool');
 							expect(el).to.have.property('props')
@@ -1847,7 +1847,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 				it('can change the extending class\' props from the extending class', () => {
 					cy.get('merged-props')
-						.then(([el]: JQuery<MergedProps>) => {
+						.then(([el]: JQuery<_MergedProps>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('bool');
 							expect(el).to.have.property('props')
@@ -1868,7 +1868,7 @@ export function propsSpec(basicFixture: string, noProxyFixture: string, complex:
 				});
 				it('can change the super\'s inherited props from the extending class', () => {
 					cy.get('merged-props')
-						.then(([el]: JQuery<MergedProps>) => {
+						.then(([el]: JQuery<_MergedProps>) => {
 							expect(el).to.have.property('props')
 								.to.have.property('bool');
 							expect(el).to.have.property('props')

@@ -1,5 +1,4 @@
-import { LifecycleElement } from "../../elements/lifecycle-element.js";
-import { TestElement } from "../../../elements/test-element.js";
+import { ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib.js";
+import { componentFixtureFactory } from "./component-fixture-factory.js";
 
-TestElement.define(true);
-LifecycleElement.define(true);
+componentFixtureFactory(ConfigurableWebComponent);

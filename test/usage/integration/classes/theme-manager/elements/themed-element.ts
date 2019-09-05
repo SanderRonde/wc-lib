@@ -20,50 +20,66 @@ export const usedThemes: {
 };
 export const defaultTheme = 'first';
 
-@config({
-	is: 'themed-element',
-	html: new TemplateFn<ThemedElement>(() => {
-		return html`
-			<div class="text">test</div>
-			<div class="text2">test2</div>
-		`;
-	}, CHANGE_TYPE.NEVER, render),
-	css: new TemplateFn<ThemedElement>((_html, _prop, theme) => {
-		return html`<style>
-				.text {
-					color: ${theme.color1};
-				}
-
-				.text2 {
-					color: ${theme.color2};
-				}
-			</style>`
-	}, CHANGE_TYPE.THEME, render)
-})
-export class ThemedElement extends ConfigurableWebComponent<{
+export declare class _ThemedElement extends ConfigurableWebComponent<{
 	themes: typeof usedThemes;
-}> {
+}> { }
 
-}
-
-@config({
-	is: 'themed-element-parent',
-	html: new TemplateFn<ThemedElementParent>(() => {
-		return html`
-			<themed-element></themed-element>
-			<themed-element></themed-element>
-			<themed-element></themed-element>
-			<themed-element></themed-element>
-			<themed-element></themed-element>
-		`;
-	}, CHANGE_TYPE.NEVER, render),
-	css: null,
-	dependencies: [
-		ThemedElement
-	]
-})
-export class ThemedElementParent extends ConfigurableWebComponent<{
+export declare class _ThemedElementParent extends ConfigurableWebComponent<{
 	globalProps: ThemeGlobalProps;
-}> {
+}> { }
 
+export const ThemedElement = (base: any) => {
+
+	@config({
+		is: 'themed-element',
+		html: new TemplateFn<ThemedElement>(() => {
+			return html`
+				<div class="text">test</div>
+				<div class="text2">test2</div>
+			`;
+		}, CHANGE_TYPE.NEVER, render),
+		css: new TemplateFn<ThemedElement>((_html, _prop, theme) => {
+			return html`<style>
+					.text {
+						color: ${(theme as unknown as TestTheme).color1};
+					}
+
+					.text2 {
+						color: ${(theme as unknown as TestTheme).color2};
+					}
+				</style>`
+		}, CHANGE_TYPE.THEME, render)
+	})
+	class ThemedElement extends base<{
+		themes: typeof usedThemes;
+	}> {
+
+	}
+
+	@config({
+		is: 'themed-element-parent',
+		html: new TemplateFn<ThemedElementParent>(() => {
+			return html`
+				<themed-element></themed-element>
+				<themed-element></themed-element>
+				<themed-element></themed-element>
+				<themed-element></themed-element>
+				<themed-element></themed-element>
+			`;
+		}, CHANGE_TYPE.NEVER, render),
+		css: null,
+		dependencies: [
+			ThemedElement
+		] as any
+	})
+	class ThemedElementParent extends base<{
+		globalProps: ThemeGlobalProps;
+	}> {
+
+	}
+
+	return {
+		ThemedElement: ThemedElement as typeof _ThemedElement,
+		ThemedElementParent: ThemedElementParent as typeof _ThemedElementParent
+	}
 }

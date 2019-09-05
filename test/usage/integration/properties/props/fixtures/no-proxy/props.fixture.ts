@@ -1,4 +1,4 @@
-import { ReflectProps, WatchedComponent } from '../../elements/props-element.js';
+import { ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib";
+import { propsNoProxyFixtureFactory } from "./props-fixture-factory";
 
-ReflectProps.define(true);
-WatchedComponent.define(true);
+propsNoProxyFixtureFactory(ConfigurableWebComponent);

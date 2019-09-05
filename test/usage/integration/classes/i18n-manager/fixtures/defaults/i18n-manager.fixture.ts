@@ -1,10 +1,4 @@
-import { WebComponent } from '../../../../../../../build/es/wc-lib.js';
-import { LangElement } from '../../elements/test-lang-element.js';
+import { ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib.js";
+import { i18nManagerDefaultsFixtureFactory } from "./i18n-manager-fixture-factory";
 
-WebComponent.initI18N({
-	urlFormat: '/test/usage/fixtures/i18n/$LANG$.json',
-	defaultLang: 'en'
-});
-
-(window as any).WebComponent = WebComponent;
-LangElement.define(true);
+i18nManagerDefaultsFixtureFactory(ConfigurableWebComponent);

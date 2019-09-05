@@ -2,147 +2,177 @@ import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, Compl
 import { render, html, directive, Part } from "../../../../../../node_modules/lit-html/lit-html.js";
 import { TestElement } from "../../elements/test-element.js";
 
-@config({
-	is: 'event-triggering-element',
-	html: new TemplateFn<EventTriggeringElement>(() => {
-		return html``;
-	}, CHANGE_TYPE.NEVER, render)
-})
-export class EventTriggeringElement extends ConfigurableWebComponent<{
+export declare class EventTriggeringElement extends ConfigurableWebComponent<{
 	events: {
 		ev: {
 			args: [number];
 		}
 	}
-}> { }
+}> {}
 
-@config({
-	is: 'complex-receiver-element',
-	html: new TemplateFn<ComplexReceiverElement>(() => {
-		return html``;
-	}, CHANGE_TYPE.NEVER, render)
-})
-export class ComplexReceiverElement extends ConfigurableWebComponent {
-	props = Props.define(this, {
-		reflect: {
-			parent: ComplexType<ComplexElement>()
-		}
+export declare class ComplexReceiverElement extends ConfigurableWebComponent {
+	props: { parent: _ComplexElement };
+}
+
+export declare class BooleanElement extends ConfigurableWebComponent {
+	props: { bool: boolean };
+}
+
+export declare class _ComplexElement extends ConfigurableWebComponent {
+	clickHandler(_arg?: any): void;
+	customClickHandler(_num: number): void;
+}
+
+export declare class _WrongElementListen extends ConfigurableWebComponent {}
+
+export function complexElementFactory(base: any) {
+	@config({
+		is: 'event-triggering-element',
+		html: new TemplateFn<EventTriggeringElement>(() => {
+			return html``;
+		}, CHANGE_TYPE.NEVER, render)
 	})
-}
-
-@config({
-	is: 'boolean-element',
-	html: new TemplateFn<EventTriggeringElement>(() => {
-		return html``;
-	}, CHANGE_TYPE.NEVER, render)
-})
-export class BooleanElement extends ConfigurableWebComponent {
-	props = Props.define(this, {
-		reflect: {
-			bool: PROP_TYPE.BOOL
+	class EventTriggeringElement extends base<{
+		events: {
+			ev: {
+				args: [number];
+			}
 		}
-	});
-}
+	}> { }
 
-const resolveDirectiveWith = directive(<T>(value: T) => (part: Part) => {
-	part.setValue(value);
-	part.commit();
-});
+	@config({
+		is: 'complex-receiver-element',
+		html: new TemplateFn<ComplexReceiverElement>(() => {
+			return html``;
+		}, CHANGE_TYPE.NEVER, render)
+	})
+	class ComplexReceiverElement extends ConfigurableWebComponent {
+		props = Props.define(this, {
+			reflect: {
+				parent: ComplexType<ComplexElement>()
+			}
+		})
+	}
 
-const changeValueDirective = directive(<T>(val1: T, val2: T, time: number = 250) => (part: Part) => {
-	part.setValue(val1);
-	part.commit();
+	@config({
+		is: 'boolean-element',
+		html: new TemplateFn<EventTriggeringElement>(() => {
+			return html``;
+		}, CHANGE_TYPE.NEVER, render)
+	})
+	class BooleanElement extends ConfigurableWebComponent {
+		props = Props.define(this, {
+			reflect: {
+				bool: PROP_TYPE.BOOL
+			}
+		});
+	}
 
-	window.setTimeout(() => {
-		part.setValue(val2);
+	const resolveDirectiveWith = directive(<T>(value: T) => (part: Part) => {
+		part.setValue(value);
 		part.commit();
-	}, time);
-})
+	});
 
-@config({
-	is: 'complex-element',
-	html: new TemplateFn<ComplexElement>(function (html) {
-		return html`
-			<test-element id="eventTest" @click="${() => {
-				// Done so the function can be stubbed
-				this.clickHandler();
-			}}"></test-element>
-			<test-element id="eventDirective" @click="${resolveDirectiveWith(() => {
-				// Done so the function can be stubbed
-				this.clickHandler();
-			})}"></test-element>
-			<event-triggering-element id="customEventTest" @@ev="${(arg: number) => {
-				// Done so the function can be stubbed
-				return this.customClickHandler(arg);
-			}}"></event-triggering-element>
-			<event-triggering-element id="customEventDirective" @@ev="${resolveDirectiveWith((arg: number) => {
-				// Done so the function can be stubbed
-				return this.customClickHandler(arg);
-			})}"></event-triggering-element>
-			<event-triggering-element id="customEventReplaced" @@ev="${changeValueDirective((arg: number) => {
-				// Done so the function can be stubbed
-				return this.customClickHandler(arg + 1);
-			}, (arg: number) => {
-				// Done so the function can be stubbed
-				return this.customClickHandler(arg + 2);
-			})}"></event-triggering-element>
-			<event-triggering-element id="customEventRemoved" @@ev="${changeValueDirective((arg: number) => {
-				// Done so the function can be stubbed
-				return this.customClickHandler(arg);
-			}, null)}"></event-triggering-element>
-			<event-triggering-element id="customEventDefined" @@ev="${changeValueDirective(null, (arg: number) => {
-				// Done so the function can be stubbed
-				return this.customClickHandler(arg);
-			})}"></event-triggering-element>
-			<!-- {} is truthy -->
-			<boolean-element id="booleanTestTrue" ?bool="${{}}"></boolean-element>
-			<!-- '' is false -->
-			<boolean-element id="booleanTestFalse" ?bool="${''}"></boolean-element>
-			<div id="classTestObj" class="${{
-				a: true,
-				b: false
-			}}"></div>
-			<div id="classTestString" class="${'a b c'}"></div>
-			<div id="classTestArr" class="${[{
-				a: true,
-				b: false
-			}, 'c', 'd', {
-				e: true,
-				f: false
-			}]}"></div>
-			<div id="classDirective" class="${resolveDirectiveWith('a b c')}"></div>
-			<complex-receiver-element id="refTest" #parent="${this}"></complex-receiver-element>
-			<complex-receiver-element id="refDirective" #parent="${resolveDirectiveWith(this)}"></complex-receiver-element>
-			<test-element id="refTest2" #parent="${this}"></test-element>
-			<test-element id="regular" :key="${'value'}"></test-element>
-		`;
-	}, CHANGE_TYPE.PROP, render),
-	dependencies: [
-		TestElement,
-		EventTriggeringElement,
-		ComplexReceiverElement,
-		BooleanElement
-	]
-})
-export class ComplexElement extends ConfigurableWebComponent {
-	clickHandler(_arg?: any) { 
-		// Will be stubbed
-	}
+	const changeValueDirective = directive(<T>(val1: T, val2: T, time: number = 250) => (part: Part) => {
+		part.setValue(val1);
+		part.commit();
 
-	customClickHandler(_num: number) {
-		// Will be stubbed
-	}
-}
+		window.setTimeout(() => {
+			part.setValue(val2);
+			part.commit();
+		}, time);
+	})
 
-
-@config({
-	is: 'wrong-element-listen',
-	html: new TemplateFn<WrongElementListen>((html) => {
-		return html`
-			<div id="customEventDirective" @@ev="${(() => {})}"></div>
+	@config({
+		is: 'complex-element',
+		html: new TemplateFn<ComplexElement>(function (html) {
+			return html`
+				<test-element id="eventTest" @click="${() => {
+					// Done so the function can be stubbed
+					this.clickHandler();
+				}}"></test-element>
+				<test-element id="eventDirective" @click="${resolveDirectiveWith(() => {
+					// Done so the function can be stubbed
+					this.clickHandler();
+				})}"></test-element>
+				<event-triggering-element id="customEventTest" @@ev="${(arg: number) => {
+					// Done so the function can be stubbed
+					return this.customClickHandler(arg);
+				}}"></event-triggering-element>
+				<event-triggering-element id="customEventDirective" @@ev="${resolveDirectiveWith((arg: number) => {
+					// Done so the function can be stubbed
+					return this.customClickHandler(arg);
+				})}"></event-triggering-element>
+				<event-triggering-element id="customEventReplaced" @@ev="${changeValueDirective((arg: number) => {
+					// Done so the function can be stubbed
+					return this.customClickHandler(arg + 1);
+				}, (arg: number) => {
+					// Done so the function can be stubbed
+					return this.customClickHandler(arg + 2);
+				})}"></event-triggering-element>
+				<event-triggering-element id="customEventRemoved" @@ev="${changeValueDirective((arg: number) => {
+					// Done so the function can be stubbed
+					return this.customClickHandler(arg);
+				}, null)}"></event-triggering-element>
+				<event-triggering-element id="customEventDefined" @@ev="${changeValueDirective(null, (arg: number) => {
+					// Done so the function can be stubbed
+					return this.customClickHandler(arg);
+				})}"></event-triggering-element>
+				<!-- {} is truthy -->
+				<boolean-element id="booleanTestTrue" ?bool="${{}}"></boolean-element>
+				<!-- '' is false -->
+				<boolean-element id="booleanTestFalse" ?bool="${''}"></boolean-element>
+				<div id="classTestObj" class="${{
+					a: true,
+					b: false
+				}}"></div>
+				<div id="classTestString" class="${'a b c'}"></div>
+				<div id="classTestArr" class="${[{
+					a: true,
+					b: false
+				}, 'c', 'd', {
+					e: true,
+					f: false
+				}]}"></div>
+				<div id="classDirective" class="${resolveDirectiveWith('a b c')}"></div>
+				<complex-receiver-element id="refTest" #parent="${this}"></complex-receiver-element>
+				<complex-receiver-element id="refDirective" #parent="${resolveDirectiveWith(this)}"></complex-receiver-element>
+				<test-element id="refTest2" #parent="${this}"></test-element>
+				<test-element id="regular" :key="${'value'}"></test-element>
 			`;
-	}, CHANGE_TYPE.PROP, render)
-})
-export class WrongElementListen extends ConfigurableWebComponent {
+		}, CHANGE_TYPE.PROP, render),
+		dependencies: [
+			TestElement,
+			EventTriggeringElement,
+			ComplexReceiverElement,
+			BooleanElement
+		] as any
+	})
+	class ComplexElement extends ConfigurableWebComponent {
+		clickHandler(_arg?: any) { 
+			// Will be stubbed
+		}
 
+		customClickHandler(_num: number) {
+			// Will be stubbed
+		}
+	}
+
+
+	@config({
+		is: 'wrong-element-listen',
+		html: new TemplateFn<WrongElementListen>((html) => {
+			return html`
+				<div id="customEventDirective" @@ev="${(() => {})}"></div>
+				`;
+		}, CHANGE_TYPE.PROP, render)
+	})
+	class WrongElementListen extends ConfigurableWebComponent {
+
+	}
+
+	return {
+		ComplexElement: ComplexElement as typeof _ComplexElement,
+		WrongElementListen: WrongElementListen as typeof _WrongElementListen
+	}
 }

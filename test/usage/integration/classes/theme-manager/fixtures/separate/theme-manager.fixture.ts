@@ -1,11 +1,4 @@
-import { ThemedElementParent, usedThemes, defaultTheme } from "../../elements/themed-element.js";
-import { WebComponent } from "../../../../../../../build/es/wc-lib.js";
-import { TestElement } from "../../../elements/test-element.js";
+import { themedElementSeparateFixtureFactory } from "./themed-element-fixture-factory.js";
+import { ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib.js";
 
-WebComponent.initTheme({
-	theme: usedThemes
-});
-WebComponent.setDefaultTheme(defaultTheme);
-
-TestElement.define(true);
-ThemedElementParent.define(true);
+themedElementSeparateFixtureFactory(ConfigurableWebComponent);

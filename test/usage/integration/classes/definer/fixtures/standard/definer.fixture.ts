@@ -1,4 +1,5 @@
-import { DefineMetadata } from "../../../../../../../build/es/wc-lib.js";
-import "../../../elements/parent-element.js";
+import { DefineMetadata, ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib.js";
+import { ParentElementFactory } from "../../../elements/parent-element-factory.js";
 
 (window as any).DefineMetadata = DefineMetadata;
+ParentElementFactory(ConfigurableWebComponent);

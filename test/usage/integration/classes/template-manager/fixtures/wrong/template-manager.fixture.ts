@@ -1,7 +1,4 @@
-import { ComplexElement, WrongElementListen } from "../../elements/complex-element.js";
-import { TestElement } from "../../../elements/test-element.js";
+import { templateManagerWrongFixtureFactory } from "./template-manager-fixture-factory.js";
+import { ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib.js";
 
-TestElement.define(true);
-(window as any).ComplexElement = ComplexElement;
-ComplexElement.define(true);
-WrongElementListen.define(true);
+templateManagerWrongFixtureFactory(ConfigurableWebComponent);

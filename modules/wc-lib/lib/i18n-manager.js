@@ -372,7 +372,7 @@ export const WebComponentI18NManagerMixin = (superFn) => {
             if ('urlFormat' in config) {
                 I18NClass.urlFormat = config.urlFormat;
             }
-            else if ('langFiles' in config) {
+            if ('langFiles' in config) {
                 I18NClass.langFiles = config.langFiles;
             }
             if (getMessage) {

@@ -304,7 +304,8 @@ export const WebComponentI18NManagerMixin = <P extends WebComponentI18NManagerMi
 			const { defaultLang, getMessage, returner } = config;
 			if ('urlFormat' in config) {
 				I18NClass.urlFormat = config.urlFormat;
-			} else if ('langFiles' in config) {
+			}
+			if ('langFiles' in config) {
 				I18NClass.langFiles = config.langFiles;
 			}
 			if (getMessage) {

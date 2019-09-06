@@ -22,14 +22,13 @@ after_script:
 - codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')
 
 deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  keep_history: true
+  provider: npm
+  email: awsdfgvhbjn@gmail.com
+  api_key:
+    secure: dAMHGYv/2jJ8DBj6AMVeJBe7LAzXBF1PV649K4ArAZs93pQuDyMPU/8tVeteYOrUv344MkPo8oszS0d9ovG5EMVuspYgskozZjxd+LDlQQs76V03LscWZyHdPgRyVnyZ3wCKqrd5gNCdT72XeJ9HpNkIVUrIhiLGpg10YYCzMR5KqAzMrRKXzmCg8lSSpqTn58CuWgfQVt7cYvNBYRSIQ78+Wp6ItcfZC20gnFoAAQ+hTBTH7CA/LPjkk6UWYmeqmMiKfIJpwWL9pRKPiwtTZWPToQbL/d9Xs2Kw+9XaJ3VPnWpbLOxxm6t0UkQf4bkctBYji0zewgYsSh/tiUTz+q6A7NK0WrlIwpmn6H1zRb0nbsJj9hJEu/M2t3h5/5ABvptNgFF9aMe2hsnspp+742Muss9q0H5fXztprIvaj+dzlIJRCouN5t/MRD3qyceBcofqSHdr12L34zIq+oE8h/jxHab0X6pmT88vKmw0UIzdDpdcKZTdy8KQfCjEUmNlBfSVB4AmAS+qRJ/ALyuHNDXuFRGS1Ne8mrVu2QH8NPnvqzVDJGP7zNbR1t6RMW512yp2NUyR9mP3EXbUcjYexkRWIZYh1wHH+EQfnVhl4ZwV4IVIQP7cB0Koc5qmDWrpWIPW3EUb+A/ta3JfUfjtsDFN9RPJuJR/KiuWI6mmJQQ=
   on:
+    tags: true
     branch: master
-  local_dir: examples/
-
 notifications:
   email:
     on_success: change
@@ -50,4 +49,4 @@ addons:
   apt:
     packages:
       # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
-      - libgconf-2-4
+    - libgconf-2-4

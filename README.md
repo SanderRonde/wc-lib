@@ -1,11 +1,10 @@
+# wc-lib
 [![Build Status](https://travis-ci.org/SanderRonde/wc-lib.svg?branch=master)](https://travis-ci.org/SanderRonde/wc-lib)
 [![codecov](https://codecov.io/gh/SanderRonde/wc-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/SanderRonde/wc-lib)
 
-# Wc-lib
+A small library for creating webcomponents based around the idea of importing what you need. Has support for I18N, themes, smart templates (that only render when they have to and that use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing, a smart custom property system that allows you to pass a reference to any value through HTML (yes even objects and HTML elements).
 
-A small library for creating webcomponents based around the idea of importing what you like. Has **optional** support for I18N, themes, smart templates (that only render when they have to and use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing, a smart custom property system that allows you to pass any value through HTML (yes even objects and HTML elements).
-
-See below for more detailed explanations of these features.
+See below for more detailed explanations of these features or [check out the demo](https://sanderronde.github.io/wc-lib/)
 
 ## Getting started
 

@@ -83,6 +83,7 @@
 		"coverage:partial-classes-i18n": "npm run set-cypress:partial-class-i18n && npm run coverage:current-cypress",
 		"coverage:partial-classes-theming": "npm run set-cypress:partial-class-theming && npm run coverage:current-cypress",
 		"coverage:properties": "npm run set-cypress:properties && npm run coverage:current-cypress",
-		"coverage:tasks": "npm run set-cypress:tasks && npm run coverage:current-cypress"
+		"coverage:tasks": "npm run set-cypress:tasks && npm run coverage:current-cypress",
+		"prepack": "npm run compile"
 	}
 }

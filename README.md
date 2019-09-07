@@ -4,7 +4,7 @@
 
 A small library for creating webcomponents based around the idea of importing what you need. Has support for I18N, themes, smart templates (that only render when they have to and that use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing, a smart custom property system that allows you to pass a reference to any value through HTML (yes even objects and HTML elements).
 
-See below for more detailed explanations of these features or [check out the demo](https://sanderronde.github.io/wc-lib/)
+See below for more detailed explanations of these features or [check out the demo](https://wc-lib.sanderron.de/)
 
 ## Getting started
 
@@ -12,7 +12,7 @@ The easiest way to get started is to use the command-line tool to generate a com
 
 ## Examples
 
-Check out the `/examples` directory for any example code or check them out [online](https://sanderronde.github.io/wc-lib/).
+Check out the `/examples` directory for any example code or check them out [online](https://wc-lib.sanderron.de).
 
 ## Features
 

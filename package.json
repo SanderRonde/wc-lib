@@ -20,7 +20,7 @@
 		"build/**"
 	],
 	"dependencies": {
-		"typescript": "^3.5.3"
+		"typescript": "^3.7.3"
 	},
 	"devDependencies": {
 		"@types/fs-extra": "^7.0.0",
@@ -28,7 +28,7 @@
 		"@types/gulp": "^4.0.6",
 		"@types/gulp-replace": "^0.0.31",
 		"@types/http-server": "^0.10.0",
-		"@types/node": "^11.13.7",
+		"@types/node": "^12.12.14",
 		"chai": "^4.2.0",
 		"chai-jquery": "^2.1.0",
 		"cypress": "^3.4.1",

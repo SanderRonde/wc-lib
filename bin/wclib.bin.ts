@@ -53,7 +53,7 @@ function capitalize(name: string) {
 }
 
 const indexTemplate = (name: string, wclib: string, querymap: boolean) => 
-`import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '${wclib}';${
+`import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '${wclib}';\n${
 	querymap ? `import { ${capitalize(dashesToUppercase(name))}IDMap, ${capitalize(dashesToUppercase(name))}ClassMap } from './${name}-querymap';\n` : ''
 }
 import { ${capitalize(dashesToUppercase(name))}HTML } from './${name}.html.js';

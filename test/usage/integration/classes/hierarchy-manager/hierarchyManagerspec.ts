@@ -78,7 +78,7 @@ export function hierarchyManagerspec(fixture: string) {
 				getAllElements().then((elements) => {
 					cy.get('root-element').then(([root]: JQuery<RootElement>) => {
 						for (const el of elements) {
-							expect(el.getRoot()).to.be.equal(root, 'root-element is the root');
+							expect((el as any).getRoot()).to.be.equal(root, 'root-element is the root');
 						}
 					});
 				});

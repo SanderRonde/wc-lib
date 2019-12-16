@@ -85,14 +85,14 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 				it('uses the default theme name', () => {
 					getDefaultThemedElements().then((elements) => {
 						for (const element of elements) {
-							expect(element.getThemeName()).to.be.equal(defaultTheme, 'default theme name is set');
+							expect((element as any).getThemeName()).to.be.equal(defaultTheme, 'default theme name is set');
 						}
 					});
 				});
 				it('uses the default theme', () => {
 					getDefaultThemedElements().then((elements) => {
 						for (const element of elements) {
-							expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme], 'default theme is set');
+							expect((element as any).getTheme()).to.be.deep.equal(usedThemes[defaultTheme], 'default theme is set');
 						}
 					});
 				});
@@ -100,7 +100,7 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 					cy.visit(separateFixture);
 					getDefaultThemedElements().then((elements) => {
 						for (const element of elements) {
-							expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme], 'default theme is set');
+							expect((element as any).getTheme()).to.be.deep.equal(usedThemes[defaultTheme], 'default theme is set');
 						}
 					});
 				});
@@ -109,7 +109,7 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 					cy.window().then((window: ThemeManagerWindow) => {
 						getDefaultThemedElements().then((elements) => {
 							for (const element of elements) {
-								expect(element.getTheme()).to.be.deep.equal(window.noTheme, 'returns noTheme when invalid theme is set');
+								expect((element as any).getTheme()).to.be.deep.equal(window.noTheme, 'returns noTheme when invalid theme is set');
 							}
 						});
 					});
@@ -196,15 +196,15 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 					test: (doChange) => {
 						getDefaultThemedElements().then((elements) => {
 							for (const element of elements) {
-								expect(element.getThemeName()).to.be.equal(defaultTheme, 'default theme name is set');
-								expect(element.getTheme()).to.be.deep.equal(usedThemes[defaultTheme], 'default theme is set');
+								expect((element as any).getThemeName()).to.be.equal(defaultTheme, 'default theme name is set');
+								expect((element as any).getTheme()).to.be.deep.equal(usedThemes[defaultTheme], 'default theme is set');
 							}
 
 							doChange().then(() => {
 								getDefaultThemedElements().then((elements) => {
 									for (const element of elements) {
-										expect(element.getThemeName()).to.be.equal('second', 'default theme name is set');
-										expect(element.getTheme()).to.be.deep.equal(usedThemes['second'], 'default theme is set');
+										expect((element as any).getThemeName()).to.be.equal('second', 'default theme name is set');
+										expect((element as any).getTheme()).to.be.deep.equal(usedThemes['second'], 'default theme is set');
 									}
 								});
 							});

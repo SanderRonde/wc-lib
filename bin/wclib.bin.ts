@@ -65,8 +65,10 @@ import { ${capitalize(dashesToUppercase(name))}CSS } from './${name}.css.js';
 	html: ${capitalize(dashesToUppercase(name))}HTML
 })
 export class ${capitalize(dashesToUppercase(name))} extends ConfigurableWebComponent${querymap ? `<{
-	IDS: IDMap;
-	CLASSES: ClassMap;
+	selectors: {
+		IDS: IDMap;
+		CLASSES: ClassMap;
+	}
 }>` : ''} {
 	props = Props.define(this, {
 		// ...

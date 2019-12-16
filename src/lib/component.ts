@@ -118,12 +118,12 @@ class ComponentClass {
 	public getIdMapSnapshot<ELS extends SelectorMap>(self: WebComponentMixinInstance) {
 		const snapshot: Partial<IDMapFn<ELS>> = ((selector: string) => {
 			return self.root.querySelector(selector) as HTMLElement;
-		}) as IDMapFn<ELS>
+		}) as any as Partial<IDMapFn<ELS>>;
 		for (const item of self.root.querySelectorAll('[id]')) {
 			(snapshot as any)[item.id as any] = item;
 		}
 
-		return snapshot as IDMapFn<ELS>;
+		return snapshot as any as IDMapFn<ELS>;
 	}
 }
 

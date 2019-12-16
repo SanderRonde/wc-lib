@@ -191,7 +191,7 @@ async function create(options: {
 			process.exit(1);
 			return 'wc-lib';
 		}
-		return wclibArg || 'wc-lib';
+		return `../${wclibArg}` || 'wc-lib';
 	})();
 	const litHTML = (() => {
 		const litHTMLArg = options['lit-html-path'];
@@ -200,7 +200,7 @@ async function create(options: {
 			process.exit(1);
 			return 'lit-html';
 		}
-		return litHTMLArg || 'lit-html';
+		return `../${litHTMLArg}` || 'lit-html';
 	})();
 
 	await writeFile(path.join(process.cwd(), name, `${name}.ts`),

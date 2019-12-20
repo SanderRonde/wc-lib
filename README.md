@@ -1,10 +1,11 @@
 # wc-lib
 [![Build Status](https://travis-ci.org/SanderRonde/wc-lib.svg?branch=master)](https://travis-ci.org/SanderRonde/wc-lib)
+[![npm version](https://badge.fury.io/js/wc-lib.svg)](https://badge.fury.io/js/wc-lib)
 [![codecov](https://codecov.io/gh/SanderRonde/wc-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/SanderRonde/wc-lib)
 
 A small library for creating webcomponents based around the idea of importing what you need. Has support for I18N, themes, smart templates (that only render when they have to and that use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing, a smart custom property system that allows you to pass a reference to any value through HTML (yes even objects and HTML elements).
 
-See below for more detailed explanations of these features or [check out the demo](https://wc-lib.sanderron.de/)
+See below for more detailed explanations of these features, [check out the demo](https://wc-lib.sanderron.de/) or [install the npm package](https://www.npmjs.com/package/wc-lib)
 
 ## Getting started
 

@@ -283,6 +283,49 @@ export function themeManagerSpec({ invalidFixture, separateFixture, standardFixt
 							return undefined;
 						}
 					});
+					context('No constructed stylesheets', () => {
+						beforeEach(() => {
+							cy.visit(standardFixture, {
+								onBeforeLoad(win) {
+									(win as any).CSSStyleSheet = class {
+										constructor() {
+											throw new Error('doesn\'t exist');
+										}
+									}
+								}
+							});
+							cy.wait(250);
+							cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
+								el.setTheme('first');
+							});
+						});
+
+						it('applies the theme without adopted stylesheets', () => {
+							getDeepThemedElements().then((elements) => {
+								for (const element of elements) {
+									expect(window.getComputedStyle(element.$('.text')!).color)
+										.to.be.equal(usedThemes[defaultTheme].color1, 'color1 is used');
+									expect(window.getComputedStyle(element.$('.text2')!).color)
+										.to.be.equal(usedThemes[defaultTheme].color2, 'color2 is used');
+								}
+
+								cy.get('#default').then(([el]: JQuery<ThemedElementParent>) => {
+									el.setTheme('second');
+									return cy.wait(100);
+								}).then(() => {
+									getDeepThemedElements().then((elements) => {
+										for (const element of elements) {
+											expect(window.getComputedStyle(element.$('.text')!).color)
+												.to.be.equal(usedThemes['second'].color1, 'color1 is used');
+											expect(window.getComputedStyle(element.$('.text2')!).color)
+												.to.be.equal(usedThemes['second'].color2, 'color2 is used');
+										}
+									});
+								});
+							});
+							return undefined;
+						});
+					});
 			});
 		});
 	});

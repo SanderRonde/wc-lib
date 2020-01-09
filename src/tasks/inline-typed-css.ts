@@ -1,3 +1,4 @@
+import * as through2 from 'through2';
 import { AST } from "./get-ast";
 import { css } from "../lib/css";
 import * as ts from 'typescript';
@@ -197,21 +198,16 @@ export function inlineTypedCSS(text: string): string {
  * end when the file is served
  */
 export function inlineTypedCSSPipe() {
-    return function(file: { 
-		isNull: () => boolean; 
-		isStream: () => boolean; 
-		contents: Buffer; 
-	}) {
-		if (file.isNull()) {
-			return file;
-		}
-		if (file.isStream()) {
-			throw new Error('Streaming not supported');
+	return through2.obj((file: {
+		isNull(): boolean;
+		isBuffer(): boolean;
+		isStream(): boolean;
+		contents: Buffer;
+	}, _, cb) => {
+		if (file.isBuffer()) {
+			file.contents = Buffer.from(inlineTypedCSS(file.contents.toString()));
 		}
 
-		file.contents = Buffer.from(
-			inlineTypedCSS(file.contents.toString()))
-
-		return file;
- 	 };
+		cb(null, file);
+	});
 };

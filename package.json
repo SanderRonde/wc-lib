@@ -20,6 +20,7 @@
 		"build/**"
 	],
 	"dependencies": {
+		"through2": "^3.0.1",
 		"typescript": "^3.7.3"
 	},
 	"devDependencies": {
@@ -29,6 +30,9 @@
 		"@types/gulp-replace": "^0.0.31",
 		"@types/http-server": "^0.10.0",
 		"@types/node": "^12.12.14",
+		"@types/rimraf": "^2.0.3",
+		"@types/through2": "^2.0.34",
+		"@types/webpack": "^4.41.1",
 		"chai": "^4.2.0",
 		"chai-jquery": "^2.1.0",
 		"cypress": "^3.8.0",
@@ -43,7 +47,9 @@
 		"lodash": "^4.17.13",
 		"nyc": "^14.1.1",
 		"remap-istanbul": "^0.13.0",
-		"ts-node": "^8.2.0"
+		"rimraf": "^3.0.0",
+		"ts-node": "^8.2.0",
+		"webpack": "^4.41.5"
 	},
 	"peerDependencies": {
 		"lit-html": "^1.1.0"

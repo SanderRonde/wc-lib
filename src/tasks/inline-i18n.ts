@@ -1,3 +1,4 @@
+import * as through2 from 'through2';
 import { AST } from "./get-ast.js";
 import * as ts from 'typescript';
 
@@ -175,22 +176,18 @@ export function inlineI18N<LF extends { [key: string]: any;}>(text: string,
 export function inlineI18NPipe<LF extends { [key: string]: any;}>( 
 	getMessage: (langFile: LF[keyof LF], key: string, values: any[]) => string,
 	langFile: LF, lang: keyof LF) {
-	return function(file: { 
+	return through2.obj((file: { 
 		isNull: () => boolean; 
 		isStream: () => boolean; 
+		isBuffer: () => boolean;
 		contents: Buffer; 
-	}) {
-		if (file.isNull()) {
-			return file;
-		}
-		if (file.isStream()) {
-			throw new Error('Streaming not supported');
+	}, _, cb) => {
+		if (file.isBuffer()) {
+			file.contents = Buffer.from(
+				inlineI18N(file.contents.toString(),
+				getMessage, langFile, lang))
 		}
 
-		file.contents = Buffer.from(
-			inlineI18N(file.contents.toString(),
-			getMessage, langFile, lang))
-
-		return file;
- 	 };
+		cb(null, file);
+ 	 });
 }

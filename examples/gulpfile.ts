@@ -1,5 +1,5 @@
 import { inlineTypedCSSPipe } from '../build/cjs/tasks/tasks';
-// const gulpClean = require('gulp-clean');
+const gulpClean = require('gulp-clean');
 import * as replace from 'gulp-replace';
 import * as webpack from 'webpack';
 import * as rimraf from 'rimraf';
@@ -80,20 +80,20 @@ gulp.task('bundle', gulp.series(function remove() {
 			});
 		});
 	}))
-// }, function clean() {
-// 	// Clean all non-bundle files
-// 	return gulp.src([
-// 		'**/*.*',
-// 		'!**/index.js',
-// 		'!**/index.html',
-// 		'!**/*.json',
-// 		'!**/*.png',
-// 	], {
-// 		cwd: './bundled',
-// 		base: './bundled',
-// 		read: false
-// 	})
-// 	.pipe(gulpClean())
+}, function clean() {
+	// Clean all non-bundle files
+	return gulp.src([
+		'**/*.*',
+		'!**/index.js',
+		'!**/index.html',
+		'!**/*.json',
+		'!**/*.png',
+	], {
+		cwd: './bundled',
+		base: './bundled',
+		read: false
+	})
+	.pipe(gulpClean())
 }, function changeHTML() {
 	// Change the overview index page to display
 	// different text depending on whether it's bundled or not

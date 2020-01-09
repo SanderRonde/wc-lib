@@ -3,9 +3,23 @@
 		<title>Examples</title>
 	</head>
 	<body>
-		Click on the links to check out the individual examples or
-		check out the github repo and the README.md's for more info
-		about them.
+		<div>
+			Click on the links to check out the individual examples or
+			check out the github repo and the README.md's for more info
+			about them.
+			<div hidden hidden hidden hidden hidden hidden hidden id="ifbundled">
+				Note that these are the bundled versions
+				and they will be quite a bit harder to read.
+				For the unbundled versions, click the link at
+				the bottom of the page.
+			</div>
+			<div id="ifnotbundled">
+				Note that these are the unbundled versions
+				and they will be slightly slower (and easier to read)
+				than the bundled versions. For the bundled versions,
+				click the link at the bottom of the page.
+			</div>
+		</div>
 		<br><br>
 
 		<a href="./hello-world/index.html">Hello World</a><br>
@@ -16,5 +30,7 @@
 		<a href="./stop-watch-typed-html/index.html">Stop-watch using typed HTML</a><br>
 		<a href="./themed-component/index.html">Themed component</a><br>
 		<a href="./tic-tac-toe/index.html">Tic Tac Toe</a><br>
+		<a hidden hidden hidden hidden hidden hidden hidden id="ifbundled" href="../examples/index.html">Unbundled versions</a><br>
+		<a id="ifnotbundled" href="../examples-bundled/index.html">Bundled versions</a><br>
 	</body>
 </html>

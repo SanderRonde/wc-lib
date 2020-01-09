@@ -39,6 +39,7 @@
 		"fs-extra": "^8.0.1",
 		"glob": "^7.1.4",
 		"gulp": "^4.0.2",
+		"gulp-clean": "^0.4.0",
 		"gulp-replace": "^1.0.0",
 		"http-server": "^0.11.1",
 		"istanbul-lib-coverage": "^2.0.5",

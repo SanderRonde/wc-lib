@@ -1,18 +1,6 @@
 import { inlineI18N, inlineI18NPipe } from '../../../../../build/es/tasks/inline-i18n.js';
+import * as stream from 'stream';
 
-class FakeBuffer {
-	constructor(private _data: string) { }
-
-	static from(data: string) {
-		return new FakeBuffer(data);
-	}
-
-	toString() {
-		return this._data;
-	}
-}
-
-const buf = Buffer || FakeBuffer;
 
 const langFile = {
 	en: {
@@ -41,36 +29,23 @@ context('Inline I18N Task', () => {
 		[key: string]: any;
 	}, string];
 	context('#inlineI18NPipe', () => {
-		it('ignores null files', () => {
-			const file = {
-				isNull() { return true; },
-				isStream() { return false },
-				contents: buf.from(exampleI18N)
-			};
-			const newFile = inlineI18NPipe(...defaultReplaceArgs)(file);
-			expect(newFile).to.have.property('contents');
-			expect(newFile.contents.toString()).to.be.equal(exampleI18N);
-		});
-		it('throws an error when the file is a stream', () => {
-			const file = {
-				isNull() { return false; },
-				isStream() { return true },
-				contents: buf.from(exampleI18N)
-			};
-			expect(() => {
-				inlineI18NPipe(...defaultReplaceArgs)(file);
-			}).to.throw('Streaming not supported');
-		});
-		it('replaces I18N when file is a string', () => {
-			const file = {
-				isNull() { return false; },
-				isStream() { return false },
-				contents: buf.from(exampleI18N)
-			};
-			const newFile = inlineI18NPipe(...defaultReplaceArgs)(file);
-			expect(newFile).to.have.property('contents');
-			expect(newFile.contents.toString()).to.be.equal(
-				'html`<div>ae</div>`');
+		it('replaces I18N when file is a string', (done) => {
+			const file = new stream.Readable();
+			file._read = () => {};
+			file.push(exampleI18N);
+			file.push(null);
+
+			const newStream = file.pipe(inlineI18NPipe(...defaultReplaceArgs));
+
+			let result: string = '';
+			newStream.on('data', (data: Buffer|string) => {
+				result += data.toString();
+			});
+			newStream.on('end', () => {
+				expect(result).to.be.equal(
+					'html`<div>ae</div>`');
+				done();
+			});
 		});
 	});
 	context('#inlineI18N', () => {

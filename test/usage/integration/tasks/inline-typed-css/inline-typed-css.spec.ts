@@ -1,52 +1,27 @@
 import { inlineTypedCSS, inlineTypedCSSPipe } from '../../../../../build/es/tasks/inline-typed-css.js';
+import * as stream from 'stream';
 
-class FakeBuffer {
-	constructor(private _data: string) { }
-
-	static from(data: string) {
-		return new FakeBuffer(data);
-	}
-
-	toString() {
-		return this._data;
-	}
-}
-
-const buf = Buffer || FakeBuffer;
 
 context('Typed CSS Task', () => {
 	const exampleTypedCSS = 'html`<style>${css().$.a.and.b}</style>`';
 	context('#inlineTypedCSSPipe', () => {
-		it('ignores null files', () => {
-			const file = {
-				isNull() { return true; },
-				isStream() { return false },
-				contents: buf.from(exampleTypedCSS)
-			};
-			const newFile = inlineTypedCSSPipe()(file);
-			expect(newFile).to.have.property('contents');
-			expect(newFile.contents.toString()).to.be.equal(exampleTypedCSS);
-		});
-		it('throws an error when the file is a stream', () => {
-			const file = {
-				isNull() { return false; },
-				isStream() { return true },
-				contents: buf.from(exampleTypedCSS)
-			};
-			expect(() => {
-				inlineTypedCSSPipe()(file);
-			}).to.throw('Streaming not supported');
-		});
-		it('replaces CSS when file is a string', () => {
-			const file = {
-				isNull() { return false; },
-				isStream() { return false },
-				contents: buf.from(exampleTypedCSS)
-			};
-			const newFile = inlineTypedCSSPipe()(file);
-			expect(newFile).to.have.property('contents');
-			expect(newFile.contents.toString()).to.be.equal(
-				'html`<style>#a.b</style>`');
+		it('replaces CSS when file is a buffer', (done) => {
+			const file = new stream.Readable();
+			file._read = () => {};
+			file.push(exampleTypedCSS);
+			file.push(null);
+
+			const newStream = file.pipe(inlineTypedCSSPipe());
+
+			let result: string = '';
+			newStream.on('data', (data: Buffer|string) => {
+				result += data.toString();
+			});
+			newStream.on('end', () => {
+				expect(result).to.be.equal(
+					'html`<style>#a.b</style>`');
+				done();
+			});
 		});
 	});
 	context('#inlineTypedCSS', () => {

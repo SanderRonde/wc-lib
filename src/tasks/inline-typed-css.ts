@@ -203,8 +203,12 @@ export function inlineTypedCSSPipe() {
 		isBuffer(): boolean;
 		isStream(): boolean;
 		contents: Buffer;
-	}, _, cb) => {
-		if (file.isBuffer()) {
+	}|Buffer, _, cb) => {
+		// The else case is tested by gulp
+		/* istanbul ignore else */
+		if (Buffer.isBuffer(file)) {
+			file = Buffer.from(inlineTypedCSS(file.toString()));
+		} else if (file.isBuffer()) {
 			file.contents = Buffer.from(inlineTypedCSS(file.contents.toString()));
 		}
 

@@ -3,7 +3,7 @@ import {
     classNames,
     WCLibError,
 } from '../../../../../build/es/wc-lib.js';
-import { SLOW } from '../../../lib/timing';
+import { SLOW, repeat } from '../../../lib/timing';
 
 function genString() {
     const letters = [
@@ -56,16 +56,19 @@ context('Shared', function() {
         it('returns empty string when passed no args', () => {
             expect(classNames()).to.be.equal('');
         });
-        it('joins strings when passed strings', () => {
-            const strings = [
-                genString(),
-                genString(),
-                genString(),
-                genString(),
-                genString(),
-            ];
-            expect(classNames(...strings)).to.be.equal(strings.join(' '));
-        });
+        it(
+            'joins strings when passed strings',
+            repeat(() => {
+                const strings = [
+                    genString(),
+                    genString(),
+                    genString(),
+                    genString(),
+                    genString(),
+                ];
+                expect(classNames(...strings)).to.be.equal(strings.join(' '));
+            })
+        );
         it('ignores invalid types (has to be either string, number, array or object)', () => {
             expect(
                 classNames('a', Symbol('x') as any, 'b'),
@@ -76,163 +79,188 @@ context('Shared', function() {
                 'ignores object'
             ).to.be.equal('a b');
         });
-        it('ignores empty sub-arrays', () => {
-            const strings = [
-                genString(),
-                [],
-                genString(),
-                [],
-                genString(),
-                [],
-                genString(),
-                genString(),
-            ];
-            expect(classNames(...strings)).to.be.equal(
-                strings.filter((i) => i.length).join(' ')
-            );
-        });
-        it('ignores falsy sub-arrays', () => {
-            const strings = [
-                genString(),
-                [false],
-                genString(),
-                [false],
-                genString(),
-                ['x'],
-                genString(),
-                genString(),
-            ];
-            expect(classNames(...strings)).to.be.equal(
-                strings
-                    .filter((i) => {
-                        if (Array.isArray(i)) {
-                            return (i as any[]).filter((item) => !!item).length;
-                        }
-                        return true;
-                    })
-                    .join(' ')
-            );
-        });
-        it('joins numbers when passed just numbers', () => {
-            const nums = [
-                Math.floor(Math.random() * 500),
-                Math.floor(Math.random() * 500),
-                Math.floor(Math.random() * 500),
-                Math.floor(Math.random() * 500),
-                Math.floor(Math.random() * 500),
-            ];
-            expect(classNames(...nums)).to.be.equal(
-                nums.map((n) => n + '').join(' ')
-            );
-        });
-        it('joins strings and numbers when passed both', () => {
-            const nums = [
-                genString(),
-                Math.floor(Math.random() * 500),
-                genString(),
-                Math.floor(Math.random() * 500),
-                genString(),
-                Math.floor(Math.random() * 500),
-                genString(),
-                Math.floor(Math.random() * 500),
-                genString(),
-                Math.floor(Math.random() * 500),
-            ];
-            expect(classNames(...nums)).to.be.equal(
-                nums.map((n) => n + '').join(' ')
-            );
-        });
-        it('joins passed arrays', () => {
-            const strings = [
-                genString(),
-                genString(),
-                genString(),
-                genString(),
-                genString(),
-            ];
-            const stringArray = [
-                genString(),
-                strings,
-                genString(),
-                genString(),
-                strings,
-                genString(),
-                genString(),
-            ];
-            expect(classNames(...stringArray)).to.be.equal(
-                flatten(stringArray).join(' ')
-            );
-        });
-        it('ignores falsy array elements', () => {
-            const strings = [
-                genString(),
-                false,
-                genString(),
-                false,
-                genString(),
-            ];
-            const stringArray = [
-                genString(),
-                strings,
-                genString(),
-                genString(),
-                strings,
-                genString(),
-                genString(),
-            ];
-            expect(classNames(...stringArray)).to.be.equal(
-                flatten(stringArray)
-                    .filter((el) => !!el)
-                    .join(' ')
-            );
-        });
-        it('joins nested arrays', () => {
-            const strings = [
-                genString(),
-                genString(),
-                genString(),
-                genString(),
-                genString(),
-            ];
-            const stringArray = [
-                genString(),
-                strings,
-                genString(),
-                genString(),
-                strings,
-                genString(),
-                genString(),
-            ];
-            const nestedArray = [
-                genString(),
-                stringArray,
-                genString(),
-                stringArray,
-                genString(),
-                stringArray,
-                genString(),
-            ];
-            expect(classNames(...nestedArray)).to.be.equal(
-                flatten(nestedArray).join(' ')
-            );
-        });
-        it('joins truthy object values', () => {
-            const obj = {
-                a: Math.random() > 0.5,
-                b: Math.random() > 0.5,
-                c: Math.random() > 0.5,
-                d: Math.random() > 0.5,
-                e: Math.random() > 0.5,
-                f: Math.random() > 0.5,
-                g: Math.random() > 0.5,
-            };
+        it(
+            'ignores empty sub-arrays',
+            repeat(() => {
+                const strings = [
+                    genString(),
+                    [],
+                    genString(),
+                    [],
+                    genString(),
+                    [],
+                    genString(),
+                    genString(),
+                ];
+                expect(classNames(...strings)).to.be.equal(
+                    strings.filter((i) => i.length).join(' ')
+                );
+            })
+        );
+        it(
+            'ignores falsy sub-arrays',
+            repeat(() => {
+                const strings = [
+                    genString(),
+                    [false],
+                    genString(),
+                    [false],
+                    genString(),
+                    ['x'],
+                    genString(),
+                    genString(),
+                ];
+                expect(classNames(...strings)).to.be.equal(
+                    strings
+                        .filter((i) => {
+                            if (Array.isArray(i)) {
+                                return (i as any[]).filter((item) => !!item)
+                                    .length;
+                            }
+                            return true;
+                        })
+                        .join(' ')
+                );
+            })
+        );
+        it(
+            'joins numbers when passed just numbers',
+            repeat(() => {
+                const nums = [
+                    Math.floor(Math.random() * 500),
+                    Math.floor(Math.random() * 500),
+                    Math.floor(Math.random() * 500),
+                    Math.floor(Math.random() * 500),
+                    Math.floor(Math.random() * 500),
+                ];
+                expect(classNames(...nums)).to.be.equal(
+                    nums.map((n) => n + '').join(' ')
+                );
+            })
+        );
+        it(
+            'joins strings and numbers when passed both',
+            repeat(() => {
+                const nums = [
+                    genString(),
+                    Math.floor(Math.random() * 500),
+                    genString(),
+                    Math.floor(Math.random() * 500),
+                    genString(),
+                    Math.floor(Math.random() * 500),
+                    genString(),
+                    Math.floor(Math.random() * 500),
+                    genString(),
+                    Math.floor(Math.random() * 500),
+                ];
+                expect(classNames(...nums)).to.be.equal(
+                    nums.map((n) => n + '').join(' ')
+                );
+            })
+        );
+        it(
+            'joins passed arrays',
+            repeat(() => {
+                const strings = [
+                    genString(),
+                    genString(),
+                    genString(),
+                    genString(),
+                    genString(),
+                ];
+                const stringArray = [
+                    genString(),
+                    strings,
+                    genString(),
+                    genString(),
+                    strings,
+                    genString(),
+                    genString(),
+                ];
+                expect(classNames(...stringArray)).to.be.equal(
+                    flatten(stringArray).join(' ')
+                );
+            })
+        );
+        it(
+            'ignores falsy array elements',
+            repeat(() => {
+                const strings = [
+                    genString(),
+                    false,
+                    genString(),
+                    false,
+                    genString(),
+                ];
+                const stringArray = [
+                    genString(),
+                    strings,
+                    genString(),
+                    genString(),
+                    strings,
+                    genString(),
+                    genString(),
+                ];
+                expect(classNames(...stringArray)).to.be.equal(
+                    flatten(stringArray)
+                        .filter((el) => !!el)
+                        .join(' ')
+                );
+            })
+        );
+        it(
+            'joins nested arrays',
+            repeat(() => {
+                const strings = [
+                    genString(),
+                    genString(),
+                    genString(),
+                    genString(),
+                    genString(),
+                ];
+                const stringArray = [
+                    genString(),
+                    strings,
+                    genString(),
+                    genString(),
+                    strings,
+                    genString(),
+                    genString(),
+                ];
+                const nestedArray = [
+                    genString(),
+                    stringArray,
+                    genString(),
+                    stringArray,
+                    genString(),
+                    stringArray,
+                    genString(),
+                ];
+                expect(classNames(...nestedArray)).to.be.equal(
+                    flatten(nestedArray).join(' ')
+                );
+            })
+        );
+        it(
+            'joins truthy object values',
+            repeat(() => {
+                const obj = {
+                    a: Math.random() > 0.5,
+                    b: Math.random() > 0.5,
+                    c: Math.random() > 0.5,
+                    d: Math.random() > 0.5,
+                    e: Math.random() > 0.5,
+                    f: Math.random() > 0.5,
+                    g: Math.random() > 0.5,
+                };
 
-            expect(classNames(obj)).to.be.equal(
-                Object.getOwnPropertyNames(obj)
-                    .filter((k) => !!obj[k as keyof typeof obj])
-                    .join(' ')
-            );
-        });
+                expect(classNames(obj)).to.be.equal(
+                    Object.getOwnPropertyNames(obj)
+                        .filter((k) => !!obj[k as keyof typeof obj])
+                        .join(' ')
+                );
+            })
+        );
     });
     context('wc-libError', () => {
         it('can create an error', () => {

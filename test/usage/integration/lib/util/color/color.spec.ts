@@ -1,5 +1,5 @@
+import { SLOW, repeat, RANDOM_RUNS } from '../../../../lib/timing.js';
 import { Color } from '../../../../../../build/es/wc-lib.js';
-import { SLOW } from '../../../../lib/timing.js';
 
 function genNum() {
     return Math.floor(Math.random() * 255);
@@ -51,111 +51,133 @@ function alphaNumToStr(a: number) {
 }
 
 context('Color', function() {
-    this.slow(SLOW);
+    this.slow(SLOW * RANDOM_RUNS);
 
     context('#getColorRepresentation', () => {
-        it('can get a non-RGBA hex color representation', () => {
-            const { r, g, b } = genColor();
-            const { rh, gh, bh } = colorToHex({ r, g, b });
-            const color = Color.getColorRepresentation(`#${rh}${gh}${bh}`);
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-            expect(color)
-                .to.have.property('a')
-                .to.be.equal(100);
-        });
-        it('can get an RGBA hex color representation', () => {
-            const { r, g, b } = genColor();
-            const { rh, gh, bh } = colorToHex({ r, g, b });
-            const a = genAlphaNum();
-            const ah = toHex(Math.floor(a * 2.56));
-            const color = Color.getColorRepresentation(`#${ah}${rh}${gh}${bh}`);
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-            expect(color)
-                .to.have.property('a')
-                .to.be.closeTo(a, 0.5);
-        });
-        it('can get an rgba(r, g, b, a) color representation', () => {
-            const { r, g, b } = genColor();
-            const a = Math.max(genAlphaNum() - 1, 0);
-            const color = Color.getColorRepresentation(
-                `rgba(${r}, ${g}, ${b}, 0.${a})`
-            );
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-            expect(color)
-                .to.have.property('a')
-                .to.be.equal(a);
-        });
-        it('ignores spacing in rgba(r, g, b, a) colors', () => {
-            const { r, g, b } = genColor();
-            const a = genAlphaNum();
-            const color = Color.getColorRepresentation(
-                `rgba( ${r} ,  ${g} ,  ${b} ,  0.${a} )`
-            );
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-            expect(color)
-                .to.have.property('a')
-                .to.be.equal(a);
-        });
-        it('can get an rgb(r, g, b) color representation', () => {
-            const { r, g, b } = genColor();
-            const color = Color.getColorRepresentation(`rgb(${r}, ${g}, ${b})`);
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-        });
-        it('ignores spacing in rgb(r, g, b) colors', () => {
-            const { r, g, b } = genColor();
-            const color = Color.getColorRepresentation(
-                `rgb( ${r} ,  ${g} ,  ${b} )`
-            );
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-        });
+        it(
+            'can get a non-RGBA hex color representation',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const { rh, gh, bh } = colorToHex({ r, g, b });
+                const color = Color.getColorRepresentation(`#${rh}${gh}${bh}`);
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+                expect(color)
+                    .to.have.property('a')
+                    .to.be.equal(100);
+            })
+        );
+        it(
+            'can get an RGBA hex color representation',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const { rh, gh, bh } = colorToHex({ r, g, b });
+                const a = genAlphaNum();
+                const ah = toHex(Math.floor(a * 2.56));
+                const color = Color.getColorRepresentation(
+                    `#${ah}${rh}${gh}${bh}`
+                );
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+                expect(color)
+                    .to.have.property('a')
+                    .to.be.closeTo(a, 0.5);
+            })
+        );
+        it(
+            'can get an rgba(r, g, b, a) color representation',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = Math.max(genAlphaNum() - 1, 0);
+                const color = Color.getColorRepresentation(
+                    `rgba(${r}, ${g}, ${b}, 0.${a})`
+                );
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+                expect(color)
+                    .to.have.property('a')
+                    .to.be.equal(a);
+            })
+        );
+        it(
+            'ignores spacing in rgba(r, g, b, a) colors',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = genAlphaNum();
+                const color = Color.getColorRepresentation(
+                    `rgba( ${r} ,  ${g} ,  ${b} ,  0.${a} )`
+                );
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+                expect(color)
+                    .to.have.property('a')
+                    .to.be.equal(a);
+            })
+        );
+        it(
+            'can get an rgb(r, g, b) color representation',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.getColorRepresentation(
+                    `rgb(${r}, ${g}, ${b})`
+                );
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+            })
+        );
+        it(
+            'ignores spacing in rgb(r, g, b) colors',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.getColorRepresentation(
+                    `rgb( ${r} ,  ${g} ,  ${b} )`
+                );
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+            })
+        );
         it("returns a mapped color if it's in the color map", () => {
             const color = Color.getColorRepresentation('red');
             expect(color)
@@ -218,138 +240,180 @@ context('Color', function() {
         });
     });
     context('#toStringColor', () => {
-        it('correctly converts an rgb string', () => {
-            const { r, g, b } = genColor();
-            const color = Color.toStringColor({ r, g, b });
-            expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 1)`);
-        });
-        it('correctly converts an rgba string with a=0', () => {
-            const { r, g, b } = genColor();
-            const color = Color.toStringColor({ r, g, b, a: 0 });
-            expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.00)`);
-        });
-        it('correctly converts an rgba string with a < 10 and a > 0', () => {
-            const { r, g, b } = genColor();
-            const a = Math.floor(Math.random() * 8) + 1;
-            const color = Color.toStringColor({ r, g, b, a });
-            expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.0${a})`);
-        });
-        it('correctly converts an rgba string with a < 100 and a > 10', () => {
-            const { r, g, b } = genColor();
-            const a = Math.floor(Math.random() * 89) + 10;
-            const color = Color.toStringColor({ r, g, b, a });
-            expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.${a})`);
-        });
-        it('correctly converts an rgba string with a == 100', () => {
-            const { r, g, b } = genColor();
-            const a = 100;
-            const color = Color.toStringColor({ r, g, b, a });
-            expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 1)`);
-        });
+        it(
+            'correctly converts an rgb string',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.toStringColor({ r, g, b });
+                expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 1)`);
+            })
+        );
+        it(
+            'correctly converts an rgba string with a=0',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.toStringColor({ r, g, b, a: 0 });
+                expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.00)`);
+            })
+        );
+        it(
+            'correctly converts an rgba string with a < 10 and a > 0',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = Math.floor(Math.random() * 8) + 1;
+                const color = Color.toStringColor({ r, g, b, a });
+                expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.0${a})`);
+            })
+        );
+        it(
+            'correctly converts an rgba string with a < 100 and a > 10',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = Math.floor(Math.random() * 89) + 10;
+                const color = Color.toStringColor({ r, g, b, a });
+                expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.${a})`);
+            })
+        );
+        it(
+            'correctly converts an rgba string with a == 100',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = 100;
+                const color = Color.toStringColor({ r, g, b, a });
+                expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 1)`);
+            })
+        );
     });
     context('#changeOpacity', () => {
-        it('sets alpha to 0 when 0 is passed', () => {
-            const { r, g, b } = genColor();
-            const color = Color.changeOpacity(`rgb(${r}, ${g}, ${b})`, 0);
-            expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.00)`);
-        });
-        it('sets alpha to 100 if 100 is passed', () => {
-            const { r, g, b } = genColor();
-            const color = Color.changeOpacity(`rgb(${r}, ${g}, ${b})`, 100);
-            expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 1)`);
-        });
-        it('sets alpha to x if x is passed', () => {
-            const { r, g, b } = genColor();
-            const a = genAlphaNum();
-            const color = Color.changeOpacity(`rgb(${r}, ${g}, ${b})`, a);
-            expect(color).to.be.equal(
-                `rgba(${r}, ${g}, ${b}, ${alphaNumToStr(a)})`
-            );
-        });
+        it(
+            'sets alpha to 0 when 0 is passed',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.changeOpacity(`rgb(${r}, ${g}, ${b})`, 0);
+                expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 0.00)`);
+            })
+        );
+        it(
+            'sets alpha to 100 if 100 is passed',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.changeOpacity(`rgb(${r}, ${g}, ${b})`, 100);
+                expect(color).to.be.equal(`rgba(${r}, ${g}, ${b}, 1)`);
+            })
+        );
+        it(
+            'sets alpha to x if x is passed',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = genAlphaNum();
+                const color = Color.changeOpacity(`rgb(${r}, ${g}, ${b})`, a);
+                expect(color).to.be.equal(
+                    `rgba(${r}, ${g}, ${b}, ${alphaNumToStr(a)})`
+                );
+            })
+        );
     });
     context('#isDark', () => {
-        it('recognizes non-dark colors if alpha is 100', () => {
-            const r = Math.floor(Math.random() * 155) + 100;
-            const g = Math.floor(Math.random() * 155) + 100;
-            const b = Math.floor(Math.random() * 155) + 100;
-            expect(Color.isDark(`rgba(${r}, ${g}, ${b}, 1)`)).to.be.false;
-        });
-        it('recognizes dark colors if alpha is 100', () => {
-            const r = Math.floor(Math.random() * 99);
-            const g = Math.floor(Math.random() * 99);
-            const b = Math.floor(Math.random() * 99);
-            expect(Color.isDark(`rgba(${r}, ${g}, ${b}, 1)`)).to.be.true;
-        });
-        it('always returns true when alpha is lower than (100 / 2.56)', () => {
-            const { r, g, b } = genColor();
-            const a = Math.floor(Math.random() * (100 / 2.56));
-            expect(
-                Color.isDark(
-                    `rgba(${r}, ${g}, ${b}, ${(() => {
-                        if (a === 0) {
-                            return '0';
-                        } else if (a < 10) {
-                            return `0.0${a}`;
-                        } else if (a < 100) {
-                            return `0.${a}`;
-                        } else {
-                            return '1';
-                        }
-                    })()})`
-                )
-            ).to.be.true;
-        });
+        it(
+            'recognizes non-dark colors if alpha is 100',
+            repeat(() => {
+                const r = Math.floor(Math.random() * 155) + 100;
+                const g = Math.floor(Math.random() * 155) + 100;
+                const b = Math.floor(Math.random() * 155) + 100;
+                expect(Color.isDark(`rgba(${r}, ${g}, ${b}, 1)`)).to.be.false;
+            })
+        );
+        it(
+            'recognizes dark colors if alpha is 100',
+            repeat(() => {
+                const r = Math.floor(Math.random() * 99);
+                const g = Math.floor(Math.random() * 99);
+                const b = Math.floor(Math.random() * 99);
+                expect(Color.isDark(`rgba(${r}, ${g}, ${b}, 1)`)).to.be.true;
+            })
+        );
+        it(
+            'always returns true when alpha is lower than (100 / 2.56)',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = Math.floor(Math.random() * (100 / 2.56));
+                expect(
+                    Color.isDark(
+                        `rgba(${r}, ${g}, ${b}, ${(() => {
+                            if (a === 0) {
+                                return '0';
+                            } else if (a < 10) {
+                                return `0.0${a}`;
+                            } else if (a < 100) {
+                                return `0.${a}`;
+                            } else {
+                                return '1';
+                            }
+                        })()})`
+                    )
+                ).to.be.true;
+            })
+        );
     });
     context('#RGBToRGBA', () => {
-        it('converts rgb to rgba correctly if alpha is 0', () => {
-            const { r, g, b } = genColor();
-            const color = Color.RGBToRGBA({ r, g, b }, 0);
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-            expect(color)
-                .to.have.property('a')
-                .to.be.equal(0);
-        });
-        it('converts rgb to rgba correctly if alpha is 100', () => {
-            const { r, g, b } = genColor();
-            const color = Color.RGBToRGBA({ r, g, b }, 100);
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-            expect(color)
-                .to.have.property('a')
-                .to.be.equal(100);
-        });
-        it('converts rgb to rgba correctly if alpha is x', () => {
-            const { r, g, b } = genColor();
-            const a = genAlphaNum();
-            const color = Color.RGBToRGBA({ r, g, b }, a);
-            expect(color)
-                .to.have.property('r')
-                .to.be.equal(r);
-            expect(color)
-                .to.have.property('g')
-                .to.be.equal(g);
-            expect(color)
-                .to.have.property('b')
-                .to.be.equal(b);
-            expect(color)
-                .to.have.property('a')
-                .to.be.equal(a);
-        });
+        it(
+            'converts rgb to rgba correctly if alpha is 0',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.RGBToRGBA({ r, g, b }, 0);
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+                expect(color)
+                    .to.have.property('a')
+                    .to.be.equal(0);
+            })
+        );
+        it(
+            'converts rgb to rgba correctly if alpha is 100',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const color = Color.RGBToRGBA({ r, g, b }, 100);
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+                expect(color)
+                    .to.have.property('a')
+                    .to.be.equal(100);
+            })
+        );
+        it(
+            'converts rgb to rgba correctly if alpha is x',
+            repeat(() => {
+                const { r, g, b } = genColor();
+                const a = genAlphaNum();
+                const color = Color.RGBToRGBA({ r, g, b }, a);
+                expect(color)
+                    .to.have.property('r')
+                    .to.be.equal(r);
+                expect(color)
+                    .to.have.property('g')
+                    .to.be.equal(g);
+                expect(color)
+                    .to.have.property('b')
+                    .to.be.equal(b);
+                expect(color)
+                    .to.have.property('a')
+                    .to.be.equal(a);
+            })
+        );
     });
     context('#mergeColors', () => {
         function genHalfColor() {
@@ -365,124 +429,156 @@ context('Color', function() {
             return Math.floor(genAlphaNum() / 2);
         }
 
-        it('merges two strings correctly', () => {
-            const { r: r1, g: g1, b: b1 } = genHalfColor();
-            const a1 = genHalfAlpha();
-            const color1 = `rgba(${r1}, ${g1}, ${b1}, ${alphaNumToStr(a1)})`;
+        it(
+            'merges two strings correctly',
+            repeat(() => {
+                const { r: r1, g: g1, b: b1 } = genHalfColor();
+                const a1 = genHalfAlpha();
+                const color1 = `rgba(${r1}, ${g1}, ${b1}, ${alphaNumToStr(
+                    a1
+                )})`;
 
-            const { r: r2, g: g2, b: b2 } = genHalfColor();
-            const a2 = genHalfAlpha();
-            const color2 = `rgba(${r2}, ${g2}, ${b2}, ${alphaNumToStr(a2)})`;
+                const { r: r2, g: g2, b: b2 } = genHalfColor();
+                const a2 = genHalfAlpha();
+                const color2 = `rgba(${r2}, ${g2}, ${b2}, ${alphaNumToStr(
+                    a2
+                )})`;
 
-            const color = Color.mergeColors(color1, color2);
-            expect(color).to.be.equal(
-                `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
-                    a1 + a2
-                )})`
-            );
-        });
-        it('merges two rgb representations correctly', () => {
-            const { r: r1, g: g1, b: b1 } = genHalfColor();
+                const color = Color.mergeColors(color1, color2);
+                expect(color).to.be.equal(
+                    `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
+                        a1 + a2
+                    )})`
+                );
+            })
+        );
+        it(
+            'merges two rgb representations correctly',
+            repeat(() => {
+                const { r: r1, g: g1, b: b1 } = genHalfColor();
 
-            const { r: r2, g: g2, b: b2 } = genHalfColor();
+                const { r: r2, g: g2, b: b2 } = genHalfColor();
 
-            const color = Color.mergeColors(
-                { r: r1, g: g1, b: b1 },
-                { r: r2, g: g2, b: b2 }
-            );
-            expect(color).to.be.equal(
-                `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
-                    100
-                )})`
-            );
-        });
-        it('meges two rgba representations correctly', () => {
-            const { r: r1, g: g1, b: b1 } = genHalfColor();
-            const a1 = genHalfAlpha();
+                const color = Color.mergeColors(
+                    { r: r1, g: g1, b: b1 },
+                    { r: r2, g: g2, b: b2 }
+                );
+                expect(color).to.be.equal(
+                    `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
+                        100
+                    )})`
+                );
+            })
+        );
+        it(
+            'meges two rgba representations correctly',
+            repeat(() => {
+                const { r: r1, g: g1, b: b1 } = genHalfColor();
+                const a1 = genHalfAlpha();
 
-            const { r: r2, g: g2, b: b2 } = genHalfColor();
-            const a2 = genHalfAlpha();
+                const { r: r2, g: g2, b: b2 } = genHalfColor();
+                const a2 = genHalfAlpha();
 
-            const color = Color.mergeColors(
-                { r: r1, g: g1, b: b1, a: a1 },
-                { r: r2, g: g2, b: b2, a: a2 }
-            );
-            expect(color).to.be.equal(
-                `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
-                    a1 + a2
-                )})`
-            );
-        });
-        it('merges an rgb representation with a string', () => {
-            const { r: r1, g: g1, b: b1 } = genHalfColor();
+                const color = Color.mergeColors(
+                    { r: r1, g: g1, b: b1, a: a1 },
+                    { r: r2, g: g2, b: b2, a: a2 }
+                );
+                expect(color).to.be.equal(
+                    `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
+                        a1 + a2
+                    )})`
+                );
+            })
+        );
+        it(
+            'merges an rgb representation with a string',
+            repeat(() => {
+                const { r: r1, g: g1, b: b1 } = genHalfColor();
 
-            const { r: r2, g: g2, b: b2 } = genHalfColor();
-            const a2 = genHalfAlpha();
-            const color2 = `rgba(${r2}, ${g2}, ${b2}, ${alphaNumToStr(a2)})`;
+                const { r: r2, g: g2, b: b2 } = genHalfColor();
+                const a2 = genHalfAlpha();
+                const color2 = `rgba(${r2}, ${g2}, ${b2}, ${alphaNumToStr(
+                    a2
+                )})`;
 
-            const color = Color.mergeColors({ r: r1, g: g1, b: b1 }, color2);
-            expect(color).to.be.equal(
-                `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
-                    100
-                )})`
-            );
-        });
-        it('merges an rgba representation with a string', () => {
-            const { r: r1, g: g1, b: b1 } = genHalfColor();
-            const a1 = genHalfAlpha();
+                const color = Color.mergeColors(
+                    { r: r1, g: g1, b: b1 },
+                    color2
+                );
+                expect(color).to.be.equal(
+                    `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
+                        100
+                    )})`
+                );
+            })
+        );
+        it(
+            'merges an rgba representation with a string',
+            repeat(() => {
+                const { r: r1, g: g1, b: b1 } = genHalfColor();
+                const a1 = genHalfAlpha();
 
-            const { r: r2, g: g2, b: b2 } = genHalfColor();
-            const a2 = genHalfAlpha();
-            const color2 = `rgba(${r2}, ${g2}, ${b2}, ${alphaNumToStr(a2)})`;
+                const { r: r2, g: g2, b: b2 } = genHalfColor();
+                const a2 = genHalfAlpha();
+                const color2 = `rgba(${r2}, ${g2}, ${b2}, ${alphaNumToStr(
+                    a2
+                )})`;
 
-            const color = Color.mergeColors(
-                { r: r1, g: g1, b: b1, a: a1 },
-                color2
-            );
-            expect(color).to.be.equal(
-                `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
-                    a1 + a2
-                )})`
-            );
-        });
-        it('merges an rgb representation with an rgba representation', () => {
-            const { r: r1, g: g1, b: b1 } = genHalfColor();
-            const a1 = genHalfAlpha();
+                const color = Color.mergeColors(
+                    { r: r1, g: g1, b: b1, a: a1 },
+                    color2
+                );
+                expect(color).to.be.equal(
+                    `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
+                        a1 + a2
+                    )})`
+                );
+            })
+        );
+        it(
+            'merges an rgb representation with an rgba representation',
+            repeat(() => {
+                const { r: r1, g: g1, b: b1 } = genHalfColor();
+                const a1 = genHalfAlpha();
 
-            const { r: r2, g: g2, b: b2 } = genHalfColor();
-            const color2 = { r: r2, g: g2, b: b2 };
+                const { r: r2, g: g2, b: b2 } = genHalfColor();
+                const color2 = { r: r2, g: g2, b: b2 };
 
-            const color = Color.mergeColors(
-                { r: r1, g: g1, b: b1, a: a1 },
-                color2
-            );
-            expect(color).to.be.equal(
-                `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
-                    100
-                )})`
-            );
-        });
-        it('subtracts color2 from color1 when subtract is set to true', () => {
-            const { r: r1, g: g1, b: b1 } = genHalfColor();
-            const a1 = genHalfAlpha();
+                const color = Color.mergeColors(
+                    { r: r1, g: g1, b: b1, a: a1 },
+                    color2
+                );
+                expect(color).to.be.equal(
+                    `rgba(${r1 + r2}, ${g1 + g2}, ${b1 + b2}, ${alphaNumToStr(
+                        100
+                    )})`
+                );
+            })
+        );
+        it(
+            'subtracts color2 from color1 when subtract is set to true',
+            repeat(() => {
+                const { r: r1, g: g1, b: b1 } = genHalfColor();
+                const a1 = genHalfAlpha();
 
-            const { r: r2, g: g2, b: b2 } = genHalfColor();
-            const a2 = genHalfAlpha();
+                const { r: r2, g: g2, b: b2 } = genHalfColor();
+                const a2 = genHalfAlpha();
 
-            const color = Color.mergeColors(
-                { r: r1, g: g1, b: b1, a: a1 },
-                { r: r2, g: g2, b: b2, a: a2 },
-                true
-            );
-            expect(color).to.be.equal(
-                `rgba(${Math.max(r1 - r2, 0)}, ${Math.max(
-                    g1 - g2,
-                    0
-                )}, ${Math.max(b1 - b2, 0)}, ${alphaNumToStr(
-                    Math.max(a1 - a2, 0)
-                )})`
-            );
-        });
+                const color = Color.mergeColors(
+                    { r: r1, g: g1, b: b1, a: a1 },
+                    { r: r2, g: g2, b: b2, a: a2 },
+                    true
+                );
+                expect(color).to.be.equal(
+                    `rgba(${Math.max(r1 - r2, 0)}, ${Math.max(
+                        g1 - g2,
+                        0
+                    )}, ${Math.max(b1 - b2, 0)}, ${alphaNumToStr(
+                        Math.max(a1 - a2, 0)
+                    )})`
+                );
+            })
+        );
         it('caps the max color value at 255', () => {
             const color = Color.mergeColors(
                 { r: 200, g: 100, b: 250, a: 60 },

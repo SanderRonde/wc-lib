@@ -14,8 +14,9 @@ context('Timeout', function() {
 			cy.get('#test')
 				.then(([el]: JQuery<TestElement>) => {
 					const resolve = cy.spy();
+					el.isMounted = true;
 					Mounting.awaitMounted(el).then(resolve as any);
-					cy.wait(25).then(() => {
+					cy.wait(0).then(() => {
 						expect(resolve).to.be.calledOnce;
 					});
 				});

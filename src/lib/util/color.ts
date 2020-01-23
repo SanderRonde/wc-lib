@@ -81,7 +81,7 @@ export namespace Color {
                 r: parseInt(r, 10),
                 g: parseInt(g, 10),
                 b: parseInt(b, 10),
-                a: preDot ? parseInt(postDot, 10) : 100,
+                a: preDot ? parseInt(postDot, 10) : parseInt(postDot, 10) * 100,
             };
         } else if (color.startsWith('rgb')) {
             const match = RGB_REGEX.exec(color);

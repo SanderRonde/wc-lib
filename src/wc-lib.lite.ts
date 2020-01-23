@@ -1,5 +1,5 @@
-/** 
- * Only the smallest amount of exports you need to 
+/**
+ * Only the smallest amount of exports you need to
  * build webcomponents with this library. Only
  * really needed if you don't use a tree-shaker
  **/

@@ -4,6 +4,6 @@ import { RootElementFactory } from '../../../../classes/hierarchy-manager/elemen
 RootElementFactory(ComplexTemplatingWebComponent).define(true);
 
 export interface TestGlobalProperties {
-	a: string;
-	c: string;
+    a: string;
+    c: string;
 }

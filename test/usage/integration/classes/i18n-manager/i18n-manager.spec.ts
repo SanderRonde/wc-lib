@@ -1,11 +1,11 @@
 /// <reference types="Cypress" />
 
-import { getClassFixture } from "../../../lib/testing";
-import { i18nManagerSpec } from "./i18nManagerspec";
+import { getClassFixture } from '../../../lib/testing';
+import { i18nManagerSpec } from './i18nManagerspec';
 
 i18nManagerSpec({
-	standard: getClassFixture('i18n-manager'),
-	root: getClassFixture('i18n-manager', 'root'),
-	defaults: getClassFixture('i18n-manager', 'defaults'),
-	i18nFiles: getClassFixture('i18n-manager', 'i18n-files')
+    standard: getClassFixture('i18n-manager'),
+    root: getClassFixture('i18n-manager', 'root'),
+    defaults: getClassFixture('i18n-manager', 'defaults'),
+    i18nFiles: getClassFixture('i18n-manager', 'i18n-files'),
 });

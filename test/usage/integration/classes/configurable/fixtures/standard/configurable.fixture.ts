@@ -1,6 +1,13 @@
-import { BasicMixin, SingleMixin, DoubleMixin, MultiMixin, SplitMixin, ManualMixin } from "../../elements/mixins.js";
-import { ConfiguredElement } from "../../elements/configured-element.js";;
-import { ExtendedElement } from "../../elements/extended-element.js";
+import {
+    BasicMixin,
+    SingleMixin,
+    DoubleMixin,
+    MultiMixin,
+    SplitMixin,
+    ManualMixin,
+} from '../../elements/mixins.js';
+import { ConfiguredElement } from '../../elements/configured-element.js';
+import { ExtendedElement } from '../../elements/extended-element.js';
 
 ConfiguredElement.define(true);
 ExtendedElement.define(true);

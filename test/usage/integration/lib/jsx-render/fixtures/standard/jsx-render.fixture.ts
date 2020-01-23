@@ -1,3 +1,3 @@
-import { JSXElement } from "../../elements/jsx-element.js";
+import { JSXElement } from '../../elements/jsx-element.js';
 
 JSXElement.define(true);

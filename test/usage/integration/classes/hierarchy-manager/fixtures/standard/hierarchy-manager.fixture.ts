@@ -1,9 +1,9 @@
-import { ConfigurableWebComponent } from "../../../../../../../build/es/wc-lib.js";
-import { RootElementFactory } from "../../elements/root-element.js";
+import { ConfigurableWebComponent } from '../../../../../../../build/es/wc-lib.js';
+import { RootElementFactory } from '../../elements/root-element.js';
 
 RootElementFactory(ConfigurableWebComponent).define(true);
 
 export interface TestGlobalProperties {
-	a: string;
-	c: string;
+    a: string;
+    c: string;
 }

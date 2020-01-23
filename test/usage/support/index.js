@@ -1,4 +1,4 @@
 import { registerShadowCommands } from './shadowCommands';
-import './cypress-istanbul/support.js'
+import './cypress-istanbul/support.js';
 
 registerShadowCommands();

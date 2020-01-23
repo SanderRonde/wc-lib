@@ -7,21 +7,23 @@ import chaijq from 'chai-jquery';
 // our should calls will not blow up on shadow dom because we
 // use chai jquery directly
 try {
-  chai.use((...args) => chaijq(...args, $));
+    chai.use((...args) => chaijq(...args, $));
 } catch (ex) {
-  console.log(ex);
+    console.log(ex);
 }
 
 export function should(subject, chainer, check, value) {
-  const caller = expect(subject).to,
-    expectation = get(caller, chainer);
-  if (expectation) {
-    expectation.call(caller, check, value);
-  } else {
-    Cypress.log(`Chainer not currently supported by .shadowShould: ${chainer}`);
-  }
+    const caller = expect(subject).to,
+        expectation = get(caller, chainer);
+    if (expectation) {
+        expectation.call(caller, check, value);
+    } else {
+        Cypress.log(
+            `Chainer not currently supported by .shadowShould: ${chainer}`
+        );
+    }
 }
 
 export function ensureChainerExists(subject, chainer) {
-  const expectation = get(expect(subject).to, chainer);
+    const expectation = get(expect(subject).to, chainer);
 }

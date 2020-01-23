@@ -47,6 +47,8 @@
 		"lit-html": "^1.1.2",
 		"lodash": "^4.17.13",
 		"nyc": "^14.1.1",
+		"prettier": "^1.19.1",
+		"pretty-quick": "^2.0.1",
 		"remap-istanbul": "^0.13.0",
 		"rimraf": "^3.0.0",
 		"ts-node": "^8.2.0",
@@ -91,6 +93,7 @@
 		"coverage:partial-classes-theming": "npm run set-cypress:partial-class-theming && npm run coverage:current-cypress",
 		"coverage:properties": "npm run set-cypress:properties && npm run coverage:current-cypress",
 		"coverage:tasks": "npm run set-cypress:tasks && npm run coverage:current-cypress",
-		"prepack": "npm run compile:all"
+		"prepack": "npm run compile:all",
+		"pretty": "pretty-quick"
 	}
 }

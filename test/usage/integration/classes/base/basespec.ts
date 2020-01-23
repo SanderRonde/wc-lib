@@ -545,7 +545,7 @@ export function baseSpec(fixture: string) {
                     const text = template.renderAsText(11, {
                         props: {},
                     } as any);
-                    expect(text).to.be.equal(`<div>${val}</div>`);
+                    expect(text.trim()).to.be.equal(`<div>${val}</div>`);
                 });
             });
             it('can convert html element templates to text', () => {
@@ -555,7 +555,7 @@ export function baseSpec(fixture: string) {
                     const text = template.renderAsText(11, {
                         props: {},
                     } as any);
-                    expect(text).to.be.equal(
+                    expect(text.trim()).to.be.equal(
                         `<div id="sub-el" a="b" c="d"><span></span></div>`
                     );
                 });

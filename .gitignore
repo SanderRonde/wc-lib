@@ -68,7 +68,6 @@ test/usage/support/commands.js
 instrumented/
 .vscode
 bin/**/*.js
-cypress.json
 examples/**/*.js
 examples/modules/
 examples/bundled

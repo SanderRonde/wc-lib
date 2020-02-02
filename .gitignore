@@ -72,3 +72,6 @@ cypress.json
 examples/**/*.js
 examples/modules/
 examples/bundled
+
+TODO.*
+TODO

@@ -321,7 +321,7 @@ interface DefaultClass {
  * the new() function in the process and preserving
  * the static methods/props only
  */
-export type ClassToObj<C> = Pick<C, keyof C>;
+export type ClassToObj<C> = Omit<C, 'prototype'>;
 
 /**
  * Mixin function that can add a mixin to a class.

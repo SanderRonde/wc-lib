@@ -81,7 +81,7 @@
         "serve": "http-server -c-1 -p 1251 .",
         "examples": "npm run compile:all && npm run compile:examples && npm run serve",
         "website": "npm run compile:all && npm run compile:examples && gulp prepareWebsite",
-        "coverage:prep": "npm run compile:all && gulp istanbulIgnoreTypescript && nyc instrument build/es/ instrumented/ && gulp replaceTestImports",
+        "coverage:prep": "npm run compile:all && gulp precoverage && nyc instrument build/es/ instrumented/ && gulp replaceTestImports",
         "coverage:remap:lcov": "remap-istanbul -i .nyc_output/out.json -t lcovonly -o coverage/lcov.info",
         "coverage:remap:html": "remap-istanbul -i .nyc_output/out.json -t html -o coverage/",
         "coverage:remap": "tsc -p src/tsconfig.sourcemap.json && npm run coverage:remap:html && npm run coverage:remap:lcov",
@@ -96,7 +96,7 @@
         "coverage:partial-classes-theming": "npm run set-cypress:partial-class-theming && npm run coverage:current-cypress",
         "coverage:properties": "npm run set-cypress:properties && npm run coverage:current-cypress",
         "coverage:tasks": "npm run set-cypress:tasks && npm run coverage:current-cypress",
-        "prepack": "npm run compile:all",
+        "prepack": "npm run compile:all && gulp prepack",
         "pretty": "pretty-quick"
     }
 }

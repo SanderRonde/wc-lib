@@ -1,4 +1,4 @@
-import { WebComponentI18NManagerMixinClass } from '../../../../../../../build/es/classes/types.js';
+import { WebComponentI18NManagerTypeInstance } from '../../../../../../../build/es/classes/types.js';
 import {
     directive,
     Part,
@@ -6,7 +6,7 @@ import {
 import { RootElementFactory } from '../../../hierarchy-manager/elements/root-element.js';
 
 export function i18nManagerRootFixtureFactory(
-    base: WebComponentI18NManagerMixinClass
+    base: typeof WebComponentI18NManagerTypeInstance
 ) {
     interface LangFile {
         test: {

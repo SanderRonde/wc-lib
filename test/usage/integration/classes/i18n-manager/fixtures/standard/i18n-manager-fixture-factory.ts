@@ -1,4 +1,4 @@
-import { WebComponentI18NManagerMixinClass } from '../../../../../../../build/es/classes/types.js';
+import { WebComponentI18NManagerTypeInstance } from '../../../../../../../build/es/classes/types.js';
 import {
     directive,
     Part,
@@ -8,7 +8,7 @@ import { TestElementFactory } from '../../../elements/test-element-factory.js';
 import { LangElementFactory } from '../../elements/test-lang-element.js';
 
 export function i18nManagerStandardFixtureFactory(
-    base: WebComponentI18NManagerMixinClass
+    base: typeof WebComponentI18NManagerTypeInstance
 ) {
     interface LangFile {
         test: {

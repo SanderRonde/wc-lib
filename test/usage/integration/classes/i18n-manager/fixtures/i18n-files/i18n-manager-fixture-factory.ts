@@ -1,4 +1,4 @@
-import { WebComponentI18NManagerMixinClass } from '../../../../../../../build/es/classes/types.js';
+import { WebComponentI18NManagerTypeInstance } from '../../../../../../../build/es/classes/types.js';
 import { RootElementFactory } from '../../../hierarchy-manager/elements/root-element.js';
 import {
     directive,
@@ -10,7 +10,7 @@ import nl from '../../../../../fixtures/i18n/nl.js';
 import en from '../../../../../fixtures/i18n/en.js';
 
 export function i18nManagerI18nFilesFixtureFactory(
-    base: WebComponentI18NManagerMixinClass
+    base: typeof WebComponentI18NManagerTypeInstance
 ) {
     interface LangFile {
         test: {

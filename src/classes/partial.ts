@@ -1,4 +1,22 @@
 import {
+    WebComponentDefinerTypeInstance,
+    WebComponentDefinerTypeStatic,
+    WebComponentBaseTypeInstance,
+    WebComponentBaseTypeStatic,
+    WebComponentListenableTypeInstance,
+    WebComponentListenableTypeStatic,
+    WebComponentTypeInstance,
+    WebComponentTypeStatic,
+    WebComponentThemeManagerTypeInstance,
+    WebComponentThemeManagerTypeStatic,
+    WebComponentI18NManagerTypeInstance,
+    WebComponentI18NManagerTypeStatic,
+    WebComponentHierarchyManagerTypeInstance,
+    WebComponentHierarchyManagerTypeStatic,
+    WebComponentTemplateManagerTypeInstance,
+    WebComponentTemplateManagerTypeStatic,
+} from './types';
+import {
     elementBase,
     WebComponentTemplateManagerMixin,
     WebComponentHierarchyManagerMixin,
@@ -14,6 +32,44 @@ import { WebComponentThemeManagerMixin } from '../lib/theme-manager.js';
 import { WebComponentDefinerMixin } from '../lib/definer.js';
 import { WebComponentBaseMixin } from '../lib/base.js';
 
+const basicWebComponent = (WebComponentMixin(
+    WebComponentListenableMixin(
+        WebComponentBaseMixin(WebComponentDefinerMixin(elementBase))
+    )
+) as unknown) as {
+    new <
+        GA extends {
+            events?: EventListenerObj;
+            root?: any;
+            parent?: any;
+            globalProps?: {
+                [key: string]: any;
+            };
+            themes?: {
+                [key: string]: any;
+            };
+            i18n?: any;
+            langs?: string;
+            selectors?: SelectorMap;
+        } = {},
+        E extends EventListenerObj = GetEvents<GA>,
+        ELS extends SelectorMap = GetEls<GA>
+    >(
+        ...args: any[]
+    ): HTMLElement &
+        WebComponentDefinerTypeInstance &
+        WebComponentBaseTypeInstance &
+        WebComponentListenableTypeInstance<GA, E> &
+        WebComponentTypeInstance<GA, void, ELS>;
+    self(): WebComponentDefinerTypeStatic &
+        WebComponentBaseTypeStatic &
+        WebComponentListenableTypeStatic &
+        WebComponentTypeStatic;
+} & WebComponentDefinerTypeStatic &
+    WebComponentBaseTypeStatic &
+    WebComponentListenableTypeStatic &
+    WebComponentTypeStatic;
+
 /**
  * A component that only uses the most basic parts
  * Uses the `definer`, `renderer` and `listeners`
@@ -27,11 +83,50 @@ export class BasicWebComponent<
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends WebComponentMixin(
-    WebComponentListenableMixin(
-        WebComponentBaseMixin(WebComponentDefinerMixin(elementBase))
+> extends basicWebComponent<GA, E, ELS> {}
+
+const themingWebComponent = (WebComponentMixin(
+    WebComponentThemeManagerMixin(
+        WebComponentListenableMixin(
+            WebComponentBaseMixin(WebComponentDefinerMixin(elementBase))
+        )
     )
-)<GA, E, ELS> {}
+) as unknown) as {
+    new <
+        GA extends {
+            events?: EventListenerObj;
+            root?: any;
+            parent?: any;
+            globalProps?: {
+                [key: string]: any;
+            };
+            themes?: {
+                [key: string]: any;
+            };
+            i18n?: any;
+            langs?: string;
+            selectors?: SelectorMap;
+        } = {},
+        E extends EventListenerObj = GetEvents<GA>,
+        ELS extends SelectorMap = GetEls<GA>
+    >(
+        ...args: any[]
+    ): HTMLElement &
+        WebComponentDefinerTypeInstance &
+        WebComponentBaseTypeInstance &
+        WebComponentListenableTypeInstance<GA, E> &
+        WebComponentThemeManagerTypeInstance<GA> &
+        WebComponentTypeInstance<GA, void, ELS>;
+    self(): WebComponentDefinerTypeStatic &
+        WebComponentBaseTypeStatic &
+        WebComponentListenableTypeStatic &
+        WebComponentThemeManagerTypeStatic &
+        WebComponentTypeStatic;
+} & WebComponentDefinerTypeStatic &
+    WebComponentBaseTypeStatic &
+    WebComponentListenableTypeStatic &
+    WebComponentThemeManagerTypeStatic &
+    WebComponentTypeStatic;
 
 /**
  * A component that uses the basic parts combined
@@ -51,13 +146,50 @@ export class ThemingWebComponent<
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends WebComponentMixin(
-    WebComponentThemeManagerMixin(
+> extends themingWebComponent<GA, E, ELS> {}
+
+const i18NWebComponent = (WebComponentMixin(
+    WebComponentI18NManagerMixin(
         WebComponentListenableMixin(
             WebComponentBaseMixin(WebComponentDefinerMixin(elementBase))
         )
     )
-)<GA, E, ELS> {}
+) as unknown) as {
+    new <
+        GA extends {
+            events?: EventListenerObj;
+            root?: any;
+            parent?: any;
+            globalProps?: {
+                [key: string]: any;
+            };
+            themes?: {
+                [key: string]: any;
+            };
+            i18n?: any;
+            langs?: string;
+            selectors?: SelectorMap;
+        } = {},
+        E extends EventListenerObj = GetEvents<GA>,
+        ELS extends SelectorMap = GetEls<GA>
+    >(
+        ...args: any[]
+    ): HTMLElement &
+        WebComponentDefinerTypeInstance &
+        WebComponentBaseTypeInstance &
+        WebComponentListenableTypeInstance<GA, E> &
+        WebComponentI18NManagerTypeInstance<GA> &
+        WebComponentTypeInstance<GA, void, ELS>;
+    self(): WebComponentDefinerTypeStatic &
+        WebComponentBaseTypeStatic &
+        WebComponentListenableTypeStatic &
+        WebComponentI18NManagerTypeStatic &
+        WebComponentTypeStatic;
+} & WebComponentDefinerTypeStatic &
+    WebComponentBaseTypeStatic &
+    WebComponentListenableTypeStatic &
+    WebComponentI18NManagerTypeStatic &
+    WebComponentTypeStatic;
 
 /**
  * A component that uses the basic parts combined
@@ -77,13 +209,55 @@ export class I18NWebComponent<
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends WebComponentMixin(
-    WebComponentI18NManagerMixin(
-        WebComponentListenableMixin(
-            WebComponentBaseMixin(WebComponentDefinerMixin(elementBase))
+> extends i18NWebComponent<GA, E, ELS> {}
+
+const complexTemplatingWebComponent = (WebComponentMixin(
+    WebComponentTemplateManagerMixin(
+        WebComponentHierarchyManagerMixin(
+            WebComponentListenableMixin(
+                WebComponentBaseMixin(WebComponentDefinerMixin(elementBase))
+            )
         )
     )
-)<GA, E, ELS> {}
+) as unknown) as {
+    new <
+        GA extends {
+            events?: EventListenerObj;
+            root?: any;
+            parent?: any;
+            globalProps?: {
+                [key: string]: any;
+            };
+            themes?: {
+                [key: string]: any;
+            };
+            i18n?: any;
+            langs?: string;
+            selectors?: SelectorMap;
+        } = {},
+        E extends EventListenerObj = GetEvents<GA>,
+        ELS extends SelectorMap = GetEls<GA>
+    >(
+        ...args: any[]
+    ): HTMLElement &
+        WebComponentDefinerTypeInstance &
+        WebComponentBaseTypeInstance &
+        WebComponentListenableTypeInstance<GA, E> &
+        WebComponentHierarchyManagerTypeInstance<GA> &
+        WebComponentTemplateManagerTypeInstance &
+        WebComponentTypeInstance<GA, void, ELS>;
+    self(): WebComponentDefinerTypeStatic &
+        WebComponentBaseTypeStatic &
+        WebComponentListenableTypeStatic &
+        WebComponentHierarchyManagerTypeStatic &
+        WebComponentTemplateManagerTypeStatic &
+        WebComponentTypeStatic;
+} & WebComponentDefinerTypeStatic &
+    WebComponentBaseTypeStatic &
+    WebComponentListenableTypeStatic &
+    WebComponentHierarchyManagerTypeStatic &
+    WebComponentTemplateManagerTypeStatic &
+    WebComponentTypeStatic;
 
 /**
  * A component that uses the basic parts combined
@@ -105,12 +279,4 @@ export class ComplexTemplatingWebComponent<
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends WebComponentMixin(
-    WebComponentTemplateManagerMixin(
-        WebComponentHierarchyManagerMixin(
-            WebComponentListenableMixin(
-                WebComponentBaseMixin(WebComponentDefinerMixin(elementBase))
-            )
-        )
-    )
-)<GA, E, ELS> {}
+> extends complexTemplatingWebComponent<GA, E, ELS> {}

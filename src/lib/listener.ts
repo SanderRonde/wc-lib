@@ -4,6 +4,7 @@ import {
     InferReturn,
     DefaultVal,
 } from '../classes/types.js';
+import { ClassToObj } from './configurable.js';
 
 /**
  * Returns type['events']
@@ -164,6 +165,89 @@ export type WebComponentListenableMixinClass = InferReturn<
 export type WebComponentListenableMixinSuper = Constructor<{}>;
 
 /**
+ * A standalone instance of the listener class
+ */
+export declare class WebComponentListenableTypeInstance<
+    GA extends {
+        events?: EventListenerObj;
+    } = {},
+    E extends EventListenerObj = GetEvents<GA>
+> {
+    /**
+     * A map that maps every event name to
+     * a set containing all of its listeners
+     *
+     * @readonly
+     */
+    get listenerMap(): ListenerSet<E>;
+
+    /**
+     * Listens for given event and fires
+     * the listener when it's triggered
+     *
+     * @template EV - The event's name
+     *
+     * @param {EV} event - The event's name
+     * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
+     * 	listener called when the event is fired
+     * @param {boolean} [once] - Whether to only
+     * 	call this listener once (false by default)
+     */
+    public listen<EV extends keyof E>(
+        event: EV,
+        listener: (...args: E[EV]['args']) => E[EV]['returnType'],
+        once?: boolean
+    ): void;
+
+    /**
+     * Clears all listeners on this component for
+     * given event
+     *
+     * @template EV - The name of the event
+     *
+     * @param {EV} event - The name of the event to clear
+     * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
+     * 	specific listener to clear. If not passed, clears all
+     * 	listeners for the event
+     */
+    public clearListener<EV extends keyof E>(
+        event: EV,
+        listener?: (...args: E[EV]['args']) => E[EV]['returnType']
+    ): void;
+
+    /**
+     * Fires given event on this component
+     * with given params, returning an array
+     * containing the return values of all
+     * triggered listeners
+     *
+     * @template EV - The event's name
+     * @template R - The return type of the
+     * 	event's listeners
+     *
+     * @param {EV} event - The event's name
+     * @param {E[EV]['args']} params - The parameters
+     * 	passed to the listeners when they are
+     * 	called
+     *
+     * @returns {R[]} An array containing the
+     * 	return values of all triggered
+     * 	listeners
+     */
+    public fire<EV extends keyof E, R extends E[EV]['returnType']>(
+        event: EV,
+        ...params: E[EV]['args']
+    ): R[];
+}
+
+/**
+ * The static values of the listener class
+ */
+export type WebComponentListenableTypeStatic = ClassToObj<
+    typeof WebComponentListenableTypeInstance
+>;
+
+/**
  * A mixin that, when applied, allows for listening
  * to and firing of events on a component or any other
  * class
@@ -206,33 +290,15 @@ export const WebComponentListenableMixin = <
             events?: EventListenerObj;
         } = {},
         E extends EventListenerObj = GetEvents<GA>
-    > extends superFn {
+    > extends superFn implements WebComponentListenableTypeInstance {
         constructor(...args: any[]) {
             super(...args);
         }
 
-        /**
-         * A map that maps every event name to
-         * a set containing all of its listeners
-         *
-         * @readonly
-         */
         get listenerMap(): ListenerSet<E> {
             return listenableClass(this).listenerMap as ListenerSet<E>;
         }
 
-        /**
-         * Listens for given event and fires
-         * the listener when it's triggered
-         *
-         * @template EV - The event's name
-         *
-         * @param {EV} event - The event's name
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
-         * 	listener called when the event is fired
-         * @param {boolean} [once] - Whether to only
-         * 	call this listener once (false by default)
-         */
         /* istanbul ignore next */
         public listen<EV extends keyof E>(
             event: EV,
@@ -242,17 +308,6 @@ export const WebComponentListenableMixin = <
             listenableClass(this).listen(event, listener, once);
         }
 
-        /**
-         * Clears all listeners on this component for
-         * given event
-         *
-         * @template EV - The name of the event
-         *
-         * @param {EV} event - The name of the event to clear
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
-         * 	specific listener to clear. If not passed, clears all
-         * 	listeners for the event
-         */
         public clearListener<EV extends keyof E>(
             event: EV,
             listener?: (...args: E[EV]['args']) => E[EV]['returnType']
@@ -267,25 +322,6 @@ export const WebComponentListenableMixin = <
             }
         }
 
-        /**
-         * Fires given event on this component
-         * with given params, returning an array
-         * containing the return values of all
-         * triggered listeners
-         *
-         * @template EV - The event's name
-         * @template R - The return type of the
-         * 	event's listeners
-         *
-         * @param {EV} event - The event's name
-         * @param {E[EV]['args']} params - The parameters
-         * 	passed to the listeners when they are
-         * 	called
-         *
-         * @returns {R[]} An array containing the
-         * 	return values of all triggered
-         * 	listeners
-         */
         public fire<EV extends keyof E, R extends E[EV]['returnType']>(
             event: EV,
             ...params: E[EV]['args']
@@ -302,5 +338,9 @@ export const WebComponentListenableMixin = <
             return returnValues;
         }
     }
+
+    const __typecheck__: WebComponentListenableTypeStatic = WebComponentListenable;
+    __typecheck__;
+
     return WebComponentListenable;
 };

@@ -10,6 +10,7 @@ import {
     InferInstance,
     DefaultVal,
 } from '../classes/types.js';
+import { ClassToObj } from './configurable.js';
 import { bindToClass } from './base.js';
 
 /**
@@ -327,6 +328,124 @@ export type WebComponentHierarchyManagerMixinSuper = Constructor<
 >;
 
 /**
+ * A standalone instance of the hierarchy manager class
+ */
+export declare class WebComponentHierarchyManagerTypeInstance<
+    GA extends {
+        root?: any;
+        parent?: any;
+        globalProps?: {
+            [key: string]: any;
+        };
+    } = {}
+> {
+    /**
+     * Registers `element` as the child of this
+     * component
+     *
+     * @template G - Global properties
+     * @param {HTMLElement} element - The
+     * 	component that is registered as the child of this one
+     *
+     * @returns {G} The global properties
+     */
+    public registerChild<G extends GA['globalProps'] = { [key: string]: any }>(
+        element: HTMLElement
+    ): G;
+
+    /**
+     * Gets the global properties functions
+     *
+     * @template G - The global properties
+     * @returns {GlobalPropsFunctions<G>} Functions
+     * 	that get and set global properties
+     */
+    public globalProps<
+        G extends GA['globalProps'] = { [key: string]: any }
+    >(): GlobalPropsFunctions<DefaultVal<G, { [key: string]: any }>>;
+
+    /**
+     * Gets the root node of the global hierarchy
+     *
+     * @template T - The type of the root
+     *
+     * @returns {T} The root
+     */
+    public getRoot<T extends GA['root'] = {}>(): T;
+
+    /**
+     * Runs a function for every component in this
+     * global hierarchy
+     *
+     * @template R - The return type of given function
+     * @template E - The components on the page's base types
+     *
+     * @param {(element: WebComponentHierarchyManager) => R} fn - The
+     * 	function that is ran on every component
+     *
+     * @returns {R[]} All return values in an array
+     */
+    public runGlobalFunction<E extends {}, R = any>(fn: (element: E) => R): R[];
+
+    /**
+     * Returns the parent of this component
+     *
+     * @template T - The parent's type
+     * @returns {T|null} - The component's parent or
+     * 	null if it has none
+     */
+    public getParent<T extends GA['parent'] = {}>(): T | null;
+
+    /**
+     * Listeners for global property changes
+     *
+     * @template GP - The global properties
+     *
+     * @param {'globalPropChange'} event - The
+     * 	event to listen for
+     * @param {(prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void} listener -
+     * 	The listener that is called when the
+     * 	event is fired
+     * @param {boolean} [once] - Whether to
+     * 	only fire this event once
+     */
+    public listenGP<GP extends GA['globalProps'] = { [key: string]: any }>(
+        event: 'globalPropChange',
+        listener: (
+            prop: keyof GP,
+            newValue: GP[typeof prop],
+            oldValue: typeof newValue
+        ) => void,
+        once?: boolean
+    ): void;
+    public listenGP<
+        GP extends GA['globalProps'] = { [key: string]: any },
+        K extends keyof GP = any
+    >(
+        event: 'globalPropChange',
+        listener: (prop: K, newValue: GP[K], oldValue: GP[K]) => void,
+        once?: boolean
+    ): void;
+    public listenGP<GP extends GA['globalProps'] = { [key: string]: any }>(
+        event: 'globalPropChange',
+        listener: (
+            prop: keyof GP,
+            newValue: GP[typeof prop],
+            oldValue: typeof newValue
+        ) => void,
+        // istanbul ignore next
+        once?: boolean
+    ): void;
+}
+
+/**
+ * The static values of the hierarchy manager class
+ */
+export type WebComponentHierarchyManagerTypeStatic = ClassToObj<
+    typeof WebComponentHierarchyManagerTypeInstance
+>;
+
+/**
  * A mixin that, when applied, allows for finding out
  * the hierarchy of all component on the page,
  * finding out the parents and children of components
@@ -383,7 +502,7 @@ export const WebComponentHierarchyManagerMixin = <
             };
         } = {},
         E extends EventListenerObj = GetEvents<GA>
-    > extends superFn {
+    > extends superFn implements WebComponentHierarchyManagerTypeInstance<GA> {
         constructor(...args: any[]) {
             super(...args);
             HierarchyClass.hierarchyClasses.add(this as any);
@@ -405,16 +524,6 @@ export const WebComponentHierarchyManagerMixin = <
             }
         }
 
-        /**
-         * Registers `element` as the child of this
-         * component
-         *
-         * @template G - Global properties
-         * @param {HTMLElement} element - The
-         * 	component that is registered as the child of this one
-         *
-         * @returns {G} The global properties
-         */
         public registerChild<
             G extends GA['globalProps'] = { [key: string]: any }
         >(element: HTMLElement): G {
@@ -424,13 +533,6 @@ export const WebComponentHierarchyManagerMixin = <
             return priv.globalProperties as G;
         }
 
-        /**
-         * Gets the global properties functions
-         *
-         * @template G - The global properties
-         * @returns {GlobalPropsFunctions<G>} Functions
-         * 	that get and set global properties
-         */
         public globalProps<
             G extends GA['globalProps'] = { [key: string]: any }
         >(): GlobalPropsFunctions<DefaultVal<G, { [key: string]: any }>> {
@@ -479,13 +581,6 @@ export const WebComponentHierarchyManagerMixin = <
             return (hierarchyClass(this).globalPropsFns = fns);
         }
 
-        /**
-         * Gets the root node of the global hierarchy
-         *
-         * @template T - The type of the root
-         *
-         * @returns {T} The root
-         */
         public getRoot<T extends GA['root'] = {}>(): T {
             const priv = hierarchyClass(this);
             if (priv.isRoot) {
@@ -494,48 +589,16 @@ export const WebComponentHierarchyManagerMixin = <
             return priv.parent!.getRoot();
         }
 
-        /**
-         * Runs a function for every component in this
-         * global hierarchy
-         *
-         * @template R - The return type of given function
-         * @template E - The components on the page's base types
-         *
-         * @param {(element: WebComponentHierarchyManager) => R} fn - The
-         * 	function that is ran on every component
-         *
-         * @returns {R[]} All return values in an array
-         */
         public runGlobalFunction<E extends {}, R = any>(
             fn: (element: E) => R
         ): R[] {
             return hierarchyClass(this).propagateThroughTree(fn as any);
         }
 
-        /**
-         * Returns the parent of this component
-         *
-         * @template T - The parent's type
-         * @returns {T|null} - The component's parent or
-         * 	null if it has none
-         */
         public getParent<T extends GA['parent'] = {}>(): T | null {
             return hierarchyClass(this).__getParent() as T;
         }
 
-        /**
-         * Listeners for global property changes
-         *
-         * @template GP - The global properties
-         *
-         * @param {'globalPropChange'} event - The
-         * 	event to listen for
-         * @param {(prop: keyof GP, newValue: GP[typeof prop], oldValue: typeof newValue) => void} listener -
-         * 	The listener that is called when the
-         * 	event is fired
-         * @param {boolean} [once] - Whether to
-         * 	only fire this event once
-         */
         public listenGP<GP extends GA['globalProps'] = { [key: string]: any }>(
             event: 'globalPropChange',
             listener: (
@@ -566,29 +629,11 @@ export const WebComponentHierarchyManagerMixin = <
             this.listen(event, listener, once);
         }
 
-        /**
-         * A map that maps every event name to
-         * a set containing all of its listeners
-         *
-         * @readonly
-         */
         get listenerMap(): ListenerSet<E> {
             // istanbul ignore next
             return super.listenerMap as ListenerSet<E>;
         }
 
-        /**
-         * Listens for given event and fires
-         * the listener when it's triggered
-         *
-         * @template EV - The event's name
-         *
-         * @param {EV} event - The event's name
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
-         * 	listener called when the event is fired
-         * @param {boolean} [once] - Whether to only
-         * 	call this listener once (false by default)
-         */
         // istanbul ignore next
         public listen = <EV extends keyof E>(
             event: EV,
@@ -599,25 +644,6 @@ export const WebComponentHierarchyManagerMixin = <
             super.listen(event as any, listener, once);
         };
 
-        /**
-         * Fires given event on this component
-         * with given params, returning an array
-         * containing the return values of all
-         * triggered listeners
-         *
-         * @template EV - The event's name
-         * @template R - The return type of the
-         * 	event's listeners
-         *
-         * @param {EV} event - The event's name
-         * @param {E[EV]['args']} params - The parameters
-         * 	passed to the listeners when they are
-         * 	called
-         *
-         * @returns {R[]} An array containing the
-         * 	return values of all triggered
-         * 	listeners
-         */
         public fire = <EV extends keyof E, R extends E[EV]['returnType']>(
             event: EV,
             ...params: E[EV]['args']
@@ -626,17 +652,6 @@ export const WebComponentHierarchyManagerMixin = <
             return super.fire(event as any, ...params);
         };
 
-        /**
-         * Clears all listeners on this component for
-         * given event
-         *
-         * @template EV - The name of the event
-         *
-         * @param {EV} event - The name of the event to clear
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
-         * 	specific listener to clear. If not passed, clears all
-         * 	listeners for the event
-         */
         // istanbul ignore next
         public clearListener = (super.clearListener
             ? <EV extends keyof E>(
@@ -648,6 +663,9 @@ export const WebComponentHierarchyManagerMixin = <
               }
             : void 0)!;
     }
+
+    const __typecheck__: WebComponentHierarchyManagerTypeStatic = WebComponentHierarchyManager;
+    __typecheck__;
 
     return WebComponentHierarchyManager;
 };

@@ -7,6 +7,7 @@ import { bindToClass, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
 import { classNames, ClassNamesArg } from './shared.js';
 import { refPrefix } from './props.js';
+import { ClassToObj } from './configurable.js';
 
 class ClassAttributePart implements Part {
     public value: any = undefined;
@@ -480,6 +481,99 @@ export type WebComponentTemplateManagerMixinSuper = Constructor<
 >;
 
 /**
+ * A standalone instance of the template manager class
+ */
+export declare class WebComponentTemplateManagerTypeInstance {
+    /**
+		 * Generate an HTML template based on the passed template literal.
+		 * This will throw an error if 
+		 * `WebComponentTemplateManager.initComplexTemplateProvider` has
+		 * not been called. If you do not wish to use the passed complex
+		 * template provider, ignore the first argument to the 
+		 * `TemplateFn's` render function and use a custom templater.
+		 * 
+		 * Can be called with 
+	```js
+	WebComponentTemplateManager.initComplexTemplateProvider({
+	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange
+	});
+	```
+		* 
+		* @param {TemplateStringsArray} strings - The strings of the 
+		* 	template literal
+		* @param {any[]} values - The values of the template literal
+		* 
+		* @returns {TemplateResultLike} A result that, when passed
+		* 	to the renderer, renders the template to DOM
+		*/
+    public generateHTMLTemplate(
+        strings: TemplateStringsArray,
+        ...values: any[]
+    ): TemplateResultLike;
+
+    /**
+     * Initializes a complex template provider. This allows
+     * for the special properties seen in `WebComponentTemplateManager's`
+     * documentation. If this is not configured, the first
+     * parameter to the `TemplateFn` render function will
+     * throw an error instead. When not configuring this,
+     * you should ignore the first argument to the
+     * `TemplateFn's` render function and instead use a
+     * custom templater
+     *
+     * @param {LitHTMLConfig} config - A config object containing
+     * 	the required lit-html constructs
+     */
+    public static initComplexTemplateProvider(config: LitHTMLConfig): void;
+
+    /**
+     * Gets the value of a reference to a value.
+     *
+     * When a complex value is passed, a "global"
+     * reference is stored and indexed. Instead
+     * a string containing that index is passed.
+     * This function "decodes" that string and
+     * retrieves the globally stored value
+     *
+     * @param {string} ref - The reference's index
+     * 	along with the ref prefix (`___complex_ref`)
+     *
+     * @returns {ComplexValue} The complex value
+     * 	that is being referenced to by `ref`
+     */
+    public getRef(ref: string): ComplexValue;
+
+    /**
+     * Gets the parent of this component and attempts
+     * to resolve the reference
+     *
+     * @param {string} ref - The reference's index
+     * 	along with the ref prefix (`___complex_ref`)
+     *
+     * @returns {ComplexValue} The complex value
+     * 	that is being referenced to by `ref`
+     */
+    public getParentRef(ref: string): ComplexValue;
+
+    /**
+     * Creates a reference to given value
+     *
+     * @param {ComplexValue} value - The value that should be referenced
+     *
+     * @returns {string} An string that represents
+     * 	a reference to the passed value
+     */
+    public genRef(value: ComplexValue): string;
+}
+
+/**
+ * The static values of the template manager class
+ */
+export type WebComponentTemplateManagerTypeStatic = ClassToObj<
+    typeof WebComponentTemplateManagerTypeInstance
+>;
+
+/**
  * A mixin that, when applied, adds the `generateHTMLTemplate`
  * method that can generate complex template literal HTML
  *
@@ -533,29 +627,8 @@ export const WebComponentTemplateManagerMixin = <
      * 	change the CSS of individual instances of an element,
      * 	while still using the element itself's shared CSS
      */
-    class WebComponentTemplateManager extends superFn {
-        /**
-		 * Generate an HTML template based on the passed template literal.
-		 * This will throw an error if 
-		 * `WebComponentTemplateManager.initComplexTemplateProvider` has
-		 * not been called. If you do not wish to use the passed complex
-		 * template provider, ignore the first argument to the 
-		 * `TemplateFn's` render function and use a custom templater.
-		 * 
-		 * Can be called with 
-	```js
-	WebComponentTemplateManager.initComplexTemplateProvider({
-	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange
-	});
-	```
-		* 
-		* @param {TemplateStringsArray} strings - The strings of the 
-		* 	template literal
-		* @param {any[]} values - The values of the template literal
-		* 
-		* @returns {TemplateResultLike} A result that, when passed
-		* 	to the renderer, renders the template to DOM
-		*/
+    class WebComponentTemplateManager extends superFn
+        implements WebComponentTemplateManagerTypeInstance {
         @bindToClass
         public generateHTMLTemplate(
             strings: TemplateStringsArray,
@@ -569,38 +642,10 @@ export const WebComponentTemplateManagerMixin = <
             );
         }
 
-        /**
-         * Initializes a complex template provider. This allows
-         * for the special properties seen in `WebComponentTemplateManager's`
-         * documentation. If this is not configured, the first
-         * parameter to the `TemplateFn` render function will
-         * throw an error instead. When not configuring this,
-         * you should ignore the first argument to the
-         * `TemplateFn's` render function and instead use a
-         * custom templater
-         *
-         * @param {LitHTMLConfig} config - A config object containing
-         * 	the required lit-html constructs
-         */
         public static initComplexTemplateProvider(config: LitHTMLConfig) {
             TemplateClass._templateSettings = config;
         }
 
-        /**
-         * Gets the value of a reference to a value.
-         *
-         * When a complex value is passed, a "global"
-         * reference is stored and indexed. Instead
-         * a string containing that index is passed.
-         * This function "decodes" that string and
-         * retrieves the globally stored value
-         *
-         * @param {string} ref - The reference's index
-         * 	along with the ref prefix (`___complex_ref`)
-         *
-         * @returns {ComplexValue} The complex value
-         * 	that is being referenced to by `ref`
-         */
         public getRef(ref: string): ComplexValue {
             if (typeof ref !== 'string') {
                 console.warn('Invalid ref', ref, 'on', this);
@@ -610,16 +655,6 @@ export const WebComponentTemplateManagerMixin = <
             return templateClass(this).reffed[refNumber];
         }
 
-        /**
-         * Gets the parent of this component and attempts
-         * to resolve the reference
-         *
-         * @param {string} ref - The reference's index
-         * 	along with the ref prefix (`___complex_ref`)
-         *
-         * @returns {ComplexValue} The complex value
-         * 	that is being referenced to by `ref`
-         */
         public getParentRef(ref: string): ComplexValue {
             const parent = this.getParent<WebComponentTemplateManager>();
             if (!parent) {
@@ -634,17 +669,13 @@ export const WebComponentTemplateManagerMixin = <
             return parent.getRef(ref);
         }
 
-        /**
-         * Creates a reference to given value
-         *
-         * @param {ComplexValue} value - The value that should be referenced
-         *
-         * @returns {string} An string that represents
-         * 	a reference to the passed value
-         */
         public genRef(value: ComplexValue): string {
             return templateClass(this).genRef(value);
         }
     }
+
+    const __typecheck__: WebComponentTemplateManagerTypeStatic = WebComponentTemplateManager;
+    __typecheck__;
+
     return WebComponentTemplateManager;
 };

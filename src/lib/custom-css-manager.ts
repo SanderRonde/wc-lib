@@ -2,6 +2,7 @@ import { WebComponentBaseMixinInstance, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { CHANGE_TYPE, TemplateFn, TemplateFnLike } from './template-fn.js';
+import { ClassToObj } from './configurable.js';
 
 class CustomCSSClass {
     public hasCustomCSS: boolean | null = null;
@@ -50,6 +51,40 @@ export type WebComponentCustomCSSManagerMixinSuper = Constructor<
 >;
 
 /**
+ * A standalone instance of the custom css manager class
+ */
+export declare class WebComponentCustomCSSManagerTypeInstance {
+    /**
+     * Whether this component has been mounted
+     *
+     * @readonly
+     */
+    public isMounted: boolean;
+
+    /**
+     * A function signaling whether this component has custom CSS applied to it
+     *
+     * @returns {boolean} Whether this component uses custom CSS
+     */
+    public __hasCustomCSS(): boolean;
+
+    /**
+     * Gets this component's custom CSS templates
+     *
+     * @returns {TemplateFnLike|TemplateFnLike[]} The
+     * 	custom CSS templates
+     */
+    public customCSS(): TemplateFnLike | TemplateFnLike[];
+}
+
+/**
+ * The static values of the custom css manager class
+ */
+export type WebComponentCustomCSSManagerTypeStatic = ClassToObj<
+    typeof WebComponentCustomCSSManagerTypeInstance
+>;
+
+/**
  * A mixin that, when applied, allows
  * for custom css to be passed to a component
  * after which it will be rendered
@@ -77,12 +112,8 @@ export const WebComponentCustomCSSManagerMixin = <
     /**
      * The class that manages custom CSS
      */
-    class WebComponentCustomCSSManager extends superFn {
-        /**
-         * Whether this component has been mounted
-         *
-         * @readonly
-         */
+    class WebComponentCustomCSSManager extends superFn
+        implements WebComponentCustomCSSManagerTypeInstance {
         public isMounted: boolean = false;
 
         constructor(...args: any[]) {
@@ -97,11 +128,6 @@ export const WebComponentCustomCSSManagerMixin = <
             };
         }
 
-        /**
-         * A function signaling whether this component has custom CSS applied to it
-         *
-         * @returns {boolean} Whether this component uses custom CSS
-         */
         public __hasCustomCSS(): boolean {
             const priv = customCSSClass(this);
             if (priv.hasCustomCSS !== null) {
@@ -121,15 +147,13 @@ export const WebComponentCustomCSSManagerMixin = <
             return (priv.hasCustomCSS = true);
         }
 
-        /**
-         * Gets this component's custom CSS templates
-         *
-         * @returns {TemplateFnLike|TemplateFnLike[]} The
-         * 	custom CSS templates
-         */
         public customCSS(): TemplateFnLike | TemplateFnLike[] {
             return customCSSClass(this).getCustomCSS();
         }
     }
+
+    const __typecheck__: WebComponentCustomCSSManagerTypeStatic = WebComponentCustomCSSManager;
+    __typecheck__;
+
     return WebComponentCustomCSSManager;
 };

@@ -2,6 +2,7 @@ import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentMixinInstance } from './component.js';
 import { TemplateFn, CHANGE_TYPE } from './template-fn.js';
 import { WebComponentBaseMixinClass } from './base.js';
+import { ClassToObj } from './configurable.js';
 import { WCLibError } from './shared.js';
 
 function define(name: string, component: any) {
@@ -308,6 +309,62 @@ export type WebComponentDefinerMixinClass = InferReturn<
 export type WebComponentDefinerMixinSuper = Constructor<HTMLElement>;
 
 /**
+ * A standalone instance of the definer class
+ */
+export declare class WebComponentDefinerTypeInstance {
+    /**
+     * The class associated with this one that
+     * contains some functions required for
+     * it to function
+     *
+     * @readonly
+     */
+    public ___definerClass: DefinerClass;
+
+    /**
+     * Dependencies of this component. If this
+     * component uses other components in its
+     * template, adding them to this array will
+     * make sure they are defined before this
+     * component is
+     *
+     * @readonly
+     */
+    public static dependencies?:
+        | {
+              define(isDevelopment?: boolean, isRoot?: boolean): void;
+          }[]
+        | null;
+
+    /**
+     * The name of this component
+     *
+     * @readonly
+     */
+    public static is: string;
+
+    /**
+     * Define this component and its dependencies as a webcomponent
+     * so they can be used
+     *
+     * @param {boolean} [isDevelopment] - Whether to enable
+     * 	development mode in which some additional checks
+     *  are performed at the cost of performance.
+     * @param {boolean} [isRoot] - Set to true if this is
+     * 	not a dependency (which most definitions aren't)
+     * 	True by default
+     */
+    public static define(isDevelopment?: boolean, isRoot?: boolean): void;
+}
+
+/**
+ * The static values of the definer class
+ */
+export type WebComponentDefinerTypeStatic = ClassToObj<
+    typeof WebComponentDefinerTypeInstance
+>;
+
+/**
  * A mixin that will add the ability to define a component
  * and its dependencies by calling .define on it
  *
@@ -324,35 +381,16 @@ export const WebComponentDefinerMixin = <
      * The class that manages defining of this component
      * and its dependencies
      */
-    class WebComponentDefiner extends superFn {
-        /**
-         * The class associated with this one that
-         * contains some functions required for
-         * it to function
-         *
-         * @readonly
-         */
+    class WebComponentDefiner extends superFn
+        implements WebComponentDefinerTypeInstance {
         public ___definerClass: DefinerClass = new DefinerClass();
 
-        /**
-         * Dependencies of this component. If this
-         * component uses other components in its
-         * template, adding them to this array will
-         * make sure they are defined before this
-         * component is
-         *
-         * @readonly
-         */
         public static dependencies?:
             | {
                   define(isDevelopment?: boolean, isRoot?: boolean): void;
               }[]
             | null = [];
-        /**
-         * The name of this component
-         *
-         * @readonly
-         */
+
         public static is: string;
 
         constructor(...args: any[]) {
@@ -367,17 +405,6 @@ export const WebComponentDefinerMixin = <
             this.___definerClass.setDevMode(this);
         }
 
-        /**
-         * Define this component and its dependencies as a webcomponent
-         * so they can be used
-         *
-         * @param {boolean} [isDevelopment] - Whether to enable
-         * 	development mode in which some additional checks
-         *  are performed at the cost of performance.
-         * @param {boolean} [isRoot] - Set to true if this is
-         * 	not a dependency (which most definitions aren't)
-         * 	True by default
-         */
         // istanbul ignore next
         static define(isDevelopment: boolean = false, isRoot: boolean = true) {
             if (isRoot && DefinerClass.finished) {
@@ -404,5 +431,9 @@ export const WebComponentDefinerMixin = <
             DefinerClass.finishLoad();
         }
     }
+
+    const __typecheck__: WebComponentDefinerTypeStatic = WebComponentDefiner;
+    __typecheck__;
+
     return WebComponentDefiner;
 };

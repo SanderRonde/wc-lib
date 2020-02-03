@@ -10,8 +10,46 @@ import {
     WebComponentDefinerMixin,
     elementBase,
 } from './parts.js';
-import { EventListenerObj, GetEvents } from '../lib/listener.js';
-import { SelectorMap, GetEls } from '../lib/component.js';
+import {
+    EventListenerObj,
+    GetEvents,
+    WebComponentListenableTypeInstance,
+    WebComponentListenableTypeStatic,
+} from '../lib/listener.js';
+import {
+    SelectorMap,
+    GetEls,
+    WebComponentTypeStatic,
+    WebComponentTypeInstance,
+} from '../lib/component.js';
+import {
+    WebComponentDefinerTypeInstance,
+    WebComponentDefinerTypeStatic,
+} from '../lib/definer.js';
+import {
+    WebComponentBaseTypeInstance,
+    WebComponentBaseTypeStatic,
+} from '../lib/base.js';
+import {
+    WebComponentHierarchyManagerTypeInstance,
+    WebComponentHierarchyManagerTypeStatic,
+} from '../lib/hierarchy-manager.js';
+import {
+    WebComponentThemeManagerTypeStatic,
+    WebComponentThemeManagerTypeInstance,
+} from '../lib/theme-manager.js';
+import {
+    WebComponentI18NManagerTypeStatic,
+    WebComponentI18NManagerTypeInstance,
+} from '../lib/i18n-manager.js';
+import {
+    WebComponentTemplateManagerTypeStatic,
+    WebComponentTemplateManagerTypeInstance,
+} from '../lib/template-manager.js';
+import {
+    WebComponentCustomCSSManagerTypeStatic,
+    WebComponentCustomCSSManagerTypeInstance,
+} from '../lib/custom-css-manager.js';
 
 /**
  * A full webcomponent that uses every layer and provides
@@ -20,7 +58,7 @@ import { SelectorMap, GetEls } from '../lib/component.js';
  * `I18N`, `theming`, `hierarchy`, `listeners` and `definer`
  * parts.
  */
-export const FullWebComponent = WebComponentMixin(
+export const FullWebComponent = (WebComponentMixin(
     WebComponentCustomCSSManagerMixin(
         WebComponentTemplateManagerMixin(
             WebComponentI18NManagerMixin(
@@ -36,7 +74,54 @@ export const FullWebComponent = WebComponentMixin(
             )
         )
     )
-);
+) as unknown) as {
+    new <
+        GA extends {
+            events?: EventListenerObj;
+            root?: any;
+            parent?: any;
+            globalProps?: {
+                [key: string]: any;
+            };
+            themes?: {
+                [key: string]: any;
+            };
+            i18n?: any;
+            langs?: string;
+            selectors?: SelectorMap;
+        } = {},
+        E extends EventListenerObj = GetEvents<GA>,
+        ELS extends SelectorMap = GetEls<GA>
+    >(
+        ...args: any[]
+    ): HTMLElement &
+        WebComponentDefinerTypeInstance &
+        WebComponentBaseTypeInstance &
+        WebComponentListenableTypeInstance<GA, E> &
+        WebComponentHierarchyManagerTypeInstance<GA> &
+        WebComponentThemeManagerTypeInstance<GA> &
+        WebComponentI18NManagerTypeInstance<GA> &
+        WebComponentTemplateManagerTypeInstance &
+        WebComponentCustomCSSManagerTypeInstance &
+        WebComponentTypeInstance<GA, void, ELS>;
+    self(): WebComponentDefinerTypeStatic &
+        WebComponentBaseTypeStatic &
+        WebComponentListenableTypeStatic &
+        WebComponentHierarchyManagerTypeStatic &
+        WebComponentThemeManagerTypeStatic &
+        WebComponentI18NManagerTypeStatic &
+        WebComponentTemplateManagerTypeStatic &
+        WebComponentCustomCSSManagerTypeStatic &
+        WebComponentTypeStatic;
+} & WebComponentDefinerTypeStatic &
+    WebComponentBaseTypeStatic &
+    WebComponentListenableTypeStatic &
+    WebComponentHierarchyManagerTypeStatic &
+    WebComponentThemeManagerTypeStatic &
+    WebComponentI18NManagerTypeStatic &
+    WebComponentTemplateManagerTypeStatic &
+    WebComponentCustomCSSManagerTypeStatic &
+    WebComponentTypeStatic;
 
 /**
  * A class that extends from the full webcomponent and passes

@@ -9,6 +9,7 @@ import {
     JSXDefinition,
 } from '../classes/types.js';
 import { TemplateFnLike, CHANGE_TYPE } from '../wc-lib.js';
+import { ClassToObj } from './configurable.js';
 
 /**
  * The property name for custom-css
@@ -314,6 +315,131 @@ export type WebComponentBaseMixinSuper = Constructor<
     Pick<InferReturn<typeof WebComponentDefinerMixin>, 'define' | 'is'>;
 
 /**
+ * A standalone instance of the webcomponent base class
+ */
+export declare class WebComponentBaseTypeInstance {
+    /**
+     * The render method that will render this component's HTML
+     *
+     * @readonly
+     */
+    public static html: TemplateFnLike<CHANGE_TYPE | number> | null;
+
+    /**
+     * The element's constructor
+     *
+     * @readonly
+     */
+    public get self(): any;
+
+    /**
+     * The template(s) that will render this component's css
+     *
+     * @readonly
+     */
+    public static css:
+        | TemplateFnLike<CHANGE_TYPE | number>
+        | TemplateFnLike<CHANGE_TYPE | number>[]
+        | null;
+
+    /**
+     * A function signaling whether this component has custom CSS applied to it
+     *
+     * @returns {boolean} Whether this component uses custom CSS
+     */
+    public __hasCustomCSS(): boolean;
+
+    /**
+     * Gets this component's custom CSS templates
+     *
+     * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
+     * 	custom CSS templates
+     */
+    public customCSS():
+        | TemplateFnLike<CHANGE_TYPE | number>
+        | TemplateFnLike<CHANGE_TYPE | number>[];
+
+    /**
+     * Checks whether the constructed CSS should be changed. This function can be
+     * overridden to allow for a custom checker. Since constructed CSS
+     * is shared with all other instances of this specific component,
+     * this should only return true if the CSS for all of these components
+     * has changed. For example it might change when the theme has changed
+     *
+     * @param {WebComponentBase} _element - The element for which to
+     * 	check it
+     *
+     * @returns {boolean} Whether the constructed CSS has changed
+     */
+    public static __constructedCSSChanged(
+        _element: WebComponentBaseTypeInstance
+    ): boolean;
+
+    /**
+     * The root of this component's DOM
+     *
+     * @readonly
+     */
+    public readonly root: ExtendedShadowRoot;
+
+    /**
+     * The properties of this component
+     *
+     * @readonly
+     */
+    props: any;
+
+    /**
+     * The properties of this component but
+     * suited to be used as JSX props
+     *
+     * @readonly
+     */
+    get jsxProps(): JSXDefinition<this>;
+
+    /**
+     * The method that starts the rendering cycle
+     *
+     * @param {CHANGE_TYPE} [change] The change type. This
+     * 	is set to always render if not supplied
+     */
+    public renderToDOM(change?: CHANGE_TYPE): void;
+
+    /**
+     * A method called before rendering (changing props won't trigger additional re-render)
+     * If false is returned, cancels the render
+     *
+     * @returns {false|any} The return value, if false, cancels the render
+     */
+    public preRender(): false | any;
+
+    /**
+     * A method called after rendering
+     */
+    public postRender(): any;
+
+    /**
+     * A method called after the very first render
+     */
+    public firstRender(): any;
+
+    /**
+     * A method called when the component is mounted
+     * to the DOM. Be sure to always call
+     * `super.connectedCallback` if you
+     * override this
+     */
+    public connectedCallback(): any;
+}
+
+/**
+ * The static values of the webcomponent base class
+ */
+export type WebComponentBaseTypeStatic = ClassToObj<
+    typeof WebComponentBaseTypeInstance
+>;
+
+/**
  * A mixin that will add the ability to do
  * basic rendering of a component
  *
@@ -333,50 +459,25 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
     /**
      * The class that handles basic rendering of a component
      */
-    class WebComponentBase extends superFn {
-        /**
-         * The render method that will render this component's HTML
-         *
-         * @readonly
-         */
+    class WebComponentBase extends superFn
+        implements WebComponentBaseTypeInstance {
         public static html: TemplateFnLike<CHANGE_TYPE | number> | null;
 
-        /**
-         * The element's constructor
-         *
-         * @readonly
-         */
         /* istanbul ignore next */
         public get self(): typeof WebComponentBase {
             return null as any;
         }
 
-        /**
-         * The template(s) that will render this component's css
-         *
-         * @readonly
-         */
         public static css:
             | TemplateFnLike<CHANGE_TYPE | number>
             | TemplateFnLike<CHANGE_TYPE | number>[]
             | null;
 
-        /**
-         * A function signaling whether this component has custom CSS applied to it
-         *
-         * @returns {boolean} Whether this component uses custom CSS
-         */
         /* istanbul ignore next */
         public __hasCustomCSS(): boolean {
             return false;
         }
 
-        /**
-         * Gets this component's custom CSS templates
-         *
-         * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
-         * 	custom CSS templates
-         */
         /* istanbul ignore next */
         public customCSS():
             | TemplateFnLike<CHANGE_TYPE | number>
@@ -384,18 +485,6 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
             return [];
         }
 
-        /**
-         * Checks whether the constructed CSS should be changed. This function can be
-         * overridden to allow for a custom checker. Since constructed CSS
-         * is shared with all other instances of this specific component,
-         * this should only return true if the CSS for all of these components
-         * has changed. For example it might change when the theme has changed
-         *
-         * @param {WebComponentBase} _element - The element for which to
-         * 	check it
-         *
-         * @returns {boolean} Whether the constructed CSS has changed
-         */
         /* istanbul ignore next */
         public static __constructedCSSChanged(
             _element: WebComponentBase
@@ -408,39 +497,17 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
             return true;
         }
 
-        /**
-         * The root of this component's DOM
-         *
-         * @readonly
-         */
         public readonly root = this.attachShadow({
             mode: 'open',
         }) as ExtendedShadowRoot;
 
-        /**
-         * The properties of this component
-         *
-         * @readonly
-         */
         props: any = {};
 
-        /**
-         * The properties of this component but
-         * suited to be used as JSX props
-         *
-         * @readonly
-         */
         /* istanbul ignore next */
         get jsxProps(): JSXDefinition<this> {
             return this.props;
         }
 
-        /**
-         * The method that starts the rendering cycle
-         *
-         * @param {CHANGE_TYPE} [change] The change type. This
-         * 	is set to always render if not supplied
-         */
         @bindToClass
         public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.FORCE) {
             const priv = baseClass(this);
@@ -477,31 +544,17 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
             priv.doPostRenderLifecycle();
         }
 
-        /**
-         * A method called before rendering (changing props won't trigger additional re-render)
-         * If false is returned, cancels the render
-         *
-         * @returns {false|any} The return value, if false, cancels the render
-         */
         public preRender(): false | any {}
 
-        /**
-         * A method called after rendering
-         */
         public postRender(): any {}
 
-        /**
-         * A method called after the very first render
-         */
         public firstRender(): any {}
 
-        /**
-         * A method called when the component is mounted
-         * to the DOM. Be sure to always call
-         * `super.connectedCallback` if you
-         * override this
-         */
         public connectedCallback() {}
     }
+
+    const __typecheck__: WebComponentBaseTypeStatic = WebComponentBase;
+    __typecheck__;
+
     return WebComponentBase;
 };

@@ -41,6 +41,11 @@ export type DefaultValUnknown<V, D = {}> = V extends undefined
     : V;
 
 /**
+ * Returns a different type if type is undefined or unknown
+ */
+export type FallbackExtends<V, F = {}> = V extends F ? V : F;
+
+/**
  * Infers props of a component from passed component['props']
  */
 export type InferProps<
@@ -245,46 +250,64 @@ export interface JSXIntrinsicProps {
 
 export {
     WebComponentBaseMixinInstance,
+    WebComponentBaseTypeInstance,
+    WebComponentBaseTypeStatic,
     WebComponentBaseMixinClass,
     WebComponentBaseMixinSuper,
 } from '../lib/base.js';
 export {
-    WebComponentSuper,
     WebComponentMixinInstance,
+    WebComponentTypeInstance,
+    WebComponentTypeStatic,
     WebComponentMixinClass,
+    WebComponentSuper,
 } from '../lib/component.js';
 export {
     WebComponentCustomCSSManagerMixinInstance,
+    WebComponentCustomCSSManagerTypeInstance,
+    WebComponentCustomCSSManagerTypeStatic,
     WebComponentCustomCSSManagerMixinClass,
     WebComponentCustomCSSManagerMixinSuper,
 } from '../lib/custom-css-manager.js';
 export {
     WebComponentDefinerMixinInstance,
+    WebComponentDefinerTypeInstance,
+    WebComponentDefinerTypeStatic,
     WebComponentDefinerMixinClass,
     WebComponentDefinerMixinSuper,
 } from '../lib/definer.js';
 export {
     WebComponentHierarchyManagerMixinInstance,
+    WebComponentHierarchyManagerTypeInstance,
+    WebComponentHierarchyManagerTypeStatic,
     WebComponentHierarchyManagerMixinClass,
     WebComponentHierarchyManagerMixinSuper,
 } from '../lib/hierarchy-manager.js';
 export {
     WebComponentI18NManagerMixinInstance,
+    WebComponentI18NManagerTypeInstance,
+    WebComponentI18NManagerTypeStatic,
     WebComponentI18NManagerMixinClass,
     WebComponentI18NManagerMixinSuper,
 } from '../lib/i18n-manager.js';
 export {
     WebComponentListenableMixinInstance,
+    WebComponentListenableTypeInstance,
+    WebComponentListenableTypeStatic,
     WebComponentListenableMixinClass,
     WebComponentListenableMixinSuper,
 } from '../lib/listener.js';
 export {
     WebComponentTemplateManagerMixinInstance,
+    WebComponentTemplateManagerTypeInstance,
+    WebComponentTemplateManagerTypeStatic,
     WebComponentTemplateManagerMixinClass,
     WebComponentTemplateManagerMixinSuper,
 } from '../lib/template-manager.js';
 export {
     WebComponentThemeManagerMixinInstance,
+    WebComponentThemeManagerTypeInstance,
+    WebComponentThemeManagerTypeStatic,
     WebComponentThemeManagerMixinClass,
     WebComponentThemeManagerMixinSuper,
 } from '../lib/theme-manager.js';

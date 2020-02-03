@@ -1,22 +1,6 @@
-import {
-    Constructor,
-    InferInstance,
-    InferReturn,
-    DefaultValUnknown,
-    DefaultVal,
-} from '../classes/types.js';
-import {
-    GetEvents,
-    WebComponentListenableMixinInstance,
-    ListenerSet,
-} from './listener.js';
-import {
-    WebComponentHierarchyManagerMixinInstance,
-    GlobalPropsFunctions,
-    ListenGPType,
-} from './hierarchy-manager.js';
+import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
+import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentBaseMixinInstance } from './base.js';
-import { EventListenerObj } from '../wc-lib.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
 
@@ -54,30 +38,7 @@ export type WebComponentThemeManagerMixinSuper = Constructor<
                 WebComponentHierarchyManagerMixinInstance,
                 'globalProps' | 'listenGP'
             >
-        > &
-        Partial<
-            Pick<
-                WebComponentListenableMixinInstance,
-                'listen' | 'fire' | 'clearListener' | 'listenerMap'
-            >
-        > &
-        Partial<
-            Pick<
-                WebComponentHierarchyManagerMixinInstance,
-                | 'registerChild'
-                | 'globalProps'
-                | 'getRoot'
-                | 'getParent'
-                | 'listenGP'
-                | 'runGlobalFunction'
-            >
-        > &
-        Partial<{
-            setLang(lang: string): Promise<any>;
-            getLang(): string;
-            __prom(key: string, ...values: any[]): Promise<any>;
-            __(key: string, ...values: any[]): any;
-        }>
+        >
 >;
 
 /**
@@ -249,19 +210,10 @@ export const WebComponentThemeManagerMixin = <
     //@ts-ignore
     class WebComponentThemeManager<
         GA extends {
-            i18n?: any;
-            langs?: string;
-            events?: EventListenerObj;
             themes?: {
                 [key: string]: any;
             };
-            root?: any;
-            parent?: any;
-            globalProps?: {
-                [key: string]: any;
-            };
-        } = {},
-        E extends EventListenerObj = GetEvents<GA>
+        } = {}
     > extends superFn implements WebComponentThemeManagerTypeInstance<GA> {
         constructor(...args: any[]) {
             super(...args);
@@ -362,143 +314,6 @@ export const WebComponentThemeManagerMixin = <
             componentThemeMap.set(element.self, theme);
             return true;
         }
-
-        get listenerMap(): ListenerSet<E> {
-            return super.listenerMap as ListenerSet<E>;
-        }
-
-        // istanbul ignore next
-        public listen = (super.listen
-            ? <EV extends keyof E>(
-                  event: EV,
-                  listener: (...args: E[EV]['args']) => E[EV]['returnType'],
-                  once: boolean = false
-              ) => {
-                  // istanbul ignore next
-                  super.listen!(event as any, listener, once);
-              }
-            : void 0)!;
-
-        // istanbul ignore next
-        public clearListener = (super.clearListener
-            ? <EV extends keyof E>(
-                  event: EV,
-                  listener?: (...args: E[EV]['args']) => E[EV]['returnType']
-              ) => {
-                  // istanbul ignore next
-                  super.clearListener!(event as any, listener);
-              }
-            : void 0)!;
-
-        // istanbul ignore next
-        public fire = (super.fire
-            ? <EV extends keyof E, R extends E[EV]['returnType']>(
-                  event: EV,
-                  ...params: E[EV]['args']
-              ): R[] => {
-                  // istanbul ignore next
-                  return super.fire!(event as any, ...params);
-              }
-            : void 0)!;
-
-        // istanbul ignore next
-        public setLang = (super.setLang
-            ? <L extends string = DefaultValUnknown<GA['langs'], string>>(
-                  lang: L
-              ): Promise<void> => {
-                  // istanbul ignore next
-                  return super.setLang!(lang);
-              }
-            : void 0)!;
-
-        // istanbul ignore next
-        public getLang = (super.getLang
-            ? (): DefaultValUnknown<GA['langs'], string> | string => {
-                  // istanbul ignore next
-                  return super.getLang!() as
-                      | DefaultValUnknown<GA['langs'], string>
-                      | string;
-              }
-            : void 0)!;
-
-        // istanbul ignore next
-        public __prom = (super.__prom
-            ? <I extends GA['i18n'] = { [key: string]: any }>(
-                  key: Extract<keyof I, string>,
-                  ...values: any[]
-              ): Promise<string> => {
-                  // istanbul ignore next
-                  return super.__prom!(key, ...values);
-              }
-            : void 0)!;
-
-        // istanbul ignore next
-        public __ = (super.__
-            ? <R, I extends GA['i18n'] = { [key: string]: any }>(
-                  key: Extract<keyof I, string>,
-                  ...values: any[]
-              ): string | R => {
-                  // istanbul ignore next
-                  return super.__!(key, ...values);
-              }
-            : void 0)!;
-
-        public registerChild = (super.registerChild
-            ? <G extends GA['globalProps'] = { [key: string]: any }>(
-                  element: HTMLElement
-              ): G => {
-                  // istanbul ignore next
-                  return super.registerChild!(element as any);
-              }
-            : void 0)!;
-
-        public globalProps = (super.globalProps
-            ? <
-                  G extends GA['globalProps'] = { [key: string]: any }
-              >(): GlobalPropsFunctions<
-                  DefaultVal<G, { [key: string]: any }>
-              > => {
-                  // istanbul ignore next
-                  return super.globalProps!();
-              }
-            : void 0)!;
-
-        public getRoot = (super.getRoot
-            ? <T extends GA['root'] = {}>(): T => {
-                  // istanbul ignore next
-                  return super.getRoot!();
-              }
-            : void 0)!;
-
-        public getParent = (super.getParent
-            ? <T extends GA['parent'] = {}>(): T | null => {
-                  // istanbul ignore next
-                  return super.getParent!();
-              }
-            : void 0)!;
-
-        public listenGP = (super.listenGP
-            ? ((<GP extends GA['globalProps'] = { [key: string]: any }>(
-                  event: 'globalPropChange',
-                  listener: (
-                      prop: keyof GP,
-                      newValue: GP[typeof prop],
-                      oldValue: typeof newValue
-                  ) => void,
-                  // istanbul ignore next
-                  once: boolean = false
-              ) => {
-                  // istanbul ignore next
-                  return super.listenGP!(event, listener, once);
-              }) as ListenGPType<GA>)
-            : void 0)!;
-
-        public runGlobalFunction = (super.runGlobalFunction
-            ? <E extends {}, R = any>(fn: (element: E) => R): R[] => {
-                  // istanbul ignore next
-                  return super.runGlobalFunction!(fn);
-              }
-            : void 0)!;
     }
 
     const __typecheck__: WebComponentThemeManagerTypeStatic = WebComponentThemeManager;

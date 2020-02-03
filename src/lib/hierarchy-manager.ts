@@ -1,15 +1,10 @@
 import {
-    WebComponentListenableMixinInstance,
-    EventListenerObj,
-    GetEvents,
-    ListenerSet,
-} from './listener.js';
-import {
     Constructor,
     InferReturn,
     InferInstance,
     DefaultVal,
 } from '../classes/types.js';
+import { WebComponentListenableMixinInstance } from './listener.js';
 import { ClassToObj } from './configurable.js';
 import { bindToClass } from './base.js';
 
@@ -316,12 +311,6 @@ export type WebComponentHierarchyManagerMixinClass = InferReturn<
  */
 export type WebComponentHierarchyManagerMixinSuper = Constructor<
     Pick<WebComponentListenableMixinInstance, 'listen' | 'fire'> &
-        Partial<
-            Pick<
-                WebComponentListenableMixinInstance,
-                'clearListener' | 'listenerMap'
-            >
-        > &
         HTMLElement & {
             connectedCallback(): void;
         }
@@ -489,19 +478,12 @@ export const WebComponentHierarchyManagerMixin = <
     //@ts-ignore
     class WebComponentHierarchyManager<
         GA extends {
-            i18n?: any;
-            langs?: string;
-            events?: EventListenerObj;
-            themes?: {
-                [key: string]: any;
-            };
             root?: any;
             parent?: any;
             globalProps?: {
                 [key: string]: any;
             };
-        } = {},
-        E extends EventListenerObj = GetEvents<GA>
+        } = {}
     > extends superFn implements WebComponentHierarchyManagerTypeInstance<GA> {
         constructor(...args: any[]) {
             super(...args);
@@ -628,40 +610,6 @@ export const WebComponentHierarchyManagerMixin = <
         ) {
             this.listen(event, listener, once);
         }
-
-        get listenerMap(): ListenerSet<E> {
-            // istanbul ignore next
-            return super.listenerMap as ListenerSet<E>;
-        }
-
-        // istanbul ignore next
-        public listen = <EV extends keyof E>(
-            event: EV,
-            listener: (...args: E[EV]['args']) => E[EV]['returnType'],
-            once: boolean = false
-        ) => {
-            // istanbul ignore next
-            super.listen(event as any, listener, once);
-        };
-
-        public fire = <EV extends keyof E, R extends E[EV]['returnType']>(
-            event: EV,
-            ...params: E[EV]['args']
-        ): R[] => {
-            // istanbul ignore next
-            return super.fire(event as any, ...params);
-        };
-
-        // istanbul ignore next
-        public clearListener = (super.clearListener
-            ? <EV extends keyof E>(
-                  event: EV,
-                  listener?: (...args: E[EV]['args']) => E[EV]['returnType']
-              ) => {
-                  // istanbul ignore next
-                  super.clearListener!(event as any, listener);
-              }
-            : void 0)!;
     }
 
     const __typecheck__: WebComponentHierarchyManagerTypeStatic = WebComponentHierarchyManager;

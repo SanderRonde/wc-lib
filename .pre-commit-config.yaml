@@ -5,14 +5,14 @@ repos:
             name: pretty-quick
             entry: node_modules/.bin/pretty-quick
             language: node
-            files: ".*.(js|jsx|ts|tsx|json|md)$"
+            files: ".*.(js|jsx|ts|tsx|md)$"
             args:
                 - "--staged"
           - id: prettier
             name: prettier
             entry: node_modules/.bin/prettier
             language: node
-            files: ".*.(js|jsx|ts|tsx|json|md)$"
+            files: ".*.(js|jsx|ts|tsx|md)$"
             args:
                 - "--config=.prettierrc"
                 - "-l"

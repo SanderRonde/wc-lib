@@ -98,6 +98,7 @@ export class DefinerClass {
      * component's definition
      */
     public setDevMode(component: HTMLElement) {
+        if (!component.tagName) return;
         this.isDevelopment =
             DefinerClass.devComponents.indexOf(
                 component.tagName.toLowerCase()

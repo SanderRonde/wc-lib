@@ -488,7 +488,11 @@ export class TemplateFn<
     ) {
         if (result === null || result === undefined) return '';
 
-        if (result instanceof HTMLElement || result instanceof Element) {
+        if (
+            (typeof HTMLElement !== 'undefined' &&
+                result instanceof HTMLElement) ||
+            (typeof Element !== 'undefined' && result instanceof Element)
+        ) {
             return `<${result.tagName.toLowerCase()} ${Array.from(
                 result.attributes
             )

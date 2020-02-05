@@ -194,6 +194,11 @@ export declare class WebComponentTypeInstance<
     public isMounted: boolean;
 
     /**
+     * Whether this component is being server-side rendered
+     */
+    public isSSR: boolean;
+
+    /**
      * An object that contains all children
      * of this element mapped by their ID.
      * This object can also be called with a
@@ -340,6 +345,7 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
         public disposables: (() => void)[] = [];
 
         public isMounted: boolean = false;
+        public isSSR: boolean = false;
 
         constructor(...args: any[]) {
             super(...args);

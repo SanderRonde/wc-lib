@@ -12,6 +12,8 @@ interface ExtendedProcess extends NodeJS.Process {
     HTMLElement: typeof HTMLElement;
 }
 
+export class FallbackHTMLElement {}
+
 /**
  * The base element from which every webcomponent is extended.
  * This will always be HTMLElement regardless of the environment
@@ -21,6 +23,6 @@ export const elementBase: typeof HTMLElement = (() => {
     if (typeof HTMLElement !== 'undefined') {
         return HTMLElement;
     } else {
-        return (<ExtendedProcess>process).HTMLElement;
+        return (<ExtendedProcess>process).HTMLElement || FallbackHTMLElement;
     }
 })();

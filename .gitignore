@@ -65,7 +65,10 @@ temp/
 test/usage/**/*.js
 !test/usage/support/
 test/usage/support/commands.js
+test/unit/**/*.js
+test/modules/
 instrumented/
+instrumented-cjs/
 .vscode
 bin/**/*.js
 examples/**/*.js

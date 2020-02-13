@@ -12,7 +12,17 @@ interface ExtendedProcess extends NodeJS.Process {
     HTMLElement: typeof HTMLElement;
 }
 
-export class FallbackHTMLElement {}
+export class FallbackHTMLElement {
+    attachShadow(_init: any): any {
+        return {};
+    }
+    tagName = '';
+    setAttribute() {}
+    removeAttribute() {}
+    hasAttribute() {
+        return false;
+    }
+}
 
 /**
  * The base element from which every webcomponent is extended.

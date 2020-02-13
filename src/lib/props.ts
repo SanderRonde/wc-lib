@@ -867,8 +867,8 @@ function getCoerced(initial: any, mapType: DefinePropTypes) {
     return initial;
 }
 
-const connectMap = new WeakMap<HTMLElement, any>();
-const connectedElements = new WeakSet<HTMLElement>();
+const connectMap = new WeakMap<HTMLElementAttributes, any>();
+const connectedElements = new WeakSet<HTMLElementAttributes>();
 
 /**
  * Waits for the element to be connected to the DOM
@@ -939,6 +939,7 @@ export interface PropComponent extends HTMLElementAttributes {
     renderToDOM(changeType: number): void;
     getParentRef?(ref: string): any;
     isMounted: boolean;
+    isSSR: boolean;
     fire<EV extends keyof PROP_EVENTS, R extends PROP_EVENTS[EV]['returnType']>(
         event: EV | any,
         ...params: PROP_EVENTS[EV]['args'] | any
@@ -1106,7 +1107,9 @@ namespace PropsDefiner {
             this.preMountedQueue.remove.forEach((key) =>
                 onRemoveAttribute(key, this)
             );
-            queueRender(this.component, CHANGE_TYPE.PROP);
+            if (!this.component.isSSR) {
+                queueRender(this.component, CHANGE_TYPE.PROP);
+            }
         }
     }
 
@@ -1630,7 +1633,7 @@ export class Props<
     // Keep this unused private value so typescript doesn't
     // optimise it away, breaking the config inference (InferPropConfig)
     // @ts-ignore
-    constructor(private __config: C) {}
+    constructor(public __config?: C) {}
 
     /**
      * Defines properties on this component
@@ -1747,11 +1750,13 @@ export class Props<
         } = {},
         parentProps: PP = (element as any).props
     ): Props<typeof config> & R & PP {
-        const tag = element.tagName.toLowerCase();
-        if (propConfigs.has(tag)) {
-            propConfigs.set(tag, { ...propConfigs.get(tag)!, ...config });
-        } else {
-            propConfigs.set(tag, config);
+        if (element.tagName) {
+            const tag = element.tagName.toLowerCase();
+            if (propConfigs.has(tag)) {
+                propConfigs.set(tag, { ...propConfigs.get(tag)!, ...config });
+            } else {
+                propConfigs.set(tag, config);
+            }
         }
 
         // if parentProps = {}, that is the default value created in base.ts
@@ -1789,9 +1794,9 @@ export class Props<
      * is connected to the dom (`connectedCallback` is called).
      * This is only used by the library and has no other uses.
      *
-     * @param {HTMLElement} - The element that was connected
+     * @param {HTMLElementAttributes} - The element that was connected
      */
-    static onConnect(element: HTMLElement) {
+    static onConnect(element: HTMLElementAttributes) {
         if (connectMap.has(element)) {
             for (const listener of connectMap.get(element)!) {
                 listener();

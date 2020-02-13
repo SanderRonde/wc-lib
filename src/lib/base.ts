@@ -497,11 +497,9 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
             return true;
         }
 
-        public readonly root =
-            this.attachShadow &&
-            (this.attachShadow({
-                mode: 'open',
-            }) as ExtendedShadowRoot);
+        public readonly root = this.attachShadow({
+            mode: 'open',
+        }) as ExtendedShadowRoot;
 
         props: any = {};
 

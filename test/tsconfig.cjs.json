@@ -22,10 +22,8 @@
         "paths": {
             "../instrumented/*": ["src/"]
         }
-	},
+    },
     "compileOnSave": true,
-	"allowJs": true,
-	"include": [
-		"usage/test.ts"
-    ]
+    "allowJs": true,
+    "include": ["usage/test.ts", "unit/"]
 }

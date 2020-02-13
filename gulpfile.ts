@@ -2,7 +2,6 @@ import * as replace from 'gulp-replace';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as gulp from 'gulp';
-import * as path from 'path';
 
 declare class Promise<T> {
     constructor(
@@ -137,27 +136,21 @@ gulp.task(
                 });
             });
         },
-        async function patchCypressIstanbul() {
-            const filePath = path.join(
-                __dirname,
-                'node_modules/cypress-istanbul/task.js'
-            );
-            return fs
-                .readFile(filePath, {
-                    encoding: 'utf8',
+        function copyMapsES() {
+            return gulp
+                .src(['**/*.map'], {
+                    cwd: './build/es',
+                    base: './build/es',
                 })
-                .then((file) => {
-                    return fs.writeFile(
-                        filePath,
-                        file.replace(
-                            /console.log\('wrote coverage file %s', nycFilename\)/g,
-                            ''
-                        ),
-                        {
-                            encoding: 'utf8',
-                        }
-                    );
-                });
+                .pipe(gulp.dest('instrumented/'));
+        },
+        function copyMapsCJS() {
+            return gulp
+                .src(['**/*.map'], {
+                    cwd: './build/cjs',
+                    base: './build/cjs',
+                })
+                .pipe(gulp.dest('instrumented-cjs/'));
         }
     )
 );
@@ -169,6 +162,7 @@ gulp.task('replaceTestImports', () => {
             base: './test',
         })
         .pipe(replace('/build/es/', '/instrumented/'))
+        .pipe(replace('/build/cjs/', '/instrumented-cjs/'))
         .pipe(gulp.dest('test'));
 });
 

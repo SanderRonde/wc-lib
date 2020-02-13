@@ -20,13 +20,9 @@
         "jsx": "react",
         "jsxFactory": "html.jsx",
         "strictBindCallApply": true
-	},
+    },
     "compileOnSave": true,
-	"allowJs": true,
-	"include": [
-		"**/*"
-    ],
-    "exclude": [
-        "usage/test.ts",
-    ]
+    "allowJs": true,
+    "include": ["**/*"],
+    "exclude": ["usage/test.ts", "unit/"]
 }

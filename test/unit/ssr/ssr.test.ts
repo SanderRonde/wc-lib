@@ -1,0 +1,586 @@
+import { ConfigurableWebComponent } from '../../../build/cjs/wc-lib.js';
+import {
+    ssr,
+    createSSRSession,
+    SSR,
+} from '../../../build/cjs/wc-lib-ssr.all.js';
+import { elementFactory } from './elements/elements';
+import { toTestTags } from './util/test-tags.js';
+import test from 'ava';
+
+const {
+    NoIs,
+    SimpleElement,
+    ParentElementSame,
+    AutoClosing,
+    CSSError,
+    DifferentChild,
+    MultiCSS,
+    MultiChild,
+    NestedChild,
+    NestedTag,
+    ParentElementDifferent,
+    RenderError,
+    SingleChild,
+    UndefinedChild,
+    WithAttributes,
+    WithCSS,
+    WithProps,
+    ComplexTag,
+} = elementFactory(ConfigurableWebComponent, true);
+
+{
+    // Children
+    test('a single child can be rendered', (t) => {
+        const root = toTestTags(t, ssr(SingleChild));
+
+        root.assertFormat([SingleChild.is, [['div', []]]]);
+    });
+    test('multiple children are rendered', (t) => {
+        const root = toTestTags(t, ssr(MultiChild));
+
+        root.assertFormat([
+            MultiChild.is,
+            [
+                ['div', []],
+                ['div', []],
+                ['div', []],
+                ['div', []],
+            ],
+        ]);
+    });
+    test('text is rendered', (t) => {
+        const root = toTestTags(t, ssr(NestedChild));
+
+        root.assertTag();
+        root.assertChildren(3);
+
+        root[0][0][0].c[0].assertText();
+    });
+    test('nested children are rendered', (t) => {
+        const root = toTestTags(t, ssr(NestedChild));
+
+        root.assertFormat([
+            NestedChild.is,
+            [
+                ['div', [['div', [['div', ['test']]]]]],
+                ['div', []],
+                ['span', [['div', [['br', []]]]]],
+            ],
+        ]);
+    });
+    test('other different tags can be rendered as children', (t) => {
+        const root = toTestTags(t, ssr(DifferentChild));
+
+        root.assertTag();
+        root.assertTagName(DifferentChild.is);
+        root.assertChildren(3);
+
+        root[0].assertTag();
+        root[0].assertTagName('simple-element');
+        root[0].assertChildren();
+
+        root[0][0].assertTag();
+        root[0][0].assertTagName('div');
+    });
+    test('a different tag can be rendered as a child multiple times', (t) => {
+        const root = toTestTags(t, ssr(DifferentChild));
+
+        root.assertFormat([
+            DifferentChild.is,
+            [
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+            ],
+        ]);
+    });
+    test('other tags are not expanded when not defined', (t) => {
+        const root = toTestTags(t, ssr(UndefinedChild));
+
+        root.assertFormat([
+            UndefinedChild.is,
+            [
+                ['simple-element', []],
+                ['simple-element', []],
+                ['simple-element', []],
+            ],
+        ]);
+    });
+    test('the same tag can be its own (optional) child', (t) => {
+        const root = toTestTags(t, ssr(NestedTag, { child: true }));
+
+        root.assertFormat([NestedTag.is, [[NestedTag.is, [['div', []]]]]]);
+    });
+}
+
+{
+    // Tagname
+    test('element with tagname gets its tag name', (t) => {
+        const root = toTestTags(t, ssr(SimpleElement));
+
+        root.assertFormat([SimpleElement.is, [['div', []]]]);
+    });
+    test('element without tagname gets default tagname', (t) => {
+        const root = toTestTags(t, ssr(NoIs));
+
+        root.assertTag();
+        root.assertTagName('wclib-element1');
+        root.assertChildren(1);
+
+        root.c[0].assertTag();
+    });
+    test('a child element without an is property keeps its tagname', (t) => {
+        const root = toTestTags(t, ssr(ParentElementSame));
+
+        root.assertTag();
+        root.assertTagName(ParentElementSame.is);
+        root.assertChildren(2);
+
+        root[0].assertTagName('no-is');
+        root[1].assertTagName('no-is');
+    });
+    test('another element without a tagname gets a different tagname', (t) => {
+        const root = toTestTags(t, ssr(ParentElementDifferent));
+
+        root.assertTag();
+        root.assertTagName(ParentElementDifferent.is);
+        root.assertChildren(2);
+
+        root[0].assertTagName('simple-element');
+        root[1].assertTagName('simple-element-x');
+    });
+}
+
+{
+    // Attributes
+    test('attributes on the elements are applied', (t) => {
+        const attributes = {
+            a: 'b',
+            c: 'd',
+            e: '"f"',
+        };
+        const root = toTestTags(t, ssr(SimpleElement, {}, attributes));
+
+        root.assertFormat([SimpleElement.is, [['div', []]]]);
+        root.assertAttributes(attributes);
+    });
+    test('no attributes are applied when no attributes are passed', (t) => {
+        const root = toTestTags(t, ssr(SimpleElement));
+
+        root.assertFormat([SimpleElement.is, [['div', []]]]);
+        root.assertAttributes({});
+    });
+    test('attributes are applied to children', (t) => {
+        const root = toTestTags(t, ssr(WithAttributes));
+
+        root.assertFormat([WithAttributes.is, [['div', []]]]);
+        root.assertAttributes({});
+        root[0].assertAttributes(
+            {
+                a: 'b',
+                c: 'd',
+                e: '"f',
+            },
+            false
+        );
+    });
+}
+
+{
+    // Autoclosing
+    test('autoclosing tags are still autoclosing', (t) => {
+        const root = toTestTags(t, ssr(AutoClosing));
+
+        root.assertTag();
+        root.assertTagName(AutoClosing.is);
+        root.assertChildren(5);
+
+        root[0].assertAutoClosing();
+        root[1].assertAutoClosing();
+        root[2].assertAutoClosing();
+        root[3].assertAutoClosing();
+        root[4].assertAutoClosing();
+
+        root[3].assertAttribute('a', 'b');
+        root[4].assertAttribute('b', 'c');
+    });
+    test('not autoclosing tags are not autoclosing', (t) => {
+        const root = toTestTags(t, ssr(SimpleElement));
+
+        root.assertFormat([SimpleElement.is, [['div', []]]]);
+
+        root[0].assertAutoClosing(false);
+    });
+}
+
+{
+    // Props
+    test('properties are applied in render', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(WithProps, {
+                x: 1,
+                y: 2,
+                a: 3,
+                b: 4,
+            })
+        );
+
+        root.assertFormat([
+            WithProps.is,
+            [
+                ['div', ['1']],
+                ['div', ['2']],
+                ['div', ['3']],
+                ['div', ['4']],
+            ],
+        ]);
+    });
+    test('missing props are not set', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(WithProps, {
+                y: 2,
+                b: 4,
+            })
+        );
+
+        root.assertFormat([
+            WithProps.is,
+            [
+                ['div', ['?']],
+                ['div', ['2']],
+                ['div', ['?']],
+                ['div', ['4']],
+            ],
+        ]);
+    });
+    test('extra props are ignored', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(WithProps, {
+                y: 2,
+                b: 4,
+                extra: 1,
+                prop: 3,
+            })
+        );
+
+        root.assertFormat([
+            WithProps.is,
+            [
+                ['div', ['?']],
+                ['div', ['2']],
+                ['div', ['?']],
+                ['div', ['4']],
+            ],
+        ]);
+    });
+    test('default props are applied when no values are passed', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(WithProps, {
+                x: 1,
+                a: 3,
+            })
+        );
+
+        root.assertFormat([
+            WithProps.is,
+            [
+                ['div', ['1']],
+                ['div', ['5']],
+                ['div', ['3']],
+                ['div', ['5']],
+            ],
+        ]);
+    });
+    test('reflective props are reflected to the element', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(WithProps, {
+                x: 1,
+                y: 2,
+                a: 3,
+                b: 4,
+            })
+        );
+
+        root.assertAttribute('x', '1');
+        root.assertAttribute('y', '2');
+    });
+    test('non-reflective props are hidden', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(WithProps, {
+                x: 1,
+                y: 2,
+                a: 3,
+                b: 4,
+            })
+        );
+
+        root.assertDoesNotHaveAttribute('a');
+        root.assertDoesNotHaveAttribute('b');
+    });
+}
+
+{
+    // CSS
+    test('css stylesheet is rendered', (t) => {
+        const root = toTestTags(t, ssr(WithCSS));
+
+        root.assertTag();
+        root.assertTagName(WithCSS.is);
+        root.assertChildren(4);
+
+        root[2].assertTagName('div');
+        root[2].assertAttribute('id', 'a');
+        root[3].assertTagName('div');
+        root[3].assertAttribute('id', 'c');
+
+        root[0].assertTagName('style');
+        root[1].assertTagName('style');
+    });
+    test('css contains rules', (t) => {
+        const root = toTestTags(t, ssr(WithCSS));
+
+        root.assertTag();
+        root.assertTagName(WithCSS.is);
+        root.assertChildren(4);
+
+        root[0].assertTagName('style');
+        root[1].assertTagName('style');
+
+        root[0].assertChildren(1);
+        root[0][0].assertText();
+
+        root[1].assertChildren(1);
+        root[1][0].assertText();
+
+        t.true(
+            root[0][0].content.includes('color: red'),
+            'Style rule is rendered'
+        );
+        t.true(
+            root[1][0].content.includes('color: blue'),
+            'Style rule is rendered'
+        );
+    });
+    test('existing classnames are not removed', (t) => {
+        const root = toTestTags(t, ssr(WithCSS));
+
+        root.assertTag();
+        root.assertTagName(WithCSS.is);
+        root.assertChildren(4);
+
+        root[2].assertHasClasses('b');
+        root[3].assertHasClasses('b', 'c', 'd');
+    });
+    test('element-global classnames are applied', (t) => {
+        const root = toTestTags(t, ssr(MultiCSS));
+
+        root.assertTag();
+        root.assertTagName(MultiCSS.is);
+        root.assertChildren(2);
+
+        root.forEach((c) => c.assertTagName('with-css'));
+
+        root[0].assertChildren(4);
+        root[0][2].assertHasClasses('css-with-css');
+        root[0][2].assertDoesNotHaveClasses('css-multi-css');
+
+        root[1].assertChildren(3);
+        root[1][1].assertHasClasses('css-with-css');
+        root[1][1].assertDoesNotHaveClasses('css-multi-css');
+    });
+    test('element-specific classnames are applied', (t) => {
+        const root = toTestTags(t, ssr(MultiCSS));
+
+        root.assertTag();
+        root.assertTagName(MultiCSS.is);
+        root.assertChildren(2);
+
+        root.forEach((c) => c.assertTagName('with-css'));
+
+        root[0].assertChildren(4);
+        root[0][2].assertHasClasses('css-with-css-0');
+        root[0][2].assertDoesNotHaveClasses('css-multi-css');
+
+        root[1].assertChildren(3);
+        root[1][1].assertHasClasses('css-with-css-1');
+        root[1][1].assertDoesNotHaveClasses('css-multi-css');
+    });
+    test('CHANGE_TYPE.THEME and CHANGE_TYPE.NEVER are only rendered once', (t) => {
+        const root = toTestTags(t, ssr(MultiCSS));
+
+        root.assertTag();
+        root.assertTagName(MultiCSS.is);
+        root.assertChildren(2);
+
+        root.forEach((c) => c.assertTagName('with-css'));
+
+        root[0].assertChildren(4);
+        root[0][0].assertTagName('style');
+        root[0][1].assertTagName('style');
+
+        root[1].assertChildren(3);
+        root[1][1].assertTagName('div');
+    });
+    test('other change type stylesheets are rendered multiple times', (t) => {
+        const root = toTestTags(t, ssr(MultiCSS));
+
+        root.assertTag();
+        root.assertTagName(MultiCSS.is);
+        root.assertChildren(2);
+
+        root.forEach((c) => c.assertTagName('with-css'));
+
+        root[0].assertChildren(4);
+        root[0][0].assertTagName('style');
+        root[0][1].assertTagName('style');
+
+        root[1].assertChildren(3);
+        root[1][0].assertTagName('style');
+        root[1][0].assertChildren(1);
+        root[1][0][0].assertText();
+        t.true(
+            root[1][0][0].content.includes('color: blue'),
+            'rendered correct stylesheet'
+        );
+    });
+}
+
+{
+    test('renders are stateless by default - unnamed tag test', (t) => {
+        const root = toTestTags(t, ssr(NoIs));
+        const root2 = toTestTags(t, ssr(NoIs));
+
+        root.assertTagName('wclib-element1');
+        root2.assertTagName('wclib-element1');
+    });
+    test('renders are stateless by default - tagname map test', (t) => {
+        const root = toTestTags(t, ssr(DifferentChild));
+        const root2 = toTestTags(t, ssr(UndefinedChild));
+
+        root.assertTagName(DifferentChild.is);
+        root2.assertTagName(UndefinedChild.is);
+
+        root.assertFormat([
+            DifferentChild.is,
+            [
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+            ],
+        ]);
+        // Elements are still undefined
+        root2.assertFormat([
+            UndefinedChild.is,
+            [
+                ['simple-element', []],
+                ['simple-element', []],
+                ['simple-element', []],
+            ],
+        ]);
+    });
+    test('renders are stateless by default - css test', (t) => {
+        const root = toTestTags(t, ssr(WithCSS));
+        const root2 = toTestTags(t, ssr(WithCSS));
+
+        root.assertTagName(WithCSS.is);
+        root2.assertTagName(WithCSS.is);
+        root.assertChildren(4);
+        root2.assertChildren(4);
+    });
+    test('renders can have state if set explicitly - unnamed tag test', (t) => {
+        const session = createSSRSession();
+
+        const root = toTestTags(t, ssr(NoIs, {}, {}, {}, session));
+        const root2 = toTestTags(t, ssr(NoIs, {}, {}, {}, session));
+
+        root.assertTagName('wclib-element1');
+        root2.assertTagName('wclib-element2');
+    });
+    test('renders can have state if set explicitly - tagname map test', (t) => {
+        const session = createSSRSession();
+
+        const root = toTestTags(t, ssr(DifferentChild, {}, {}, {}, session));
+        const root2 = toTestTags(t, ssr(UndefinedChild, {}, {}, {}, session));
+
+        root.assertTagName(DifferentChild.is);
+        root2.assertTagName(UndefinedChild.is);
+
+        root.assertFormat([
+            DifferentChild.is,
+            [
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+            ],
+        ]);
+        // Elements are now defined
+        root2.assertFormat([
+            UndefinedChild.is,
+            [
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+                ['simple-element', [['div', []]]],
+            ],
+        ]);
+    });
+    test('renders can have state if set explicitly - css test', (t) => {
+        const session = createSSRSession();
+
+        const root = toTestTags(t, ssr(WithCSS, {}, {}, {}, session));
+        const root2 = toTestTags(t, ssr(WithCSS, {}, {}, {}, session));
+
+        root.assertTagName(WithCSS.is);
+        root2.assertTagName(WithCSS.is);
+        root.assertChildren(4);
+        root2.assertChildren(3);
+    });
+}
+
+{
+    // Errors
+    test('errors during rendering are captured', (t) => {
+        const err = t.throws<SSR.Errors.RenderError>(
+            () => {
+                toTestTags(t, ssr(RenderError));
+            },
+            {
+                message: /Error while rendering component on the server: Error, oh no/,
+                name: 'RenderError',
+                instanceOf: SSR.Errors.RenderError,
+            }
+        );
+        t.true(err.source instanceof Error, 'source is an error');
+        t.is(err.stack, err.source.stack, 'stack is copied over');
+    });
+    test('errors during CSS parsing are captured', (t) => {
+        const err = t.throws<SSR.Errors.CSSParseError>(
+            () => {
+                toTestTags(t, ssr(CSSError));
+            },
+            {
+                message: /Error while parsing rendered CSS/,
+                name: 'CSSParseError',
+                instanceOf: SSR.Errors.CSSParseError,
+            }
+        );
+        t.true(err.source instanceof Error, 'source is an error');
+        t.is(err.stack, err.source.stack, 'stack is copied over');
+        t.truthy(err.file, 'file is attached');
+    });
+}
+
+{
+    // Complex
+    test('complex templates still render (without complex features)', (t) => {
+        const root = toTestTags(t, ssr(ComplexTag));
+
+        root.assertFormat([ComplexTag.is, [['div', []]]]);
+    });
+}

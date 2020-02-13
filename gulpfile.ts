@@ -155,6 +155,58 @@ gulp.task(
     )
 );
 
+function fromEntries<V>(
+    entries: [string, V][]
+): {
+    [key: string]: V;
+} {
+    const obj: {
+        [key: string]: V;
+    } = {};
+    for (const [key, val] of entries) {
+        obj[key] = val;
+    }
+    return obj;
+}
+
+/**
+ * Filter out instrumented files from generated unit test
+ * coverage file
+ */
+gulp.task('filterInstrumented', () => {
+    return new Promise((resolve) => {
+        globProm('.nyc_output/*.json').then((filePaths) => {
+            Promise.all(
+                filePaths.map((filePath) => {
+                    return fs
+                        .readFile(filePath, {
+                            encoding: 'utf8',
+                        })
+                        .then((content) => {
+                            const parsed = JSON.parse(content);
+                            const filtered = fromEntries(
+                                Object.keys(parsed)
+                                    .filter((key) => {
+                                        return (
+                                            key.indexOf('instrumented') === -1
+                                        );
+                                    })
+                                    .map((key) => [key, parsed[key]])
+                            );
+                            return fs.writeFile(
+                                filePath,
+                                JSON.stringify(filtered, null, '\t'),
+                                {
+                                    encoding: 'utf8',
+                                }
+                            );
+                        });
+                })
+            ).then(resolve);
+        });
+    });
+});
+
 gulp.task('replaceTestImports', () => {
     return gulp
         .src(['**/*.js'], {

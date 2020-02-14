@@ -51,7 +51,7 @@ gulp.task(
                 .pipe(gulp.dest('bundled'));
         },
         async function bundle() {
-            // GEt all directories in the bundled/ folder
+            // Get all directories in the bundled/ folder
             const dirs = (
                 await Promise.all(
                     (await fs.readdir(path.join(__dirname, './bundled'))).map(

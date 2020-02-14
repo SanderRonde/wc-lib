@@ -64,7 +64,7 @@ function wrapFnTitle(
 }
 
 function wrapFnTitleWrapper(name: string, original: Function) {
-    return function(...args: any[]) {
+    return function(this: any, ...args: any[]) {
         return wrapFnTitle(name, original, this, args);
     };
 }
@@ -76,11 +76,11 @@ function genTestFn(name: string): TestInterface {
                 return wrapFnTitleWrapper(name, target[key]);
             }
             if (key === 'todo') {
-                return function(title: string) {
+                return function(this: any, title: string) {
                     return target.todo.apply(this, [`${name}: ${title}`]);
                 };
             }
-            return target[key];
+            return (target as any)[key];
         },
         apply(target, thisArg, args: any[]) {
             return wrapFnTitle(name, target, thisArg, args);

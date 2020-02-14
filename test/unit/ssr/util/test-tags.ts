@@ -88,6 +88,18 @@ class TestTag extends Array<TestTag> {
         }
     }
 
+    assertMinChildren(amount: number) {
+        this.assertTag();
+
+        if (amount > 0) {
+            this._t.true(this.children.length > 0, 'Has children');
+        }
+        this._t.true(
+            this.children.length >= amount,
+            `Amount of children is at least ${amount}`
+        );
+    }
+
     assertHasAttribute(name: string) {
         this._t.true(
             name in this.tag.attributes,

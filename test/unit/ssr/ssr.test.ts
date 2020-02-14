@@ -27,6 +27,14 @@ const {
     WithCSS,
     WithProps,
     ComplexTag,
+    BothSlotsUser,
+    DefaultSlotUser,
+    DefaultSlotUserEmpty,
+    DefaultSlotUserMulti,
+    NamedSlotUser,
+    DefaultSlotMultiUser,
+    SimpleElementEmptyProps,
+    WithPrivProps,
 } = elementFactory(ConfigurableWebComponent, true);
 
 {
@@ -185,6 +193,52 @@ const {
             false
         );
     });
+    test('non-strings are converted to strings', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(
+                SimpleElement,
+                {},
+                {
+                    a: 0,
+                    c: /x/,
+                    e: true,
+                }
+            )
+        );
+
+        root.assertFormat([SimpleElement.is, [['div', []]]]);
+        root.assertAttributes({
+            a: '0',
+            c: '/x/',
+            e: 'true',
+        });
+    });
+    test('iterables have their values converted to strings', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(
+                SimpleElement,
+                {},
+                {
+                    a: [0, 1, 2],
+                    c: [/x/, /y/, /z/],
+                    e: [true, false, true],
+                    f: [0, /x/, true],
+                    g: ['a', 'b', 'c'],
+                }
+            )
+        );
+
+        root.assertFormat([SimpleElement.is, [['div', []]]]);
+        root.assertAttributes({
+            a: '012',
+            c: '/x//y//z/',
+            e: 'truefalsetrue',
+            f: '0/x/true',
+            g: 'abc',
+        });
+    });
 }
 
 {
@@ -232,6 +286,23 @@ const {
             [
                 ['div', ['1']],
                 ['div', ['2']],
+                ['div', ['3']],
+                ['div', ['4']],
+            ],
+        ]);
+    });
+    test('properties are applied in render when only private props are set', (t) => {
+        const root = toTestTags(
+            t,
+            ssr(WithPrivProps, {
+                a: 3,
+                b: 4,
+            })
+        );
+
+        root.assertFormat([
+            WithPrivProps.is,
+            [
                 ['div', ['3']],
                 ['div', ['4']],
             ],
@@ -323,6 +394,11 @@ const {
 
         root.assertDoesNotHaveAttribute('a');
         root.assertDoesNotHaveAttribute('b');
+    });
+    test('works fine with an empty props object', (t) => {
+        const root = toTestTags(t, ssr(SimpleElementEmptyProps));
+
+        root.assertFormat([SimpleElementEmptyProps.is, [['div', []]]]);
     });
 }
 
@@ -453,6 +529,7 @@ const {
 }
 
 {
+    // Statelessness
     test('renders are stateless by default - unnamed tag test', (t) => {
         const root = toTestTags(t, ssr(NoIs));
         const root2 = toTestTags(t, ssr(NoIs));
@@ -582,5 +659,175 @@ const {
         const root = toTestTags(t, ssr(ComplexTag));
 
         root.assertFormat([ComplexTag.is, [['div', []]]]);
+    });
+}
+
+{
+    // Slots
+    test("empty default slots don't use the default value", (t) => {
+        const root = toTestTags(t, ssr(DefaultSlotUserEmpty));
+
+        root.assertFormat([
+            DefaultSlotUserEmpty.is,
+            [
+                [
+                    'default-slot',
+                    [
+                        ['div', []],
+                        ['slot', []],
+                        ['div', []],
+                    ],
+                ],
+            ],
+        ]);
+    });
+    test('default slot values can be filled', (t) => {
+        const root = toTestTags(t, ssr(DefaultSlotUser));
+
+        root.assertFormat([
+            DefaultSlotUser.is,
+            [
+                [
+                    'default-slot',
+                    [
+                        ['div', []],
+                        ['slot', [['span', ['content']]]],
+                        ['div', []],
+                    ],
+                ],
+            ],
+        ]);
+    });
+    test('only the first default slot is used for slotting', (t) => {
+        const root = toTestTags(t, ssr(DefaultSlotMultiUser));
+
+        root.assertFormat([
+            DefaultSlotMultiUser.is,
+            [
+                [
+                    'default-slot-multi',
+                    [
+                        ['div', []],
+                        ['slot', [['span', ['content']]]],
+                        ['slot', [['div', ['default2']]]],
+                        ['div', []],
+                    ],
+                ],
+            ],
+        ]);
+    });
+    test('multiple tags can be put into a default slot', (t) => {
+        const root = toTestTags(t, ssr(DefaultSlotUserMulti));
+
+        root.assertFormat([
+            DefaultSlotUserMulti.is,
+            [
+                [
+                    'default-slot',
+                    [
+                        ['div', []],
+                        [
+                            'slot',
+                            [
+                                ['span', ['content']],
+                                ['span', ['content2']],
+                            ],
+                        ],
+                        ['div', []],
+                    ],
+                ],
+            ],
+        ]);
+    });
+    test('named slots are filled with their values', (t) => {
+        const root = toTestTags(t, ssr(NamedSlotUser));
+
+        root.assertTagName(NamedSlotUser.is);
+        root.assertChildren(1);
+        root[0].assertMinChildren(7);
+        root[0][1].assertTag();
+        root[0][1].assertTagName('slot');
+        root[0][1][0].assertTag();
+        root[0][1][0].assertTagName('span');
+        root[0][1][0][0].assertContent('a-content');
+
+        root[0][5].assertTag();
+        root[0][5].assertTagName('slot');
+        root[0][5][0].assertTag();
+        root[0][5][0].assertTagName('span');
+        root[0][5][0][0].assertContent('c-content');
+    });
+    test('unnamed values are ignored when no slot exists for them', (t) => {
+        const root = toTestTags(t, ssr(NamedSlotUser));
+
+        root.assertFormat([
+            NamedSlotUser.is,
+            [
+                [
+                    'named-slot',
+                    [
+                        ['div', []],
+                        ['slot', [['span', ['a-content']]]],
+                        ['div', []],
+                        ['slot', []],
+                        ['div', []],
+                        ['slot', [['span', ['c-content']]]],
+                        ['div', []],
+                    ],
+                ],
+            ],
+        ]);
+    });
+    test('empty named slots use the default value', (t) => {
+        const root = toTestTags(t, ssr(BothSlotsUser));
+
+        root.assertTagName(BothSlotsUser.is);
+        root.assertChildren(1);
+        root[0].assertMinChildren(2);
+        root[0][1].assertTag();
+        root[0][1].assertTagName('slot');
+        root[0][1].assertChildren(1);
+        root[0][1][0].assertContent('default-a');
+    });
+    test('tags with the wrong slot name are ignored when no default slot exists', (t) => {
+        const root = toTestTags(t, ssr(BothSlotsUser));
+
+        root.assertTagName(BothSlotsUser.is);
+        root.assertChildren(1);
+        root[0].assertChildren(7);
+    });
+    test('tags with the wrong slot name are still ignored if a default slot exists', (t) => {
+        const root = toTestTags(t, ssr(BothSlotsUser));
+
+        root.assertTagName(BothSlotsUser.is);
+        root.assertChildren(1);
+        root[0].assertChildren(7);
+        root[0][3].assertTag();
+        root[0][3].assertTagName('slot');
+        root[0][3].assertChildren(1);
+        root[0][3][0].assertTagName('span');
+        root[0][3][0].assertChildren();
+        root[0][3][0][0].assertContent('default-content');
+    });
+    test('default slots and named slots can work together', (t) => {
+        const root = toTestTags(t, ssr(BothSlotsUser));
+
+        root.assertFormat([
+            BothSlotsUser.is,
+            [
+                [
+                    'both-slots',
+                    [
+                        ['div', []],
+                        ['slot', ['default-a']],
+                        ['div', []],
+                        ['slot', [['span', ['default-content']]]],
+                        ['div', []],
+                        ['slot', [['span', ['c-content']]]],
+                        ['div', []],
+                    ],
+                ],
+            ],
+        ]);
     });
 }

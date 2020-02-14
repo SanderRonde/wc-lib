@@ -50,6 +50,27 @@ export function elementFactory<
     }
 
     @config({
+        is: 'simple-element-empty-props',
+        html: new TemplateFn<SimpleElementEmptyProps>(
+            () => {
+                return html`
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class SimpleElementEmptyProps extends base {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {});
+    }
+
+    @config({
         is: 'simple-element-x',
         html: new TemplateFn<SimpleElementX>(
             () => {
@@ -211,6 +232,36 @@ export function elementFactory<
     }
 
     @config({
+        is: 'with-priv-props',
+        html: new TemplateFn<WithPrivProps>(
+            (_, props) => {
+                return html`
+                    <div>${props.a || '?'}</div>
+                    <div>${props.b || '?'}</div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class WithPrivProps extends base {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {
+            priv: {
+                a: PROP_TYPE.NUMBER,
+                b: {
+                    value: 5,
+                    type: PROP_TYPE.NUMBER,
+                },
+            },
+        });
+    }
+
+    @config({
         is: 'with-css',
         html: new TemplateFn<WithCSS>(
             () => {
@@ -274,6 +325,38 @@ export function elementFactory<
     })
     //@ts-ignore
     class MultiCSS extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'nested-css',
+        html: new TemplateFn<NestedCSS>(
+            () => {
+                return html``;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        css: [
+            new TemplateFn<WithCSS>(
+                () => {
+                    return html`
+                        <style>
+                            #a {
+                                color: red;
+                            }
+                        </style>
+                    `;
+                },
+                CHANGE_TYPE.NEVER,
+                render
+            ),
+        ],
+    })
+    //@ts-ignore
+    class NestedCSS extends base {
         constructor() {
             super();
         }
@@ -503,6 +586,233 @@ export function elementFactory<
         });
     }
 
+    @config({
+        is: 'default-slot',
+        html: new TemplateFn<DefaultSlot>(
+            () => {
+                return html`
+                    <div></div>
+                    <slot><div>default</div></slot>
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class DefaultSlot extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'default-slot-multi',
+        html: new TemplateFn<DefaultSlotMulti>(
+            () => {
+                return html`
+                    <div></div>
+                    <slot><div>default</div></slot>
+                    <slot><div>default2</div></slot>
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class DefaultSlotMulti extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'default-slot-multi-user',
+        html: new TemplateFn<DefaultSlotMultiUser>(
+            () => {
+                return html`
+                    <default-slot-multi>
+                        <span>content</span>
+                    </default-slot-multi>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [DefaultSlotMulti],
+    })
+    //@ts-ignore
+    class DefaultSlotMultiUser extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'default-slot-user-empty',
+        html: new TemplateFn<DefaultSlotUserEmpty>(
+            () => {
+                return html`
+                    <default-slot></default-slot>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [DefaultSlot],
+    })
+    //@ts-ignore
+    class DefaultSlotUserEmpty extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'default-slot-user',
+        html: new TemplateFn<DefaultSlotUser>(
+            () => {
+                return html`
+                    <default-slot><span>content</span></default-slot>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [DefaultSlot],
+    })
+    //@ts-ignore
+    class DefaultSlotUser extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'default-slot-user-multi',
+        html: new TemplateFn<DefaultSlotUserMulti>(
+            () => {
+                return html`
+                    <default-slot>
+                        <span>content</span>
+                        <span>content2</span>
+                    </default-slot>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [DefaultSlot],
+    })
+    //@ts-ignore
+    class DefaultSlotUserMulti extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'named-slot',
+        html: new TemplateFn<NamedSlot>(
+            () => {
+                return html`
+                    <div></div>
+                    <slot name="a"></slot>
+                    <div></div>
+                    <slot name="b"></slot>
+                    <div></div>
+                    <slot name="c"></slot>
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class NamedSlot extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'named-slot-user',
+        html: new TemplateFn<NamedSlotUser>(
+            () => {
+                return html`
+                    <named-slot>
+                        <span slot="c">c-content</span>
+                        <span slot="a">a-content</span>
+                        <span slot="d">wrong-slot</span>
+                        <span>ignored</span>
+                    </named-slot>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [NamedSlot],
+    })
+    //@ts-ignore
+    class NamedSlotUser extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'both-slots',
+        html: new TemplateFn<BothSlots>(
+            () => {
+                return html`
+                    <div></div>
+                    <slot name="a">default-a</slot>
+                    <div></div>
+                    <slot></slot>
+                    <div></div>
+                    <slot name="c">default-c</slot>
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class BothSlots extends base {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'both-slots-user',
+        html: new TemplateFn<BothSlotsUser>(
+            () => {
+                return html`
+                    <both-slots>
+                        <span slot="c">c-content</span>
+                        <span slot="b">b-content</span>
+                        <span>default-content</span>
+                    </both-slots>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [BothSlots],
+    })
+    //@ts-ignore
+    class BothSlotsUser extends base {
+        constructor() {
+            super();
+        }
+    }
+
     return {
         SimpleElement,
         NoIs,
@@ -522,5 +832,13 @@ export function elementFactory<
         RenderError,
         CSSError,
         ComplexTag,
+        DefaultSlotUserEmpty,
+        DefaultSlotUser,
+        DefaultSlotUserMulti,
+        NamedSlotUser,
+        BothSlotsUser,
+        DefaultSlotMultiUser,
+        SimpleElementEmptyProps,
+        WithPrivProps,
     };
 }

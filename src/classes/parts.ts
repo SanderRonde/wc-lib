@@ -17,8 +17,11 @@ export class FallbackHTMLElement {
         return {};
     }
     tagName = '';
+    /* istanbul ignore next */
     setAttribute() {}
+    /* istanbul ignore next */
     removeAttribute() {}
+    /* istanbul ignore next */
     hasAttribute() {
         return false;
     }
@@ -29,7 +32,6 @@ export class FallbackHTMLElement {
  * This will always be HTMLElement regardless of the environment
  */
 export const elementBase: typeof HTMLElement = (() => {
-    /* istanbul ignore else */
     if (typeof HTMLElement !== 'undefined') {
         return HTMLElement;
     } else {

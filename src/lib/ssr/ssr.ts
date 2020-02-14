@@ -262,6 +262,7 @@ export namespace SSR {
                     map[element.is] = element;
                 }
 
+                /* istanbul ignore next */
                 for (const dependency of element.dependencies || []) {
                     buildMap(dependency, map);
                 }
@@ -309,10 +310,6 @@ export namespace SSR {
                     });
                 }
 
-                static from(tag: Tag) {
-                    return tag.copy();
-                }
-
                 setChildren(children: (Tag | TextTag)[]) {
                     this._children = children;
                     return this;
@@ -320,7 +317,7 @@ export namespace SSR {
 
                 walk(
                     handler: (
-                        tag: ParsedTag
+                        tag: Tag
                     ) => {
                         newTag: ParsedTag;
                         stop: boolean;
@@ -474,10 +471,7 @@ export namespace SSR {
                         };
                         root.forEach((t) =>
                             t.walk((tag) => {
-                                if (
-                                    tag instanceof Tag &&
-                                    tag.tagName === 'slot'
-                                ) {
+                                if (tag.tagName === 'slot') {
                                     if (tag.attributes.hasOwnProperty('name')) {
                                         const {
                                             name: slotName,
@@ -485,7 +479,9 @@ export namespace SSR {
                                         slots.named[slotName] =
                                             slots.named[slotName] || tag;
                                     } else {
-                                        slots.unnamed = slots.unnamed || tag;
+                                        if (!slots.unnamed) {
+                                            slots.unnamed = tag;
+                                        }
                                     }
 
                                     return {
@@ -509,20 +505,17 @@ export namespace SSR {
 
                         root.forEach((t) =>
                             t.walk((tag) => {
-                                if (tag instanceof Tag) {
-                                    if (tag.attributes.hasOwnProperty('slot')) {
-                                        const slotName = tag.attributes.slot;
-                                        slottables.named[slotName] =
-                                            slottables.named[slotName] || tag;
-                                    } else {
-                                        slottables.unnamed.push(tag);
-                                    }
-                                    return {
-                                        newTag: tag,
-                                        stop: true,
-                                    };
+                                if (tag.attributes.hasOwnProperty('slot')) {
+                                    const slotName = tag.attributes.slot;
+                                    slottables.named[slotName] =
+                                        slottables.named[slotName] || tag;
+                                } else {
+                                    slottables.unnamed.push(tag);
                                 }
-                                return;
+                                return {
+                                    newTag: tag,
+                                    stop: true,
+                                };
                             })
                         );
                         return slottables;
@@ -532,20 +525,17 @@ export namespace SSR {
                         receivers: SlotReceivers,
                         slottables: Slottables
                     ) {
-                        const unslotted: ParsedTag[] = [...slottables.unnamed];
                         for (const slotName in slottables.named) {
                             const slottable = slottables.named[slotName];
                             if (receivers.named[slotName]) {
                                 receivers.named[slotName].setChildren([
                                     slottable,
                                 ]);
-                            } else {
-                                unslotted.push(slottable);
                             }
                         }
 
                         if (receivers.unnamed) {
-                            receivers.unnamed.setChildren(unslotted);
+                            receivers.unnamed.setChildren(slottables.unnamed);
                         }
                     }
 
@@ -557,14 +547,13 @@ export namespace SSR {
                 }
 
                 export function _mapTag(
-                    tag: ParsedTag,
+                    tag: Tag,
                     theme: BaseTypes.Theme,
                     session: DocumentSession
                 ): {
                     newTag: ParsedTag;
                     stop: boolean;
                 } | void {
-                    if (tag instanceof TextTag) return;
                     if (
                         !tag.tagName.includes('-') ||
                         !session._elementMap.hasOwnProperty(tag.tagName)
@@ -601,7 +590,7 @@ export namespace SSR {
             export namespace _CSS {
                 export class CSSTag extends _TextToTags.Tag {
                     public _changeOn!: CHANGE_TYPE;
-                    private _cssChildren: (CSSText | CSSTag)[];
+                    private _cssChildren: CSSText[];
 
                     constructor({
                         tagName,
@@ -615,7 +604,7 @@ export namespace SSR {
                         children: (Tag | TextTag | CSSText | CSSTag)[];
                     }) {
                         super({ tagName, attributes, isSelfClosing, children });
-                        this._cssChildren = children as (CSSText | CSSTag)[];
+                        this._cssChildren = children as CSSText[];
                     }
 
                     get children() {
@@ -661,13 +650,6 @@ export namespace SSR {
                         }
                     }
 
-                    get elementGlobal() {
-                        return (
-                            this._changeOn === CHANGE_TYPE.THEME ||
-                            !!(this._changeOn & CHANGE_TYPE.NEVER)
-                        );
-                    }
-
                     get cssParsed() {
                         if (this._stylesheet) return this._stylesheet;
                         return (this._stylesheet = this.parse());
@@ -678,11 +660,14 @@ export namespace SSR {
                     }
 
                     addPrefix(prefix: string) {
+                        /* istanbul ignore next */
                         if (!this.stylesheet) return;
                         this.stylesheet.rules = this.stylesheet.rules.map(
                             (line) => {
+                                /* istanbul ignore next */
                                 if (!('selectors' in line)) return line;
                                 const rule = line as Rule;
+                                /* istanbul ignore next */
                                 if (!rule.selectors) return line;
                                 rule.selectors = rule.selectors.map(
                                     (selector) => {
@@ -703,6 +688,7 @@ export namespace SSR {
                     element: BaseTypes.BaseClass,
                     instance: BaseTypes.BaseClassInstance
                 ): CSSTag[][] {
+                    /* istanbul ignore next */
                     if (!element.css) return [];
                     const templates = Array.isArray(element.css)
                         ? element.css
@@ -746,20 +732,6 @@ export namespace SSR {
                     return `css-${tagName}`;
                 }
 
-                export function _walkCSSSheets(
-                    tags: (CSSTag | CSSText)[],
-                    handler: (tag: CSSText) => void
-                ): (CSSTag | CSSText)[] {
-                    return tags.map((tag) => {
-                        if (tag instanceof CSSTag) {
-                            _walkCSSSheets(tag.children, handler);
-                        } else {
-                            handler(tag);
-                        }
-                        return tag;
-                    });
-                }
-
                 export function _addCSSPrefixes(
                     templates: CSSTag[][],
                     uniqueID: string,
@@ -771,7 +743,7 @@ export namespace SSR {
                                 ? componentID
                                 : uniqueID;
 
-                            _walkCSSSheets(sheet.children, (tag) => {
+                            sheet.children.map((tag) => {
                                 tag.addPrefix(prefix);
                                 tag.stringify();
                             });
@@ -787,13 +759,11 @@ export namespace SSR {
                 ) {
                     return tags.map((tagClass) => {
                         return tagClass.walk((tag) => {
-                            if (tag instanceof TextTag) return;
-
                             const classNames = (() => {
                                 if (!tag.attributes.hasOwnProperty('class'))
                                     return [];
-                                const classNames = tag.attributes.class;
-                                if (typeof classNames !== 'string') return [];
+                                const classNames = tag.attributes
+                                    .class as string;
                                 return classNames.split(' ');
                             })();
                             classNames.push(uniqueID, componentID);
@@ -870,6 +840,7 @@ export namespace SSR {
             ) {
                 try {
                     return (
+                        /* istanbul ignore next */
                         template?.renderAsText(CHANGE_TYPE.ALWAYS, instance) ||
                         ''
                     );

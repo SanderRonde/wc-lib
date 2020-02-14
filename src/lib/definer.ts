@@ -6,6 +6,8 @@ import { ClassToObj } from './configurable.js';
 import { WCLibError } from './shared.js';
 
 function define(name: string, component: any) {
+    /* istanbul ignore next */
+    if (typeof window === 'undefined') return;
     if (window.customElements.get(name)) {
         return;
     }

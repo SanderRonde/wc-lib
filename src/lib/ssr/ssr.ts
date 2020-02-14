@@ -271,7 +271,7 @@ export namespace SSR {
             }
         }
 
-        export namespace _TextToTags {
+        export namespace TextToTags {
             export class Tag {
                 public tagName: string;
                 public attributes: Object & BaseTypes.TextAttributes;
@@ -450,8 +450,8 @@ export namespace SSR {
                 }
             }
 
-            export namespace _Replacement {
-                export namespace _Slots {
+            export namespace Replacement {
+                export namespace Slots {
                     export interface SlotReceivers {
                         named: BaseTypes.StringMap<Tag>;
                         unnamed: Tag | null;
@@ -462,7 +462,7 @@ export namespace SSR {
                         unnamed: ParsedTag[];
                     }
 
-                    export function _findSlotReceivers(
+                    export function findSlotReceivers(
                         root: ParsedTag[]
                     ): SlotReceivers {
                         const slots: SlotReceivers = {
@@ -540,7 +540,7 @@ export namespace SSR {
                     }
 
                     export function applySlots(element: Tag, lightDOM: Tag) {
-                        const receivers = _findSlotReceivers(element.children);
+                        const receivers = findSlotReceivers(element.children);
                         const slottables = _findSlottables(lightDOM.children);
                         _replaceSlots(receivers, slottables);
                     }
@@ -567,7 +567,7 @@ export namespace SSR {
                         theme,
                         session
                     );
-                    _Slots.applySlots(newTag, tag);
+                    Slots.applySlots(newTag, tag);
                     return {
                         newTag,
                         stop: true,
@@ -588,7 +588,7 @@ export namespace SSR {
             }
 
             export namespace _CSS {
-                export class CSSTag extends _TextToTags.Tag {
+                export class CSSTag extends TextToTags.Tag {
                     public _changeOn!: CHANGE_TYPE;
                     private _cssChildren: CSSText[];
 
@@ -629,7 +629,7 @@ export namespace SSR {
                     css: Stylesheet;
                 }
 
-                export class CSSText extends _TextToTags.TextTag {
+                export class CSSText extends TextToTags.TextTag {
                     public _changeOn!: CHANGE_TYPE;
                     private _stylesheet: null | Stylesheet = null;
 
@@ -696,7 +696,7 @@ export namespace SSR {
 
                     return templates.map((template) => {
                         const text = _tryRender(instance, template);
-                        const cssTags = _TextToTags._Parser.parse<
+                        const cssTags = TextToTags._Parser.parse<
                             CSSTag,
                             CSSText
                         >(text, {
@@ -853,7 +853,8 @@ export namespace SSR {
                 element: BaseTypes.BaseClass,
                 attribs: BaseTypes.Attributes,
                 theme: BaseTypes.Theme,
-                session: DocumentSession
+                session: DocumentSession,
+                isRoot: boolean = false
             ): Tag {
                 const tagName =
                     element.is || `wclib-element${session._unnamedElements++}`;
@@ -867,11 +868,21 @@ export namespace SSR {
 
                 const text = _tryRender(instance, element.html);
                 const tags = _Parser.parse(text);
+                if (
+                    isRoot &&
+                    _Rendering.TextToTags.Replacement.Slots.findSlotReceivers(
+                        tags
+                    ).unnamed
+                ) {
+                    throw new Error(
+                        "Root element can't have unnamed slots as children"
+                    );
+                }
                 const { attributes, publicProps } = _Properties.splitAttributes(
                     instance,
                     attribs
                 );
-                const children = _Replacement.replace(tags, theme, session);
+                const children = Replacement.replace(tags, theme, session);
                 const cssApplied = _CSS.getCSSApplied(
                     element,
                     instance,
@@ -898,11 +909,12 @@ export namespace SSR {
             theme: BaseTypes.Theme,
             session: DocumentSession
         ): string {
-            const dom = _TextToTags.elementToTag(
+            const dom = TextToTags.elementToTag(
                 element,
                 attributes,
                 theme,
-                session
+                session,
+                true
             );
             return dom.toText();
         }

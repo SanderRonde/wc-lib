@@ -116,6 +116,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         DefaultSlotMultiUser,
         SimpleElementEmptyProps,
         WithPrivProps,
+        NamedSlot,
+        DefaultSlot,
     } = elementFactory(component, isComplex);
 
     const test = genTestFn(name);
@@ -918,6 +920,23 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                     ],
                 ],
             ]);
+        });
+        test('root can have named slots as children', (t) => {
+            t.notThrows(() => {
+                toTestTags(t, ssr(NamedSlot));
+            });
+        });
+        test("root can't have unnamed slots as children", (t) => {
+            t.throws(
+                () => {
+                    toTestTags(t, ssr(DefaultSlot));
+                },
+                {
+                    message:
+                        "Root element can't have unnamed slots as children",
+                    instanceOf: Error,
+                }
+            );
         });
     }
 });

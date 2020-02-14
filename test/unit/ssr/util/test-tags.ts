@@ -17,12 +17,12 @@ class TestTag extends Array<TestTag> {
 
     get tag() {
         this.assertTag();
-        return this.parsedTag as SSR._Rendering._TextToTags.Tag;
+        return this.parsedTag as SSR._Rendering.TextToTags.Tag;
     }
 
     get textTag() {
         this.assertText();
-        return this.parsedTag as SSR._Rendering._TextToTags.TextTag;
+        return this.parsedTag as SSR._Rendering.TextToTags.TextTag;
     }
 
     get c() {
@@ -230,7 +230,7 @@ class TestTag extends Array<TestTag> {
 type TestTagFormat = [string, TestTagsFormat[]];
 type TestTagsFormat = TestTagFormat | string;
 
-type ParsedTag = SSR._Rendering._TextToTags.ParsedTag;
+type ParsedTag = SSR._Rendering.TextToTags.ParsedTag;
 
 function mapTag<R>(
     tag: ParsedTag,
@@ -243,7 +243,7 @@ function mapTag<R>(
 }
 
 export function toTestTags(t: ExecutionContext<unknown>, text: string) {
-    const tags = SSR._Rendering._TextToTags._Parser.parse(text);
+    const tags = SSR._Rendering.TextToTags._Parser.parse(text);
     return tags.map((tag) => {
         return mapTag<TestTag>(tag, (tag, children) => {
             return new TestTag(t, tag, children);

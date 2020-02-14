@@ -840,5 +840,7 @@ export function elementFactory<
         DefaultSlotMultiUser,
         SimpleElementEmptyProps,
         WithPrivProps,
+        NamedSlot,
+        DefaultSlot,
     };
 }

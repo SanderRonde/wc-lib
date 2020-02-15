@@ -19,6 +19,7 @@
         "bin/bin.js",
         "build/**"
     ],
+    "@std/esm": "cjs",
     "ava": {
         "files": [
             "test/**/*.test.js"
@@ -42,10 +43,12 @@
     },
     "devDependencies": {
         "@ava/babel": "^1.0.1",
+        "@std/esm": "^0.26.0",
         "@types/css": "^0.0.31",
         "@types/fs-extra": "^7.0.0",
         "@types/glob": "^7.1.1",
         "@types/gulp": "^4.0.6",
+        "@types/gulp-header": "^2.0.0",
         "@types/gulp-replace": "^0.0.31",
         "@types/http-server": "^0.10.0",
         "@types/node": "^12.12.14",
@@ -60,6 +63,7 @@
         "glob": "^7.1.4",
         "gulp": "^4.0.2",
         "gulp-clean": "^0.4.0",
+        "gulp-header": "^2.0.9",
         "gulp-replace": "^1.0.0",
         "http-server": "^0.11.1",
         "istanbul-lib-coverage": "^2.0.5",
@@ -73,7 +77,8 @@
         "rimraf": "^3.0.0",
         "rollup": "^1.31.0",
         "ts-node": "^8.2.0",
-        "webpack": "^4.41.5"
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.11"
     },
     "peerDependencies": {
         "lit-html": "^1.1.0"
@@ -104,7 +109,8 @@
         "test": "npm run compile:all && npm run set-cypress:all && npm run test:unit && npm run cypress",
         "serve": "http-server -c-1 -p 1251 .",
         "examples": "npm run compile:all && npm run compile:examples && npm run serve",
-        "website": "npm run compile:all && npm run compile:examples && gulp prepareWebsite && gulp bundle --cwd examples",
+        "website:gulp": "node -r @std/esm ./node_modules/gulp/bin/gulp.js --cwd examples",
+        "website": "npm run compile:all && npm run compile:examples && gulp prepareWebsite && npm run website:gulp -- bundle && npm run website:gulp -- ssr",
         "coverage:run-unit": "nyc --no-clean --reporter=text npm run test:unit",
         "coverage:instrument": "nyc instrument build/es/ instrumented/ && nyc instrument build/cjs/ instrumented-cjs/ && gulp replaceTestImports",
         "coverage:prep": "npm run compile:all && gulp precoverage && npm run coverage:instrument",

@@ -74,6 +74,7 @@ bin/**/*.js
 examples/**/*.js
 examples/modules/
 examples/bundled
+examples/ssr
 
 TODO.*
 TODO

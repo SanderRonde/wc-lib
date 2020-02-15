@@ -1490,7 +1490,7 @@ namespace PropsDefiner {
         }
     }
 
-    async function defineProperties<
+    function defineProperties<
         R extends PropTypeConfig,
         P extends PropTypeConfig,
         Z extends ReturnType<R, P>
@@ -1507,33 +1507,35 @@ namespace PropsDefiner {
         properties.forEach((property) => property.setKeyMap(element.keyMap));
         properties.forEach((property) => property.setReflect());
         properties.forEach((property) => property.setPropAccessors());
-        await Promise.all(
-            properties.map(async (property) => {
-                /**
-                 * If type is simple, check for values first and then assign default value
-                 *
-                 * If type is complex, there are two cases
-                 * 		If the value is a ref it should wait for that ref
-                 * 			to resolve through its parent and in the meantime
-                 * 			assign a default value
-                 *		If the value is not a ref it should assign it
-                 * 			and otherwise do the default
-                 * 		If there is no value, the default should be assigned
-                 */
-                if (property.config.type !== complex) {
-                    property.assignSimpleType();
-                    return property.doDefaultAssign();
-                }
+        return Promise.all(
+            properties.map(
+                (property): Promise<void | void[]> => {
+                    /**
+                     * If type is simple, check for values first and then assign default value
+                     *
+                     * If type is complex, there are two cases
+                     * 		If the value is a ref it should wait for that ref
+                     * 			to resolve through its parent and in the meantime
+                     * 			assign a default value
+                     *		If the value is not a ref it should assign it
+                     * 			and otherwise do the default
+                     * 		If there is no value, the default should be assigned
+                     */
+                    if (property.config.type !== complex) {
+                        property.assignSimpleType();
+                        return property.doDefaultAssign();
+                    }
 
-                return Promise.all([
-                    property.assignComplexType(),
-                    property.doDefaultAssign(),
-                ]);
-            })
+                    return Promise.all([
+                        property.assignComplexType(),
+                        property.doDefaultAssign(),
+                    ]);
+                }
+            )
         );
     }
 
-    export async function define<
+    export function define<
         R extends PropTypeConfig,
         P extends PropTypeConfig,
         Z extends ReturnType<R, P>
@@ -1557,7 +1559,7 @@ namespace PropsDefiner {
             element,
         });
 
-        await defineProperties(element, props, config);
+        return defineProperties(element, props, config);
     }
 
     export async function joinProps<

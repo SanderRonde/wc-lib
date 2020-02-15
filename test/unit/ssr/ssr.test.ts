@@ -324,6 +324,25 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 g: 'abc',
             });
         });
+        test('dashes are replaced with uppercase letters', (t) => {
+            const attributes = {
+                'with-dashes': 'abc',
+                withoutdashes: 'def',
+            };
+            const html = ssr(SimpleElement, {}, attributes);
+            const root = toTestTags(t, html);
+
+            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertAttributes({
+                // HTML parsing removes casing
+                withdashes: 'abc',
+                withoutdashes: 'def',
+            });
+            t.true(
+                html.indexOf('withDashes') > -1,
+                'attribute is now partially uppercase'
+            );
+        });
     }
 
     {

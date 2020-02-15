@@ -187,6 +187,21 @@ export namespace SSR {
             return text;
         }
 
+        export function _dashesToCasing(name: string) {
+            if (name.indexOf('-') === -1) return name;
+
+            let newStr = '';
+            for (let i = 0; i < name.length; i++) {
+                if (name[i] === '-') {
+                    newStr += name[i + 1].toUpperCase();
+                    i++;
+                } else {
+                    newStr += name[i];
+                }
+            }
+            return newStr;
+        }
+
         export function stringify(attributes: BaseTypes.Attributes) {
             if (Object.keys(attributes).length === 0) {
                 return '';
@@ -195,10 +210,9 @@ export namespace SSR {
             const parts = [];
             for (const key in attributes) {
                 parts.push(
-                    `${key}="${_toString(attributes[key]).replace(
-                        /"/g,
-                        '&quot;'
-                    )}"`
+                    `${_dashesToCasing(key)}="${_toString(
+                        attributes[key]
+                    ).replace(/"/g, '&quot;')}"`
                 );
             }
             return ` ${parts.join(' ')}`;

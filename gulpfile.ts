@@ -1,3 +1,4 @@
+const header = require('gulp-header') as typeof import('gulp-header');
 import * as replace from 'gulp-replace';
 import * as fs from 'fs-extra';
 import * as glob from 'glob';
@@ -246,12 +247,25 @@ gulp.task(
 gulp.task(
     'prepareWebsite',
     gulp.parallel(
-        function moveLitHTML() {
+        function moveLitHTMLTypes() {
             return gulp
-                .src(['**/*.*'], {
+                .src(['**/*.*', '!**/*.js'], {
                     cwd: 'node_modules/lit-html/',
                     base: 'node_modules/lit-html/',
                 })
+                .pipe(gulp.dest('examples/modules/lit-html/'));
+        },
+        function moveLitHTML() {
+            return gulp
+                .src(['**/*.js'], {
+                    cwd: 'node_modules/lit-html/',
+                    base: 'node_modules/lit-html/',
+                })
+                .pipe(
+                    header(
+                        'var window = typeof window !== "undefined" ? window : {};'
+                    )
+                )
                 .pipe(gulp.dest('examples/modules/lit-html/'));
         },
         function movewclib() {

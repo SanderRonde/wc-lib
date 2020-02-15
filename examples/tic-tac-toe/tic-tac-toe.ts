@@ -7,7 +7,8 @@ import {
 import { CellBlock } from './elements/cell-block/cell-block.js';
 import { TicTacToeHTML } from './tic-tac-toe.html.js';
 import { TicTacToeCSS } from './tic-tac-toe.css.js';
-import { theme, LangFile } from './index.js';
+import { LangFile } from './index.js';
+import { theme } from './theme.js';
 
 export const enum PLAYER {
     X = 'X',

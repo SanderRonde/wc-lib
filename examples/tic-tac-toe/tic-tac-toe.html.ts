@@ -1,7 +1,14 @@
 import { TicTacToe, languages, ACTIVITY_STATE } from './tic-tac-toe.js';
 import { render } from '../../node_modules/lit-html/lit-html.js';
 import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
-import { theme } from './index.js';
+import { theme } from './theme.js';
+
+function setLocalStorageItem(name: string, value: string) {
+    if (typeof localStorage !== 'undefined') {
+        return localStorage.setItem(name, value);
+    }
+    return null;
+}
 
 export const TicTacToeHTML = new TemplateFn<TicTacToe>(
     function(html, props) {
@@ -18,7 +25,7 @@ export const TicTacToeHTML = new TemplateFn<TicTacToe>(
                             src="images/${lang}.png"
                             title="${this.__('change_lang')}"
                             @click="${() => {
-                                localStorage.setItem('lang', lang);
+                                setLocalStorageItem('lang', lang);
                                 this.setLang(lang);
                             }}"
                         />
@@ -39,7 +46,7 @@ export const TicTacToeHTML = new TemplateFn<TicTacToe>(
                                     .background}"
                                 title="${this.__('change_theme')}"
                                 @click="${() => {
-                                    localStorage.setItem('theme', themeName);
+                                    setLocalStorageItem('theme', themeName);
                                     this.setTheme(themeName);
                                 }}"
                             ></div>

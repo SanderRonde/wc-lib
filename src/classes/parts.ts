@@ -16,7 +16,9 @@ export class FallbackHTMLElement {
     attachShadow(_init: any): any {
         return {};
     }
-    tagName = '';
+    get tagName() {
+        return '';
+    }
     /* istanbul ignore next */
     setAttribute() {}
     /* istanbul ignore next */

@@ -754,7 +754,7 @@ namespace Watching {
             typeof obj !== 'object' ||
             obj === undefined ||
             obj === null ||
-            obj instanceof HTMLElement
+            (typeof HTMLElement !== 'undefined' && obj instanceof HTMLElement)
         ) {
             return obj;
         }

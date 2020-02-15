@@ -120,8 +120,9 @@ export namespace SSR {
             props: BaseTypes.Attributes,
             theme: any
         ): BaseClassExtended {
+            const attributes: Attributes = { ...props };
+
             return (class Base extends klass {
-                _attributes: Attributes = {};
                 isSSR = true;
 
                 tagName = tagName;
@@ -131,16 +132,16 @@ export namespace SSR {
                     Props.onConnect(this);
                 }
                 getAttribute(name: string): string {
-                    return props[name];
+                    return attributes[name];
                 }
                 hasAttribute(name: string): boolean {
-                    return props.hasOwnProperty(name);
+                    return attributes.hasOwnProperty(name);
                 }
                 setAttribute(name: string, value: string) {
-                    this._attributes[name] = value;
+                    attributes[name] = value;
                 }
                 removeAttribute(name: string) {
-                    delete this._attributes[name];
+                    delete attributes[name];
                 }
                 getTheme() {
                     return theme;

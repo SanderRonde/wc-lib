@@ -1550,9 +1550,14 @@ namespace PropsDefiner {
         const element = new ElementRepresentation(component);
 
         element.overrideAttributeFunctions();
-        awaitConnected(component as any).then(() => {
+        if (component.isSSR) {
             element.runQueued();
-        });
+            connectedElements.add(component);
+        } else {
+            awaitConnected(component as any).then(() => {
+                element.runQueued();
+            });
+        }
 
         elementConfigs.set(props, {
             composite: false,

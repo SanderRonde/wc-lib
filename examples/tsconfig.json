@@ -25,5 +25,11 @@
     "allowJs": true,
     "include": [
         "./"
+    ],
+    "exclude": [
+        "modules/",
+        "gulpfile.ts",
+        "ssr",
+        "bundled"
     ]
 }

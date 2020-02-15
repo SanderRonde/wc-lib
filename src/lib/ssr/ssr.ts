@@ -123,9 +123,13 @@ export namespace SSR {
             const attributes: Attributes = { ...props };
 
             return (class Base extends klass {
-                isSSR = true;
+                get isSSR() {
+                    return true;
+                }
 
-                tagName = tagName;
+                get tagName() {
+                    return tagName;
+                }
 
                 constructor(...args: any[]) {
                     super(...args);

@@ -939,7 +939,7 @@ export interface PropComponent extends HTMLElementAttributes {
     renderToDOM(changeType: number): void;
     getParentRef?(ref: string): any;
     isMounted: boolean;
-    isSSR: boolean;
+    readonly isSSR?: boolean;
     fire<EV extends keyof PROP_EVENTS, R extends PROP_EVENTS[EV]['returnType']>(
         event: EV | any,
         ...params: PROP_EVENTS[EV]['args'] | any

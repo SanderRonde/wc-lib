@@ -196,7 +196,7 @@ export declare class WebComponentTypeInstance<
     /**
      * Whether this component is being server-side rendered
      */
-    public isSSR: boolean;
+    get isSSr(): boolean;
 
     /**
      * An object that contains all children
@@ -345,7 +345,9 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
         public disposables: (() => void)[] = [];
 
         public isMounted: boolean = false;
-        public isSSR: boolean = false;
+        get isSSR(): boolean {
+            return false;
+        }
 
         constructor(...args: any[]) {
             super(...args);

@@ -7,7 +7,7 @@ import {
 import { CellBlockHTML, CELL_CLASSES } from './cell-block.html.js';
 import { CellBlockCSS } from './cell-block.css.js';
 import { PLAYER } from '../../tic-tac-toe.js';
-import { theme } from '../../index.js';
+import { theme } from '../../theme.js';
 
 @config({
     is: 'cell-block',

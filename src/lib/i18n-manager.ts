@@ -96,13 +96,23 @@ class I18NClass<
         }
     }
 
-    private static async __fetch(url: string) {
+    private static async __fetch(url: string): Promise<string | null> {
         /* istanbul ignore next */
-        if ('fetch' in window && typeof window.fetch !== undefined) {
+        if (
+            typeof window !== 'undefined' &&
+            'fetch' in window &&
+            typeof window.fetch !== undefined
+        ) {
             return window.fetch(url).then((r) => r.text());
         }
 
-        return new Promise<string>((resolve, reject) => {
+        return new Promise<string | null>((resolve, reject) => {
+            /* istanbul ignore next */
+            if (typeof XMLHttpRequest === 'undefined') {
+                resolve(null);
+                return;
+            }
+
             const xhr = new XMLHttpRequest();
             xhr.open('GET', url);
             xhr.onreadystatechange = () => {
@@ -126,6 +136,11 @@ class I18NClass<
             const text = await this.__fetch(
                 this.urlFormat.replace(/\$LANG\$/g, lang)
             );
+            /* istanbul ignore next */
+            if (!text) {
+                resolve({});
+                return;
+            }
             resolve(JSON.parse(text));
         });
         this.__langPromises[lang] = prom;

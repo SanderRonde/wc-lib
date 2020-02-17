@@ -61,7 +61,7 @@ class TestTag extends Array<TestTag> {
     }
 
     assertContent(content: string) {
-        this._t.is(this.content, content, `Text content is ${content}`);
+        this._t.is(this.content.trim(), content, `Text content is ${content}`);
     }
 
     assertType(type: 'TEXT' | 'TAG') {

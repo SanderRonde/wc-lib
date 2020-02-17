@@ -59,13 +59,210 @@ export namespace SSR {
         }
     }
 
+    export class MergableWeakMap<K extends object, V> implements WeakMap<K, V> {
+        private _maps: WeakMap<K, V>[] = [new WeakMap()];
+
+        merge(map: MergableWeakMap<K, V>) {
+            this._maps.push(...map._maps);
+            return this;
+        }
+
+        delete(key: K) {
+            let deleted: boolean = false;
+            for (const map of this._maps) {
+                if (map.delete(key)) {
+                    deleted = true;
+                }
+            }
+            return deleted;
+        }
+
+        get(key: K) {
+            for (const map of this._maps) {
+                if (map.has(key)) {
+                    return map.get(key);
+                }
+            }
+            return undefined;
+        }
+
+        has(key: K) {
+            for (const map of this._maps) {
+                if (map.has(key)) return true;
+            }
+            return false;
+        }
+
+        set(key: K, value: V) {
+            this._maps[0].set(key, value);
+            return this;
+        }
+
+        clone() {
+            const newMap = new MergableWeakMap<K, V>();
+
+            // Setting is performed on the first map so this should
+            // create a readonly clone
+            newMap._maps.push(...this._maps);
+            return newMap;
+        }
+
+        [Symbol.toStringTag] = this._maps[0][Symbol.toStringTag];
+    }
+
+    export class MergableWeakSet<T extends object> implements WeakSet<T> {
+        private _sets: WeakSet<T>[] = [new WeakSet()];
+
+        merge(set: MergableWeakSet<T>) {
+            this._sets.push(...set._sets);
+            return this;
+        }
+
+        delete(value: T) {
+            let deleted: boolean = false;
+            for (const set of this._sets) {
+                if (set.delete(value)) {
+                    deleted = true;
+                }
+            }
+            return deleted;
+        }
+
+        has(value: T) {
+            for (const set of this._sets) {
+                if (set.has(value)) return true;
+            }
+            return false;
+        }
+
+        add(value: T) {
+            this._sets[0].add(value);
+            return this;
+        }
+
+        clone() {
+            const newSet = new MergableWeakSet<T>();
+
+            // Setting is performed on the first set so this should
+            // create a readonly clone
+            newSet._sets.push(...this._sets);
+            return newSet;
+        }
+
+        [Symbol.toStringTag] = this._sets[0][Symbol.toStringTag];
+    }
+
+    export interface GetMessageFunction {
+        (langFile: any, key: string, values: any[]): string | Promise<string>;
+    }
+
+    export interface DocumentConfig {
+        theme?: SSR.BaseTypes.Theme;
+        i18n?: any;
+        getMessage?: GetMessageFunction;
+    }
+
     export class DocumentSession {
-        _cssIdentifierMap: WeakMap<BaseTypes.BaseClass, number> = new WeakMap();
-        _sheetSet: WeakSet<BaseTypes.BaseClass> = new WeakSet();
+        _i18n?: any;
+        _theme?: SSR.BaseTypes.Theme;
+        _getMessage?: GetMessageFunction;
 
-        _unnamedElements: number = 1;
+        _cssIdentifierMap: MergableWeakMap<
+            BaseTypes.BaseClass,
+            number
+        > = new MergableWeakMap();
+        _sheetSet: MergableWeakSet<BaseTypes.BaseClass> = new MergableWeakSet();
 
-        _elementMap: BaseTypes.DepdendencyMap = {};
+        // This is an object so that references to it are updated
+        _unnamedElements = {
+            amount: 0,
+        };
+
+        _elementMap: BaseTypes.DependencyMap = {};
+
+        constructor({ i18n, theme, getMessage }: DocumentConfig = {}) {
+            this._i18n = i18n;
+            this._theme = theme;
+            this._getMessage = getMessage;
+        }
+
+        /**
+         * Merge a config into this SSR session, prioritizing config over current state
+         */
+        mergeConfig({ i18n, theme, getMessage }: DocumentConfig) {
+            this._i18n = i18n || this._i18n;
+            this._theme = theme || this._theme;
+            this._getMessage = getMessage || this._getMessage;
+            return this;
+        }
+
+        /**
+         * Merge a document session into this one, prioritizing the merged one
+         *
+         * @param {DocumentSession} session - The session to merge
+         *
+         * @returns {DocumentSession} The merged documentSession (this)
+         */
+        merge(session: DocumentSession): DocumentSession {
+            return DocumentSession.merge(this, session);
+        }
+
+        /**
+         * Clone this document session and preserve any object links.
+         * Any changes to the clone **are** reflected to the original.
+         *
+         * @returns {DocumentSession} The clone
+         */
+        clone(): DocumentSession {
+            const session = new DocumentSession({
+                i18n: this._i18n,
+                theme: this._theme,
+                getMessage: this._getMessage,
+            });
+            session._cssIdentifierMap = this._cssIdentifierMap;
+            session._sheetSet = this._sheetSet;
+            session._unnamedElements = this._unnamedElements;
+            session._elementMap = this._elementMap;
+            return session;
+        }
+
+        /**
+         * Merge given sessions into the first one, prioritizing later values
+         * over the earlier ones.
+         *
+         * @param {DocumentSession} target - The target into which everything is merged
+         * @param {DocumentSession[]} [sessions] - Sessions to merge into this one
+         *
+         * @returns {DocumentSession} The merged into documentSession (this)
+         */
+        static merge<T extends DocumentSession>(
+            target: T,
+            ...sessions: DocumentSession[]
+        ): T {
+            for (const session of sessions) {
+                target._i18n = session._i18n || target._i18n;
+                target._theme = session._theme || target._theme;
+                target._getMessage = session._getMessage || target._getMessage;
+
+                target._cssIdentifierMap = session._cssIdentifierMap.merge(
+                    session._cssIdentifierMap
+                );
+                target._sheetSet = session._sheetSet.merge(session._sheetSet);
+
+                target._unnamedElements = {
+                    amount: Math.max(
+                        session._unnamedElements.amount,
+                        session._unnamedElements.amount
+                    ),
+                };
+
+                target._elementMap = {
+                    ...session._elementMap,
+                    ...target._elementMap,
+                };
+            }
+            return target;
+        }
     }
 
     export namespace BaseTypes {
@@ -96,7 +293,7 @@ export namespace SSR {
             new (): BaseClassInstanceExtended;
         }
 
-        export type DepdendencyMap = Object & {
+        export type DependencyMap = Object & {
             [key: string]: BaseTypes.BaseClass;
         };
 
@@ -118,7 +315,7 @@ export namespace SSR {
             klass: C,
             tagName: string,
             props: BaseTypes.Attributes,
-            theme: any
+            session: DocumentSession
         ): BaseClassExtended {
             const attributes: Attributes = { ...props };
 
@@ -148,7 +345,35 @@ export namespace SSR {
                     delete attributes[name];
                 }
                 getTheme() {
-                    return theme;
+                    return session._theme;
+                }
+                private static _getI18n(key: string, ...values: any[]) {
+                    if (!session._i18n) return undefined;
+                    if (session._getMessage) {
+                        return session._getMessage(session._i18n, key, values);
+                    }
+                    return session._i18n[key];
+                }
+                async __prom(
+                    key: string,
+                    ...values: any[]
+                ): Promise<string | undefined> {
+                    return Base._getI18n(key, ...values);
+                }
+
+                __(key: string, ...values: any[]): string | undefined {
+                    return Base._getI18n(key, ...values);
+                }
+
+                static async __prom(
+                    key: string,
+                    ...values: any[]
+                ): Promise<string> {
+                    return Base._getI18n(key, ...values);
+                }
+
+                static __(key: string, ...values: any[]): string {
+                    return Base._getI18n(key, ...values);
                 }
             } as unknown) as BaseClassExtended;
         }
@@ -275,7 +500,7 @@ export namespace SSR {
         export namespace Dependencies {
             export function buildMap(
                 element: BaseTypes.BaseClass,
-                map: BaseTypes.DepdendencyMap = {}
+                map: BaseTypes.DependencyMap = {}
             ) {
                 if (element.is) {
                     map[element.is] = element;
@@ -567,7 +792,6 @@ export namespace SSR {
 
                 export function _mapTag(
                     tag: Tag,
-                    theme: BaseTypes.Theme,
                     session: DocumentSession
                 ): {
                     newTag: ParsedTag;
@@ -583,7 +807,6 @@ export namespace SSR {
                     const newTag = elementToTag(
                         element,
                         tag.attributes,
-                        theme,
                         session
                     );
                     Slots.applySlots(newTag, tag);
@@ -595,12 +818,11 @@ export namespace SSR {
 
                 export function replace(
                     tags: ParsedTag[],
-                    theme: BaseTypes.Theme,
                     session: DocumentSession
                 ) {
                     return tags.map((t) =>
                         t.walk((tag) => {
-                            return _mapTag(tag, theme, session);
+                            return _mapTag(tag, session);
                         })
                     );
                 }
@@ -871,17 +1093,17 @@ export namespace SSR {
             export function elementToTag(
                 element: BaseTypes.BaseClass,
                 attribs: BaseTypes.Attributes,
-                theme: BaseTypes.Theme,
                 session: DocumentSession,
                 isRoot: boolean = false
             ): Tag {
                 const tagName =
-                    element.is || `wclib-element${session._unnamedElements++}`;
+                    element.is ||
+                    `wclib-element${session._unnamedElements.amount++}`;
                 const wrappedClass = BaseTypes._createBase(
                     element,
                     tagName,
                     attribs,
-                    theme
+                    session
                 );
                 const instance = new wrappedClass();
 
@@ -901,7 +1123,7 @@ export namespace SSR {
                     instance,
                     attribs
                 );
-                const children = Replacement.replace(tags, theme, session);
+                const children = Replacement.replace(tags, session);
                 const cssApplied = _CSS.getCSSApplied(
                     element,
                     instance,
@@ -925,13 +1147,11 @@ export namespace SSR {
         export function render<C extends BaseTypes.BaseClass>(
             element: C,
             attributes: BaseTypes.Attributes,
-            theme: BaseTypes.Theme,
             session: DocumentSession
         ): string {
             const dom = TextToTags.elementToTag(
                 element,
                 attributes,
-                theme,
                 session,
                 true
             );
@@ -944,21 +1164,24 @@ export namespace SSR {
         I extends InferInstance<C>
     >(
         element: C,
-        props: Partial<I['props']> = {},
-        attributes: SSR.BaseTypes.Attributes = {},
-        theme: SSR.BaseTypes.Theme = {},
-        session: DocumentSession = new DocumentSession()
+        {
+            attributes,
+            documentSession = new DocumentSession(),
+            i18n,
+            props,
+            theme,
+            getMessage,
+        }: SSRConfig<C, I>
     ): string {
-        session._elementMap = {
-            ...session._elementMap,
+        documentSession._elementMap = {
+            ...documentSession._elementMap,
             ..._Rendering.Dependencies.buildMap(element),
         };
-        return _Rendering.render(
-            element,
-            { ...props, ...attributes },
-            theme,
-            session
-        );
+        const session = documentSession
+            .clone()
+            .mergeConfig({ i18n, theme, getMessage });
+
+        return _Rendering.render(element, { ...props, ...attributes }, session);
     }
 }
 
@@ -967,6 +1190,18 @@ export namespace SSR {
  */
 export interface SSRBaseClass extends SSR.BaseTypes.BaseClass {}
 
+export interface SSRConfig<
+    C extends SSR.BaseTypes.BaseClass,
+    I extends InferInstance<C>
+> {
+    props?: Partial<I['props']>;
+    attributes?: SSR.BaseTypes.Attributes;
+    theme?: SSR.BaseTypes.Theme;
+    i18n?: any;
+    documentSession?: SSR.DocumentSession;
+    getMessage?: SSR.GetMessageFunction;
+}
+
 /**
  * Render a single element to a string that can be written to a server's client. If no
  *  document session is passed, treats the element as if it's the only element in the
@@ -974,30 +1209,22 @@ export interface SSRBaseClass extends SSR.BaseTypes.BaseClass {}
  *  use `createSSRSession`.
  *
  * @param {SSR.BaseTypes.BaseClass} element - The element to render
- * @param { { [key: string]: any } } [props] - Props to pass to the element
- * @param { { [key: string]: any } } [attributes] - HTML attributes to apply to the element
- * @param { { [key: string]: any } } [theme] - A theme to apply to teh element
- * @param {SSR.DocumentSession} [documentSession] - The document session to use
+ * @param {SSRConfig} [config] - Config for the render
+ * @param { { [key: string]: any } } [config.props] - Props to pass to the element
+ * @param { { [key: string]: any } } [config.attributes] - HTML attributes to apply to the element
+ * @param { { [key: string]: any } } [config.theme] - A theme to apply to the element
+ * @param { any } [config.i18n] - The i8n to apply to the element
+ * @param { SSR.GetMessageFunction } [config.getMessage] - The
+ *  function called when an i18n message is fetched
+ * @param {SSR.DocumentSession} [config.documentSession] - The document session to use (remembers theme and i18n)
  *
  * @returns {string} The rendered element
  */
 export function ssr<
     C extends SSR.BaseTypes.BaseClass,
     I extends InferInstance<C>
->(
-    element: C,
-    props?: Partial<I['props']>,
-    attributes?: SSR.BaseTypes.Attributes,
-    theme?: SSR.BaseTypes.Theme,
-    documentSession?: SSR.DocumentSession
-): string {
-    return SSR.renderElement(
-        element,
-        props,
-        attributes,
-        theme,
-        documentSession
-    );
+>(element: C, config: SSRConfig<C, I> = {}): string {
+    return SSR.renderElement(element, config);
 }
 
 /**
@@ -1006,6 +1233,8 @@ export function ssr<
  *
  * @returns {SSR.DocumentSession} A document rendering session's variables
  */
-export function createSSRSession(): SSR.DocumentSession {
-    return new SSR.DocumentSession();
+export function createSSRSession(
+    config: SSR.DocumentConfig = {}
+): SSR.DocumentSession {
+    return new SSR.DocumentSession(config);
 }

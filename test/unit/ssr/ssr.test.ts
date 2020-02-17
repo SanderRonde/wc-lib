@@ -118,6 +118,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         WithPrivProps,
         NamedSlot,
         DefaultSlot,
+        I18nComponent,
+        ThemeUser,
     } = elementFactory(component, isComplex);
 
     const test = genTestFn(name);
@@ -201,7 +203,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             ]);
         });
         test('the same tag can be its own (optional) child', (t) => {
-            const root = toTestTags(t, ssr(NestedTag, { child: true }));
+            const root = toTestTags(
+                t,
+                ssr(NestedTag, { props: { child: true } })
+            );
 
             root.assertFormat([NestedTag.is, [[NestedTag.is, [['div', []]]]]]);
         });
@@ -218,7 +223,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(t, ssr(NoIs));
 
             root.assertTag();
-            root.assertTagName('wclib-element1');
+            root.assertTagName('wclib-element0');
             root.assertChildren(1);
 
             root.c[0].assertTag();
@@ -253,7 +258,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 c: 'd',
                 e: '"f"',
             };
-            const root = toTestTags(t, ssr(SimpleElement, {}, attributes));
+            const root = toTestTags(t, ssr(SimpleElement, { attributes }));
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
             root.assertAttributes(attributes);
@@ -281,15 +286,13 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         test('non-strings are converted to strings', (t) => {
             const root = toTestTags(
                 t,
-                ssr(
-                    SimpleElement,
-                    {},
-                    {
+                ssr(SimpleElement, {
+                    attributes: {
                         a: 0,
                         c: /x/,
                         e: true,
-                    }
-                )
+                    },
+                })
             );
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
@@ -302,17 +305,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         test('iterables have their values converted to strings', (t) => {
             const root = toTestTags(
                 t,
-                ssr(
-                    SimpleElement,
-                    {},
-                    {
+                ssr(SimpleElement, {
+                    attributes: {
                         a: [0, 1, 2],
                         c: [/x/, /y/, /z/],
                         e: [true, false, true],
                         f: [0, /x/, true],
                         g: ['a', 'b', 'c'],
-                    }
-                )
+                    },
+                })
             );
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
@@ -329,7 +330,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 'with-dashes': 'abc',
                 withoutdashes: 'def',
             };
-            const html = ssr(SimpleElement, {}, attributes);
+            const html = ssr(SimpleElement, { attributes });
             const root = toTestTags(t, html);
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
@@ -378,10 +379,12 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(
                 t,
                 ssr(WithProps, {
-                    x: 1,
-                    y: 2,
-                    a: 3,
-                    b: 4,
+                    props: {
+                        x: 1,
+                        y: 2,
+                        a: 3,
+                        b: 4,
+                    },
                 })
             );
 
@@ -399,8 +402,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(
                 t,
                 ssr(WithPrivProps, {
-                    a: 3,
-                    b: 4,
+                    props: {
+                        a: 3,
+                        b: 4,
+                    },
                 })
             );
 
@@ -416,8 +421,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(
                 t,
                 ssr(WithProps, {
-                    y: 2,
-                    b: 4,
+                    props: {
+                        y: 2,
+                        b: 4,
+                    },
                 })
             );
 
@@ -435,10 +442,12 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(
                 t,
                 ssr(WithProps, {
-                    y: 2,
-                    b: 4,
-                    extra: 1,
-                    prop: 3,
+                    props: {
+                        y: 2,
+                        b: 4,
+                        extra: 1,
+                        prop: 3,
+                    },
                 })
             );
 
@@ -456,8 +465,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(
                 t,
                 ssr(WithProps, {
-                    x: 1,
-                    a: 3,
+                    props: {
+                        x: 1,
+                        a: 3,
+                    },
                 })
             );
 
@@ -475,10 +486,12 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(
                 t,
                 ssr(WithProps, {
-                    x: 1,
-                    y: 2,
-                    a: 3,
-                    b: 4,
+                    props: {
+                        x: 1,
+                        y: 2,
+                        a: 3,
+                        b: 4,
+                    },
                 })
             );
 
@@ -489,10 +502,12 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(
                 t,
                 ssr(WithProps, {
-                    x: 1,
-                    y: 2,
-                    a: 3,
-                    b: 4,
+                    props: {
+                        x: 1,
+                        y: 2,
+                        a: 3,
+                        b: 4,
+                    },
                 })
             );
 
@@ -630,6 +645,23 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 'rendered correct stylesheet'
             );
         });
+        test('themes can be passed', (t) => {
+            const root = toTestTags(
+                t,
+                ssr(ThemeUser, {
+                    theme: {
+                        color: 'red',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(ThemeUser.is);
+            root.assertChildren(2);
+            root[0].assertTag();
+            root[0].assertTagName('style');
+            t.true(root[0][0].content.includes('red'), 'theme is used');
+        });
     }
 
     {
@@ -638,8 +670,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(t, ssr(NoIs));
             const root2 = toTestTags(t, ssr(NoIs));
 
-            root.assertTagName('wclib-element1');
-            root2.assertTagName('wclib-element1');
+            root.assertTagName('wclib-element0');
+            root2.assertTagName('wclib-element0');
         });
         test('renders are stateless by default - tagname map test', (t) => {
             const root = toTestTags(t, ssr(DifferentChild));
@@ -678,22 +710,36 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         test('renders can have state if set explicitly - unnamed tag test', (t) => {
             const session = createSSRSession();
 
-            const root = toTestTags(t, ssr(NoIs, {}, {}, {}, session));
-            const root2 = toTestTags(t, ssr(NoIs, {}, {}, {}, session));
+            const root = toTestTags(
+                t,
+                ssr(NoIs, {
+                    documentSession: session,
+                })
+            );
+            const root2 = toTestTags(
+                t,
+                ssr(NoIs, {
+                    documentSession: session,
+                })
+            );
 
-            root.assertTagName('wclib-element1');
-            root2.assertTagName('wclib-element2');
+            root.assertTagName('wclib-element0');
+            root2.assertTagName('wclib-element1');
         });
         test('renders can have state if set explicitly - tagname map test', (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
                 t,
-                ssr(DifferentChild, {}, {}, {}, session)
+                ssr(DifferentChild, {
+                    documentSession: session,
+                })
             );
             const root2 = toTestTags(
                 t,
-                ssr(UndefinedChild, {}, {}, {}, session)
+                ssr(UndefinedChild, {
+                    documentSession: session,
+                })
             );
 
             root.assertTagName(DifferentChild.is);
@@ -720,8 +766,18 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         test('renders can have state if set explicitly - css test', (t) => {
             const session = createSSRSession();
 
-            const root = toTestTags(t, ssr(WithCSS, {}, {}, {}, session));
-            const root2 = toTestTags(t, ssr(WithCSS, {}, {}, {}, session));
+            const root = toTestTags(
+                t,
+                ssr(WithCSS, {
+                    documentSession: session,
+                })
+            );
+            const root2 = toTestTags(
+                t,
+                ssr(WithCSS, {
+                    documentSession: session,
+                })
+            );
 
             root.assertTagName(WithCSS.is);
             root2.assertTagName(WithCSS.is);
@@ -957,5 +1013,522 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 }
             );
         });
+    }
+
+    {
+        const defaultI18n = {
+            known_key: 'a',
+            values: 'text',
+        };
+
+        // I18N
+        test('valid entries are displayed when using __', (t) => {
+            const root = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    i18n: defaultI18n,
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(I18nComponent.is);
+            root.assertMinChildren(5);
+
+            root[0].assertTagName('div');
+            root[0].assertChildren(1);
+            root[0][0].assertText();
+            root[0][0].assertContent(defaultI18n['known_key']);
+
+            root[4].assertTagName('div');
+            root[4].assertChildren(1);
+            root[4][0].assertText();
+            root[4][0].assertContent(defaultI18n['known_key']);
+        });
+        test('__prom returns a promise', (t) => {
+            const root = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    i18n: defaultI18n,
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(I18nComponent.is);
+            root.assertMinChildren(6);
+
+            root[1].assertTagName('div');
+            root[1].assertChildren(1);
+            root[1][0].assertText();
+            root[1][0].assertContent('true');
+
+            root[5].assertTagName('div');
+            root[5].assertChildren(1);
+            root[5][0].assertText();
+            root[5][0].assertContent('true');
+        });
+        test('unknown keys display nothing by default when using __', (t) => {
+            const root = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    i18n: defaultI18n,
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(I18nComponent.is);
+            root.assertMinChildren(7);
+
+            root[2].assertTagName('div');
+            root[2].assertChildren(0);
+
+            root[6].assertTagName('div');
+            root[6].assertChildren(0);
+        });
+        test('unknown keys can display fallback when using getMessage', (t) => {
+            const root = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    i18n: defaultI18n,
+                    getMessage(langFile, key) {
+                        if (key in langFile) return langFile[key];
+                        return `{{${key}}}`;
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(I18nComponent.is);
+            root.assertMinChildren(7);
+
+            root[2].assertTagName('div');
+            root[2].assertChildren(1);
+            root[2][0].assertText();
+            root[2][0].assertContent('{{unknown_key}}');
+
+            root[6].assertTagName('div');
+            root[6].assertChildren(1);
+            root[6][0].assertText();
+            root[6][0].assertContent('{{unknown_key}}');
+        });
+        test('values can be passed along when using getMessage', (t) => {
+            const root = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    i18n: defaultI18n,
+                    getMessage(langFile, key, values) {
+                        if (!(key in langFile)) {
+                            return `{{${key}}}`;
+                        }
+                        return `${langFile[key]} ${values.join(',')}`;
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(I18nComponent.is);
+            root.assertMinChildren(8);
+
+            root[3].assertTagName('div');
+            root[3].assertChildren(1);
+            root[3][0].assertText();
+            root[3][0].assertContent('text a,b,c');
+
+            root[7].assertTagName('div');
+            root[7].assertChildren(1);
+            root[7][0].assertText();
+            root[7][0].assertContent('text a,b,c');
+        });
+        test('is empty when no i18n is passed', (t) => {
+            const root = toTestTags(t, ssr(I18nComponent, {}));
+
+            root.assertTag();
+            root.assertTagName(I18nComponent.is);
+            root.assertMinChildren(5);
+
+            root[0].assertTagName('div');
+            root[0].assertChildren(0);
+
+            root[4].assertTagName('div');
+            root[4].assertChildren(0);
+        });
+    }
+
+    {
+        // Sessions
+        test('theme can be passed through session', (t) => {
+            const session = createSSRSession({
+                theme: {
+                    color: 'red',
+                },
+            });
+
+            const root1 = toTestTags(
+                t,
+                ssr(ThemeUser, {
+                    documentSession: session,
+                })
+            );
+            const root2 = toTestTags(
+                t,
+                ssr(ThemeUser, {
+                    documentSession: session,
+                })
+            );
+
+            [root1, root2].forEach((root) => {
+                root.assertTag();
+                root.assertTagName(ThemeUser.is);
+                root.assertChildren(2);
+                root[0].assertTag();
+                root[0].assertTagName('style');
+                t.true(root[0][0].content.includes('red'), 'theme is used');
+            });
+        });
+        test('i18n and getMessage can be passed through session', (t) => {
+            const session = createSSRSession({
+                i18n: {
+                    known_key: 'text',
+                },
+                getMessage(langFile, key) {
+                    if (!(key in langFile)) return '';
+
+                    return `${langFile[key]}-postfix`;
+                },
+            });
+
+            const root1 = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    documentSession: session,
+                })
+            );
+            const root2 = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    documentSession: session,
+                })
+            );
+
+            [root1, root2].forEach((root) => {
+                root.assertTag();
+                root.assertTagName(I18nComponent.is);
+                root.assertMinChildren(8);
+
+                root[0].assertTagName('div');
+                root[0].assertChildren(1);
+                root[0][0].assertText();
+                root[0][0].assertContent('text-postfix');
+
+                root[4].assertTagName('div');
+                root[4].assertChildren(1);
+                root[4][0].assertText();
+                root[4][0].assertContent('text-postfix');
+            });
+        });
+        test('render config overrides session theme and only once', (t) => {
+            const session = createSSRSession({
+                theme: {
+                    color: 'red',
+                },
+            });
+
+            const root1 = toTestTags(
+                t,
+                ssr(ThemeUser, {
+                    documentSession: session,
+                    theme: {
+                        color: 'blue',
+                    },
+                })
+            );
+            const root2 = toTestTags(
+                t,
+                ssr(ThemeUser, {
+                    documentSession: session,
+                })
+            );
+
+            root1.assertTag();
+            root1.assertTagName(ThemeUser.is);
+            root1.assertChildren(2);
+            root1[0].assertTag();
+            root1[0].assertTagName('style');
+            t.true(root1[0][0].content.includes('blue'), 'theme is used');
+
+            root2.assertTag();
+            root2.assertTagName(ThemeUser.is);
+            root2.assertChildren(2);
+            root2[0].assertTag();
+            root2[0].assertTagName('style');
+            t.true(root2[0][0].content.includes('red'), 'theme is used');
+        });
+        test('render config overrides session theme i18n and getMessage and only once', (t) => {
+            const session = createSSRSession({
+                i18n: {
+                    known_key: 'text',
+                },
+                getMessage(langFile, key) {
+                    if (!(key in langFile)) return '';
+
+                    return `${langFile[key]}-postfix`;
+                },
+            });
+
+            const root1 = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    documentSession: session,
+                    i18n: {
+                        known_key: 'text2',
+                    },
+                    getMessage(langFile, key) {
+                        if (!(key in langFile)) return '';
+
+                        return `${langFile[key]}-postfix2`;
+                    },
+                })
+            );
+            const root2 = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    documentSession: session,
+                })
+            );
+
+            root1.assertTag();
+            root1.assertTagName(I18nComponent.is);
+            root1.assertMinChildren(8);
+
+            root1[0].assertTagName('div');
+            root1[0].assertChildren(1);
+            root1[0][0].assertText();
+            root1[0][0].assertContent('text2-postfix2');
+
+            root1[4].assertTagName('div');
+            root1[4].assertChildren(1);
+            root1[4][0].assertText();
+            root1[4][0].assertContent('text2-postfix2');
+
+            root2.assertTag();
+            root2.assertTagName(I18nComponent.is);
+            root2.assertMinChildren(8);
+
+            root2[0].assertTagName('div');
+            root2[0].assertChildren(1);
+            root2[0][0].assertText();
+            root2[0][0].assertContent('text-postfix');
+
+            root2[4].assertTagName('div');
+            root2[4].assertChildren(1);
+            root2[4][0].assertText();
+            root2[4][0].assertContent('text-postfix');
+        });
+        test('sessions can be manually merged into with configs', (t) => {
+            const session = createSSRSession({
+                theme: {
+                    color: 'red',
+                },
+            });
+            const session2 = createSSRSession({
+                theme: {
+                    color: 'blue',
+                },
+            });
+
+            const root = toTestTags(
+                t,
+                ssr(ThemeUser, {
+                    documentSession: session.merge(session2),
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(ThemeUser.is);
+            root.assertChildren(2);
+            root[0].assertTag();
+            root[0].assertTagName('style');
+            t.true(root[0][0].content.includes('blue'), 'theme is used');
+        });
+        test('sessions can be manually merged into with maps', (t) => {
+            const session = createSSRSession();
+            const session2 = createSSRSession();
+
+            const root = toTestTags(
+                t,
+                ssr(NoIs, {
+                    documentSession: session,
+                })
+            );
+            const root2 = toTestTags(
+                t,
+                ssr(NoIs, {
+                    documentSession: session2,
+                })
+            );
+
+            root.assertTagName('wclib-element0');
+            root2.assertTagName('wclib-element0');
+
+            const root3 = toTestTags(
+                t,
+                ssr(NoIs, {
+                    documentSession: SSR.DocumentSession.merge(
+                        session,
+                        session2
+                    ),
+                })
+            );
+            root3.assertTagName('wclib-element1');
+        });
+    }
+
+    {
+        // Mergables
+        {
+            // Mergable weakmap
+            test('weakmap - set values can be retrieved', (t) => {
+                const map = new SSR.MergableWeakMap();
+
+                const key = {};
+                t.true(map.get(key) === undefined, 'key does not exist');
+                map.set(key, 'value');
+                t.is(map.get(key), 'value', 'value was set');
+            });
+            test('weakmap - deleted keys no longer exist', (t) => {
+                const map = new SSR.MergableWeakMap();
+
+                const key = {};
+                map.set(key, 'value');
+                t.is(map.get(key), 'value', 'value was set');
+                map.delete(key);
+                t.true(map.get(key) === undefined, 'key was deleted');
+            });
+            test('weakmap - the presence of keys can be checked with has', (t) => {
+                const map = new SSR.MergableWeakMap();
+
+                const key = {};
+                t.true(map.get(key) === undefined, 'key does not exist');
+                map.set(key, 'value');
+                t.true(map.has(key), 'value was set');
+            });
+            test('weakmap - cloned maps contain the values of the source', (t) => {
+                const map = new SSR.MergableWeakMap();
+
+                const key = {};
+                map.set(key, 'value');
+                t.is(map.get(key), 'value', 'value was set');
+
+                const clone = map.clone();
+                t.is(clone.get(key), 'value', 'value was set');
+            });
+            test('weakmap - changing a cloned map does not change the original', (t) => {
+                const map = new SSR.MergableWeakMap();
+
+                const key = {};
+                const key2 = {};
+                map.set(key, 'value');
+                t.is(map.get(key), 'value', 'value was set');
+
+                const clone = map.clone();
+                clone.set(key2, 'value');
+                t.false(map.has(key2), 'value was not set in the original');
+            });
+            test('weakmap - merged maps contain the values of both', (t) => {
+                const map1 = new SSR.MergableWeakMap();
+                const map2 = new SSR.MergableWeakMap();
+
+                const key1 = {};
+                const key2 = {};
+
+                map1.set(key1, 'value');
+                map2.set(key2, 'value');
+
+                t.true(map1.has(key1), 'map contains key');
+                t.true(map2.has(key2), 'map contains key');
+
+                const merged = map1.merge(map2);
+                t.true(merged.has(key1), 'map contains key');
+                t.true(merged.has(key2), 'map contains key');
+            });
+            test('weakmap - delete returns value based on whether something was deleted', (t) => {
+                const map = new SSR.MergableWeakMap();
+
+                const key = {};
+                map.set(key, 'value');
+                t.is(map.get(key), 'value', 'value was set');
+                t.true(map.delete(key));
+                t.true(map.get(key) === undefined, 'key was deleted');
+                t.false(map.delete(key));
+            });
+        }
+        {
+            // Mergable weakset
+            test('weakset - set values can be retrieved', (t) => {
+                const set = new SSR.MergableWeakSet();
+
+                const key = {};
+                t.false(set.has(key), 'key does not exist');
+                set.add(key);
+                t.true(set.has(key), 'value was set');
+            });
+            test('weakset - deleted keys no longer exist', (t) => {
+                const set = new SSR.MergableWeakSet();
+
+                const key = {};
+                set.add(key);
+                t.true(set.has(key), 'value was set');
+                set.delete(key);
+                t.false(set.has(key), 'key was deleted');
+            });
+            test('weakset - cloned sets contain the values of the source', (t) => {
+                const set = new SSR.MergableWeakSet();
+
+                const key = {};
+                set.add(key);
+                t.true(set.has(key), 'value was set');
+
+                const clone = set.clone();
+                t.true(clone.has(key), 'value was set');
+            });
+            test('weakset - changing a cloned set does not change the original', (t) => {
+                const set = new SSR.MergableWeakSet();
+
+                const key = {};
+                const key2 = {};
+                set.add(key);
+                t.true(set.has(key), 'value was set');
+
+                const clone = set.clone();
+                clone.add(key2);
+                t.false(set.has(key2), 'value was not set in the original');
+            });
+            test('weakset - merged sets contain the values of both', (t) => {
+                const set1 = new SSR.MergableWeakSet();
+                const set2 = new SSR.MergableWeakSet();
+
+                const key1 = {};
+                const key2 = {};
+
+                set1.add(key1);
+                set2.add(key2);
+
+                t.true(set1.has(key1), 'map contains key');
+                t.true(set2.has(key2), 'map contains key');
+
+                const merged = set1.merge(set2);
+                t.true(merged.has(key1), 'map contains key');
+                t.true(merged.has(key2), 'map contains key');
+            });
+            test('weakset - delete returns value based on whether something was deleted', (t) => {
+                const map = new SSR.MergableWeakSet();
+
+                const key = {};
+                map.add(key);
+                t.true(map.has(key), 'value was set');
+                t.true(map.delete(key));
+                t.false(map.has(key), 'key was deleted');
+                t.false(map.delete(key));
+            });
+        }
     }
 });

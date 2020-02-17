@@ -11,6 +11,83 @@ import * as path from 'path';
 
 const EXCLUDED_DIRS = ['ssr', 'modules', 'bundled'];
 
+const I18N_FILE = {
+    what_is_your_name: [
+        {
+            defaultValue: 'What is your name',
+        },
+    ],
+    my_name_is: [
+        {
+            defaultValue: 'My name is',
+        },
+    ],
+    set_lang_to: [
+        {
+            defaultValue: 'Set language to ',
+        },
+        {
+            defaultValue: 'language',
+            replaceable: true,
+        },
+    ],
+    english: [
+        {
+            defaultValue: 'english',
+        },
+    ],
+    german: [
+        {
+            defaultValue: 'german',
+        },
+    ],
+    spanish: [
+        {
+            defaultValue: 'spanish',
+        },
+    ],
+};
+
+type MessageEntry = {
+    defaultValue: string;
+    replaceable?: boolean;
+}[];
+
+const I18N_GET_MESSAGE = (
+    langFile: {
+        [key: string]: MessageEntry;
+    },
+    key: string,
+    values: any[]
+) => {
+    if (!(key in langFile)) {
+        return '???';
+    }
+
+    if (values.some((v) => v instanceof Promise)) {
+        // Values contain promises, return placeholder since this
+        // only renders once
+        return `{{${key}}}`;
+    }
+
+    // Get the relevant entry
+    const item = langFile[key as keyof typeof langFile];
+
+    let valueIndex: number = 0;
+
+    let result: string = '';
+    for (const { defaultValue, replaceable } of item) {
+        if (!replaceable || values[valueIndex] === void 0) {
+            result += defaultValue;
+        } else {
+            result += values[valueIndex];
+            valueIndex++;
+        }
+    }
+
+    return result;
+};
+
 function bundleToDir(dir: string) {
     return gulp.series(
         function remove() {
@@ -182,7 +259,11 @@ gulp.task(
                     const mainExport = imports[keys[0]];
 
                     // There's currently just one theme, use that one for all example elements
-                    const rendered = ssr(mainExport, {}, {}, theme['light']);
+                    const rendered = ssr(mainExport, {
+                        theme: theme['light'],
+                        i18n: I18N_FILE,
+                        getMessage: I18N_GET_MESSAGE,
+                    });
 
                     const htmlPath = path.join(
                         __dirname,

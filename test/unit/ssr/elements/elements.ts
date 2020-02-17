@@ -30,6 +30,19 @@ export function elementFactory<
         new (...args: any[]): {};
     }
 >(base: C, isComplex: boolean = false) {
+    type CStatic = C & {
+        __prom(key: string, ...values: any[]): Promise<string>;
+        __(key: string, ...values: any[]): string;
+    };
+    const typedBase = (base as unknown) as CStatic & {
+        new (...args: any[]): {
+            __prom(key: string, ...values: any[]): Promise<string | undefined>;
+            __(key: string, ...values: any[]): string | undefined;
+            props: any;
+            constructor: CStatic;
+        };
+    };
+
     @config({
         is: 'simple-element',
         html: new TemplateFn<SimpleElement>(
@@ -43,7 +56,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class SimpleElement extends base {
+    class SimpleElement extends typedBase {
         constructor() {
             super();
         }
@@ -62,7 +75,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class SimpleElementEmptyProps extends base {
+    class SimpleElementEmptyProps extends typedBase {
         constructor() {
             super();
         }
@@ -83,7 +96,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class SimpleElementX extends base {
+    class SimpleElementX extends typedBase {
         constructor() {
             super();
         }
@@ -102,7 +115,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class NoIs extends base {
+    class NoIs extends typedBase {
         constructor() {
             super();
         }
@@ -123,7 +136,7 @@ export function elementFactory<
         dependencies: [],
     })
     //@ts-ignore
-    class ParentElementSame extends base {
+    class ParentElementSame extends typedBase {
         constructor() {
             super();
         }
@@ -144,7 +157,7 @@ export function elementFactory<
         dependencies: [SimpleElement, SimpleElementX],
     })
     //@ts-ignore
-    class ParentElementDifferent extends base {
+    class ParentElementDifferent extends typedBase {
         constructor() {
             super();
         }
@@ -163,7 +176,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class WithAttributes extends base {
+    class WithAttributes extends typedBase {
         constructor() {
             super();
         }
@@ -186,7 +199,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class AutoClosing extends base {
+    class AutoClosing extends typedBase {
         constructor() {
             super();
         }
@@ -208,7 +221,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class WithProps extends base {
+    class WithProps extends typedBase {
         constructor() {
             super();
         }
@@ -245,7 +258,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class WithPrivProps extends base {
+    class WithPrivProps extends typedBase {
         constructor() {
             super();
         }
@@ -303,7 +316,7 @@ export function elementFactory<
         ],
     })
     //@ts-ignore
-    class WithCSS extends base {
+    class WithCSS extends typedBase {
         constructor() {
             super();
         }
@@ -324,7 +337,7 @@ export function elementFactory<
         dependencies: [WithCSS],
     })
     //@ts-ignore
-    class MultiCSS extends base {
+    class MultiCSS extends typedBase {
         constructor() {
             super();
         }
@@ -356,7 +369,7 @@ export function elementFactory<
         ],
     })
     //@ts-ignore
-    class NestedCSS extends base {
+    class NestedCSS extends typedBase {
         constructor() {
             super();
         }
@@ -375,7 +388,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class SingleChild extends base {
+    class SingleChild extends typedBase {
         constructor() {
             super();
         }
@@ -397,7 +410,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class MultiChild extends base {
+    class MultiChild extends typedBase {
         constructor() {
             super();
         }
@@ -426,7 +439,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class NestedChild extends base {
+    class NestedChild extends typedBase {
         constructor() {
             super();
         }
@@ -448,7 +461,7 @@ export function elementFactory<
         dependencies: [SimpleElement],
     })
     //@ts-ignore
-    class DifferentChild extends base {
+    class DifferentChild extends typedBase {
         constructor() {
             super();
         }
@@ -470,7 +483,7 @@ export function elementFactory<
         dependencies: [],
     })
     //@ts-ignore
-    class UndefinedChild extends base {
+    class UndefinedChild extends typedBase {
         constructor() {
             super();
         }
@@ -490,7 +503,7 @@ export function elementFactory<
         dependencies: [],
     })
     //@ts-ignore
-    class NestedTag extends base {
+    class NestedTag extends typedBase {
         constructor() {
             super();
         }
@@ -517,7 +530,7 @@ export function elementFactory<
         dependencies: [],
     })
     //@ts-ignore
-    class RenderError extends base {
+    class RenderError extends typedBase {
         constructor() {
             super();
         }
@@ -547,7 +560,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class CSSError extends base {
+    class CSSError extends typedBase {
         constructor() {
             super();
         }
@@ -567,23 +580,25 @@ export function elementFactory<
         dependencies: [],
     })
     //@ts-ignore
-    class ComplexTag extends base {
+    class ComplexTag extends typedBase {
         constructor() {
             super();
         }
     }
 
     if (isComplex) {
-        ((base as unknown) as typeof WebComponent).initComplexTemplateProvider({
-            TemplateResult,
-            PropertyCommitter,
-            EventPart,
-            BooleanAttributePart,
-            AttributeCommitter,
-            NodePart,
-            isDirective,
-            noChange,
-        });
+        ((typedBase as unknown) as typeof WebComponent).initComplexTemplateProvider(
+            {
+                TemplateResult,
+                PropertyCommitter,
+                EventPart,
+                BooleanAttributePart,
+                AttributeCommitter,
+                NodePart,
+                isDirective,
+                noChange,
+            }
+        );
     }
 
     @config({
@@ -601,7 +616,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class DefaultSlot extends base {
+    class DefaultSlot extends typedBase {
         constructor() {
             super();
         }
@@ -623,7 +638,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class DefaultSlotMulti extends base {
+    class DefaultSlotMulti extends typedBase {
         constructor() {
             super();
         }
@@ -645,7 +660,7 @@ export function elementFactory<
         dependencies: [DefaultSlotMulti],
     })
     //@ts-ignore
-    class DefaultSlotMultiUser extends base {
+    class DefaultSlotMultiUser extends typedBase {
         constructor() {
             super();
         }
@@ -665,7 +680,7 @@ export function elementFactory<
         dependencies: [DefaultSlot],
     })
     //@ts-ignore
-    class DefaultSlotUserEmpty extends base {
+    class DefaultSlotUserEmpty extends typedBase {
         constructor() {
             super();
         }
@@ -685,7 +700,7 @@ export function elementFactory<
         dependencies: [DefaultSlot],
     })
     //@ts-ignore
-    class DefaultSlotUser extends base {
+    class DefaultSlotUser extends typedBase {
         constructor() {
             super();
         }
@@ -708,7 +723,7 @@ export function elementFactory<
         dependencies: [DefaultSlot],
     })
     //@ts-ignore
-    class DefaultSlotUserMulti extends base {
+    class DefaultSlotUserMulti extends typedBase {
         constructor() {
             super();
         }
@@ -733,7 +748,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class NamedSlot extends base {
+    class NamedSlot extends typedBase {
         constructor() {
             super();
         }
@@ -758,7 +773,7 @@ export function elementFactory<
         dependencies: [NamedSlot],
     })
     //@ts-ignore
-    class NamedSlotUser extends base {
+    class NamedSlotUser extends typedBase {
         constructor() {
             super();
         }
@@ -783,7 +798,7 @@ export function elementFactory<
         ),
     })
     //@ts-ignore
-    class BothSlots extends base {
+    class BothSlots extends typedBase {
         constructor() {
             super();
         }
@@ -807,7 +822,75 @@ export function elementFactory<
         dependencies: [BothSlots],
     })
     //@ts-ignore
-    class BothSlotsUser extends base {
+    class BothSlotsUser extends typedBase {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'i18n-user',
+        html: new TemplateFn<I18nComponent>(
+            function() {
+                return html`
+                    <div>${this.__('known_key')}</div>
+                    <div>${this.isPromise(this.__prom('known_key'))}</div>
+                    <div>${this.__('unknown_key')}</div>
+                    <div>${this.__('values', 'a', 'b', 'c')}</div>
+                    <div>${this.constructor.__('known_key')}</div>
+                    <div>
+                        ${this.isPromise(this.constructor.__prom('known_key'))}
+                    </div>
+                    <div>${this.constructor.__('unknown_key')}</div>
+                    <div>${this.constructor.__('values', 'a', 'b', 'c')}</div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class I18nComponent extends typedBase {
+        constructor() {
+            super();
+        }
+
+        isPromise(value: any): value is Promise<any> {
+            return value instanceof Promise;
+        }
+    }
+
+    @config({
+        is: 'theme-user',
+        html: new TemplateFn<ThemeUser>(
+            function() {
+                return html`
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        css: [
+            new TemplateFn<WithCSS>(
+                (_html, _props, theme) => {
+                    return html`
+                        <style>
+                            #a {
+                                color: ${((theme as unknown) as {
+                                    color: string;
+                                })['color']};
+                            }
+                        </style>
+                    `;
+                },
+                CHANGE_TYPE.PROP,
+                render
+            ),
+        ],
+    })
+    //@ts-ignore
+    class ThemeUser extends typedBase {
         constructor() {
             super();
         }
@@ -842,5 +925,7 @@ export function elementFactory<
         WithPrivProps,
         NamedSlot,
         DefaultSlot,
+        I18nComponent,
+        ThemeUser,
     };
 }

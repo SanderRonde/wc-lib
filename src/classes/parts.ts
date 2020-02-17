@@ -16,6 +16,7 @@ export class FallbackHTMLElement {
     attachShadow(_init: any): any {
         return {};
     }
+    /* istanbul ignore next */
     get tagName() {
         return '';
     }

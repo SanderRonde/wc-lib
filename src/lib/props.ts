@@ -1757,13 +1757,11 @@ export class Props<
         } = {},
         parentProps: PP = (element as any).props
     ): Props<typeof config> & R & PP {
-        if (element.tagName) {
-            const tag = element.tagName.toLowerCase();
-            if (propConfigs.has(tag)) {
-                propConfigs.set(tag, { ...propConfigs.get(tag)!, ...config });
-            } else {
-                propConfigs.set(tag, config);
-            }
+        const tag = element.tagName.toLowerCase();
+        if (propConfigs.has(tag)) {
+            propConfigs.set(tag, { ...propConfigs.get(tag)!, ...config });
+        } else {
+            propConfigs.set(tag, config);
         }
 
         // if parentProps = {}, that is the default value created in base.ts

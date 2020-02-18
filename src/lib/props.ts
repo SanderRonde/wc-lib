@@ -233,7 +233,7 @@ export function setter(
                 setAttrFn(name, encodeURIComponent('_'));
             }
         } else {
-            setAttrFn(name, `${strVal}`);
+            setAttrFn(name, String(strVal));
         }
     }
 }

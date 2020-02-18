@@ -239,8 +239,8 @@ class TestTag extends Array<TestTag> {
     }
 }
 
-type TestTagFormat = [string, TestTagsFormat[]];
-type TestTagsFormat = TestTagFormat | string;
+export type TestTagFormat = [string, TestTagsFormat[]];
+export type TestTagsFormat = TestTagFormat | string;
 
 type ParsedTag = SSR._Rendering.TextToTags.ParsedTag;
 

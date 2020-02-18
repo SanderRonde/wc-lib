@@ -100,11 +100,23 @@ class TestTag extends Array<TestTag> {
         );
     }
 
+    assertHasAttributes(...names: string[]) {
+        for (const name of names) {
+            this.assertHasAttribute(name);
+        }
+    }
+
     assertHasAttribute(name: string) {
         this._t.true(
             name in this.tag.attributes,
             'Attribute is in attributes object'
         );
+    }
+
+    assertDoesNotHaveAttributes(...names: string[]) {
+        for (const name of names) {
+            this.assertDoesNotHaveAttribute(name);
+        }
     }
 
     assertDoesNotHaveAttribute(name: string) {

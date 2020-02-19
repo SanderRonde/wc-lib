@@ -15,14 +15,15 @@ install:
     - yarn --ignore-engines
     - npm install -g typescript
     - npm install -g codecov
+    - npm install -g makfy
 script:
-    - yarn makfy coverage --subset $TEST
-    - yarn makfy compile --dir examples
+    - makfy coverage --subset $TEST
+    - makfy compile --dir examples
 after_script:
     - codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')
 
 before_deploy:
-    - yarn makfy website
+    - makfy website
 
 deploy:
     - provider: npm

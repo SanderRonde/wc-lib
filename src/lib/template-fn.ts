@@ -394,7 +394,9 @@ export class TemplateFn<
         }
         const componentTemplateMap = templaterMap.get(templater!)!;
 
-        const jsxAddedTemplate = (templater! as unknown) as JSXTemplater<TR>;
+        const jsxAddedTemplate = ((typeof templater === 'function'
+            ? templater.bind(component)
+            : templater!) as unknown) as JSXTemplater<TR>;
         jsxAddedTemplate.jsx = (
             tag:
                 | string

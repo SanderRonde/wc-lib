@@ -102,10 +102,10 @@ cmd('_set-cypress')
                 'all',
                 'classes',
                 'lib',
-                'partial-class-basic',
-                'partial-class-complex-template',
-                'partial-class-i18n',
-                'partial-class-theming',
+                'partial-classes-basic',
+                'partial-classes-complex-template',
+                'partial-classes-i18n',
+                'partial-classes-theming',
                 'properties',
                 'tasks',
             ],
@@ -135,7 +135,7 @@ cmd('_set-cypress')
                     'node scripts/set-specs.js test/usage/integration/lib'
                 );
                 break;
-            case 'partial-class-basic':
+            case 'partial-classes-basic':
                 await exec(
                     `? setting selection to test/usage/integration/partial-classes/basic`
                 );
@@ -143,7 +143,7 @@ cmd('_set-cypress')
                     'node scripts/set-specs.js test/usage/integration/partial-classes/basic'
                 );
                 break;
-            case 'partial-class-complex-template':
+            case 'partial-classes-complex-template':
                 await exec(
                     `? setting selection to test/usage/integration/partial-classes/complex-template`
                 );
@@ -151,7 +151,7 @@ cmd('_set-cypress')
                     'node scripts/set-specs.js test/usage/integration/partial-classes/complex-template'
                 );
                 break;
-            case 'partial-class-i18n':
+            case 'partial-classes-i18n':
                 await exec(
                     `? setting selection to test/usage/integration/partial-classes/i18n`
                 );
@@ -159,7 +159,7 @@ cmd('_set-cypress')
                     'node scripts/set-specs.js test/usage/integration/partial-classes/i18n'
                 );
                 break;
-            case 'partial-class-theming':
+            case 'partial-classes-theming':
                 await exec(
                     `? setting selection to test/usage/integration/partial-classes/theming`
                 );

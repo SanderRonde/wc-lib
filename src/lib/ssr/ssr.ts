@@ -356,6 +356,7 @@ export namespace SSR {
                     }
 
                     // Generate ref instead
+                    /* istanbul ignore next */
                     if (refMap.has(name)) {
                         return refMap.get(name);
                     }
@@ -363,7 +364,8 @@ export namespace SSR {
                     const ref =
                         'genRef' in this && this.genRef
                             ? this.genRef(value)
-                            : String(value);
+                            : /* istanbul ignore next */
+                              String(value);
 
                     refMap.set(name, ref);
                     return ref;

@@ -16,7 +16,7 @@ install:
     - npm install -g typescript
     - npm install -g codecov
 script:
-    - yarn makfy coverage --dir $TEST
+    - yarn makfy coverage --subset $TEST
     - yarn makfy compile --dir examples
 after_script:
     - codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')

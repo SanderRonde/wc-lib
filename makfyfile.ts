@@ -38,11 +38,9 @@ cmd('compile')
                 await exec(`tsc -p examples/tsconfig.json ${watchArg}`);
                 break;
             case 'all':
-                await exec(
-                    ['src', 'test', 'bin'].map((subDir) => {
-                        return `@compile --dir ${subDir} ${watchArg}`;
-                    })
-                );
+                await exec(`@compile --dir src ${watchArg}`);
+                await exec(`@compile --dir test ${watchArg}`);
+                await exec(`@compile --dir bin ${watchArg}`);
                 await exec(`@compile --dir examples ${watchArg}`);
                 break;
         }

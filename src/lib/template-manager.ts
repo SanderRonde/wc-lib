@@ -6,8 +6,8 @@ import { WebComponentListenableMixinInstance } from './listener.js';
 import { bindToClass, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
 import { classNames, ClassNamesArg } from './shared.js';
-import { refPrefix } from './props.js';
 import { ClassToObj } from './configurable.js';
+import { refPrefix } from './props.js';
 
 class ClassAttributePart implements Part {
     public value: any = undefined;

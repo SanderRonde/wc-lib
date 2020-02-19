@@ -229,21 +229,24 @@ function bundleToDir(bundleDir: string) {
     );
 }
 
+function changeDirHTML(name: string) {
+    // Change the overview index page to display
+    // different text depending on whether it's bundled or not
+    return function changeHTML() {
+        return gulp
+            .src(['./index.html'], {
+                cwd: `./${name}`,
+                base: `./${name}`,
+            })
+            .pipe(replace(/body class="regular"/g, `body class="${name}"`))
+            .pipe(gulp.dest(`./${name}`));
+    };
+}
+
 // Bundle pages
 gulp.task(
     'bundle',
-    gulp.series(bundleToDir('bundled'), function changeHTML() {
-        // Change the overview index page to display
-        // different text depending on whether it's bundled or not
-        return gulp
-            .src(['index.html'], {
-                cwd: './bundled',
-                base: './bundled',
-            })
-            .pipe(replace(/hidden id="ifnotbundled"/g, 'id="ifnotbundled"'))
-            .pipe(replace(/id="ifbundled"/g, 'hidden id="ifbundled"'))
-            .pipe(gulp.dest('./'));
-    })
+    gulp.series(bundleToDir('bundled'), changeDirHTML('bundled'))
 );
 
 // Bundle and server-side render pages
@@ -329,7 +332,7 @@ gulp.task(
                     });
                 })
             );
-        }
-        // TODO: changeHTML
+        },
+        changeDirHTML('ssr')
     )
 );

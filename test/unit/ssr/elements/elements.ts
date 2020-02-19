@@ -593,19 +593,21 @@ export function elementFactory<
                             `;
                         })}
                     </div>
+                    <!-- prettier-ignore -->
                     <div
                         ?prop="${props.x}"
-                        ?prop2="${props.x}"
+                        ?prop2='${props.x}'
                         ?prop3=${props.x}
                         ?prop4="${props.y}"
-                        ?prop5="${props.y}"
+                        ?prop5='${props.y}'
                         ?prop6=${props.y}
                     ></div>
+                    <!-- prettier-ignore -->
                     <div
                         prop="${{}}"
-                        prop2="${{}}"
+                        prop2='${{}}'
                         prop3="${[]}"
-                        prop4="${[]}"
+                        prop4='${[]}'
                         prop5=${{}}
                         prop6=${[]}
                         prop7="${() => {}}"

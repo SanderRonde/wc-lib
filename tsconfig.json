@@ -21,10 +21,8 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true
-	},
+    },
     "compileOnSave": true,
     "allowJs": true,
-    "include": [
-        "gulpfile.ts"
-    ]
+    "include": ["gulpfile.ts", "makfyfile.ts"]
 }

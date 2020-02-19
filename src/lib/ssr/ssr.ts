@@ -1119,8 +1119,7 @@ export namespace SSR {
                     return tags.map((tagClass) => {
                         return tagClass.walk((tag) => {
                             const classNames = (() => {
-                                if (!tag.attributes.hasOwnProperty('class'))
-                                    return [];
+                                if (!tag.attributes['class']) return [];
                                 const classNames = tag.attributes
                                     .class as string;
                                 return classNames.split(' ');

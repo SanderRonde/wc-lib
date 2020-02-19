@@ -61,7 +61,7 @@ const I18N_FILE = {
         ],
         has_won: [
             {
-                defaultValue: '$WINNER$ has won 🎉',
+                defaultValue: '$WINNER$ has won ðŸŽ‰',
             },
         ],
     },
@@ -107,11 +107,11 @@ const I18N_GET_MESSAGE = (
     return result;
 };
 
-function bundleToDir(dir: string) {
+function bundleToDir(bundleDir: string) {
     return gulp.series(
         function remove() {
             return new Promise((resolve) => {
-                rimraf(path.join(__dirname, dir), (_err) => {
+                rimraf(path.join(__dirname, bundleDir), (_err) => {
                     // Ignore errors because if it doesn't exist
                     // it's been removed anyway
                     resolve();
@@ -135,34 +135,34 @@ function bundleToDir(dir: string) {
                         base: './',
                     }
                 )
-                .pipe(gulp.dest(dir));
+                .pipe(gulp.dest(bundleDir));
         },
         function inlineCSS() {
             // Inline all typed CSS
             return gulp
                 .src(['**/*.css.js'], {
-                    cwd: dir,
-                    base: dir,
+                    cwd: bundleDir,
+                    base: bundleDir,
                 })
                 .pipe(inlineTypedCSSPipe())
-                .pipe(gulp.dest(dir));
+                .pipe(gulp.dest(bundleDir));
         },
         function changeImports() {
             // Change imports to be relative to the root (since
             // it's been moved to dir/)
             return gulp
                 .src(['**/*.js'], {
-                    cwd: dir,
-                    base: dir,
+                    cwd: bundleDir,
+                    base: bundleDir,
                 })
                 .pipe(replace(/\.\.\/modules/g, '../../modules'))
-                .pipe(gulp.dest(dir));
+                .pipe(gulp.dest(bundleDir));
         },
         async function bundle() {
             // Get all directories in the bundled/ folder
             const dirs = (
                 await Promise.all(
-                    (await fs.readdir(path.join(__dirname, dir))).map(
+                    (await fs.readdir(path.join(__dirname, bundleDir))).map(
                         async (file) => {
                             return [file, await fs.stat(file)];
                         }
@@ -182,12 +182,12 @@ function bundleToDir(dir: string) {
                                 mode: 'production',
                                 entry: path.join(
                                     __dirname,
-                                    dir,
+                                    bundleDir,
                                     dir,
                                     'index.js'
                                 ),
                                 output: {
-                                    path: path.join(__dirname, dir, dir),
+                                    path: path.join(__dirname, bundleDir, dir),
                                     filename: 'index.js',
                                 },
                                 optimization: {
@@ -219,8 +219,8 @@ function bundleToDir(dir: string) {
                         '!**/*.png',
                     ],
                     {
-                        cwd: dir,
-                        base: dir,
+                        cwd: bundleDir,
+                        base: bundleDir,
                         read: false,
                     }
                 )
@@ -264,6 +264,18 @@ gulp.task(
                 .map(([name, _]) => name as string)
                 .filter((name) => EXCLUDED_DIRS.indexOf(name) === -1);
 
+            const {
+                TemplateResult,
+                PropertyCommitter,
+                EventPart,
+                BooleanAttributePart,
+                AttributeCommitter,
+                NodePart,
+                isDirective,
+                noChange,
+                //@ts-ignore
+            } = await import('./modules/lit-html/lit-html.js');
+
             return Promise.all(
                 dirs.map(async (dir) => {
                     const imports = await import(
@@ -277,7 +289,21 @@ gulp.task(
                     }
                     const mainExport = imports[keys[0]];
 
+                    if ('initComplexTemplateProvider' in mainExport) {
+                        mainExport.initComplexTemplateProvider({
+                            TemplateResult,
+                            PropertyCommitter,
+                            EventPart,
+                            BooleanAttributePart,
+                            AttributeCommitter,
+                            NodePart,
+                            isDirective,
+                            noChange,
+                        });
+                    }
+
                     // There's currently just one theme, use that one for all example elements
+                    debugger;
                     const rendered = ssr(mainExport, {
                         theme: theme['light'],
                         i18n: I18N_FILE,

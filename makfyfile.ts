@@ -1,14 +1,12 @@
-import { cmd, choice, flag, escape, str } from 'makfy';
-
-type CompileDirChoice = 'src' | 'test' | 'bin' | 'examples' | 'all';
+import { cmd as _cmd, choice as _choice, flag, escape, str } from 'makfy';
+import { choice, cmd } from './types/makfy-extended';
+const choice = (_choice as unknown) as choice;
+const cmd = (_cmd as unknown) as cmd;
 
 cmd('compile')
     .desc('Compile source typescript')
     .args({
-        dir: choice(
-            ['src', 'test', 'bin', 'examples', 'all'] as CompileDirChoice[],
-            'src' as CompileDirChoice
-        ),
+        dir: choice(['src', 'test', 'bin', 'examples', 'all'], 'src'),
         watch: flag(),
     })
     .argsDesc({
@@ -16,60 +14,43 @@ cmd('compile')
             'The directory to compile (or all if you want to compile them all)',
         watch: 'Watch for changes',
     })
-    .run(
-        async (
-            exec,
-            { watch, dir }: { dir: CompileDirChoice; watch: boolean }
-        ) => {
-            const watchArg = watch ? '--watch' : '';
+    .run(async (exec, { watch, dir }) => {
+        const watchArg = watch ? '--watch' : '';
 
-            await exec(`? compiling directory ${dir}`);
-            switch (dir) {
-                case 'src':
-                    await exec([
-                        `tsc -p src/tsconfig.cjs.json ${watchArg}`,
-                        `tsc -p src/tsconfig.json ${watchArg}`,
-                    ]);
-                    break;
-                case 'test':
-                    await exec([
-                        `tsc -p test/tsconfig.cjs.json ${watchArg}`,
-                        `tsc -p test/tsconfig.json ${watchArg}`,
-                    ]);
-                    break;
-                case 'bin':
-                    await exec(`tsc -p bin/tsconfig.json ${watchArg}`);
-                    break;
-                case 'examples':
-                    await exec(`tsc -p examples/tsconfig.json ${watchArg}`);
-                    break;
-                case 'all':
-                    await exec(
-                        ['src', 'test', 'bin', 'examples'].map((subDir) => {
-                            return `@compile --dir ${subDir} ${watchArg}`;
-                        })
-                    );
-                    break;
-            }
+        await exec(`? compiling directory ${dir}`);
+        switch (dir) {
+            case 'src':
+                await exec([
+                    `tsc -p src/tsconfig.cjs.json ${watchArg}`,
+                    `tsc -p src/tsconfig.json ${watchArg}`,
+                ]);
+                break;
+            case 'test':
+                await exec([
+                    `tsc -p test/tsconfig.cjs.json ${watchArg}`,
+                    `tsc -p test/tsconfig.json ${watchArg}`,
+                ]);
+                break;
+            case 'bin':
+                await exec(`tsc -p bin/tsconfig.json ${watchArg}`);
+                break;
+            case 'examples':
+                await exec(`tsc -p examples/tsconfig.json ${watchArg}`);
+                break;
+            case 'all':
+                await exec(
+                    ['src', 'test', 'bin', 'examples'].map((subDir) => {
+                        return `@compile --dir ${subDir} ${watchArg}`;
+                    })
+                );
+                break;
         }
-    );
-
-type WatchDirChoice = 'es' | 'cjs' | 'test-es' | 'test-cjs' | 'bin' | 'all';
+    });
 
 cmd('watch')
     .desc('Watch compile typescript files')
     .args({
-        dir: choice(
-            [
-                'es',
-                'cjs',
-                'test-es',
-                'test-cjs',
-                'bin',
-                'all',
-            ] as WatchDirChoice[],
-            'es' as WatchDirChoice
-        ),
+        dir: choice(['es', 'cjs', 'test-es', 'test-cjs', 'bin', 'all'], 'es'),
         noclear: flag(),
     })
     .argsDesc({
@@ -77,58 +58,43 @@ cmd('watch')
             'The directory to compile (or all if you want to compile them all)',
         noclear: "Don't clear output on re-compile",
     })
-    .run(
-        async (
-            exec,
-            { dir, noclear }: { dir: WatchDirChoice; noclear: boolean }
-        ) => {
-            const clearArg = noclear ? '--preserveWatchOutput' : '';
-            await exec(`? watching directory ${dir}`);
-            switch (dir) {
-                case 'es':
-                    await exec(`tsc -p src/tsconfig.json -w ${clearArg}`);
-                    break;
-                case 'cjs':
-                    await exec(`tsc -p src/tsconfig.cjs.json -w ${clearArg}`);
-                    break;
-                case 'test-es':
-                    await exec(`tsc -p test/tsconfig.json -w ${clearArg}`);
-                    break;
-                case 'test-cjs':
-                    await exec(`tsc -p test/tsconfig.cjs.json -w ${clearArg}`);
-                    break;
-                case 'bin':
-                    await exec(`tsc -p bin/tsconfig.json -w ${clearArg}`);
-                    break;
-                case 'all':
-                    await exec(
-                        escape(
-                            'concurrently',
-                            `tsc -p src/tsconfig.json -w ${clearArg}`,
-                            `tsc -p src/tsconfig.cjs.json -w ${clearArg}`,
-                            `tsc -p test/tsconfig.json -w ${clearArg}`,
-                            `tsc -p test/tsconfig.cjs.json -w ${clearArg}`,
-                            `tsc -p bin/tsconfig.json -w ${clearArg}`
-                        )
-                    );
-            }
+    .run(async (exec, { dir, noclear }) => {
+        const clearArg = noclear ? '--preserveWatchOutput' : '';
+        await exec(`? watching directory ${dir}`);
+        switch (dir) {
+            case 'es':
+                await exec(`tsc -p src/tsconfig.json -w ${clearArg}`);
+                break;
+            case 'cjs':
+                await exec(`tsc -p src/tsconfig.cjs.json -w ${clearArg}`);
+                break;
+            case 'test-es':
+                await exec(`tsc -p test/tsconfig.json -w ${clearArg}`);
+                break;
+            case 'test-cjs':
+                await exec(`tsc -p test/tsconfig.cjs.json -w ${clearArg}`);
+                break;
+            case 'bin':
+                await exec(`tsc -p bin/tsconfig.json -w ${clearArg}`);
+                break;
+            case 'all':
+                await exec(
+                    escape(
+                        'concurrently',
+                        `tsc -p src/tsconfig.json -w --preserveWatchOutput`,
+                        `tsc -p src/tsconfig.cjs.json -w --preserveWatchOutput`,
+                        `tsc -p test/tsconfig.json -w --preserveWatchOutput`,
+                        `tsc -p test/tsconfig.cjs.json -w --preserveWatchOutput`,
+                        `tsc -p bin/tsconfig.json ---preserveWatchOutput}`
+                    )
+                );
         }
-    );
+    });
 
 cmd('cypress')
     .desc('Run cypress tests')
     .run('node test/usage/test.js');
 
-type SetCypressSelectionChoice =
-    | 'all'
-    | 'classes'
-    | 'lib'
-    | 'partial-class-basic'
-    | 'partial-class-complex-template'
-    | 'partial-class-i18n'
-    | 'partial-class-theming'
-    | 'properties'
-    | 'tasks';
 cmd('_set-cypress')
     .desc('Set the cypress config to only run given files')
     .args({
@@ -143,106 +109,93 @@ cmd('_set-cypress')
                 'partial-class-theming',
                 'properties',
                 'tasks',
-            ] as SetCypressSelectionChoice[],
-            'all' as SetCypressSelectionChoice
+            ],
+            'all'
         ),
     })
     .argsDesc({
         selection: 'What part of the files to select for running',
     })
-    .run(
-        async (
-            exec,
-            { selection }: { selection: SetCypressSelectionChoice }
-        ) => {
-            switch (selection) {
-                case 'all':
-                    await exec(`? setting selection to test/usage/integration`);
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration'
-                    );
-                    break;
-                case 'classes':
-                    await exec(
-                        `? setting selection to test/usage/integration/classes`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/classes'
-                    );
-                    break;
-                case 'lib':
-                    await exec(
-                        `? setting selection to test/usage/integration/lib`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/lib'
-                    );
-                    break;
-                case 'partial-class-basic':
-                    await exec(
-                        `? setting selection to test/usage/integration/partial-classes/basic`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/partial-classes/basic'
-                    );
-                    break;
-                case 'partial-class-complex-template':
-                    await exec(
-                        `? setting selection to test/usage/integration/partial-classes/complex-template`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/partial-classes/complex-template'
-                    );
-                    break;
-                case 'partial-class-i18n':
-                    await exec(
-                        `? setting selection to test/usage/integration/partial-classes/i18n`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/partial-classes/i18n'
-                    );
-                    break;
-                case 'partial-class-theming':
-                    await exec(
-                        `? setting selection to test/usage/integration/partial-classes/theming`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/partial-classes/theming'
-                    );
-                    break;
-                case 'properties':
-                    await exec(
-                        `? setting selection to test/usage/integration/properties`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/properties'
-                    );
-                    break;
-                case 'tasks':
-                    await exec(
-                        `? setting selection to test/usage/integration/tasks`
-                    );
-                    await exec(
-                        'node scripts/set-specs.js test/usage/integration/tasks'
-                    );
-                    break;
-            }
+    .run(async (exec, { selection }) => {
+        switch (selection) {
+            case 'all':
+                await exec(`? setting selection to test/usage/integration`);
+                await exec('node scripts/set-specs.js test/usage/integration');
+                break;
+            case 'classes':
+                await exec(
+                    `? setting selection to test/usage/integration/classes`
+                );
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/classes'
+                );
+                break;
+            case 'lib':
+                await exec(`? setting selection to test/usage/integration/lib`);
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/lib'
+                );
+                break;
+            case 'partial-class-basic':
+                await exec(
+                    `? setting selection to test/usage/integration/partial-classes/basic`
+                );
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/partial-classes/basic'
+                );
+                break;
+            case 'partial-class-complex-template':
+                await exec(
+                    `? setting selection to test/usage/integration/partial-classes/complex-template`
+                );
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/partial-classes/complex-template'
+                );
+                break;
+            case 'partial-class-i18n':
+                await exec(
+                    `? setting selection to test/usage/integration/partial-classes/i18n`
+                );
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/partial-classes/i18n'
+                );
+                break;
+            case 'partial-class-theming':
+                await exec(
+                    `? setting selection to test/usage/integration/partial-classes/theming`
+                );
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/partial-classes/theming'
+                );
+                break;
+            case 'properties':
+                await exec(
+                    `? setting selection to test/usage/integration/properties`
+                );
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/properties'
+                );
+                break;
+            case 'tasks':
+                await exec(
+                    `? setting selection to test/usage/integration/tasks`
+                );
+                await exec(
+                    'node scripts/set-specs.js test/usage/integration/tasks'
+                );
+                break;
         }
-    );
+    });
 
-type TestSubtestChoice = 'unit' | 'cypress' | 'all';
 cmd('test')
     .desc('Run tests')
     .args({
-        subtest: choice(
-            ['unit', 'cypress', 'all'] as TestSubtestChoice[],
-            'all' as TestSubtestChoice
-        ),
+        subtest: choice(['unit', 'cypress', 'all'], 'all'),
     })
     .argsDesc({
         subtest: 'Which subtest to run',
     })
-    .run(async (exec, { subtest }: { subtest: TestSubtestChoice }) => {
+    .run(async (exec, { subtest }) => {
         switch (subtest) {
             case 'unit':
                 await exec(
@@ -303,7 +256,6 @@ cmd('website')
         );
     });
 
-type CoverageSubsetChoice = SetCypressSelectionChoice | 'unit' | 'cypress';
 cmd('coverage')
     .args({
         subset: choice(
@@ -317,15 +269,16 @@ cmd('coverage')
                 'partial-classes-theming',
                 'properties',
                 'tasks',
+                'cypress',
                 'unit',
-            ] as CoverageSubsetChoice[],
-            'all' as CoverageSubsetChoice
+            ],
+            'all'
         ),
     })
     .argsDesc({
         subset: 'The subset for which to collect coverage',
     })
-    .run(async (exec, { subset }: { subset: CoverageSubsetChoice }) => {
+    .run(async (exec, { subset }) => {
         await exec('? clearing previous coverage');
         await exec('rimraf ./.nyc_output');
         if (subset === 'unit') {

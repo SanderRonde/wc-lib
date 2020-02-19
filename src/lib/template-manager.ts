@@ -448,7 +448,7 @@ class TemplateClass {
     }
 }
 
-type ComplexValue = TemplateFnLike | Function | Object;
+export type ComplexValue = TemplateFnLike | Function | Object;
 
 /**
  * An instance of the template manager mixin's resulting class

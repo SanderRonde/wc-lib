@@ -1310,7 +1310,7 @@ export namespace SSR {
                 ): {
                     isComplex: boolean;
                     str?: string;
-                    markers?: _MarkerArr[];
+                    markers: _MarkerArr[];
                 } {
                     if (!_Attributes._isPrimitive(content)) {
                         if (Array.isArray(content)) {
@@ -1335,10 +1335,7 @@ export namespace SSR {
                                 .join('');
                             const joinedMarkers = mappedContent.reduce(
                                 (prev, current) => {
-                                    return [
-                                        ...prev,
-                                        ...(current.markers || []),
-                                    ];
+                                    return [...prev, ...current.markers];
                                 },
                                 []
                             );
@@ -1359,7 +1356,7 @@ export namespace SSR {
                             };
                         }
                     }
-                    return { isComplex: false };
+                    return { isComplex: false, markers: [] };
                 }
 
                 export function markerHas(markers: _MarkerArr[], value: any) {

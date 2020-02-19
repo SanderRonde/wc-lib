@@ -12,40 +12,59 @@ import * as path from 'path';
 const EXCLUDED_DIRS = ['ssr', 'modules', 'bundled'];
 
 const I18N_FILE = {
-    what_is_your_name: [
-        {
-            defaultValue: 'What is your name',
-        },
-    ],
-    my_name_is: [
-        {
-            defaultValue: 'My name is',
-        },
-    ],
-    set_lang_to: [
-        {
-            defaultValue: 'Set language to ',
-        },
-        {
-            defaultValue: 'language',
-            replaceable: true,
-        },
-    ],
-    english: [
-        {
-            defaultValue: 'english',
-        },
-    ],
-    german: [
-        {
-            defaultValue: 'german',
-        },
-    ],
-    spanish: [
-        {
-            defaultValue: 'spanish',
-        },
-    ],
+    ...{
+        what_is_your_name: [
+            {
+                defaultValue: 'What is your name',
+            },
+        ],
+        my_name_is: [
+            {
+                defaultValue: 'My name is',
+            },
+        ],
+        set_lang_to: [
+            {
+                defaultValue: 'Set language to ',
+            },
+            {
+                defaultValue: 'language',
+                replaceable: true,
+            },
+        ],
+        english: [
+            {
+                defaultValue: 'english',
+            },
+        ],
+        german: [
+            {
+                defaultValue: 'german',
+            },
+        ],
+        spanish: [
+            {
+                defaultValue: 'spanish',
+            },
+        ],
+    },
+    ...{
+        change_lang: [
+            {
+                defaultValue: 'Change language',
+            },
+        ],
+        change_theme: [
+            {
+                defaultValue: 'Change theme',
+            },
+        ],
+        has_won: [
+            {
+                defaultValue: '$WINNER$ has won 🎉',
+            },
+        ],
+    },
 };
 
 type MessageEntry = {

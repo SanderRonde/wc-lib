@@ -15,6 +15,8 @@ import {
     WebComponentTypeStatic,
 } from '../../classes/types';
 import { CHANGE_TYPE, TemplateFnLike } from '../template-fn';
+import { ComplexValue } from '../template-manager';
+import { classNames } from '../shared';
 import { Props } from '../props';
 
 /**
@@ -270,6 +272,8 @@ export namespace SSR {
             extends WebComponentBaseTypeInstance,
                 WebComponentTypeInstance {
             getTheme?(): Theme;
+            genRef?(value: ComplexValue): string;
+            getRef?(ref: string): ComplexValue;
         }
 
         export type BaseClass = WebComponentBaseTypeStatic &
@@ -303,21 +307,28 @@ export namespace SSR {
 
         export type Theme = StringMap<any>;
 
+        export type Props = Object & StringMap<any>;
+
         export type Attributes = Object & StringMap<any>;
 
         export type TextAttributes = Object & StringMap<any>;
 
         export function _createBase<
             C extends {
-                new (...args: any[]): any;
+                new (...args: any[]): {
+                    genRef?(value?: ComplexValue): string;
+                    getRef?(ref: string): ComplexValue;
+                };
             }
         >(
             klass: C,
             tagName: string,
-            props: BaseTypes.Attributes,
+            props: BaseTypes.Props,
+            attributes: BaseTypes.Attributes,
             session: DocumentSession
         ): BaseClassExtended {
-            const attributes: Attributes = { ...props };
+            const joinedAttributes = { ...attributes, ...props };
+            const refMap: Map<string, any> = new Map();
 
             return (class Base extends klass {
                 get isSSR() {
@@ -330,19 +341,41 @@ export namespace SSR {
 
                 constructor(...args: any[]) {
                     super(...args);
+
                     Props.onConnect(this);
                 }
+                getParentRef(ref: string): ComplexValue {
+                    // There is no real parent here so refer back to the ref-hoster
+                    // which is itself
+                    return this.getRef!(ref);
+                }
                 getAttribute(name: string): string {
-                    return attributes[name];
+                    const value = joinedAttributes[name];
+                    if (_Attributes._isPrimitive(value)) {
+                        return String(value);
+                    }
+
+                    // Generate ref instead
+                    if (refMap.has(name)) {
+                        return refMap.get(name);
+                    }
+
+                    const ref =
+                        'genRef' in this && this.genRef
+                            ? this.genRef(value)
+                            : String(value);
+
+                    refMap.set(name, ref);
+                    return ref;
                 }
                 hasAttribute(name: string): boolean {
-                    return attributes.hasOwnProperty(name);
+                    return joinedAttributes.hasOwnProperty(name);
                 }
                 setAttribute(name: string, value: string) {
-                    attributes[name] = value;
+                    joinedAttributes[name] = value;
                 }
                 removeAttribute(name: string) {
-                    delete attributes[name];
+                    delete joinedAttributes[name];
                 }
                 getTheme() {
                     return session._theme;
@@ -408,7 +441,11 @@ export namespace SSR {
         export function _toString(value: any): string {
             let text: string = '';
             if (_isPrimitive(value) || !_isIterable(value)) {
-                return typeof value === 'string' ? value : String(value);
+                if (typeof value !== 'object') return String(value);
+                if (value instanceof RegExp) {
+                    return String(value);
+                }
+                return JSON.stringify(value);
             } else {
                 for (const t of value) {
                     text += typeof t === 'string' ? t : String(t);
@@ -516,11 +553,18 @@ export namespace SSR {
         }
 
         export namespace TextToTags {
+            export interface TagConfig {
+                attributeOverride: {
+                    [key: string]: any;
+                };
+            }
+
             export class Tag {
                 public tagName: string;
                 public attributes: Object & BaseTypes.TextAttributes;
                 public isSelfClosing: boolean;
                 private _children: (Tag | TextTag)[];
+                public config: Partial<TagConfig> = {};
 
                 public readonly type = 'TAG';
 
@@ -569,7 +613,7 @@ export namespace SSR {
                 ): ParsedTag {
                     const result = handler(this);
                     const { stop, newTag } = result || {
-                        stop: true,
+                        stop: false,
                         newTag: this,
                     };
                     if (newTag instanceof TextTag || stop) {
@@ -580,6 +624,21 @@ export namespace SSR {
                         .copy()
                         .setChildren(
                             newTag.children.map((c) => c.walk(handler))
+                        );
+                }
+
+                walkAll(
+                    handler: <T extends Tag | TextTag>(tag: T) => T | void
+                ): ParsedTag {
+                    const result = handler(this);
+
+                    /* istanbul ignore next */
+                    const newTag = result || this;
+
+                    return newTag
+                        .copy()
+                        .setChildren(
+                            newTag.children.map((c) => c.walkAll(handler))
                         );
                 }
 
@@ -608,6 +667,12 @@ export namespace SSR {
 
                 walk() {
                     return this;
+                }
+
+                walkAll(
+                    handler: <T extends Tag | TextTag>(tag: T) => T | void
+                ): ParsedTag {
+                    return handler(this) || this;
                 }
 
                 toText() {
@@ -790,9 +855,36 @@ export namespace SSR {
                     }
                 }
 
+                export function _applyOverriddenAttributes(
+                    tag: Tag,
+                    markers: _ComplexRender._MarkerArr[]
+                ) {
+                    const overrides: BaseTypes.Attributes = {};
+                    const attributes: BaseTypes.TextAttributes = {};
+
+                    for (const attributeName in tag.attributes) {
+                        const attributeValue = tag.attributes[attributeName];
+                        if (
+                            !_ComplexRender.markerHas(markers, attributeValue)
+                        ) {
+                            attributes[attributeName] = attributeValue;
+                        } else {
+                            overrides[attributeName] = _ComplexRender.markerGet(
+                                markers,
+                                attributeValue
+                            );
+                        }
+                    }
+                    return {
+                        overrides,
+                        attributes,
+                    };
+                }
+
                 export function _mapTag(
                     tag: Tag,
-                    session: DocumentSession
+                    session: DocumentSession,
+                    markers: _ComplexRender._MarkerArr[]
                 ): {
                     newTag: ParsedTag;
                     stop: boolean;
@@ -804,9 +896,14 @@ export namespace SSR {
                         return;
 
                     const element = session._elementMap[tag.tagName];
+                    const {
+                        attributes,
+                        overrides: props,
+                    } = _applyOverriddenAttributes(tag, markers);
                     const newTag = elementToTag(
                         element,
-                        tag.attributes,
+                        props,
+                        attributes,
                         session
                     );
                     Slots.applySlots(newTag, tag);
@@ -818,11 +915,12 @@ export namespace SSR {
 
                 export function replace(
                     tags: ParsedTag[],
-                    session: DocumentSession
+                    session: DocumentSession,
+                    markers: _ComplexRender._MarkerArr[]
                 ) {
                     return tags.map((t) =>
                         t.walk((tag) => {
-                            return _mapTag(tag, session);
+                            return _mapTag(tag, session, markers);
                         })
                     );
                 }
@@ -936,7 +1034,15 @@ export namespace SSR {
                         : [element.css];
 
                     return templates.map((template) => {
-                        const text = _tryRender(instance, template);
+                        const text = _tryRender(() => {
+                            return (
+                                /* istanbul ignore next */
+                                template?.renderAsText(
+                                    CHANGE_TYPE.ALWAYS,
+                                    instance
+                                ) || ''
+                            );
+                        });
                         const cssTags = TextToTags._Parser.parse<
                             CSSTag,
                             CSSText
@@ -1055,7 +1161,6 @@ export namespace SSR {
                         componentID
                     );
 
-                    // debugger;
                     const isFirstElementRender = !session._sheetSet.has(
                         element
                     );
@@ -1075,23 +1180,354 @@ export namespace SSR {
                 }
             }
 
-            export function _tryRender(
-                instance: BaseTypes.BaseClassInstance,
-                template: TemplateFnLike<number> | null
-            ) {
+            export function _tryRender<R>(renderFunction: () => R): R {
                 try {
-                    return (
-                        /* istanbul ignore next */
-                        template?.renderAsText(CHANGE_TYPE.ALWAYS, instance) ||
-                        ''
-                    );
+                    return renderFunction();
                 } catch (e) {
                     Errors._renderError(e);
                 }
             }
 
+            export namespace _ComplexRender {
+                export interface _RenderedTemplate {
+                    strings: TemplateStringsArray | string[];
+                    values: any[];
+                }
+
+                export type _MarkerMeta = (
+                    | {
+                          isTag: true;
+                          attrName: string;
+                      }
+                    | {
+                          isTag?: false;
+                          attrName?: undefined;
+                      }
+                ) & {
+                    forceMarker?: boolean;
+                };
+
+                export type _MarkerArr = [string, any, _MarkerMeta];
+
+                export let _markedIndex: number = 0;
+                export function _templateToMarkedString({
+                    strings,
+                    values,
+                }: _RenderedTemplate) {
+                    const markers: _MarkerArr[] = [];
+
+                    const result: string[] = [strings[0]];
+                    for (let i = 0; i < values.length; i++) {
+                        const marker = `___marker${_markedIndex++}___`;
+                        result.push(marker, strings[i + 1]);
+                        markers.push([marker, values[i], {}]);
+                    }
+                    return {
+                        text: result.join(''),
+                        markers,
+                    };
+                }
+
+                export function _getPreAttrRemoved(
+                    resultStrings: string[],
+                    config: _MarkerArr[2]
+                ) {
+                    let sliceChars = config.attrName!.length + 1;
+                    if (
+                        resultStrings[resultStrings.length - 1].endsWith('"') ||
+                        resultStrings[resultStrings.length - 1].endsWith("'")
+                    ) {
+                        // Quoted
+                        sliceChars++;
+                    }
+                    return resultStrings[resultStrings.length - 1].slice(
+                        0,
+                        -sliceChars
+                    );
+                }
+
+                export function _ensurePostQuote(str: string) {
+                    const nextChar = str[0];
+                    if (nextChar !== '"') {
+                        if (nextChar === "'") {
+                            // Replace with "
+                            return `"${str.slice(1)}`;
+                        } else {
+                            // No quote, add a quote
+                            return `"${str}`;
+                        }
+                    }
+                    return str;
+                }
+
+                export function _ensureNoPostQuote(str: string) {
+                    const nextChar = str[0];
+                    if (nextChar === '"' || nextChar === "'") {
+                        return str.slice(1);
+                    }
+                    return str;
+                }
+
+                export function _finalMarkedToString(
+                    strings: string[],
+                    markers: _MarkerArr[]
+                ): string {
+                    const result: string[] = [strings[0]];
+                    for (let i = 0; i < strings.length - 1; i++) {
+                        const [marker, value, config] = markers[i];
+                        if (config.isTag && config.attrName.startsWith('?')) {
+                            result[result.length - 1] = _getPreAttrRemoved(
+                                result,
+                                config
+                            );
+                            if (value) {
+                                result.push(`${config.attrName.slice(1)}="`);
+                                result.push(_ensurePostQuote(strings[i + 1]));
+                            } else {
+                                result.push(_ensureNoPostQuote(strings[i + 1]));
+                            }
+                        } else if (config.forceMarker) {
+                            result.push(marker, strings[i + 1]);
+                        } else if (
+                            config.isTag &&
+                            !_Attributes._isPrimitive(value)
+                        ) {
+                            // Delete it altogether
+                            result[result.length - 1] = _getPreAttrRemoved(
+                                result,
+                                config
+                            );
+                            result.push(_ensureNoPostQuote(strings[i + 1]));
+                        } else {
+                            result.push(value, strings[i + 1]);
+                        }
+                    }
+                    return result.join('');
+                }
+
+                export function _complexContentToString(
+                    content: any
+                ): {
+                    isComplex: boolean;
+                    str?: string;
+                    markers?: _MarkerArr[];
+                } {
+                    if (!_Attributes._isPrimitive(content)) {
+                        if (Array.isArray(content)) {
+                            const mappedContent = content.map((v) => {
+                                const {
+                                    isComplex,
+                                    str,
+                                    markers,
+                                } = _complexContentToString(v);
+                                if (isComplex)
+                                    return {
+                                        str,
+                                        markers,
+                                    };
+                                return {
+                                    str: v,
+                                    markers: [],
+                                };
+                            });
+                            const joinedStrings = mappedContent
+                                .map((c) => c.str)
+                                .join('');
+                            const joinedMarkers = mappedContent.reduce(
+                                (prev, current) => {
+                                    return [
+                                        ...prev,
+                                        ...(current.markers || []),
+                                    ];
+                                },
+                                []
+                            );
+                            return {
+                                isComplex: true,
+                                str: joinedStrings,
+                                markers: joinedMarkers,
+                            };
+                        }
+                        if ('values' in content && 'strings' in content) {
+                            const { markers, str } = _complexRenderedToText(
+                                content
+                            );
+                            return {
+                                isComplex: true,
+                                str,
+                                markers,
+                            };
+                        }
+                    }
+                    return { isComplex: false };
+                }
+
+                export function markerHas(markers: _MarkerArr[], value: any) {
+                    for (const [marker] of markers) {
+                        if (marker === value) return true;
+                    }
+                    return false;
+                }
+
+                export function markerGet(markers: _MarkerArr[], value: any) {
+                    for (const [marker, markerValue] of markers) {
+                        if (marker === value) return markerValue;
+                    }
+                }
+
+                export function _markerSet(
+                    markers: _MarkerArr[],
+                    keyMarker: string,
+                    value: any,
+                    config?: _MarkerMeta
+                ) {
+                    for (let i = 0; i < markers.length; i++) {
+                        const [marker] = markers[i];
+                        if (marker === keyMarker) {
+                            markers[i][1] = value;
+                            if (config) {
+                                markers[i][2] = {
+                                    ...markers[i][2],
+                                    ...config,
+                                } as _MarkerMeta;
+                            }
+                            return;
+                        }
+                    }
+                }
+
+                export function _applyComplexToTag(
+                    tag: Tag | TextTag,
+                    markers: _MarkerArr[]
+                ) {
+                    if (tag.type === 'TEXT') {
+                        const markerKey = tag.content.trim();
+                        if (!markerHas(markers, markerKey)) {
+                            return;
+                        }
+
+                        const marked = markerGet(markers, markerKey);
+                        // Check if there is an object-like in the DOM
+                        const {
+                            isComplex,
+                            str,
+                            markers: contentMarkers,
+                        } = _complexContentToString(marked);
+                        markers.push(...(contentMarkers || []));
+
+                        if (isComplex) {
+                            _markerSet(markers, markerKey, str!);
+                        }
+                    } else {
+                        const attrValues = { ...tag.attributes };
+                        for (const attrName in tag.attributes) {
+                            const attrValue = tag.attributes[attrName];
+                            if (!markerHas(markers, attrValue)) continue;
+
+                            const marked = markerGet(markers, attrValue);
+
+                            if (attrName === 'class') {
+                                const classString = classNames(marked);
+                                attrValues[attrName] = classString;
+                                _markerSet(markers, attrValue, classString);
+                            } else {
+                                _markerSet(markers, attrValue, marked, {
+                                    isTag: true,
+                                    attrName,
+                                });
+                            }
+                        }
+                        if (tag.tagName.includes('-')) {
+                            // Output markers and resolve to map
+                            for (const attrName in tag.attributes) {
+                                const attrValue = tag.attributes[attrName];
+
+                                if (!markerHas(markers, attrValue)) continue;
+
+                                _markerSet(
+                                    markers,
+                                    attrValue,
+                                    markerGet(markers, attrValue),
+                                    {
+                                        forceMarker: true,
+                                    }
+                                );
+                            }
+
+                            tag.config.attributeOverride = attrValues;
+                        }
+                    }
+                }
+
+                export function _complexRenderedToText(
+                    renderedTemplate: any
+                ): {
+                    str: string;
+                    markers: _MarkerArr[];
+                } {
+                    // Render to text with markers inserted
+                    const textRenderedMarked = _templateToMarkedString(
+                        renderedTemplate
+                    );
+
+                    // Check if values at those markers contain anything special
+                    const parsedMarked = _Parser.parse(textRenderedMarked.text);
+                    for (const parsedTag of parsedMarked) {
+                        parsedTag.walkAll((tag) => {
+                            _applyComplexToTag(tag, textRenderedMarked.markers);
+                        });
+                    }
+
+                    // Convert the old template to text again with new values
+                    return {
+                        str: _finalMarkedToString(
+                            renderedTemplate.strings,
+                            textRenderedMarked.markers
+                        ),
+                        markers: textRenderedMarked.markers,
+                    };
+                }
+
+                export function renderToText(
+                    instance: BaseTypes.BaseClassInstance,
+                    template: TemplateFnLike<number> | null
+                ): {
+                    str: string;
+                    markers: _MarkerArr[];
+                } {
+                    /* istanbul ignore next */
+                    if (!template)
+                        return {
+                            str: '',
+                            markers: [],
+                        };
+                    const renderedTemplate = _tryRender(() => {
+                        return template.renderTemplate(
+                            CHANGE_TYPE.ALWAYS,
+                            instance
+                        );
+                    });
+                    if (
+                        typeof renderedTemplate !== 'object' ||
+                        !('values' in renderedTemplate) ||
+                        !('strings' in renderedTemplate)
+                    ) {
+                        return {
+                            str: template.renderAsText(
+                                CHANGE_TYPE.ALWAYS,
+                                instance
+                            ),
+                            markers: [],
+                        };
+                    }
+
+                    return _complexRenderedToText(renderedTemplate);
+                }
+            }
+
             export function elementToTag(
                 element: BaseTypes.BaseClass,
+                props: BaseTypes.Props,
                 attribs: BaseTypes.Attributes,
                 session: DocumentSession,
                 isRoot: boolean = false
@@ -1102,13 +1538,17 @@ export namespace SSR {
                 const wrappedClass = BaseTypes._createBase(
                     element,
                     tagName,
+                    props,
                     attribs,
                     session
                 );
                 const instance = new wrappedClass();
 
-                const text = _tryRender(instance, element.html);
-                const tags = _Parser.parse(text);
+                const { str, markers } = _ComplexRender.renderToText(
+                    instance,
+                    element.html
+                );
+                const tags = _Parser.parse(str);
                 if (
                     isRoot &&
                     _Rendering.TextToTags.Replacement.Slots.findSlotReceivers(
@@ -1121,9 +1561,12 @@ export namespace SSR {
                 }
                 const { attributes, publicProps } = _Properties.splitAttributes(
                     instance,
-                    attribs
+                    {
+                        ...props,
+                        ...attribs,
+                    }
                 );
-                const children = Replacement.replace(tags, session);
+                const children = Replacement.replace(tags, session, markers);
                 const cssApplied = _CSS.getCSSApplied(
                     element,
                     instance,
@@ -1146,11 +1589,13 @@ export namespace SSR {
 
         export function render<C extends BaseTypes.BaseClass>(
             element: C,
+            props: BaseTypes.Props,
             attributes: BaseTypes.Attributes,
             session: DocumentSession
         ): string {
             const dom = TextToTags.elementToTag(
                 element,
+                props,
                 attributes,
                 session,
                 true
@@ -1181,7 +1626,12 @@ export namespace SSR {
             .clone()
             .mergeConfig({ i18n, theme, getMessage });
 
-        return _Rendering.render(element, { ...props, ...attributes }, session);
+        return _Rendering.render(
+            element,
+            props || {},
+            attributes || {},
+            session
+        );
     }
 }
 

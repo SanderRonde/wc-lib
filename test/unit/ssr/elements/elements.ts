@@ -5,6 +5,7 @@ import {
     Props,
     PROP_TYPE,
     WebComponent,
+    ComplexType,
 } from '../../../../build/cjs/wc-lib.js';
 import {
     render as _render,
@@ -569,9 +570,51 @@ export function elementFactory<
     @config({
         is: 'complex-tag',
         html: new TemplateFn<ComplexTag>(
-            (html) => {
+            (html, props) => {
                 return html`
-                    <div></div>
+                    <div
+                        class="${{
+                            a: true,
+                            b: true,
+                        }}"
+                    ></div>
+                    <div>${['a', 'b', 'c', 'd']}</div>
+                    <div>${[1, 2, 3, 4]}</div>
+                    <div>
+                        ${[
+                            ['a', 'b'],
+                            ['c', 'd'],
+                        ]}
+                    </div>
+                    <div>
+                        ${[1, 2].map((number) => {
+                            return html`
+                                <div>${number}</div>
+                            `;
+                        })}
+                    </div>
+                    <div
+                        ?prop="${props.x}"
+                        ?prop2="${props.x}"
+                        ?prop3=${props.x}
+                        ?prop4="${props.y}"
+                        ?prop5="${props.y}"
+                        ?prop6=${props.y}
+                    ></div>
+                    <div
+                        prop="${{}}"
+                        prop2="${{}}"
+                        prop3="${[]}"
+                        prop4="${[]}"
+                        prop5=${{}}
+                        prop6=${[]}
+                        prop7="${() => {}}"
+                    ></div>
+                    <div>
+                        ${[1, 2].map(() => {
+                            return {};
+                        })}
+                    </div>
                 `;
             },
             CHANGE_TYPE.NEVER,
@@ -584,6 +627,181 @@ export function elementFactory<
         constructor() {
             super();
         }
+
+        props = Props.define(this as any, {
+            reflect: {
+                x: {
+                    value: false,
+                    type: PROP_TYPE.BOOL,
+                },
+                y: {
+                    value: true,
+                    type: PROP_TYPE.BOOL,
+                },
+            },
+        });
+    }
+
+    @config({
+        is: 'text-tag',
+        html: new TemplateFn<TextTag>(
+            () => {
+                return 'some text';
+            },
+            CHANGE_TYPE.NEVER,
+            (result) => result
+        ),
+        dependencies: [],
+    })
+    //@ts-ignore
+    class TextTag extends typedBase {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {
+            reflect: {
+                x: {
+                    value: false,
+                    type: PROP_TYPE.BOOL,
+                },
+                y: {
+                    value: true,
+                    type: PROP_TYPE.BOOL,
+                },
+            },
+        });
+    }
+
+    @config({
+        is: 'obj-text-tag',
+        html: new TemplateFn<ObjTextTag>(
+            () => {
+                return {
+                    toText() {
+                        return 'more text';
+                    },
+                };
+            },
+            CHANGE_TYPE.NEVER,
+            (result) => result
+        ),
+        dependencies: [],
+    })
+    //@ts-ignore
+    class ObjTextTag extends typedBase {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {
+            reflect: {
+                x: {
+                    value: false,
+                    type: PROP_TYPE.BOOL,
+                },
+                y: {
+                    value: true,
+                    type: PROP_TYPE.BOOL,
+                },
+            },
+        });
+    }
+
+    @config({
+        is: 'complex-prop-receiver',
+        html: new TemplateFn<ComplexPropReceiver>(
+            (_, props) => {
+                return html`
+                    <div>${props.x}</div>
+                    <div>${props.y.a}</div>
+                    <div>${props.z}</div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class ComplexPropReceiver extends typedBase {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {
+            reflect: {
+                x: {
+                    type: PROP_TYPE.NUMBER,
+                    value: 1,
+                },
+                y: {
+                    type: ComplexType<{
+                        a: number;
+                    }>(),
+                    value: {
+                        a: 1,
+                    },
+                },
+                z: {
+                    type: PROP_TYPE.STRING,
+                    value: 'a',
+                },
+            },
+        });
+    }
+
+    @config({
+        is: 'complex-prop-user',
+        html: new TemplateFn<ComplexPropUser>(
+            () => {
+                return html`
+                    <div>
+                        <complex-prop-receiver
+                            z="b"
+                            x="${2}"
+                            y="${{ a: 2 }}"
+                        ></complex-prop-receiver>
+                    </div>
+                    <div>
+                        ${[2, 3, 4, 5].map((num) => {
+                            return html`
+                                <complex-prop-receiver
+                                    z="b"
+                                    x="${num}"
+                                    y="${{ a: num }}"
+                                ></complex-prop-receiver>
+                            `;
+                        })}
+                    </div>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [ComplexPropReceiver],
+    })
+    //@ts-ignore
+    class ComplexPropUser extends typedBase {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {
+            reflect: {
+                x: {
+                    type: PROP_TYPE.NUMBER,
+                    value: 1,
+                },
+                y: {
+                    type: ComplexType<{
+                        a: number;
+                    }>(),
+                    value: {
+                        a: 1,
+                    },
+                },
+            },
+        });
     }
 
     if (isComplex) {
@@ -927,5 +1145,9 @@ export function elementFactory<
         DefaultSlot,
         I18nComponent,
         ThemeUser,
+        TextTag,
+        ObjTextTag,
+        ComplexPropUser,
+        ComplexPropReceiver,
     };
 }

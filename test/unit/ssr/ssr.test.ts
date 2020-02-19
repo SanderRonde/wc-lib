@@ -10,8 +10,8 @@ import {
     SSR,
 } from '../../../build/cjs/wc-lib-ssr.all.js';
 import { ConfigurableWebComponent } from '../../../build/cjs/wc-lib.js';
+import { toTestTags, TestTagFormat } from './util/test-tags.js';
 import { elementFactory } from './elements/elements';
-import { toTestTags } from './util/test-tags.js';
 import _test, { TestInterface } from 'ava';
 
 const baseComponents: {
@@ -120,6 +120,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         DefaultSlot,
         I18nComponent,
         ThemeUser,
+        TextTag,
+        ObjTextTag,
+        ComplexPropUser,
+        ComplexPropReceiver,
     } = elementFactory(component, isComplex);
 
     const test = genTestFn(name);
@@ -519,6 +523,31 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertFormat([SimpleElementEmptyProps.is, [['div', []]]]);
         });
+        if (isComplex) {
+            test('passes on complex props', (t) => {
+                const root = toTestTags(
+                    t,
+                    ssr(ComplexPropReceiver, {
+                        props: {
+                            x: 2,
+                            y: {
+                                a: 2,
+                            },
+                            z: 'b',
+                        },
+                    })
+                );
+
+                root.assertFormat([
+                    ComplexPropReceiver.is,
+                    [
+                        ['div', ['2']],
+                        ['div', ['2']],
+                        ['div', ['b']],
+                    ],
+                ]);
+            });
+        }
     }
 
     {
@@ -819,12 +848,185 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         });
     }
 
-    {
+    if (isComplex) {
         // Complex
-        test('complex templates still render (without complex features)', (t) => {
+        test('the class attribute is applied', (t) => {
             const root = toTestTags(t, ssr(ComplexTag));
 
-            root.assertFormat([ComplexTag.is, [['div', []]]]);
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(1);
+            root[0].assertTag();
+            root[0].assertTagName('div');
+            root[0].assertHasClasses('a', 'b');
+        });
+        test('strings are joined', (t) => {
+            const root = toTestTags(t, ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(2);
+            root[1].assertTag();
+            root[1].assertTagName('div');
+            root[1].assertChildren(1);
+            root[1][0].assertContent('abcd');
+        });
+        test('numbers are joined', (t) => {
+            const root = toTestTags(t, ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(3);
+            root[2].assertTag();
+            root[2].assertTagName('div');
+            root[2].assertChildren(1);
+            root[2][0].assertContent('1234');
+        });
+        test('nested arrays are joined', (t) => {
+            const root = toTestTags(t, ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(4);
+            root[3].assertTag();
+            root[3].assertTagName('div');
+            root[3].assertChildren(1);
+            root[3][0].assertContent('abcd');
+        });
+        test('template arrays are joined', (t) => {
+            const root = toTestTags(t, ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(5);
+            root[4].assertTag();
+            root[4].assertTagName('div');
+            root[4].assertChildren(2);
+            root[4][0].assertChildren(1);
+            root[4][0][0].assertContent('1');
+            root[4][1].assertChildren(1);
+            root[4][1][0].assertContent('2');
+        });
+        test('boolean attributes are applied', (t) => {
+            const root = toTestTags(t, ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(6);
+            root[5].assertTag();
+            root[5].assertTagName('div');
+            root[5].assertDoesNotHaveAttributes('prop', 'prop2', 'prop3');
+            root[5].assertHasAttributes('prop4', 'prop5', 'prop6');
+        });
+        test('complex values are removed altogether', (t) => {
+            const root = toTestTags(t, ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(7);
+            root[6].assertTag();
+            root[6].assertTagName('div');
+            root[6].assertDoesNotHaveAttributes(
+                'prop',
+                'prop2',
+                'prop3',
+                'prop4',
+                'prop5',
+                'prop6',
+                'prop6'
+            );
+        });
+        test('regular objects are turned into strings', (t) => {
+            const root = toTestTags(t, ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root.assertMinChildren(8);
+            root[7].assertTag();
+            root[7].assertTagName('div');
+            root[7].assertChildren(1);
+            root[7][0].assertText();
+            root[7][0].assertContent('[object Object][object Object]');
+        });
+        test('non-lit-html pure text tags are still rendered to text', (t) => {
+            const root = toTestTags(t, ssr(TextTag));
+
+            root.assertTag();
+            root.assertTagName(TextTag.is);
+            root.assertChildren(1);
+            root[0].assertText();
+            root[0].assertContent('some text');
+        });
+        test('non-lit-html object text tags are still rendered to text', (t) => {
+            const root = toTestTags(t, ssr(ObjTextTag));
+
+            root.assertTag();
+            root.assertTagName(ObjTextTag.is);
+            root.assertChildren(1);
+            root[0].assertText();
+            root[0].assertContent('more text');
+        });
+        test('complex values are still passed on to components', (t) => {
+            const root = toTestTags(t, ssr(ComplexPropUser));
+
+            root.assertTag();
+            root.assertTagName(ComplexPropUser.is);
+            root.assertMinChildren(1);
+            root[0].assertTag();
+            root[0].assertTagName('div');
+            root[0].assertChildren(1);
+            root[0][0].assertTag();
+            root[0][0].assertTagName('complex-prop-receiver');
+            root[0][0].assertChildren(3);
+            root[0][0][0].assertChildren(1);
+            root[0][0][0][0].assertContent('2');
+            root[0][0][1].assertChildren(1);
+            root[0][0][1][0].assertContent('2');
+            root[0][0][2].assertChildren(1);
+            root[0][0][2][0].assertContent('b');
+        });
+        test('complex values are passed on to nested templates', (t) => {
+            const root = toTestTags(t, ssr(ComplexPropUser));
+
+            root.assertFormat([
+                ComplexPropUser.is,
+                [
+                    [
+                        'div',
+                        [
+                            [
+                                'complex-prop-receiver',
+                                [
+                                    ['div', ['2']],
+                                    ['div', ['2']],
+                                    ['div', ['b']],
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'div',
+                        [2, 3, 4, 5].map((num) => {
+                            return [
+                                'complex-prop-receiver',
+                                [
+                                    ['div', [`${num}`]],
+                                    ['div', [`${num}`]],
+                                    ['div', ['b']],
+                                ],
+                            ] as TestTagFormat;
+                        }),
+                    ],
+                ],
+            ]);
         });
     }
 
@@ -1274,26 +1476,22 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 },
             });
 
-            const root1 = toTestTags(
-                t,
-                ssr(I18nComponent, {
-                    documentSession: session,
-                    i18n: {
-                        known_key: 'text2',
-                    },
-                    getMessage(langFile, key) {
-                        if (!(key in langFile)) return '';
+            const content = ssr(I18nComponent, {
+                documentSession: session,
+                i18n: {
+                    known_key: 'text2',
+                },
+                getMessage(langFile, key) {
+                    if (!(key in langFile)) return '';
 
-                        return `${langFile[key]}-postfix2`;
-                    },
-                })
-            );
-            const root2 = toTestTags(
-                t,
-                ssr(I18nComponent, {
-                    documentSession: session,
-                })
-            );
+                    return `${langFile[key]}-postfix2`;
+                },
+            });
+            const root1 = toTestTags(t, content);
+            const content2 = ssr(I18nComponent, {
+                documentSession: session,
+            });
+            const root2 = toTestTags(t, content2);
 
             root1.assertTag();
             root1.assertTagName(I18nComponent.is);

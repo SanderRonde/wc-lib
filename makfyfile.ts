@@ -39,10 +39,11 @@ cmd('compile')
                 break;
             case 'all':
                 await exec(
-                    ['src', 'test', 'bin', 'examples'].map((subDir) => {
+                    ['src', 'test', 'bin'].map((subDir) => {
                         return `@compile --dir ${subDir} ${watchArg}`;
                     })
                 );
+                await exec(`@compile --dir examples ${watchArg}`);
                 break;
         }
     });
@@ -238,7 +239,7 @@ cmd('serve')
 
 cmd('examples')
     .desc('Compile and prepare examples for serving')
-    .run(['@compile --dir all', '@compile --dir examples'], '@serve');
+    .run('@compile --dir all', '@serve');
 
 cmd('website')
     .desc(
@@ -246,7 +247,7 @@ cmd('website')
     )
     .run(async (exec) => {
         await exec('? compiling TS');
-        await exec(['@compile --dir all', '@compile --dir examples']);
+        await exec('@compile --dir all');
         await exec('? preparing website');
         await exec('gulp prepareWebsite');
         await exec('? generating bundles');

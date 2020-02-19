@@ -1,9 +1,10 @@
 # wc-lib
+
 [![Build Status](https://travis-ci.org/SanderRonde/wc-lib.svg?branch=master)](https://travis-ci.org/SanderRonde/wc-lib)
 [![npm version](https://badge.fury.io/js/wc-lib.svg)](https://badge.fury.io/js/wc-lib)
 [![codecov](https://codecov.io/gh/SanderRonde/wc-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/SanderRonde/wc-lib)
 
-A small library for creating webcomponents based around the idea of importing what you need, boasting 100% code coverage. Has support for I18N, themes, smart templates (that only render when they have to and that use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing, a smart custom property system that allows you to pass a reference to any value through HTML (yes even objects and HTML elements).
+A small library for creating webcomponents based around the idea of importing what you need, boasting 100% code coverage. Has out of the box support for server-sider rendering, I18N, themes, smart templates (that only render when they have to and that use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing, a smart custom property system that allows you to pass a reference to any value through HTML (yes even objects and HTML elements).
 
 See below for more detailed explanations of these features, [check out the demo](https://wc-lib.sanderron.de/) or [install the npm package](https://www.npmjs.com/package/wc-lib)
 
@@ -17,20 +18,32 @@ Check out the `/examples` directory for any example code or check them out [onli
 
 ## Features
 
+### Server-side rendering
+
+Server side is easily done by passing the component to the `ssr` function with the props, attributes, i18n and theme you want. The resulting string is ready to be sent to the client. Thanks to webcomponents and shadowroots, loading the original JS and defining the component immediately "hydrates" the component. This replaces it with an actual webcomponent instance (intead of raw HTML) and allows for its JS to run.
+
 ### Smart template system
 
 The templating system consists of two parts. The part renders them and the part that generates them (the part that features the custom properties). The part that renders them allows you to specify when to render certain templates. CSS stylesheets for example, don't need to be re-rendered when the language changes or when a property changes but they do need to be re-rendered when the theme changes. You can specify this for all templates (and you can choose multiple ones as well), making sure no unnecessary work is done. Stylesheets that are the same across all instances of a component are also merged into one, using [adopted stylesheets](https://wicg.github.io/construct-stylesheets/) to only render them once.
 
 ### Custom properties
 
-The templates themselves allow you to pass custom values through attributes by using special names. In the following examples the templating library that is used under the hood is [lit-html](https://github.com/Polymer/lit-html). However, any templating engine, even your own or none at all (returning plain text) can be used. For example using 
+The templates themselves allow you to pass custom values through attributes by using special names. In the following examples the templating library that is used under the hood is [lit-html](https://github.com/Polymer/lit-html). However, any templating engine, even your own or none at all (returning plain text) can be used. For example using
+
 ```js
-html`<div @click="${this.someListener}"></div>`;
+html`
+    <div @click="${this.someListener}"></div>
+`;
 ```
-allows you to run a handler when the 'click' event is fired. Using 
+
+allows you to run a handler when the 'click' event is fired. Using
+
 ```js
-html`<div #some-value="${this}"></div>`;
+html`
+    <div #some-value="${this}"></div>
+`;
 ```
+
 allows you to pass a reference to any value that is returned when `div['some-value']` is accessed. This allows you to easily refer to a parent component or another object. The library features a lot more of these special attributes prefixes. This can be combined with you having the ability to create pre-defined properties that should be watched on a component. When one of them changes, the corresponding templates are re-rendered.
 
 ### I18N
@@ -38,7 +51,9 @@ allows you to pass a reference to any value that is returned when `div['some-val
 The i18n support only requires you to pass the path to your i18n files and a default language. Handling language changes, switching all elements on the page to that language, re-rendering them and handling any conflicts that might occur are all done by the library. Using the templating system, using i18n is as simple as the following line.
 
 ```js
-html`<div>${this.__('my-key')}</div>`;
+html`
+    <div>${this.__('my-key')}</div>
+`;
 ```
 
 If you provide the library with typescript definitions for your i18n files, these keys will be typed as well, adding some more security.
@@ -51,7 +66,7 @@ Theming support work similar to i18n support. It allows you to use the same them
 
 ```js
 (html, props, theme) => {
-	html`<style>
+    html`<style>
 		.text {
 			color: ${theme.text};
 		}
@@ -60,17 +75,16 @@ Theming support work similar to i18n support. It allows you to use the same them
 			background-color: ${theme.primary};
 		}
 	<style>`;
-}
+};
 ```
 
 ### Custom events
 
 A simple event listener system with custom events allows you to listen to and fire custom events on components. The listener system also allows you to listen to specific child element IDs on re-render for example. This ensures that a listener is always present on the currently rendered version of the element. This takes away the pain of a templating system that re-renders elements often.
 
-
 ### Typescript
 
-This library is largely built around typescript support and being 100% sure your code is free of typos in the IDs, classes or attributes of elements. 
+This library is largely built around typescript support and being 100% sure your code is free of typos in the IDs, classes or attributes of elements.
 
 #### Properties
 
@@ -78,14 +92,15 @@ The property system for example, allows you to define properties on an element a
 
 #### Typed events
 
-The custom events that can be listened to for a given component can be specified in the class' type as well. This way you always know what events a specific component delivers and what arguments they have. 
+The custom events that can be listened to for a given component can be specified in the class' type as well. This way you always know what events a specific component delivers and what arguments they have.
 
 #### JSX
+
 The library also features support for JSX. Combining JSX with typed properties and events makes sure you even have type safety in your HTML, making sure you only pass the correct types of values to properties. **Note:** Make sure you have `{"jsx": "react", "jsxFactory": "html.jsx"}` in your tsconfig's compiler options since passing React elements won't work.
 
 #### HTML and CSS Typings
 
-Using [html-typings](https://github.com/SanderRonde/html-typings) (coincidentally created by the same author as this library), you can infer typings from your templates. Wc-lib then allows you to use these typings for a few things. The first is one is that every component has a `$` property that contains an id-mapped list of all of its children. When you pass the generated HTMl typings, this allows you to easily and reliably refer to child elements through `this.$.somechild`, while ensuring ID is correct but also returning the correct type (check the html-typings repo for more info). 
+Using [html-typings](https://github.com/SanderRonde/html-typings) (coincidentally created by the same author as this library), you can infer typings from your templates. Wc-lib then allows you to use these typings for a few things. The first is one is that every component has a `$` property that contains an id-mapped list of all of its children. When you pass the generated HTMl typings, this allows you to easily and reliably refer to child elements through `this.$.somechild`, while ensuring ID is correct but also returning the correct type (check the html-typings repo for more info).
 
 The second thing this is used for is for typed CSS. Something that often happens to websites is that they feature unused CSS. It can be very hard to get rid of this since you might never know if a click somewhere triggers some code that adds a class that is eventually used by your CSS. This is why this library allows you to use typed CSS. This way you only generate selectors that you know are actually in your HTML template. Here's an example:
 
@@ -114,7 +129,6 @@ html`<style>
 
 If any of these elements were to be removed from your HTML, you'd notice the type error and you could remove the offending CSS rule. You could also pass in enums. This can be great when combined with toggled classes. Say for example, that you have some code that applies a `hover` style to some button element. You could instead apply `STATES.HOVER`, after which you pass the `STATES` enum to the toggle types, which allows you to pick `hover` as a togglable state. This way your CSS can reference your code, adding even more type safety. It also has the benefit of removing the possibility of any typos in your CSS which can be a huge cause of frustration. See [below](#Typed-CSS) for full custom css documentation.
 
-
 ## Reference
 
 ### Props
@@ -135,7 +149,7 @@ A property takes a single type (for example `PROP_TYPE.STRING`) or a config obje
 	// The type of this property. Can either by a PROP_TYPE:
 	// PROP_TYPE.STRING, PROP_TYPE.NUMBER or PROP_TYPE.BOOL
 	// or it can be a complex type passed through ComplexType<TYPE>().
-	// ComplexType should be used for any values that do not fit 
+	// ComplexType should be used for any values that do not fit
 	// the regular prop type
 	type: PROP_TYPE|ComplexType<any>;
 	// The default value of this component. Should be of the same
@@ -146,7 +160,7 @@ A property takes a single type (for example `PROP_TYPE.STRING`) or a config obje
 	// The properties to watch if this is an object. These can contain
 	// asterisks and can go multiple properties deep. ** will watch any
 	// properties, even newly defined ones.
-	// For example: 
+	// For example:
 	// 	['x'] only watched property x,
 	//  ['*.y'] watches the y property of any object values in this object
 	//  ['z.*'] watches any property of the z object
@@ -187,11 +201,11 @@ A property takes a single type (for example `PROP_TYPE.STRING`) or a config obje
 	// the equivalent of doing `this.props.x!` in typescript.
 	// This value is not actually used in any way except for typing.
 	isDefined?: boolean = false;
-	// 
+	//
 	// Whether this parameter is required. False by default.
 	// Currently only affects the JSX typings.
 	// This value is not actually used in any way except for typing.
-	// 
+	//
 	required?: boolean = false;
 }
 ```
@@ -201,19 +215,21 @@ A property takes a single type (for example `PROP_TYPE.STRING`) or a config obje
 The `css()` function itself can be called in two ways. Either with or without a parameter. If called with a parameter (which should be a component instance), the types are inferred from that parameter. If called without one, you should pass the type of that component as a generic argument (for example `css<MyComponent>()`) instead to make sure types can be inferred.
 
 This function returns a class which we'll call `CSS` that can be chained off of. It has a few properties.
-* The `$`, `i` and `id` properties contain objects with the ID keys (previously passed through step one of Typed CSS) as its keys. 
-* The `class` and `c` properties do the same except with class keys.
-* The `tag` and `t` do the same but with tags.
 
-These each return another class which we'll call a `CSSSelector` with different properties. 
-* The `and` property returns a class map. For example `css(this).$.x.and.y` resolves to `#x.y`. This returns another `CSSSelector` (and as such can be chained).
-* The `or` property returns another `CSS` class. For example `css(this).$.x.or.$.y` resolves to `#x, #y`.
-* The `orFn` method can be called with another `CSSSelector` in order to merge them. For example `css(this).$.x.orFn(css(this).$.y)` resolves to `#x, #y` as well.
-* The `toggle` property returns an object with all possible toggle values as keys. For example `css(this).$.x.toggle.y` resolves to `#x.y`.
-* The `toggleFn` method takes a variable number of arguments where the arguments must all be possible toggle values. For example `css(this).$.x.toggleFn('y', 'z')` resolves to `#x.y.z`.
-* The `attr` property returns an object with all possible attribute values as keys. For example `css(this).$.x.attr.y` resolves to `#x[y]`. Note that this way you can not set values
-* The `attrFn` method takes an attribute as a key and an optional value for it. For example `css(this).$.x.attrFn('y', 'z')` resolves to `#x[y="z"]`.
-* The `toString` method will convert the whole thing to a valid CSS selector. This is done implicitly in the templates and is not something you have to think about but it can be handy to debug it.
+-   The `$`, `i` and `id` properties contain objects with the ID keys (previously passed through step one of Typed CSS) as its keys.
+-   The `class` and `c` properties do the same except with class keys.
+-   The `tag` and `t` do the same but with tags.
+
+These each return another class which we'll call a `CSSSelector` with different properties.
+
+-   The `and` property returns a class map. For example `css(this).$.x.and.y` resolves to `#x.y`. This returns another `CSSSelector` (and as such can be chained).
+-   The `or` property returns another `CSS` class. For example `css(this).$.x.or.$.y` resolves to `#x, #y`.
+-   The `orFn` method can be called with another `CSSSelector` in order to merge them. For example `css(this).$.x.orFn(css(this).$.y)` resolves to `#x, #y` as well.
+-   The `toggle` property returns an object with all possible toggle values as keys. For example `css(this).$.x.toggle.y` resolves to `#x.y`.
+-   The `toggleFn` method takes a variable number of arguments where the arguments must all be possible toggle values. For example `css(this).$.x.toggleFn('y', 'z')` resolves to `#x.y.z`.
+-   The `attr` property returns an object with all possible attribute values as keys. For example `css(this).$.x.attr.y` resolves to `#x[y]`. Note that this way you can not set values
+-   The `attrFn` method takes an attribute as a key and an optional value for it. For example `css(this).$.x.attrFn('y', 'z')` resolves to `#x[y="z"]`.
+-   The `toString` method will convert the whole thing to a valid CSS selector. This is done implicitly in the templates and is not something you have to think about but it can be handy to debug it.
 
 **Note**: If at any time you see a question mark as a suggestion instead of something else you expected, you've probably done something wrong.
 

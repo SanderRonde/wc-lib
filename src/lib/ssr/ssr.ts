@@ -1422,7 +1422,7 @@ export namespace SSR {
                             str,
                             markers: contentMarkers,
                         } = _complexContentToString(marked);
-                        markers.push(...(contentMarkers || []));
+                        markers.push(...contentMarkers);
 
                         if (isComplex) {
                             _markerSet(markers, markerKey, str!);

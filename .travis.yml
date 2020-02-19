@@ -5,9 +5,6 @@ cache:
     directories:
         - '~/.npm'
         - '~/.cache'
-branches:
-    only:
-        - master
 stages:
     - test
 

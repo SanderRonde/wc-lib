@@ -124,6 +124,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         ObjTextTag,
         ComplexPropUser,
         ComplexPropReceiver,
+        ScriptTag,
     } = elementFactory(component, isComplex);
 
     const test = genTestFn(name);
@@ -690,6 +691,20 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertTag();
             root[0].assertTagName('style');
             t.true(root[0][0].content.includes('red'), 'theme is used');
+        });
+        test('scripts are rendered as well', (t) => {
+            const root = toTestTags(t, ssr(ScriptTag));
+
+            root.assertTag();
+            root.assertTagName(ScriptTag.is);
+            root.assertChildren(2);
+            root[0].assertTag();
+            root[0].assertTagName('div');
+            root[1].assertTag();
+            root[1].assertTagName('script');
+            root[1].assertChildren(1);
+            root[1][0].assertText();
+            root[1][0].assertContent("console.log('some code');");
         });
     }
 

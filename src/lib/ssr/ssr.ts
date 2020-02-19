@@ -726,27 +726,37 @@ export namespace SSR {
                     dom: (DataNode | Element)[],
                     { tagBase = Tag, textBase = TextTag }: _TagConfig = {}
                 ): (T | TT)[] {
-                    return dom.map((node) => {
-                        if (node.type === 'text') {
-                            const dataNode = node as DataNode;
-                            return new textBase({
-                                content: dataNode.nodeValue,
-                            }) as TT;
-                        } else {
-                            const tagNode = node as Element;
-                            return new tagBase({
-                                attributes: tagNode.attribs,
-                                children: _domToTags(
-                                    tagNode.children as (DataNode | Element)[],
-                                    { tagBase, textBase }
-                                ),
-                                isSelfClosing: _VOID_TAGS.includes(
-                                    tagNode.tagName.toLowerCase()
-                                ),
-                                tagName: tagNode.tagName,
-                            }) as T;
-                        }
-                    });
+                    return dom
+                        .map((node) => {
+                            if (node.type === 'text') {
+                                const dataNode = node as DataNode;
+                                return new textBase({
+                                    content: dataNode.nodeValue,
+                                }) as TT;
+                            } else if (
+                                node.type === 'tag' ||
+                                node.type === 'style' ||
+                                node.type === 'script'
+                            ) {
+                                const tagNode = node as Element;
+                                return new tagBase({
+                                    attributes: tagNode.attribs,
+                                    children: _domToTags(
+                                        tagNode.children as (
+                                            | DataNode
+                                            | Element
+                                        )[],
+                                        { tagBase, textBase }
+                                    ),
+                                    isSelfClosing: _VOID_TAGS.includes(
+                                        tagNode.tagName.toLowerCase()
+                                    ),
+                                    tagName: tagNode.tagName,
+                                }) as T;
+                            }
+                            return undefined;
+                        })
+                        .filter((v) => !!v) as (T | TT)[];
                 }
 
                 export function parse<

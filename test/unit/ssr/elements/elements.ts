@@ -568,6 +568,28 @@ export function elementFactory<
     }
 
     @config({
+        is: 'script-tag',
+        html: new TemplateFn<ScriptTag>(
+            () => {
+                return html`
+                    <div></div>
+                    <script>
+                        console.log('some code');
+                    </script>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class ScriptTag extends typedBase {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
         is: 'complex-tag',
         html: new TemplateFn<ComplexTag>(
             (html, props) => {
@@ -1151,5 +1173,6 @@ export function elementFactory<
         ObjTextTag,
         ComplexPropUser,
         ComplexPropReceiver,
+        ScriptTag,
     };
 }

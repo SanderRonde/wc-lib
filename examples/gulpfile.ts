@@ -306,7 +306,6 @@ gulp.task(
                     }
 
                     // There's currently just one theme, use that one for all example elements
-                    debugger;
                     const rendered = ssr(mainExport, {
                         theme: theme['light'],
                         i18n: I18N_FILE,

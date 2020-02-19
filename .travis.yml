@@ -2,35 +2,32 @@ language: node_js
 os: linux
 node_js: '10'
 cache:
-    directories:
-        - '~/.npm'
-        - '~/.cache'
+  directories:
+  - "~/.npm"
+  - "~/.cache"
 stages:
-    - test
-
+- test
 install:
-    - yarn --ignore-engines
-    - npm install -g typescript
-    - npm install -g codecov
-    - npm install -g makfy
+- yarn --ignore-engines
+- npm install -g typescript
+- npm install -g codecov
+- npm install -g makfy
 script:
-    - makfy coverage --subset $TEST
-    - makfy compile --dir examples
+- makfy coverage --subset $TEST
+- makfy compile --dir examples
 after_script:
-    - codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')
-
+- codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')
 before_deploy:
-    - makfy website
-
+- makfy website
 deploy:
-    - provider: npm
-      email: awsdfgvhbjn@gmail.com
-      api_key:
-          secure: dAMHGYv/2jJ8DBj6AMVeJBe7LAzXBF1PV649K4ArAZs93pQuDyMPU/8tVeteYOrUv344MkPo8oszS0d9ovG5EMVuspYgskozZjxd+LDlQQs76V03LscWZyHdPgRyVnyZ3wCKqrd5gNCdT72XeJ9HpNkIVUrIhiLGpg10YYCzMR5KqAzMrRKXzmCg8lSSpqTn58CuWgfQVt7cYvNBYRSIQ78+Wp6ItcfZC20gnFoAAQ+hTBTH7CA/LPjkk6UWYmeqmMiKfIJpwWL9pRKPiwtTZWPToQbL/d9Xs2Kw+9XaJ3VPnWpbLOxxm6t0UkQf4bkctBYji0zewgYsSh/tiUTz+q6A7NK0WrlIwpmn6H1zRb0nbsJj9hJEu/M2t3h5/5ABvptNgFF9aMe2hsnspp+742Muss9q0H5fXztprIvaj+dzlIJRCouN5t/MRD3qyceBcofqSHdr12L34zIq+oE8h/jxHab0X6pmT88vKmw0UIzdDpdcKZTdy8KQfCjEUmNlBfSVB4AmAS+qRJ/ALyuHNDXuFRGS1Ne8mrVu2QH8NPnvqzVDJGP7zNbR1t6RMW512yp2NUyR9mP3EXbUcjYexkRWIZYh1wHH+EQfnVhl4ZwV4IVIQP7cB0Koc5qmDWrpWIPW3EUb+A/ta3JfUfjtsDFN9RPJuJR/KiuWI6mmJQQ=
-      on:
-          tags: true
-          branch: master
-    - provider: pages
+  - provider: npm
+    email: awsdfgvhbjn@gmail.com
+    api_key:
+      secure: bZde40zH+//2N23K4FDyJ+MAuBGhQVXTgqQ2zFn1DuzjUGSGucx160qKHoFHI3x1g82oJ9x7xBvWNIyXewuriKQZNmTeFDUOZ9l4SpHADbT0wYZ2OIY4Eayq4J3rVg8PURDrQebKfOh722YYy/FfiqGkWvKtQvdX5+zj1I/ryhSbs5HIq2Y00HpFEH5EqDEXAGWQuOGajbH1FGSmx8bdQ/l72zXQ4CeQRaTH5Su+Rghbp1gLmbWXOwfEdzQtwDcGE7NlQH/Jof3JdlX7GaDvEzJZOYfRP0f6o+f6C4NHVC45QyTcCVSu5EBdMA0huSwhAvSLCTob5JQe1amYcvq8Qmdn0DWcymqP2CNjcyvxOJjszPhjGd7IL4T2uYQnxdkgQ0WnzX3FZsKL+U5DFwonPfO3pVU/FofR3ULgWlli9bZ8lRMKN+438HkgSI1oKk2eQfLVLH35EwK2zgVnEa6Fk/8h5U4hs0SrbQYAeikrv2qO8Lsx5AFgBbHMZJRPaLvypDJZITYVisX/SScscKAdiiX+4KmwjXbmIZs58OAoW9OLcUX5h9LuwxIN/S9Jcdifv1TX+tMYKZj+I8+WgufGzG4sWlZZUCQlMBI8uSjg0VCfr/e7EGWlSGXVOQ9SCNZrQb5tVNmwLDYklMOcGmGbiXmVnu38wArO+3Wd02J7s1M=
+    on:
+      tags: true
+      repo: SanderRonde/wc-lib
+  - provider: pages
       github_token:
           secure: nklP+wF12QYCQD9coe1m9ekKzDndTw0EoraYIbQXtERxDzDzTTi227QeUFOqKJswhQOQJVETW03oVa8JVyRh0IRndQgr7gD/0idnTMeHiv+i4nGvK8fNH1NrsVCFDRrmtEyeuMvlbQt58+dZnBIFtZZe1rGlRYqj0+JV65qezpaFwsD0R9CLKX8sWlL47TMdsd01fafkq3tTf0XA9DZiUPD4mZ8HrBgG36Egqa7cQh4IS1G3EZ004hpqWIwqjOyQKkBxJZK9It9bHkunriaHTZ9XYkacxgdhmYX1p3FF9P1Fi/RNdJipQ5dn8s0q7YMeR6/ZT8ygbTKTd323WMFDzIGGjPE9Jf4wUND9BOD08bQRo1BTBYU579svFkbc4dghPny+mlzoSLxNNCkkdmDuVwMV4TsrXKPRNSRInbbIcJkbitlvHuuHx4/SNgfvdwLBhzLms+cKS4KGORJdIfxW8fXFSMdS/mOCGTkzONjMWKB2MZ424D/dXOgZEhME+ksNAWXVrPKVIYUD3ZOTWCEaWUyTLpUngaSpEW36kE/1dPoHSwAlt4LWArXDgJV+g9ff7kKBncY8JE4qNrj+iwz/Q3iUM6QKaC1Xja72DVfQwZ+0vrXlJgIxpiFLXs6ZfIcay/kBdg/YzcoPULz4YHV2fz1gRqqaJjqim0h8JLypNhk=
       keep_history: true
@@ -39,26 +36,24 @@ deploy:
           tags: true
           branch: master
       local_dir: ./examples
-
 notifications:
-    email:
-        on_success: change
-        on_failure: change
+  email:
+    on_success: change
+    on_failure: change
 env:
-    jobs:
-        - TEST=classes
-        - TEST=lib
-        - TEST=properties
-        - TEST=partial-classes-basic
-        - TEST=partial-classes-complex-template
-        - TEST=partial-classes-i18n
-        - TEST=partial-classes-theming
-        - TEST=tasks
-        - TEST=unit
-    global:
-        - secure: gk0qwWSGXiPnRo5V7C7xeim+ieuqBCXyA+6Lt0bbLgE9bI9XbBMz3UHvXL/25A+WqpWnM9WQGSUqpz8wGOSTGpLEYYpjr41CTJZeO64iwH0wbhdE8BGxB53Er4pkIQJ55CeUB5hIeWGzHWWT6SU1GNnw1MedhGKF0JfA2APP6a6GV+6skl2Bo+bba1F0jCmICHVahd6NgVGm5c6Pk0Ql/tcPZln5FGNGWmvtm4/l6MT9WEWrV+Xe4/Aegpx8EoF5h5s1ENzSDo9sOQoI1htVJ1Zbdg9R7ysd/UJKPrJUI0G/a1DbDSVdUhw+TrYl6v77R/brV93Llr56zHBtUk02/SNNG69LGnAJHZKbP2xUKqUOQmdU8wi0kCisw5HdWyNvK2I+D6ajiv12GGaMwYEOYuL/OXQ+0cTUSpE8MNIvwQxATVPP24VwK03FQpSeFlO+HN1tr7Qqbn/eIPHiBEW3x0SzaayEH2NAxPV+t1LcHc53POWvDPqSRcDUCllcUiJXb+35uoZb3256e0f2evCZxpgTY91VAPEwr9I3vpkEQSMBSQASuNTZPaPf4Fh7Nkwf04E6Ch5yTOSfS0xJr8hMcBknKLG5J2b7AHqlS1uu6cDhkyjf6Crp/WFNhmXjiKyQEyp3Z9f30eqz6fvIIlNpXyTqGQnwQXcLoXH/b9BHfR4=
+  jobs:
+  - TEST=classes
+  - TEST=lib
+  - TEST=properties
+  - TEST=partial-classes-basic
+  - TEST=partial-classes-complex-template
+  - TEST=partial-classes-i18n
+  - TEST=partial-classes-theming
+  - TEST=tasks
+  - TEST=unit
+  global:
+  - secure: gk0qwWSGXiPnRo5V7C7xeim+ieuqBCXyA+6Lt0bbLgE9bI9XbBMz3UHvXL/25A+WqpWnM9WQGSUqpz8wGOSTGpLEYYpjr41CTJZeO64iwH0wbhdE8BGxB53Er4pkIQJ55CeUB5hIeWGzHWWT6SU1GNnw1MedhGKF0JfA2APP6a6GV+6skl2Bo+bba1F0jCmICHVahd6NgVGm5c6Pk0Ql/tcPZln5FGNGWmvtm4/l6MT9WEWrV+Xe4/Aegpx8EoF5h5s1ENzSDo9sOQoI1htVJ1Zbdg9R7ysd/UJKPrJUI0G/a1DbDSVdUhw+TrYl6v77R/brV93Llr56zHBtUk02/SNNG69LGnAJHZKbP2xUKqUOQmdU8wi0kCisw5HdWyNvK2I+D6ajiv12GGaMwYEOYuL/OXQ+0cTUSpE8MNIvwQxATVPP24VwK03FQpSeFlO+HN1tr7Qqbn/eIPHiBEW3x0SzaayEH2NAxPV+t1LcHc53POWvDPqSRcDUCllcUiJXb+35uoZb3256e0f2evCZxpgTY91VAPEwr9I3vpkEQSMBSQASuNTZPaPf4Fh7Nkwf04E6Ch5yTOSfS0xJr8hMcBknKLG5J2b7AHqlS1uu6cDhkyjf6Crp/WFNhmXjiKyQEyp3Z9f30eqz6fvIIlNpXyTqGQnwQXcLoXH/b9BHfR4=
 addons:
-    apt:
-        packages:
-            # Ubuntu 16+ does not install this dependency by default, so we need to install it ourselves
-            - libgconf-2-4
+  apt:
+    packages:
+    - libgconf-2-4

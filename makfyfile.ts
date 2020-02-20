@@ -14,6 +14,10 @@ cmd('clean')
         await exec('rimraf ./examples/bundled');
         await exec('rimraf ./examples/modules');
         await exec('rimraf ./examples/ssr');
+        await exec('rimraf ./src/**/*.js');
+        await exec('rimraf ./src/**/*.d.ts');
+        await exec('rimraf ./src/**/*.map');
+        await exec('rimraf ./test/modules');
     });
 
 cmd('compile')

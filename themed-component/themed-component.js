@@ -20,7 +20,7 @@ ThemedComponent = __decorate([
     config({
         is: 'themed-component',
         css: ThemedComponentCSS,
-        html: ThemedComponentHTML
+        html: ThemedComponentHTML,
     })
 ], ThemedComponent);
 export { ThemedComponent };

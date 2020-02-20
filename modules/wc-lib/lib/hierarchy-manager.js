@@ -25,16 +25,17 @@ class HierarchyClass {
         for (let i = 0; i < this._self.attributes.length; i++) {
             const attr = this._self.attributes[i];
             if (attr.name.startsWith('prop_')) {
-                props[attr.name.slice('prop_'.length)] =
-                    decodeURIComponent(attr.value);
+                props[attr.name.slice('prop_'.length)] = decodeURIComponent(attr.value);
             }
         }
         return props;
     }
     __findLocalRoot() {
         let element = this._self.parentNode;
-        while (element && !(element instanceof window.ShadowRoot) &&
-            element !== document && !(element instanceof DocumentFragment)) {
+        while (element &&
+            !(element instanceof window.ShadowRoot) &&
+            element !== document &&
+            !(element instanceof DocumentFragment)) {
             element = element.parentNode;
         }
         /* istanbul ignore if */
@@ -61,8 +62,10 @@ class HierarchyClass {
     }
     __findDirectParents() {
         let element = this._self.parentNode;
-        while (element && !(element instanceof window.ShadowRoot) &&
-            element !== document && !(element instanceof DocumentFragment) &&
+        while (element &&
+            !(element instanceof window.ShadowRoot) &&
+            element !== document &&
+            !(element instanceof DocumentFragment) &&
             !this.__isHierarchyManagerInstance(element)) {
             element = element.parentNode;
         }
@@ -77,8 +80,9 @@ class HierarchyClass {
             return this._self;
         }
         else {
-            const host = this.__isHierarchyManagerInstance(element) ?
-                element : element.host;
+            const host = this.__isHierarchyManagerInstance(element)
+                ? element
+                : element.host;
             if (!this.__isHierarchyManagerInstance(host)) {
                 return null;
             }
@@ -114,7 +118,8 @@ class HierarchyClass {
         for (const child of this.children.values()) {
             /* istanbul ignore next */
             if (!this._self.shadowRoot.contains(child) &&
-                !nodeChildren.filter(nodeChild => nodeChild.contains(child)).length) {
+                !nodeChildren.filter((nodeChild) => nodeChild.contains(child))
+                    .length) {
                 this.children.delete(child);
             }
         }
@@ -167,7 +172,9 @@ export const WebComponentHierarchyManagerMixin = (superFn) => {
     function hierarchyClass(self) {
         if (privateMap.has(self))
             return privateMap.get(self);
-        return privateMap.set(self, new HierarchyClass(self, () => hierarchyClass)).get(self);
+        return privateMap
+            .set(self, new HierarchyClass(self, () => hierarchyClass))
+            .get(self);
     }
     // Explanation for ts-ignore:
     // Will show a warning regarding using generics in mixins
@@ -184,62 +191,6 @@ export const WebComponentHierarchyManagerMixin = (superFn) => {
     class WebComponentHierarchyManager extends superFn {
         constructor(...args) {
             super(...args);
-            /**
-             * Listens for given event and fires
-             * the listener when it's triggered
-             *
-             * @template EV - The event's name
-             *
-             * @param {EV} event - The event's name
-             * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
-             * 	listener called when the event is fired
-             * @param {boolean} [once] - Whether to only
-             * 	call this listener once (false by default)
-             */
-            // istanbul ignore next
-            this.listen = (event, listener, once = false) => {
-                // istanbul ignore next
-                super.listen(event, listener, once);
-            };
-            /**
-             * Fires given event on this component
-             * with given params, returning an array
-             * containing the return values of all
-             * triggered listeners
-             *
-             * @template EV - The event's name
-             * @template R - The return type of the
-             * 	event's listeners
-             *
-             * @param {EV} event - The event's name
-             * @param {E[EV]['args']} params - The parameters
-             * 	passed to the listeners when they are
-             * 	called
-             *
-             * @returns {R[]} An array containing the
-             * 	return values of all triggered
-             * 	listeners
-             */
-            this.fire = (event, ...params) => {
-                // istanbul ignore next
-                return super.fire(event, ...params);
-            };
-            /**
-             * Clears all listeners on this component for
-             * given event
-             *
-             * @template EV - The name of the event
-             *
-             * @param {EV} event - The name of the event to clear
-             * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
-             * 	specific listener to clear. If not passed, clears all
-             * 	listeners for the event
-             */
-            // istanbul ignore next
-            this.clearListener = (super.clearListener ? (event, listener) => {
-                // istanbul ignore next
-                super.clearListener(event, listener);
-            } : void 0);
             HierarchyClass.hierarchyClasses.add(this);
         }
         /**
@@ -255,29 +206,12 @@ export const WebComponentHierarchyManagerMixin = (superFn) => {
                 priv.globalProperties = Object.assign({}, priv.getGlobalProperties());
             }
         }
-        /**
-         * Registers `element` as the child of this
-         * component
-         *
-         * @template G - Global properties
-         * @param {HTMLElement} element - The
-         * 	component that is registered as the child of this one
-         *
-         * @returns {G} The global properties
-         */
         registerChild(element) {
             const priv = hierarchyClass(this);
             priv.clearNonExistentChildren();
             priv.children.add(element);
             return priv.globalProperties;
         }
-        /**
-         * Gets the global properties functions
-         *
-         * @template G - The global properties
-         * @returns {GlobalPropsFunctions<G>} Functions
-         * 	that get and set global properties
-         */
         globalProps() {
             const priv = hierarchyClass(this);
             if (priv.globalPropsFns) {
@@ -297,24 +231,18 @@ export const WebComponentHierarchyManagerMixin = (superFn) => {
                 },
                 set(key, value) {
                     /* istanbul ignore if */
-                    if (!hierarchyClass(__this).parent && !hierarchyClass(__this).isRoot) {
+                    if (!hierarchyClass(__this).parent &&
+                        !hierarchyClass(__this).isRoot) {
                         console.warn(`Failed to propagate global property "${key}" since this element has no registered parent`);
                         return;
                     }
                     hierarchyClass(__this).propagateThroughTree((element) => {
                         hierarchyClass(element).setGlobalProperty(key, value);
                     });
-                }
+                },
             };
             return (hierarchyClass(this).globalPropsFns = fns);
         }
-        /**
-         * Gets the root node of the global hierarchy
-         *
-         * @template T - The type of the root
-         *
-         * @returns {T} The root
-         */
         getRoot() {
             const priv = hierarchyClass(this);
             if (priv.isRoot) {
@@ -322,28 +250,9 @@ export const WebComponentHierarchyManagerMixin = (superFn) => {
             }
             return priv.parent.getRoot();
         }
-        /**
-         * Runs a function for every component in this
-         * global hierarchy
-         *
-         * @template R - The return type of given function
-         * @template E - The components on the page's base types
-         *
-         * @param {(element: WebComponentHierarchyManager) => R} fn - The
-         * 	function that is ran on every component
-         *
-         * @returns {R[]} All return values in an array
-         */
         runGlobalFunction(fn) {
             return hierarchyClass(this).propagateThroughTree(fn);
         }
-        /**
-         * Returns the parent of this component
-         *
-         * @template T - The parent's type
-         * @returns {T|null} - The component's parent or
-         * 	null if it has none
-         */
         getParent() {
             return hierarchyClass(this).__getParent();
         }
@@ -352,17 +261,9 @@ export const WebComponentHierarchyManagerMixin = (superFn) => {
         once = false) {
             this.listen(event, listener, once);
         }
-        /**
-         * A map that maps every event name to
-         * a set containing all of its listeners
-         *
-         * @readonly
-         */
-        get listenerMap() {
-            // istanbul ignore next
-            return super.listenerMap;
-        }
     }
+    const __typecheck__ = WebComponentHierarchyManager;
+    __typecheck__;
     return WebComponentHierarchyManager;
 };
 //# sourceMappingURL=hierarchy-manager.js.map

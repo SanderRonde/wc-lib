@@ -28,14 +28,17 @@ export class TemplateFn {
         // If no object-like or function-like templater exists, use a random object
         // to prevent an invalid key error from being thrown and to prevent
         // sharing cache that should not be used
-        if (!templater || (typeof templater !== 'object' && typeof templater !== 'function')) {
+        if (!templater ||
+            (typeof templater !== 'object' && typeof templater !== 'function')) {
             templater = component;
         }
         if (!templaterMap.has(templater)) {
             templaterMap.set(templater, new WeakMap());
         }
         const componentTemplateMap = templaterMap.get(templater);
-        const jsxAddedTemplate = templater;
+        const jsxAddedTemplate = (typeof templater === 'function'
+            ? templater.bind(component)
+            : templater);
         jsxAddedTemplate.jsx = (tag, attrs, ...children) => {
             const { strings, values } = jsxToLiteral(tag, attrs, ...children);
             return templater(strings, ...values);
@@ -50,33 +53,33 @@ export class TemplateFn {
             if (cached) {
                 return {
                     changed: false,
-                    rendered: cached
+                    rendered: cached,
                 };
             }
             const templateComponent = component;
-            const rendered = this._template === null ?
-                null : this._template.call(component, jsxAddedTemplate, templateComponent.props, getTheme(templateComponent), changeType);
+            const rendered = this._template === null
+                ? null
+                : this._template.call(component, jsxAddedTemplate, templateComponent.props, getTheme(templateComponent), changeType);
             templateMap.set(this, rendered);
             return {
                 changed: true,
-                rendered: rendered
+                rendered: rendered,
             };
         }
-        if (this.changeOn & changeType ||
-            !templateMap.has(this)) {
+        if (this.changeOn & changeType || !templateMap.has(this)) {
             //Change, re-render
             const templateComponent = component;
             const rendered = this._template.call(component, jsxAddedTemplate, templateComponent.props, getTheme(templateComponent), changeType);
             templateMap.set(this, rendered);
             return {
                 changed: true,
-                rendered: rendered
+                rendered: rendered,
             };
         }
         //No change, return what was last rendered
         return {
             changed: false,
-            rendered: templateMap.get(this)
+            rendered: templateMap.get(this),
         };
     }
     static _textRenderer(strings, ...values) {
@@ -89,10 +92,14 @@ export class TemplateFn {
     static _templateResultToText(result) {
         if (result === null || result === undefined)
             return '';
-        if (result instanceof HTMLElement || result instanceof Element) {
-            return `<${result.tagName.toLowerCase()} ${Array.from(result.attributes).map((attr) => {
+        if ((typeof HTMLElement !== 'undefined' &&
+            result instanceof HTMLElement) ||
+            (typeof Element !== 'undefined' && result instanceof Element)) {
+            return `<${result.tagName.toLowerCase()} ${Array.from(result.attributes)
+                .map((attr) => {
                 return `${attr.name}="${attr.value}"`;
-            }).join(' ')}>${result.innerHTML}</${result.tagName.toLowerCase()}>`;
+            })
+                .join(' ')}>${result.innerHTML}</${result.tagName.toLowerCase()}>`;
         }
         if ('toText' in result && typeof result.toText === 'function') {
             return result.toText();
@@ -132,8 +139,7 @@ export class TemplateFn {
      * 	can be passed to the renderer
      */
     renderTemplate(changeType, component) {
-        const { changed, rendered } = this._renderWithTemplater(changeType, component, component
-            .generateHTMLTemplate);
+        const { changed, rendered } = this._renderWithTemplater(changeType, component, component.generateHTMLTemplate);
         this._lastRenderChanged = changed;
         return rendered;
     }

@@ -24,9 +24,11 @@ export var Templates;
             return prev | template.changeOn;
         }, 0) || 4 /* NEVER */;
         return new TemplateFn(function (html) {
-            return html `${templates.map((template) => {
+            return html `
+                    ${templates.map((template) => {
                 return template.renderSame(changeType, this, html);
-            })}`;
+            })}
+                `;
         }, changeType, renderer);
     }
     Templates.joinTemplates = joinTemplates;

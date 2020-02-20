@@ -24,7 +24,8 @@ export var AST;
     function getNodeComments(node) {
         const nodePos = node.pos;
         const parentPos = node.parent.pos;
-        if (node.parent.kind === ts.SyntaxKind.SourceFile || nodePos !== parentPos) {
+        if (node.parent.kind === ts.SyntaxKind.SourceFile ||
+            nodePos !== parentPos) {
             let comments = ts.getLeadingCommentRanges(node.getSourceFile().getFullText(), nodePos);
             if (Array.isArray(comments)) {
                 return comments;
@@ -40,13 +41,12 @@ export var AST;
             return comments;
         if (ts.isSourceFile(node))
             return comments;
-        comments.push(...getNodeComments(node) || []);
+        comments.push(...(getNodeComments(node) || []));
         return collectComments(node.parent, comments);
     }
     function isIgnored(node, ignoreString) {
         // Find the root block
-        const comments = collectComments(node, [])
-            .filter((c, i, a) => a.indexOf(c) === i);
+        const comments = collectComments(node, []).filter((c, i, a) => a.indexOf(c) === i);
         for (const comment of comments) {
             // istanbul ignore next
             if (usedComments.has(comment))
@@ -71,7 +71,7 @@ export var AST;
             end: lastNode.end,
             node: lastNode,
             str,
-            inString: false
+            inString: false,
         });
     }
     function handleTaggedTemplate(config) {
@@ -96,13 +96,13 @@ export var AST;
                     end: lastNode.end + 1,
                     node: lastNode,
                     str,
-                    inString: true
+                    inString: true,
                 });
             }
             else {
                 // If it's not just one expression, keep searching for
                 // css expression in its children
-                span.forEachChild(child => find(Object.assign({}, config, { node: child })));
+                span.forEachChild((child) => find(Object.assign(Object.assign({}, config), { node: child })));
             }
         }
     }
@@ -113,10 +113,10 @@ export var AST;
             return;
         }
         if (ts.isTaggedTemplateExpression(node)) {
-            handleTaggedTemplate(Object.assign({}, config, { node }));
+            handleTaggedTemplate(Object.assign(Object.assign({}, config), { node }));
             return;
         }
-        node.forEachChild(child => find(Object.assign({}, config, { node: child })));
+        node.forEachChild((child) => find(Object.assign(Object.assign({}, config), { node: child })));
     }
     AST.find = find;
     function applyReplacements(text, replacements) {
@@ -129,20 +129,36 @@ export var AST;
     function getAST(code) {
         const host = {
             // istanbul ignore next
-            fileExists() { return true; },
-            getCanonicalFileName(fileName) { return fileName; },
-            getCurrentDirectory() { return ''; },
-            getDefaultLibFileName() { return 'lib.d.ts'; },
+            fileExists() {
+                return true;
+            },
+            getCanonicalFileName(fileName) {
+                return fileName;
+            },
+            getCurrentDirectory() {
+                return '';
+            },
+            getDefaultLibFileName() {
+                return 'lib.d.ts';
+            },
             // istanbul ignore next
-            getNewLine() { return '\n'; },
+            getNewLine() {
+                return '\n';
+            },
             getSourceFile(fileName) {
                 return ts.createSourceFile(fileName, code, ts.ScriptTarget.Latest, true);
             },
             // istanbul ignore next
-            readFile() { return undefined; },
-            useCaseSensitiveFileNames() { return true; },
+            readFile() {
+                return undefined;
+            },
+            useCaseSensitiveFileNames() {
+                return true;
+            },
             // istanbul ignore next
-            writeFile() { return undefined; }
+            writeFile() {
+                return undefined;
+            },
         };
         const fileName = 'sourcefile.ts';
         const program = ts.createProgram([fileName], {
@@ -150,7 +166,7 @@ export var AST;
             target: ts.ScriptTarget.Latest,
             experimentalDecorators: true,
             jsxFactory: 'html.jsx',
-            jsx: ts.JsxEmit.React
+            jsx: ts.JsxEmit.React,
         }, host);
         return program.getSourceFile(fileName);
     }

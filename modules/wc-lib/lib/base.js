@@ -35,7 +35,7 @@ function makeArray(value) {
  * 	property
  */
 export function bindToClass(_target, propertyKey, descriptor) {
-    if (!descriptor || (typeof descriptor.value !== 'function')) {
+    if (!descriptor || typeof descriptor.value !== 'function') {
         throw new TypeError(`Only methods can be decorated with @bind. <${propertyKey}> is not a method!`);
     }
     return {
@@ -45,10 +45,10 @@ export function bindToClass(_target, propertyKey, descriptor) {
             Object.defineProperty(this, propertyKey, {
                 value: bound,
                 configurable: true,
-                writable: true
+                writable: true,
             });
             return bound;
-        }
+        },
     };
 }
 class BaseClassElementInstance {
@@ -86,22 +86,21 @@ class BaseClass {
         const instance = this.instance;
         if (instance.___cssArr !== null)
             return instance.___cssArr;
-        return (instance.___cssArr =
-            makeArray(this._self.self.css || []));
+        return (instance.___cssArr = makeArray(this._self.self.css || []));
     }
-    ;
     get __privateCSS() {
         const instance = this.instance;
         if (instance.___privateCSS !== null)
             return instance.___privateCSS;
         return (instance.___privateCSS =
             /* istanbul ignore next */
-            this.canUseConstructedCSS ? this.__cssArr.filter((template) => {
-                return !(template.changeOn === 2 /* THEME */ ||
-                    template.changeOn & 4 /* NEVER */);
-            }) : this.__cssArr);
+            this.canUseConstructedCSS
+                ? this.__cssArr.filter((template) => {
+                    return !(template.changeOn === 2 /* THEME */ ||
+                        template.changeOn & 4 /* NEVER */);
+                })
+                : this.__cssArr);
     }
-    ;
     doPreRenderLifecycle() {
         this.disableRender = true;
         const retVal = this._self.preRender();
@@ -109,7 +108,7 @@ class BaseClass {
         return retVal;
     }
     doPostRenderLifecycle() {
-        this._self.___definerClass.internals.postRenderHooks.forEach(fn => fn());
+        this._self.___definerClass.internals.postRenderHooks.forEach((fn) => fn());
         if (this.__firstRender) {
             this.__firstRender = false;
             this._self.firstRender();
@@ -139,13 +138,13 @@ class BaseClass {
         })();
         const html = document.createElement('span');
         html.setAttribute('data-type', 'html');
-        css.forEach(n => this._self.root.appendChild(n));
-        customCSS.forEach(n => this._self.root.appendChild(n));
+        css.forEach((n) => this._self.root.appendChild(n));
+        customCSS.forEach((n) => this._self.root.appendChild(n));
         this._self.root.appendChild(html);
         return {
             css,
             customCSS,
-            html
+            html,
         };
     }
     get renderContainers() {
@@ -157,14 +156,17 @@ class BaseClass {
     /* istanbul ignore next */
     __genConstructedCSS() {
         // Create them
-        this.instance.__cssSheets = this.instance.__cssSheets || this.__cssArr
-            .filter((template) => {
-            return template.changeOn === 2 /* THEME */ ||
-                template.changeOn & 4 /* NEVER */;
-        }).map(t => ({
-            sheet: new CSSStyleSheet(),
-            template: t
-        }));
+        this.instance.__cssSheets =
+            this.instance.__cssSheets ||
+                this.__cssArr
+                    .filter((template) => {
+                    return (template.changeOn === 2 /* THEME */ ||
+                        template.changeOn & 4 /* NEVER */);
+                })
+                    .map((t) => ({
+                    sheet: new CSSStyleSheet(),
+                    template: t,
+                }));
     }
     /* istanbul ignore next */
     renderConstructedCSS(change) {
@@ -174,8 +176,7 @@ class BaseClass {
             this.__genConstructedCSS();
             if (this.instance.__cssSheets.length) {
                 // Mount them
-                this._self.root.adoptedStyleSheets =
-                    this.instance.__cssSheets.map(s => s.sheet);
+                this._self.root.adoptedStyleSheets = this.instance.__cssSheets.map((s) => s.sheet);
                 this.__sheetsMounted = true;
                 // Force new render
                 change = 11 /* ALWAYS */;
@@ -190,7 +191,9 @@ class BaseClass {
             return;
         }
         this.instance.__cssSheets.forEach(({ sheet, template }) => {
-            const rendered = template.renderAsText(change, this._self).replace(/<\/?style>/g, '');
+            const rendered = template
+                .renderAsText(change, this._self)
+                .replace(/<\/?style>/g, '');
             sheet.replaceSync(rendered);
         });
     }
@@ -240,61 +243,23 @@ export const WebComponentBaseMixin = (superFn) => {
     class WebComponentBase extends superFn {
         constructor() {
             super(...arguments);
-            /**
-             * The root of this component's DOM
-             *
-             * @readonly
-             */
             this.root = this.attachShadow({
-                mode: 'open'
+                mode: 'open',
             });
-            /**
-             * The properties of this component
-             *
-             * @readonly
-             */
             this.props = {};
         }
-        /**
-         * The element's constructor
-         *
-         * @readonly
-         */
         /* istanbul ignore next */
         get self() {
             return null;
         }
-        /**
-         * A function signaling whether this component has custom CSS applied to it
-         *
-         * @returns {boolean} Whether this component uses custom CSS
-         */
         /* istanbul ignore next */
         __hasCustomCSS() {
             return false;
         }
-        /**
-         * Gets this component's custom CSS templates
-         *
-         * @returns {TemplateFnLike<CHANGE_TYPE|number>|TemplateFnLike<CHANGE_TYPE|number>[]} The
-         * 	custom CSS templates
-         */
         /* istanbul ignore next */
         customCSS() {
             return [];
         }
-        /**
-         * Checks whether the constructed CSS should be changed. This function can be
-         * overridden to allow for a custom checker. Since constructed CSS
-         * is shared with all other instances of this specific component,
-         * this should only return true if the CSS for all of these components
-         * has changed. For example it might change when the theme has changed
-         *
-         * @param {WebComponentBase} _element - The element for which to
-         * 	check it
-         *
-         * @returns {boolean} Whether the constructed CSS has changed
-         */
         /* istanbul ignore next */
         static __constructedCSSChanged(_element) {
             // Assume nothing can be changed then, only do first render
@@ -304,22 +269,10 @@ export const WebComponentBaseMixin = (superFn) => {
             BaseClass.__constructedCSSRendered = true;
             return true;
         }
-        /**
-         * The properties of this component but
-         * suited to be used as JSX props
-         *
-         * @readonly
-         */
         /* istanbul ignore next */
         get jsxProps() {
             return this.props;
         }
-        /**
-         * The method that starts the rendering cycle
-         *
-         * @param {CHANGE_TYPE} [change] The change type. This
-         * 	is set to always render if not supplied
-         */
         renderToDOM(change = 27 /* FORCE */) {
             const priv = baseClass(this);
             if (priv.disableRender)
@@ -345,32 +298,16 @@ export const WebComponentBaseMixin = (superFn) => {
             }
             priv.doPostRenderLifecycle();
         }
-        /**
-         * A method called before rendering (changing props won't trigger additional re-render)
-         * If false is returned, cancels the render
-         *
-         * @returns {false|any} The return value, if false, cancels the render
-         */
         preRender() { }
-        /**
-         * A method called after rendering
-         */
         postRender() { }
-        /**
-         * A method called after the very first render
-         */
         firstRender() { }
-        /**
-         * A method called when the component is mounted
-         * to the DOM. Be sure to always call
-         * `super.connectedCallback` if you
-         * override this
-         */
         connectedCallback() { }
     }
     __decorate([
         bindToClass
     ], WebComponentBase.prototype, "renderToDOM", null);
+    const __typecheck__ = WebComponentBase;
+    __typecheck__;
     return WebComponentBase;
 };
 //# sourceMappingURL=base.js.map

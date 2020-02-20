@@ -1,4 +1,4 @@
-import { WebComponentMixin, WebComponentCustomCSSManagerMixin, WebComponentTemplateManagerMixin, WebComponentI18NManagerMixin, WebComponentThemeManagerMixin, WebComponentHierarchyManagerMixin, WebComponentListenableMixin, WebComponentBaseMixin, WebComponentDefinerMixin, elementBase } from "./parts.js";
+import { WebComponentMixin, WebComponentCustomCSSManagerMixin, WebComponentTemplateManagerMixin, WebComponentI18NManagerMixin, WebComponentThemeManagerMixin, WebComponentHierarchyManagerMixin, WebComponentListenableMixin, WebComponentBaseMixin, WebComponentDefinerMixin, elementBase, } from './parts.js';
 /**
  * A full webcomponent that uses every layer and provides
  * maximum functionality.

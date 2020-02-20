@@ -1,14 +1,18 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 import { TemplateFn } from './template-fn.js';
 import { WCLibError } from './shared.js';
 function define(name, component) {
+    /* istanbul ignore next */
+    if (typeof window === 'undefined')
+        return;
     if (window.customElements.get(name)) {
         return;
     }
@@ -26,7 +30,7 @@ export class DefinerClass {
          */
         this.internals = {
             connectedHooks: [],
-            postRenderHooks: []
+            postRenderHooks: [],
         };
         /**
          * Whether this component is in development mode
@@ -54,7 +58,7 @@ export class DefinerClass {
             else {
                 this.listeners.push({
                     component,
-                    constructed: isConstructed
+                    constructed: isConstructed,
                 });
             }
         });
@@ -64,12 +68,14 @@ export class DefinerClass {
      * component's definition
      */
     setDevMode(component) {
-        this.isDevelopment = DefinerClass.devComponents.indexOf(component.tagName.toLowerCase()) > -1;
+        this.isDevelopment =
+            DefinerClass.devComponents.indexOf(component.tagName.toLowerCase()) > -1;
     }
     static __doSingleMount(component) {
         return new Promise((resolve) => {
             /* istanbul ignore next */
-            const animationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame;
+            const animationFrame = window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame;
             animationFrame(() => {
                 if (component.isMounted) {
                     resolve();
@@ -87,7 +93,8 @@ export class DefinerClass {
     static finishLoad() {
         return __awaiter(this, void 0, void 0, function* () {
             this.finished = true;
-            if (window.requestAnimationFrame || window.webkitRequestAnimationFrame) {
+            if (window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame) {
                 for (const { component, constructed } of [...this.listeners]) {
                     yield constructed;
                     yield this.__doSingleMount(component);
@@ -150,19 +157,20 @@ export class DefinerClass {
             component.html = new TemplateFn(null, 4 /* NEVER */, null);
         }
         else if (!this.__isTemplate(component.html)) {
-            throw new WCLibError(component, 'Component\'s html template should be an instance of the TemplateFn class');
+            throw new WCLibError(component, "Component's html template should be an instance of the TemplateFn class");
         }
         if (Array.isArray(component.css)) {
             for (const template of component.css) {
                 if (!this.__isTemplate(template)) {
-                    throw new WCLibError(component, 'Component\'s css template should be an instance of the TemplateFn class ' +
+                    throw new WCLibError(component, "Component's css template should be an instance of the TemplateFn class " +
                         'or an array of them');
                 }
             }
         }
-        else if (component.css !== null && component.css !== undefined &&
+        else if (component.css !== null &&
+            component.css !== undefined &&
             !this.__isTemplate(component.css)) {
-            throw new WCLibError(component, 'Component\'s css template should be an instance of the TemplateFn class ' +
+            throw new WCLibError(component, "Component's css template should be an instance of the TemplateFn class " +
                 'or an array of them');
         }
     }
@@ -197,7 +205,7 @@ export class DefineMetadata {
      */
     static increment() {
         this.defined++;
-        this._listeners.forEach(l => l(this.defined));
+        this._listeners.forEach((l) => l(this.defined));
     }
     /**
      * Add a listener that is called when a component
@@ -245,13 +253,6 @@ export const WebComponentDefinerMixin = (superFn) => {
     class WebComponentDefiner extends superFn {
         constructor(...args) {
             super(...args);
-            /**
-             * The class associated with this one that
-             * contains some functions required for
-             * it to function
-             *
-             * @readonly
-             */
             this.___definerClass = new DefinerClass();
             const isConnected = new Promise((resolve) => {
                 this.___definerClass.internals.connectedHooks.push(() => {
@@ -261,17 +262,6 @@ export const WebComponentDefinerMixin = (superFn) => {
             DefinerClass.listenForFinished(this, isConnected);
             this.___definerClass.setDevMode(this);
         }
-        /**
-         * Define this component and its dependencies as a webcomponent
-         * so they can be used
-         *
-         * @param {boolean} [isDevelopment] - Whether to enable
-         * 	development mode in which some additional checks
-         *  are performed at the cost of performance.
-         * @param {boolean} [isRoot] - Set to true if this is
-         * 	not a dependency (which most definitions aren't)
-         * 	True by default
-         */
         // istanbul ignore next
         static define(isDevelopment = false, isRoot = true) {
             if (isRoot && DefinerClass.finished) {
@@ -294,16 +284,9 @@ export const WebComponentDefinerMixin = (superFn) => {
             DefinerClass.finishLoad();
         }
     }
-    /**
-     * Dependencies of this component. If this
-     * component uses other components in its
-     * template, adding them to this array will
-     * make sure they are defined before this
-     * component is
-     *
-     * @readonly
-     */
     WebComponentDefiner.dependencies = [];
+    const __typecheck__ = WebComponentDefiner;
+    __typecheck__;
     return WebComponentDefiner;
 };
 //# sourceMappingURL=definer.js.map

@@ -1,6 +1,7 @@
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentMixinInstance } from './component.js';
 import { WebComponentBaseMixinClass } from './base.js';
+import { ClassToObj } from './configurable.js';
 /**
  * A definer class that has some functions that
  * allow you to keep track of how many components
@@ -123,6 +124,53 @@ export declare type WebComponentDefinerMixinClass = InferReturn<typeof WebCompon
  */
 export declare type WebComponentDefinerMixinSuper = Constructor<HTMLElement>;
 /**
+ * A standalone instance of the definer class
+ */
+export declare class WebComponentDefinerTypeInstance {
+    /**
+     * The class associated with this one that
+     * contains some functions required for
+     * it to function
+     *
+     * @readonly
+     */
+    ___definerClass: DefinerClass;
+    /**
+     * Dependencies of this component. If this
+     * component uses other components in its
+     * template, adding them to this array will
+     * make sure they are defined before this
+     * component is
+     *
+     * @readonly
+     */
+    static dependencies?: {
+        define(isDevelopment?: boolean, isRoot?: boolean): void;
+    }[] | null;
+    /**
+     * The name of this component
+     *
+     * @readonly
+     */
+    static is: string;
+    /**
+     * Define this component and its dependencies as a webcomponent
+     * so they can be used
+     *
+     * @param {boolean} [isDevelopment] - Whether to enable
+     * 	development mode in which some additional checks
+     *  are performed at the cost of performance.
+     * @param {boolean} [isRoot] - Set to true if this is
+     * 	not a dependency (which most definitions aren't)
+     * 	True by default
+     */
+    static define(isDevelopment?: boolean, isRoot?: boolean): void;
+}
+/**
+ * The static values of the definer class
+ */
+export declare type WebComponentDefinerTypeStatic = ClassToObj<typeof WebComponentDefinerTypeInstance>;
+/**
  * A mixin that will add the ability to define a component
  * and its dependencies by calling .define on it
  *
@@ -132,13 +180,6 @@ export declare type WebComponentDefinerMixinSuper = Constructor<HTMLElement>;
  */
 export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElement>>(superFn: P) => {
     new (...args: any[]): {
-        /**
-         * The class associated with this one that
-         * contains some functions required for
-         * it to function
-         *
-         * @readonly
-         */
         ___definerClass: DefinerClass;
         accessKey: string;
         readonly accessKeyLabel: string;
@@ -157,9 +198,9 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         title: string;
         translate: boolean;
         click(): void;
-        addEventListener<K extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadend" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
+        addEventListener<K extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadend" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined): void;
-        removeEventListener<K extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadend" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions | undefined): void;
+        removeEventListener<K_1 extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadend" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | EventListenerOptions | undefined): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions | undefined): void;
         readonly assignedSlot: HTMLSlotElement | null;
         readonly attributes: NamedNodeMap;
@@ -184,19 +225,19 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         slot: string;
         readonly tagName: string;
         attachShadow(init: ShadowRootInit): ShadowRoot;
-        closest<K extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(selector: K): HTMLElementTagNameMap[K] | null;
-        closest<K extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(selector: K): SVGElementTagNameMap[K] | null;
-        closest(selector: string): Element | null;
+        closest<K_2 extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(selector: K_2): HTMLElementTagNameMap[K_2] | null;
+        closest<K_3 extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(selector: K_3): SVGElementTagNameMap[K_3] | null;
+        closest<E extends Element = Element>(selector: string): E | null;
         getAttribute(qualifiedName: string): string | null;
         getAttributeNS(namespace: string | null, localName: string): string | null;
         getAttributeNames(): string[];
         getAttributeNode(name: string): Attr | null;
         getAttributeNodeNS(namespaceURI: string, localName: string): Attr | null;
-        getBoundingClientRect(): DOMRect | ClientRect;
-        getClientRects(): ClientRectList | DOMRectList;
+        getBoundingClientRect(): DOMRect;
+        getClientRects(): DOMRectList;
         getElementsByClassName(classNames: string): HTMLCollectionOf<Element>;
-        getElementsByTagName<K extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(qualifiedName: K): HTMLCollectionOf<HTMLElementTagNameMap[K]>;
-        getElementsByTagName<K extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(qualifiedName: K): HTMLCollectionOf<SVGElementTagNameMap[K]>;
+        getElementsByTagName<K_4 extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(qualifiedName: K_4): HTMLCollectionOf<HTMLElementTagNameMap[K_4]>;
+        getElementsByTagName<K_5 extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(qualifiedName: K_5): HTMLCollectionOf<SVGElementTagNameMap[K_5]>;
         getElementsByTagName(qualifiedName: string): HTMLCollectionOf<Element>;
         getElementsByTagNameNS(namespaceURI: "http://www.w3.org/1999/xhtml", localName: string): HTMLCollectionOf<HTMLElement>;
         getElementsByTagNameNS(namespaceURI: "http://www.w3.org/2000/svg", localName: string): HTMLCollectionOf<SVGElement>;
@@ -250,15 +291,15 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         contains(other: Node | null): boolean;
         getRootNode(options?: GetRootNodeOptions | undefined): Node;
         hasChildNodes(): boolean;
-        insertBefore<T extends Node>(newChild: T, refChild: Node | null): T;
+        insertBefore<T_1 extends Node>(newChild: T_1, refChild: Node | null): T_1;
         isDefaultNamespace(namespace: string | null): boolean;
         isEqualNode(otherNode: Node | null): boolean;
         isSameNode(otherNode: Node | null): boolean;
         lookupNamespaceURI(prefix: string | null): string | null;
         lookupPrefix(namespace: string | null): string | null;
         normalize(): void;
-        removeChild<T extends Node>(oldChild: T): T;
-        replaceChild<T extends Node>(newChild: Node, oldChild: T): T;
+        removeChild<T_2 extends Node>(oldChild: T_2): T_2;
+        replaceChild<T_3 extends Node>(newChild: Node, oldChild: T_3): T_3;
         readonly ATTRIBUTE_NODE: number;
         readonly CDATA_SECTION_NODE: number;
         readonly COMMENT_NODE: number;
@@ -278,27 +319,34 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         readonly PROCESSING_INSTRUCTION_NODE: number;
         readonly TEXT_NODE: number;
         dispatchEvent(event: Event): boolean;
+        animate(keyframes: PropertyIndexedKeyframes | Keyframe[] | null, options?: number | KeyframeAnimationOptions | undefined): Animation;
+        getAnimations(): Animation[];
+        after(...nodes: (string | Node)[]): void;
+        before(...nodes: (string | Node)[]): void;
+        remove(): void;
+        replaceWith(...nodes: (string | Node)[]): void;
+        innerHTML: string;
+        readonly nextElementSibling: Element | null;
+        readonly previousElementSibling: Element | null;
         readonly childElementCount: number;
         readonly children: HTMLCollection;
         readonly firstElementChild: Element | null;
         readonly lastElementChild: Element | null;
         append(...nodes: (string | Node)[]): void;
         prepend(...nodes: (string | Node)[]): void;
-        querySelector<K extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(selectors: K): HTMLElementTagNameMap[K] | null;
-        querySelector<K extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(selectors: K): SVGElementTagNameMap[K] | null;
-        querySelector<E extends Element = Element>(selectors: string): E | null;
-        querySelectorAll<K extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(selectors: K): NodeListOf<HTMLElementTagNameMap[K]>;
-        querySelectorAll<K extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(selectors: K): NodeListOf<SVGElementTagNameMap[K]>;
-        querySelectorAll<E extends Element = Element>(selectors: string): NodeListOf<E>;
-        readonly nextElementSibling: Element | null;
-        readonly previousElementSibling: Element | null;
-        after(...nodes: (string | Node)[]): void;
-        before(...nodes: (string | Node)[]): void;
-        remove(): void;
-        replaceWith(...nodes: (string | Node)[]): void;
-        innerHTML: string;
-        animate(keyframes: PropertyIndexedKeyframes | Keyframe[] | null, options?: number | KeyframeAnimationOptions | undefined): Animation;
-        getAnimations(): Animation[];
+        querySelector<K_6 extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(selectors: K_6): HTMLElementTagNameMap[K_6] | null;
+        querySelector<K_7 extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(selectors: K_7): SVGElementTagNameMap[K_7] | null;
+        querySelector<E_1 extends Element = Element>(selectors: string): E_1 | null;
+        querySelectorAll<K_8 extends "object" | "link" | "small" | "sub" | "sup" | "track" | "progress" | "a" | "abbr" | "address" | "applet" | "area" | "article" | "aside" | "audio" | "b" | "base" | "basefont" | "bdi" | "bdo" | "blockquote" | "body" | "br" | "button" | "canvas" | "caption" | "cite" | "code" | "col" | "colgroup" | "data" | "datalist" | "dd" | "del" | "details" | "dfn" | "dialog" | "dir" | "div" | "dl" | "dt" | "em" | "embed" | "fieldset" | "figcaption" | "figure" | "font" | "footer" | "form" | "frame" | "frameset" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "head" | "header" | "hgroup" | "hr" | "html" | "i" | "iframe" | "img" | "input" | "ins" | "kbd" | "label" | "legend" | "li" | "main" | "map" | "mark" | "marquee" | "menu" | "meta" | "meter" | "nav" | "noscript" | "ol" | "optgroup" | "option" | "output" | "p" | "param" | "picture" | "pre" | "q" | "rp" | "rt" | "ruby" | "s" | "samp" | "script" | "section" | "select" | "slot" | "source" | "span" | "strong" | "style" | "summary" | "table" | "tbody" | "td" | "template" | "textarea" | "tfoot" | "th" | "thead" | "time" | "title" | "tr" | "u" | "ul" | "var" | "video" | "wbr">(selectors: K_8): NodeListOf<HTMLElementTagNameMap[K_8]>;
+        querySelectorAll<K_9 extends "symbol" | "a" | "script" | "style" | "title" | "circle" | "clipPath" | "defs" | "desc" | "ellipse" | "feBlend" | "feColorMatrix" | "feComponentTransfer" | "feComposite" | "feConvolveMatrix" | "feDiffuseLighting" | "feDisplacementMap" | "feDistantLight" | "feFlood" | "feFuncA" | "feFuncB" | "feFuncG" | "feFuncR" | "feGaussianBlur" | "feImage" | "feMerge" | "feMergeNode" | "feMorphology" | "feOffset" | "fePointLight" | "feSpecularLighting" | "feSpotLight" | "feTile" | "feTurbulence" | "filter" | "foreignObject" | "g" | "image" | "line" | "linearGradient" | "marker" | "mask" | "metadata" | "path" | "pattern" | "polygon" | "polyline" | "radialGradient" | "rect" | "stop" | "svg" | "switch" | "text" | "textPath" | "tspan" | "use" | "view">(selectors: K_9): NodeListOf<SVGElementTagNameMap[K_9]>;
+        querySelectorAll<E_2 extends Element = Element>(selectors: string): NodeListOf<E_2>;
+        oncopy: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
+        oncut: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
+        onpaste: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
+        readonly style: CSSStyleDeclaration;
+        contentEditable: string;
+        inputMode: string;
+        readonly isContentEditable: boolean;
         onabort: ((this: GlobalEventHandlers, ev: UIEvent) => any) | null;
         onanimationcancel: ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null;
         onanimationend: ((this: GlobalEventHandlers, ev: AnimationEvent) => any) | null;
@@ -337,7 +385,7 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         onload: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onloadeddata: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onloadedmetadata: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onloadend: ((this: GlobalEventHandlers, ev: ProgressEvent) => any) | null;
+        onloadend: ((this: GlobalEventHandlers, ev: ProgressEvent<EventTarget>) => any) | null;
         onloadstart: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onlostpointercapture: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
         onmousedown: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
@@ -358,7 +406,7 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         onpointerout: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
         onpointerover: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
         onpointerup: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
-        onprogress: ((this: GlobalEventHandlers, ev: ProgressEvent) => any) | null;
+        onprogress: ((this: GlobalEventHandlers, ev: ProgressEvent<EventTarget>) => any) | null;
         onratechange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onreset: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onresize: ((this: GlobalEventHandlers, ev: UIEvent) => any) | null;
@@ -385,48 +433,16 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         onvolumechange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onwaiting: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onwheel: ((this: GlobalEventHandlers, ev: WheelEvent) => any) | null;
-        oncopy: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
-        oncut: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
-        onpaste: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
-        contentEditable: string;
-        inputMode: string;
-        readonly isContentEditable: boolean;
         readonly dataset: DOMStringMap;
         nonce?: string | undefined;
         tabIndex: number;
         blur(): void;
         focus(options?: FocusOptions | undefined): void;
-        readonly style: CSSStyleDeclaration;
     };
-    /**
-     * Dependencies of this component. If this
-     * component uses other components in its
-     * template, adding them to this array will
-     * make sure they are defined before this
-     * component is
-     *
-     * @readonly
-     */
     dependencies?: {
         define(isDevelopment?: boolean | undefined, isRoot?: boolean | undefined): void;
     }[] | null | undefined;
-    /**
-     * The name of this component
-     *
-     * @readonly
-     */
     is: string;
-    /**
-     * Define this component and its dependencies as a webcomponent
-     * so they can be used
-     *
-     * @param {boolean} [isDevelopment] - Whether to enable
-     * 	development mode in which some additional checks
-     *  are performed at the cost of performance.
-     * @param {boolean} [isRoot] - Set to true if this is
-     * 	not a dependency (which most definitions aren't)
-     * 	True by default
-     */
     define(isDevelopment?: boolean, isRoot?: boolean): void;
 } & P;
 //# sourceMappingURL=definer.d.ts.map

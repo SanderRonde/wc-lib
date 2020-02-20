@@ -1,4 +1,5 @@
-import { AST } from "./get-ast.js";
+import * as through2 from 'through2';
+import { AST } from './get-ast.js';
 import * as ts from 'typescript';
 function isI18NExpression(node) {
     if (!ts.isCallExpression(node))
@@ -34,7 +35,7 @@ function decodeI18NExpression(node, getMessage, langFile, lang) {
         }
         return null;
     });
-    if (args.some(a => a === null))
+    if (args.some((a) => a === null))
         return null;
     const [firstArg, ...values] = args;
     if (typeof firstArg === 'number')
@@ -42,7 +43,7 @@ function decodeI18NExpression(node, getMessage, langFile, lang) {
     try {
         return {
             lastNode: node,
-            str: getMessage(langFile[lang], firstArg, values)
+            str: getMessage(langFile[lang], firstArg, values),
         };
     }
     catch (e) {
@@ -65,7 +66,7 @@ export function inlineI18N(text, getMessage, langFile, lang) {
     }
     const results = new Map((lang ? [lang] : Object.getOwnPropertyNames(langFile)).map((lang) => {
         const replacements = [];
-        ast.forEachChild(child => AST.find({
+        ast.forEachChild((child) => AST.find({
             node: child,
             replacements,
             isExpr(node) {
@@ -78,11 +79,9 @@ export function inlineI18N(text, getMessage, langFile, lang) {
                 if (isI18NExpression(node))
                     return node;
                 return null;
-            }
+            },
         }));
-        return [
-            lang, AST.applyReplacements(text, replacements)
-        ];
+        return [lang, AST.applyReplacements(text, replacements)];
     }));
     if (lang) {
         return results.get(lang);
@@ -112,15 +111,16 @@ export function inlineI18N(text, getMessage, langFile, lang) {
  * 	calls.
  */
 export function inlineI18NPipe(getMessage, langFile, lang) {
-    return function (file) {
-        if (file.isNull()) {
-            return file;
+    return through2.obj((file, _, cb) => {
+        // The else case is tested by gulp
+        /* istanbul ignore else */
+        if (Buffer.isBuffer(file)) {
+            file = Buffer.from(inlineI18N(file.toString(), getMessage, langFile, lang));
         }
-        if (file.isStream()) {
-            throw new Error('Streaming not supported');
+        else if (file.isBuffer()) {
+            file.contents = Buffer.from(inlineI18N(file.contents.toString(), getMessage, langFile, lang));
         }
-        file.contents = Buffer.from(inlineI18N(file.contents.toString(), getMessage, langFile, lang));
-        return file;
-    };
+        cb(null, file);
+    });
 }
 //# sourceMappingURL=inline-i18n.js.map

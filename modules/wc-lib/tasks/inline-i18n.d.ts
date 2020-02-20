@@ -68,13 +68,5 @@ export declare function inlineI18N<LF extends {
  */
 export declare function inlineI18NPipe<LF extends {
     [key: string]: any;
-}>(getMessage: (langFile: LF[keyof LF], key: string, values: any[]) => string, langFile: LF, lang: keyof LF): (file: {
-    isNull: () => boolean;
-    isStream: () => boolean;
-    contents: Buffer;
-}) => {
-    isNull: () => boolean;
-    isStream: () => boolean;
-    contents: Buffer;
-};
+}>(getMessage: (langFile: LF[keyof LF], key: string, values: any[]) => string, langFile: LF, lang: keyof LF): import("stream").Transform;
 //# sourceMappingURL=inline-i18n.d.ts.map

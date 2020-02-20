@@ -265,8 +265,8 @@ export declare class TemplateFn<C extends {} = WebComponent<any, any>, R extends
      * 	with the container element as the second element and is
      * 	tasked with rendering it to the DOM
      */
-    constructor(_template: (TemplateRenderFunction<C, InferThemeVal<C>, R>) | null, changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R> | null);
-    constructor(_template: (TemplateRenderFunction<C, InferThemeVal<C>, R>), changeOn: CHANGE_TYPE.ALWAYS | CHANGE_TYPE.PROP | CHANGE_TYPE.THEME | CHANGE_TYPE.LANG, renderer: Renderer<R> | null);
+    constructor(_template: TemplateRenderFunction<C, InferThemeVal<C>, R> | null, changeOn: CHANGE_TYPE.NEVER, renderer: Renderer<R> | null);
+    constructor(_template: TemplateRenderFunction<C, InferThemeVal<C>, R>, changeOn: CHANGE_TYPE.ALWAYS | CHANGE_TYPE.PROP | CHANGE_TYPE.THEME | CHANGE_TYPE.LANG, renderer: Renderer<R> | null);
     private _renderWithTemplater;
     private static _textRenderer;
     private static _templateResultToText;

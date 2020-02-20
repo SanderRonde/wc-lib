@@ -1,8 +1,9 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -15,7 +16,7 @@ export const refPrefix = '___complex_ref';
 function getterWithVal(component, value, strict, type) {
     if (type === 'bool') {
         if (strict) {
-            return (value + '') === 'true';
+            return value + '' === 'true';
         }
         return value !== undefined && value !== null && value !== 'false';
     }
@@ -75,7 +76,7 @@ export function setter(setAttrFn, removeAttrFn, name, value, type) {
             }
         }
         else {
-            setAttrFn(name, `${strVal}`);
+            setAttrFn(name, String(strVal));
         }
     }
 }
@@ -104,7 +105,7 @@ function getDefinePropConfig(value) {
             watch: true,
             strict: false,
             reflectToSelf: true,
-            type: value
+            type: value,
         };
     }
 }
@@ -118,7 +119,7 @@ var Watching;
                     name: path[0],
                     relevantPaths: [],
                     watchCurrent: path.length === 1,
-                    map: new Map()
+                    map: new Map(),
                 });
             }
             currentLevel.get(path[0]).relevantPaths.push(...pathParts);
@@ -159,20 +160,21 @@ var Watching;
          * }
          */
         for (const [, level] of currentLevel) {
-            level.map = genProxyStructureLevel(level.relevantPaths.map(p => p.slice(1))
-                .filter(p => p.length));
+            level.map = genProxyStructureLevel(level.relevantPaths
+                .map((p) => p.slice(1))
+                .filter((p) => p.length));
         }
         return currentLevel;
     }
     function getProxyStructure(paths) {
-        const pathParts = paths.map(p => p.split('.'));
+        const pathParts = paths.map((p) => p.split('.'));
         for (const path of pathParts) {
             for (const pathPart of path) {
                 if (pathPart === '**') {
                     const retMap = new Map();
                     retMap.set('**', {
                         name: '**',
-                        map: new Map()
+                        map: new Map(),
                     });
                     return retMap;
                 }
@@ -188,7 +190,8 @@ var Watching;
                     if (isArr) {
                         if (typeof prop === 'symbol')
                             return true;
-                        if (typeof prop === 'number' || !Number.isNaN(parseInt(prop))) {
+                        if (typeof prop === 'number' ||
+                            !Number.isNaN(parseInt(prop))) {
                             return true;
                         }
                         return false;
@@ -219,7 +222,7 @@ var Watching;
                     return deleted;
                 }
                 return true;
-            }
+            },
         });
         for (const key of Object.keys(obj)) {
             if (typeof obj[key] === 'object') {
@@ -239,9 +242,11 @@ var Watching;
                         if (level.has('*')) {
                             if (typeof prop === 'symbol')
                                 return true;
-                            return typeof prop === 'number' || !Number.isNaN(parseInt(prop));
+                            return (typeof prop === 'number' ||
+                                !Number.isNaN(parseInt(prop)));
                         }
-                        if (typeof prop !== 'symbol' && level.has(prop + '') &&
+                        if (typeof prop !== 'symbol' &&
+                            level.has(prop + '') &&
                             level.get(prop + '').watchCurrent) {
                             return true;
                         }
@@ -249,7 +254,8 @@ var Watching;
                     }
                     else {
                         if (typeof prop !== 'symbol') {
-                            return ((level.get(prop + '') && level.get(prop + '').watchCurrent) ||
+                            return ((level.get(prop + '') &&
+                                level.get(prop + '').watchCurrent) ||
                                 (level.get('*') && level.get('*').watchCurrent));
                         }
                         return level.has('*') && level.get('*').watchCurrent;
@@ -287,23 +293,29 @@ var Watching;
                 if (Reflect.has(obj, prop)) {
                     const deleted = Reflect.deleteProperty(obj, prop);
                     // istanbul ignore next
-                    if (deleted && ((typeof prop !== 'symbol' && (level.has(prop + '')) || level.has('*')))) {
+                    if (deleted &&
+                        ((typeof prop !== 'symbol' && level.has(prop + '')) ||
+                            level.has('*'))) {
                         onAccessed();
                     }
                     return deleted;
                 }
                 return true;
-            }
+            },
         });
         for (const name of Object.keys(obj)) {
-            if ((level.has(name) || level.has('*')) && typeof obj[name] === 'object') {
+            if ((level.has(name) || level.has('*')) &&
+                typeof obj[name] === 'object') {
                 obj[name] = watchObjectLevel(obj[name], (level.get(name) || level.get('*')).map, onAccessed);
             }
         }
         return proxy;
     }
     function watchObject(obj, properties, callback) {
-        if (typeof obj !== 'object' || obj === undefined || obj === null || obj instanceof HTMLElement) {
+        if (typeof obj !== 'object' ||
+            obj === undefined ||
+            obj === null ||
+            (typeof HTMLElement !== 'undefined' && obj instanceof HTMLElement)) {
             return obj;
         }
         if (typeof Proxy === 'undefined') {
@@ -318,14 +330,21 @@ var Watching;
         }
     }
     function watchValue(render, value, watch, watchProperties) {
-        if (typeof value === 'object' && (watch || watchProperties.length > 0)) {
-            value = watchObject(value, watchProperties.length ?
-                getProxyStructure(watchProperties) : new Map([['*', {
-                        name: '*',
-                        relevantPaths: [],
-                        watchCurrent: true,
-                        map: new Map()
-                    }]]), () => {
+        if (typeof value === 'object' &&
+            (watch || watchProperties.length > 0)) {
+            value = watchObject(value, watchProperties.length
+                ? getProxyStructure(watchProperties)
+                : new Map([
+                    [
+                        '*',
+                        {
+                            name: '*',
+                            relevantPaths: [],
+                            watchCurrent: true,
+                            map: new Map(),
+                        },
+                    ],
+                ]), () => {
                 render(1 /* PROP */);
             });
         }
@@ -445,7 +464,6 @@ export function hookIntoConnect(el, fn) {
         }));
     });
 }
-;
 var PropsDefiner;
 (function (PropsDefiner) {
     const renderMap = new WeakMap();
@@ -470,7 +488,7 @@ var PropsDefiner;
             this.propValues = {};
             this.preMountedQueue = {
                 set: [],
-                remove: []
+                remove: [],
             };
             this.setAttr = component.setAttribute.bind(component);
             this.removeAttr = component.removeAttribute.bind(component);
@@ -495,24 +513,29 @@ var PropsDefiner;
         }
         runQueued() {
             this.preMountedQueue.set.forEach(([key, val]) => onSetAttribute(key, val, this));
-            this.preMountedQueue.remove.forEach(key => onRemoveAttribute(key, this));
-            queueRender(this.component, 1 /* PROP */);
+            this.preMountedQueue.remove.forEach((key) => onRemoveAttribute(key, this));
+            if (!this.component.isSSR) {
+                queueRender(this.component, 1 /* PROP */);
+            }
         }
     }
-    function getKeys({ reflect = {}, priv = {} }) {
-        return [...Object.getOwnPropertyNames(reflect).map((key) => {
+    function getKeys({ reflect = {}, priv = {}, }) {
+        return [
+            ...Object.getOwnPropertyNames(reflect).map((key) => {
                 return {
                     key: key,
                     value: reflect[key],
-                    reflectToAttr: true
+                    reflectToAttr: true,
                 };
-            }), ...Object.getOwnPropertyNames(priv).map((key) => {
+            }),
+            ...Object.getOwnPropertyNames(priv).map((key) => {
                 return {
                     key: key,
                     value: priv[key],
-                    reflectToAttr: false
+                    reflectToAttr: false,
                 };
-            })];
+            }),
+        ];
     }
     function onSetAttribute(key, val, el) {
         const casingKey = dashesToCasing(key);
@@ -571,12 +594,19 @@ var PropsDefiner;
             const { key, value, reflectToAttr } = this._propertyConfig;
             const mapKey = key;
             const propName = casingToDashes(mapKey);
-            const { watch = true, coerce = false, defaultValue, value: defaultValue2, type: type, strict = false, watchProperties = [], reflectToSelf = true } = getDefinePropConfig(value);
+            const { watch = true, coerce = false, defaultValue, value: defaultValue2, type: type, strict = false, watchProperties = [], reflectToSelf = true, } = getDefinePropConfig(value);
             return {
-                watch, coerce, type, strict,
-                watchProperties, reflectToSelf,
-                mapKey: mapKey, key, reflectToAttr, propName,
-                defaultValue: defaultValue !== undefined ? defaultValue : defaultValue2
+                watch,
+                coerce,
+                type,
+                strict,
+                watchProperties,
+                reflectToSelf,
+                mapKey: mapKey,
+                key,
+                reflectToAttr,
+                propName,
+                defaultValue: defaultValue !== undefined ? defaultValue : defaultValue2,
             };
         }
         get config() {
@@ -587,9 +617,13 @@ var PropsDefiner;
         }
         setKeyMap(keyMap) {
             const { key } = this._propertyConfig;
-            const { watch, coerce, type: mapType, strict, reflectToAttr } = this.config;
+            const { watch, coerce, type: mapType, strict, reflectToAttr, } = this.config;
             keyMap.set(key, {
-                watch, coerce, mapType, strict, reflectToAttr
+                watch,
+                coerce,
+                mapType,
+                strict,
+                reflectToAttr,
             });
         }
         _setReflect() {
@@ -606,7 +640,7 @@ var PropsDefiner;
                     if (props[mapKey] === value)
                         return;
                     props[mapKey] = value;
-                }
+                },
             });
         }
         setReflect() {
@@ -617,7 +651,7 @@ var PropsDefiner;
         }
         setPropAccessors() {
             const _this = this;
-            const { mapKey, coerce, type, key, watch, watchProperties, propName } = this.config;
+            const { mapKey, coerce, type, key, watch, watchProperties, propName, } = this.config;
             Object.defineProperty(this._props, mapKey, {
                 get() {
                     const value = _this._rep.propValues[mapKey];
@@ -641,26 +675,29 @@ var PropsDefiner;
                     if (watch) {
                         queueRender(_this._rep.component, 1 /* PROP */);
                     }
-                }
+                },
             });
         }
         assignComplexType() {
             return __awaiter(this, void 0, void 0, function* () {
-                const { type, mapKey, propName, strict, watch, watchProperties } = this.config;
+                const { type, mapKey, propName, strict, watch, watchProperties, } = this.config;
                 yield hookIntoConnect(this._rep.component, () => {
-                    this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), this._rep.component.hasAttribute(propName) ?
-                        getter(this._rep.component, propName, strict, type) : undefined, watch, watchProperties);
+                    this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), this._rep.component.hasAttribute(propName)
+                        ? getter(this._rep.component, propName, strict, type)
+                        : undefined, watch, watchProperties);
                 });
             });
         }
         assignSimpleType() {
-            const { type, mapKey, propName, strict, watch, watchProperties } = this.config;
-            this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), this._rep.component.hasAttribute(propName) || (strict && type === 'bool') ?
-                getter(this._rep.component, propName, strict, type) : undefined, watch, watchProperties);
+            const { type, mapKey, propName, strict, watch, watchProperties, } = this.config;
+            this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), this._rep.component.hasAttribute(propName) ||
+                (strict && type === 'bool')
+                ? getter(this._rep.component, propName, strict, type)
+                : undefined, watch, watchProperties);
         }
         doDefaultAssign() {
             return __awaiter(this, void 0, void 0, function* () {
-                const { defaultValue, mapKey, watch, watchProperties, propName, type, reflectToAttr } = this.config;
+                const { defaultValue, mapKey, watch, watchProperties, propName, type, reflectToAttr, } = this.config;
                 if (defaultValue !== undefined) {
                     yield hookIntoConnect(this._rep.component, () => {
                         if (this._rep.propValues[mapKey] === undefined) {
@@ -680,48 +717,50 @@ var PropsDefiner;
         }
     }
     function defineProperties(element, props, config) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const keys = getKeys(config);
-            const properties = keys.map(key => new Property(key, element, props));
-            properties.forEach(property => property.setKeyMap(element.keyMap));
-            properties.forEach(property => property.setReflect());
-            properties.forEach(property => property.setPropAccessors());
-            yield Promise.all(properties.map((property) => __awaiter(this, void 0, void 0, function* () {
-                /**
-                 * If type is simple, check for values first and then assign default value
-                 *
-                 * If type is complex, there are two cases
-                 * 		If the value is a ref it should wait for that ref
-                 * 			to resolve through its parent and in the meantime
-                 * 			assign a default value
-                 *		If the value is not a ref it should assign it
-                 * 			and otherwise do the default
-                 * 		If there is no value, the default should be assigned
-                 */
-                if (property.config.type !== complex) {
-                    property.assignSimpleType();
-                    return property.doDefaultAssign();
-                }
-                return Promise.all([
-                    property.assignComplexType(),
-                    property.doDefaultAssign()
-                ]);
-            })));
-        });
+        const keys = getKeys(config);
+        const properties = keys.map((key) => new Property(key, element, props));
+        properties.forEach((property) => property.setKeyMap(element.keyMap));
+        properties.forEach((property) => property.setReflect());
+        properties.forEach((property) => property.setPropAccessors());
+        return Promise.all(properties.map((property) => {
+            /**
+             * If type is simple, check for values first and then assign default value
+             *
+             * If type is complex, there are two cases
+             * 		If the value is a ref it should wait for that ref
+             * 			to resolve through its parent and in the meantime
+             * 			assign a default value
+             *		If the value is not a ref it should assign it
+             * 			and otherwise do the default
+             * 		If there is no value, the default should be assigned
+             */
+            if (property.config.type !== complex) {
+                property.assignSimpleType();
+                return property.doDefaultAssign();
+            }
+            return Promise.all([
+                property.assignComplexType(),
+                property.doDefaultAssign(),
+            ]);
+        }));
     }
     function define(props, component, config) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const element = new ElementRepresentation(component);
-            element.overrideAttributeFunctions();
+        const element = new ElementRepresentation(component);
+        element.overrideAttributeFunctions();
+        if (component.isSSR) {
+            element.runQueued();
+            connectedElements.add(component);
+        }
+        else {
             awaitConnected(component).then(() => {
                 element.runQueued();
             });
-            elementConfigs.set(props, {
-                composite: false,
-                element
-            });
-            yield defineProperties(element, props, config);
+        }
+        elementConfigs.set(props, {
+            composite: false,
+            element,
         });
+        return defineProperties(element, props, config);
     }
     PropsDefiner.define = define;
     function joinProps(previousProps, config) {
@@ -733,7 +772,7 @@ var PropsDefiner;
             const { element } = elementConfigs.get(previousProps);
             elementConfigs.set(previousProps, {
                 composite: true,
-                element
+                element,
             });
             yield defineProperties(element, previousProps, config);
         });
@@ -757,15 +796,19 @@ export class Props {
     static define(element, config = {}, parentProps = element.props) {
         const tag = element.tagName.toLowerCase();
         if (propConfigs.has(tag)) {
-            propConfigs.set(tag, Object.assign({}, propConfigs.get(tag), config));
+            propConfigs.set(tag, Object.assign(Object.assign({}, propConfigs.get(tag)), config));
         }
         else {
             propConfigs.set(tag, config);
         }
         // if parentProps = {}, that is the default value created in base.ts
         // ignore that as it's neither a Props object or something the user passed
-        if (parentProps && !(typeof parentProps === 'object' && Object.keys(parentProps).length === 0 && !(parentProps instanceof Props))) {
-            if (typeof parentProps !== 'object' || !(parentProps instanceof Props)) {
+        if (parentProps &&
+            !(typeof parentProps === 'object' &&
+                Object.keys(parentProps).length === 0 &&
+                !(parentProps instanceof Props))) {
+            if (typeof parentProps !== 'object' ||
+                !(parentProps instanceof Props)) {
                 throw new Error('Parent props should be a Props object');
             }
             PropsDefiner.joinProps(parentProps, config);
@@ -780,7 +823,7 @@ export class Props {
      * is connected to the dom (`connectedCallback` is called).
      * This is only used by the library and has no other uses.
      *
-     * @param {HTMLElement} - The element that was connected
+     * @param {HTMLElementAttributes} - The element that was connected
      */
     static onConnect(element) {
         if (connectMap.has(element)) {

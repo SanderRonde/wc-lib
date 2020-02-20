@@ -1,10 +1,10 @@
-import { casingToDashes } from "./props.js";
+import { casingToDashes } from './props.js';
 function convertSpecialAttrs(attrs) {
     if (!attrs)
         return attrs;
     const specialAttrs = attrs;
     if (specialAttrs.__listeners || specialAttrs['@']) {
-        const specialProps = Object.assign({}, specialAttrs.__listeners, specialAttrs["@"]);
+        const specialProps = Object.assign(Object.assign({}, specialAttrs.__listeners), specialAttrs['@']);
         for (const key in specialProps) {
             attrs[`@${key}`] = specialProps[key];
         }
@@ -12,7 +12,7 @@ function convertSpecialAttrs(attrs) {
         delete specialAttrs['@'];
     }
     if (specialAttrs.__component_listeners || specialAttrs['@@']) {
-        const specialProps = Object.assign({}, specialAttrs.__component_listeners, specialAttrs["@@"]);
+        const specialProps = Object.assign(Object.assign({}, specialAttrs.__component_listeners), specialAttrs['@@']);
         for (const key in specialProps) {
             attrs[`@@${key}`] = specialProps[key];
         }
@@ -20,7 +20,7 @@ function convertSpecialAttrs(attrs) {
         delete specialAttrs['@@'];
     }
     if (specialAttrs.__bools || specialAttrs['?']) {
-        const specialProps = Object.assign({}, specialAttrs.__bools, specialAttrs["?"]);
+        const specialProps = Object.assign(Object.assign({}, specialAttrs.__bools), specialAttrs['?']);
         for (const key in specialProps) {
             attrs[`?${key}`] = specialProps[key];
         }
@@ -28,7 +28,7 @@ function convertSpecialAttrs(attrs) {
         delete specialAttrs['?'];
     }
     if (specialAttrs.__refs || specialAttrs['#']) {
-        const specialProps = Object.assign({}, specialAttrs.__refs, specialAttrs["#"]);
+        const specialProps = Object.assign(Object.assign({}, specialAttrs.__refs), specialAttrs['#']);
         for (const key in specialProps) {
             attrs[`#${key}`] = specialProps[key];
         }
@@ -54,8 +54,7 @@ function convertSpecialAttrs(attrs) {
  * 	representation of the JSX element in template literal form
  */
 export function jsxToLiteral(tag, attrs, ...children) {
-    const tagName = typeof tag === 'string' ?
-        tag : tag.is;
+    const tagName = typeof tag === 'string' ? tag : tag.is;
     const strings = [];
     const values = [];
     let openTagClosed = false;
@@ -68,7 +67,7 @@ export function jsxToLiteral(tag, attrs, ...children) {
         arr.raw = strings;
         return {
             strings: arr,
-            values
+            values,
         };
     }
     if (hasAttrs) {
@@ -119,7 +118,7 @@ export function jsxToLiteral(tag, attrs, ...children) {
     arr.raw = strings;
     return {
         strings: arr,
-        values
+        values,
     };
 }
 //# sourceMappingURL=jsx-render.js.map

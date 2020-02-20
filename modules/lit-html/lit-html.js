@@ -1,4 +1,4 @@
-/**
+var window = typeof window !== "undefined" ? window : {};/**
  * @license
  * Copyright (c) 2017 The Polymer Project Authors. All rights reserved.
  * This code may only be used under the BSD style license found at
@@ -44,7 +44,7 @@ export { createMarker, isTemplatePartActive, Template } from './lib/template.js'
 // IMPORTANT: do not change the property name or the assignment expression.
 // This line will be used in regexes to search for lit-html usage.
 // TODO(justinfagnani): inject version number at build time
-(window['litHtmlVersions'] || (window['litHtmlVersions'] = [])).push('1.0.0');
+(window['litHtmlVersions'] || (window['litHtmlVersions'] = [])).push('1.1.2');
 /**
  * Interprets a template literal as an HTML template that can efficiently
  * render to and update a container.

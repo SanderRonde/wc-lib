@@ -103,42 +103,13 @@ export const WebComponentListenableMixin = (superFn) => {
         constructor(...args) {
             super(...args);
         }
-        /**
-         * A map that maps every event name to
-         * a set containing all of its listeners
-         *
-         * @readonly
-         */
         get listenerMap() {
             return listenableClass(this).listenerMap;
         }
-        /**
-         * Listens for given event and fires
-         * the listener when it's triggered
-         *
-         * @template EV - The event's name
-         *
-         * @param {EV} event - The event's name
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
-         * 	listener called when the event is fired
-         * @param {boolean} [once] - Whether to only
-         * 	call this listener once (false by default)
-         */
         /* istanbul ignore next */
         listen(event, listener, once = false) {
             listenableClass(this).listen(event, listener, once);
         }
-        /**
-         * Clears all listeners on this component for
-         * given event
-         *
-         * @template EV - The name of the event
-         *
-         * @param {EV} event - The name of the event to clear
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
-         * 	specific listener to clear. If not passed, clears all
-         * 	listeners for the event
-         */
         clearListener(event, listener) {
             if (event in this.listenerMap) {
                 const eventListeners = this.listenerMap[event];
@@ -149,25 +120,6 @@ export const WebComponentListenableMixin = (superFn) => {
                 eventListeners.delete(listener);
             }
         }
-        /**
-         * Fires given event on this component
-         * with given params, returning an array
-         * containing the return values of all
-         * triggered listeners
-         *
-         * @template EV - The event's name
-         * @template R - The return type of the
-         * 	event's listeners
-         *
-         * @param {EV} event - The event's name
-         * @param {E[EV]['args']} params - The parameters
-         * 	passed to the listeners when they are
-         * 	called
-         *
-         * @returns {R[]} An array containing the
-         * 	return values of all triggered
-         * 	listeners
-         */
         fire(event, ...params) {
             if (!(event in this.listenerMap)) {
                 return [];
@@ -180,6 +132,8 @@ export const WebComponentListenableMixin = (superFn) => {
             return returnValues;
         }
     }
+    const __typecheck__ = WebComponentListenable;
+    __typecheck__;
     return WebComponentListenable;
 };
 //# sourceMappingURL=listener.js.map

@@ -35,11 +35,6 @@ export const WebComponentCustomCSSManagerMixin = (superFn) => {
     class WebComponentCustomCSSManager extends superFn {
         constructor(...args) {
             super(...args);
-            /**
-             * Whether this component has been mounted
-             *
-             * @readonly
-             */
             this.isMounted = false;
             const originalSetAttr = this.setAttribute;
             this.setAttribute = (key, val) => {
@@ -49,11 +44,6 @@ export const WebComponentCustomCSSManagerMixin = (superFn) => {
                 }
             };
         }
-        /**
-         * A function signaling whether this component has custom CSS applied to it
-         *
-         * @returns {boolean} Whether this component uses custom CSS
-         */
         __hasCustomCSS() {
             const priv = customCSSClass(this);
             if (priv.hasCustomCSS !== null) {
@@ -69,16 +59,12 @@ export const WebComponentCustomCSSManagerMixin = (superFn) => {
             }
             return (priv.hasCustomCSS = true);
         }
-        /**
-         * Gets this component's custom CSS templates
-         *
-         * @returns {TemplateFnLike|TemplateFnLike[]} The
-         * 	custom CSS templates
-         */
         customCSS() {
             return customCSSClass(this).getCustomCSS();
         }
     }
+    const __typecheck__ = WebComponentCustomCSSManager;
+    __typecheck__;
     return WebComponentCustomCSSManager;
 };
 //# sourceMappingURL=custom-css-manager.js.map

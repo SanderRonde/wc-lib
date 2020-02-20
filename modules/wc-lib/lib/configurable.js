@@ -16,7 +16,9 @@ export class ConfigurableWebComponent extends FullWebComponent {
      * @readonly
      */
     /* istanbul ignore next */
-    get self() { return null; }
+    get self() {
+        return null;
+    }
 }
 /**
  * A mixin base for use with the `@config` method
@@ -90,16 +92,18 @@ export const ExtendableMixin = (_superFn) => FullWebComponent;
 export function config(config) {
     const { is, html, css = [], mixins = [], dependencies = [] } = config;
     return (target) => {
-        const targetComponent = target;
+        const targetComponent = (target);
         class WebComponentConfig extends targetComponent {
             get self() {
-                return WebComponentConfig;
+                return (WebComponentConfig);
             }
         }
         WebComponentConfig.is = is;
         /* istanbul ignore next */
-        WebComponentConfig.dependencies = [...targetComponent.dependencies || [], ...dependencies]
-            .filter((dependency, index, arr) => arr.indexOf(dependency) === index);
+        WebComponentConfig.dependencies = [
+            ...(targetComponent.dependencies || []),
+            ...dependencies,
+        ].filter((dependency, index, arr) => arr.indexOf(dependency) === index);
         WebComponentConfig.mixins = mixins;
         WebComponentConfig.html = html;
         WebComponentConfig.css = css || [];
@@ -112,8 +116,16 @@ export function mixin(mixin1, mixin2, mixin3, mixin4, mixin5, mixin6, mixin7, mi
     let current = class {
     };
     const mixins = [
-        mixin1, mixin2, mixin3, mixin4, mixin5,
-        mixin6, mixin7, mixin8, mixin9, mixin10
+        mixin1,
+        mixin2,
+        mixin3,
+        mixin4,
+        mixin5,
+        mixin6,
+        mixin7,
+        mixin8,
+        mixin9,
+        mixin10,
     ];
     for (const mixin of mixins) {
         if (!mixin)

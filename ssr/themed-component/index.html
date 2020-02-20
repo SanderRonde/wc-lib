@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<title>Themed component</title>
+	</head>
+	<body>
+		<themed-component><style>css-themed-component-#horizontal-centerer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+css-themed-component-#vertical-centerer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+css-themed-component-#background {
+  width: 90vw;
+  height: 90vw;
+  background-color: rgb(222, 222, 222);
+}
+
+css-themed-component-#primary {
+  color: rgb(3, 169, 244);
+}
+
+css-themed-component-#secondary {
+  color: ;
+}
+
+css-themed-component-#regular {
+  color: ;
+}
+
+css-themed-component-.theme-option {
+  font-weight: normal;
+}
+
+css-themed-component-.theme-option.active {
+  font-weight: bold;
+}</style>
+            <div id="horizontal-centerer" class="css-themed-component-0 css-themed-component">
+                <div id="vertical-centerer" class="css-themed-component-0 css-themed-component">
+                    <div id="background" class="css-themed-component-0 css-themed-component">
+                        <h1 id="primary" class="css-themed-component-0 css-themed-component">Primary color</h1>
+                        <h2 id="secondary" class="css-themed-component-0 css-themed-component">Secondary color</h2>
+                        <div id="regular" class="css-themed-component-0 css-themed-component">Regular text</div>
+                        <button class="theme-option active css-themed-component-0 css-themed-component" id="light">
+                            Light mode
+                        </button>
+                        <button class="theme-option css-themed-component-0 css-themed-component" id="dark">
+                            Dark mode
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </themed-component>
+		<script type="module" src="./index.js"></script>
+	</body>
+</html>

@@ -67,7 +67,7 @@ function genProxy(prefix, preRet) {
         get(_, selector) {
             const cls = new CSSSelector(typeof selector === 'string' ? selector : '?', prefix);
             return preRet ? preRet(cls) : cls;
-        }
+        },
     });
 }
 class DiffSelectorClass extends AllCSSMap {
@@ -93,17 +93,17 @@ class CSSSelector {
         this._orSelectors = {
             parent: null,
             group: [],
-            name: '_orSelectors'
+            name: '_orSelectors',
         };
         this._childSelectors = {
             parent: null,
             group: [],
-            name: '_childSelectors'
+            name: '_childSelectors',
         };
         this._descendantSelectors = {
             parent: null,
             group: [],
-            name: '_descendantSelectors'
+            name: '_descendantSelectors',
         };
         this._toggles = [];
         this._attrs = [];
@@ -204,7 +204,7 @@ class CSSSelector {
                     this._toggles.push('?');
                 }
                 return this;
-            }
+            },
         });
         /**
          * Used to set attributes and their values on this selector.
@@ -237,7 +237,7 @@ class CSSSelector {
                     this._attrs.push({ key: '?' });
                 }
                 return this;
-            }
+            },
         });
     }
     _and(sel) {
@@ -248,13 +248,13 @@ class CSSSelector {
         while (parent[container.name].parent) {
             parent = parent[container.name].parent;
         }
-        parent[container.name].group.push(selector, ...selector[container.name].group, ...selector[container.name].parent ?
-            [
+        parent[container.name].group.push(selector, ...selector[container.name].group, ...(selector[container.name].parent
+            ? [
                 ...selector[container.name].parent[container.name].group,
-                selector[container.name].parent
-            ] : []);
-        parent[container.name].group = parent[container.name].group
-            .filter((v, i, a) => a.indexOf(v) === i);
+                selector[container.name].parent,
+            ]
+            : []));
+        parent[container.name].group = parent[container.name].group.filter((v, i, a) => a.indexOf(v) === i);
         selector[container.name].parent = this;
     }
     /**
@@ -310,8 +310,6 @@ class CSSSelector {
         this._toggles.push(...toggles);
         return this;
     }
-    ;
-    ;
     /**
      * Used to set attributes and their values on this selector.
      * Passed attribute can be any string defined in selectors['ATTRIBUTES']
@@ -344,7 +342,6 @@ class CSSSelector {
         this._attrs.push({ key: attr, value });
         return this;
     }
-    ;
     /**
      * A function that applies any passed pseudo selectors to this selector.
      * Returns this again.
@@ -365,9 +362,10 @@ class CSSSelector {
     }
     _collapseDiffSelector(group, ignore) {
         return {
-            pre: this[group.name].parent ?
-                this[group.name].parent._toString(ignore) : null,
-            post: this[group.name].group.map(o => o._toString(ignore))
+            pre: this[group.name].parent
+                ? this[group.name].parent._toString(ignore)
+                : null,
+            post: this[group.name].group.map((o) => o._toString(ignore)),
         };
     }
     _toString(ignore = new WeakSet()) {
@@ -377,35 +375,39 @@ class CSSSelector {
         // Generate the own selector first
         const ownSelector = `${this._prefix}${this._selector}`;
         // Then add any toggles
-        const toggles = this._toggles.map(t => `.${t}`).join('');
+        const toggles = this._toggles.map((t) => `.${t}`).join('');
         // Then any attributes
-        const attributes = this._attrs.map(({ key, value }) => {
+        const attributes = this._attrs
+            .map(({ key, value }) => {
             if (value === void 0) {
                 return `[${key}]`;
             }
             return `[${key}="${value}"]`;
-        }).join('');
+        })
+            .join('');
         // Then any pseudo selectors
-        const pseudo = this._pseudo.map(p => `:${p}`).join('');
+        const pseudo = this._pseudo.map((p) => `:${p}`).join('');
         // Then any ands
-        const ands = this._andGroup.map(a => a._toString(ignore)).join('');
+        const ands = this._andGroup.map((a) => a._toString(ignore)).join('');
         const andGroupSelector = `${ownSelector}${toggles}${attributes}${pseudo}${ands}`;
         const { pre: orPre, post: orPost } = this._collapseDiffSelector(this._orSelectors, ignore);
         const { pre: childPre, post: childPost } = this._collapseDiffSelector(this._childSelectors, ignore);
-        const { pre: descendantPre, post: descendantPost } = this._collapseDiffSelector(this._descendantSelectors, ignore);
+        const { pre: descendantPre, post: descendantPost, } = this._collapseDiffSelector(this._descendantSelectors, ignore);
         return [
             descendantPre,
             [
                 childPre,
-                [
-                    orPre,
-                    andGroupSelector,
-                    ...orPost
-                ].filter(i => i !== null).join(', '),
-                ...childPost
-            ].filter(i => i !== null).join(' > '),
-            ...descendantPost
-        ].filter(i => i !== null).join(' ');
+                [orPre, andGroupSelector, ...orPost]
+                    .filter((i) => i !== null)
+                    .join(', '),
+                ...childPost,
+            ]
+                .filter((i) => i !== null)
+                .join(' > '),
+            ...descendantPost,
+        ]
+            .filter((i) => i !== null)
+            .join(' ');
     }
     /**
      * Converts this selector to a string. This is done implicitly

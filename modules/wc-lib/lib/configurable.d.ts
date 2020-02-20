@@ -44,13 +44,13 @@ export declare class ConfigurableWebComponent<GA extends {
      *
      * @readonly
      */
-    readonly self: typeof ConfigurableWebComponent;
+    get self(): typeof ConfigurableWebComponent;
     /**
      * Components from which this component should inherit
      *
      * @readonly
      */
-    static mixins?: (MixinFn<any, any, any>)[];
+    static mixins?: MixinFn<any, any, any>[];
 }
 /**
  * The configuration passed to `@configure`
@@ -78,7 +78,7 @@ export interface WebComponentConfiguration {
      *
      * @readonly
      */
-    readonly dependencies?: (Pick<WebComponentDefinerMixinClass, 'define'>)[];
+    readonly dependencies?: Pick<WebComponentDefinerMixinClass, 'define'>[];
     /**
      * The render method that will render this component's HTML
      *
@@ -94,7 +94,7 @@ export interface WebComponentConfiguration {
      *
      * @readonly
      */
-    readonly mixins?: (MixinFn<any, any, any>)[];
+    readonly mixins?: MixinFn<any, any, any>[];
 }
 /**
  * A component that has been configured.
@@ -151,14 +151,14 @@ export declare class ConfiguredComponent<GA extends {
      *
      * @readonly
      */
-    static dependencies?: (Pick<WebComponentDefinerMixinClass, 'define'>)[];
+    static dependencies?: Pick<WebComponentDefinerMixinClass, 'define'>[];
     /**
      * Components from which this component should inherit.
      * You should also call
      *
      * @readonly
      */
-    static mixins?: (MixinFn<any, any, any>)[];
+    static mixins?: MixinFn<any, any, any>[];
 }
 /**
  * A mixin base for use with the `@config` method
@@ -256,7 +256,7 @@ interface DefaultClass {
  * the new() function in the process and preserving
  * the static methods/props only
  */
-export declare type ClassToObj<C> = Pick<C, keyof C>;
+export declare type ClassToObj<C> = Omit<C, 'prototype'>;
 /**
  * Mixin function that can add a mixin to a class.
  * Starts by calling the first arg with the base (HTMLElement)

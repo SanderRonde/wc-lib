@@ -1,4 +1,4 @@
-import { WebComponent } from "../../classes/full.js";
+import { WebComponent } from '../../classes/full.js';
 /**
  * Waits for the component to have a mounted callback
  * function. It waits for `el.mounted` to be a function

@@ -3,11 +3,11 @@
  * when creating webcomponents with this library
  **/
 export { bindToClass } from './lib/base.js';
-export { TemplateFn } from './lib/template-fn.js';
-export { ConfigurableWebComponent, ConfigurableMixin, ExtendableMixin, mixin, config } from './lib/configurable.js';
+export { TemplateFn, } from './lib/template-fn.js';
+export { ConfigurableWebComponent, ConfigurableMixin, ExtendableMixin, mixin, config, } from './lib/configurable.js';
 export { DefineMetadata } from './lib/definer.js';
 export { Listeners } from './lib/listeners.js';
-export { ComplexType, awaitConnected, hookIntoConnect, Props } from './lib/props.js';
+export { ComplexType, awaitConnected, hookIntoConnect, Props, } from './lib/props.js';
 export * from './lib/shared.js';
 export * from './lib/util.js';
 export { noTheme } from './lib/theme-manager.js';

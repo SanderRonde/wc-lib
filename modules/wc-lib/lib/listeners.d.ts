@@ -1,4 +1,4 @@
-import { WebComponent } from "../classes/full.js";
+import { WebComponent } from '../classes/full.js';
 /**
  * Functions that are related to adding and removing listeners to elements
  */

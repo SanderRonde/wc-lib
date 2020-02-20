@@ -1,27 +1,33 @@
-import { TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange } from "../modules/lit-html/lit-html.js";
-import { ThemedComponent } from "./themed-component.js";
-import { WebComponent } from "../modules/wc-lib/wc-lib.js";
+import { TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange, } from '../modules/lit-html/lit-html.js';
+import { ThemedComponent } from './themed-component.js';
+import { WebComponent } from '../modules/wc-lib/wc-lib.js';
 export const theme = {
     // Theme can contain any values that are valid in CSS
     light: {
         background: '#EEEEEE',
         primary: 'blue',
         secondary: 'red',
-        regular: 'rgb(0, 0, 0)'
+        regular: 'rgb(0, 0, 0)',
     },
     dark: {
         background: '#111111',
         primary: 'yellow',
         secondary: 'purple',
-        regular: 'rgb(255, 255, 255)'
-    }
+        regular: 'rgb(255, 255, 255)',
+    },
 };
 WebComponent.initComplexTemplateProvider({
-    TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart,
-    AttributeCommitter, NodePart, isDirective, noChange
+    TemplateResult,
+    PropertyCommitter,
+    EventPart,
+    BooleanAttributePart,
+    AttributeCommitter,
+    NodePart,
+    isDirective,
+    noChange,
 });
 WebComponent.initTheme({
     theme: theme,
-    defaultTheme: 'light'
+    defaultTheme: 'light',
 });
 ThemedComponent.define();

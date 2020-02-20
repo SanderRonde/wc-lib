@@ -4,6 +4,7 @@
 export * from './classes/full.js';
 export * from './classes/partial.js';
 export * from './classes/parts.js';
+export * from './classes/types.js';
 export * from './lib/base.js';
 export * from './lib/component.js';
 export * from './lib/configurable.js';
@@ -21,6 +22,7 @@ export * from './lib/template-fn.js';
 export * from './lib/template-manager.js';
 export * from './lib/theme-manager.js';
 export * from './lib/util.js';
+export * from './lib/ssr/ssr.js';
 export * from './tasks/inline-typed-css.js';
 export * from './tasks/inline-i18n.js';
 //# sourceMappingURL=wc-lib.all.js.map

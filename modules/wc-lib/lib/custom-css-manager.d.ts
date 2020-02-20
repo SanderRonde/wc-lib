@@ -2,6 +2,7 @@ import { WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { CHANGE_TYPE, TemplateFnLike } from './template-fn.js';
+import { ClassToObj } from './configurable.js';
 /**
  * An instance of the custom-css-manager's mixin's resulting class
  */
@@ -17,6 +18,34 @@ export declare type WebComponentCustomCSSManagerMixinClass = InferReturn<typeof 
  */
 export declare type WebComponentCustomCSSManagerMixinSuper = Constructor<Pick<HTMLElement, 'setAttribute' | 'hasAttribute' | 'getAttribute'> & Pick<WebComponentBaseMixinInstance, 'renderToDOM'> & Pick<WebComponentTemplateManagerMixinInstance, 'getParentRef'>>;
 /**
+ * A standalone instance of the custom css manager class
+ */
+export declare class WebComponentCustomCSSManagerTypeInstance {
+    /**
+     * Whether this component has been mounted
+     *
+     * @readonly
+     */
+    isMounted: boolean;
+    /**
+     * A function signaling whether this component has custom CSS applied to it
+     *
+     * @returns {boolean} Whether this component uses custom CSS
+     */
+    __hasCustomCSS(): boolean;
+    /**
+     * Gets this component's custom CSS templates
+     *
+     * @returns {TemplateFnLike|TemplateFnLike[]} The
+     * 	custom CSS templates
+     */
+    customCSS(): TemplateFnLike | TemplateFnLike[];
+}
+/**
+ * The static values of the custom css manager class
+ */
+export declare type WebComponentCustomCSSManagerTypeStatic = ClassToObj<typeof WebComponentCustomCSSManagerTypeInstance>;
+/**
  * A mixin that, when applied, allows
  * for custom css to be passed to a component
  * after which it will be rendered
@@ -25,32 +54,16 @@ export declare type WebComponentCustomCSSManagerMixinSuper = Constructor<Pick<HT
  *
  * @param {P} superFn - The parent/super that this mixin extends
  */
-export declare const WebComponentCustomCSSManagerMixin: <P extends Constructor<Pick<HTMLElement, "setAttribute" | "hasAttribute" | "getAttribute"> & Pick<WebComponentBaseMixinInstance, "renderToDOM"> & Pick<WebComponentTemplateManagerMixinInstance, "getParentRef">>>(superFn: P) => {
+export declare const WebComponentCustomCSSManagerMixin: <P extends Constructor<Pick<HTMLElement, "getAttribute" | "hasAttribute" | "setAttribute"> & Pick<WebComponentBaseMixinInstance, "renderToDOM"> & Pick<WebComponentTemplateManagerMixinInstance, "getParentRef">>>(superFn: P) => {
     new (...args: any[]): {
-        /**
-         * Whether this component has been mounted
-         *
-         * @readonly
-         */
         isMounted: boolean;
-        /**
-         * A function signaling whether this component has custom CSS applied to it
-         *
-         * @returns {boolean} Whether this component uses custom CSS
-         */
         __hasCustomCSS(): boolean;
-        /**
-         * Gets this component's custom CSS templates
-         *
-         * @returns {TemplateFnLike|TemplateFnLike[]} The
-         * 	custom CSS templates
-         */
         customCSS(): TemplateFnLike<number> | TemplateFnLike<number>[];
-        setAttribute: (qualifiedName: string, value: string) => void;
-        hasAttribute: (qualifiedName: string) => boolean;
         getAttribute: (qualifiedName: string) => string | null;
+        hasAttribute: (qualifiedName: string) => boolean;
+        setAttribute: (qualifiedName: string, value: string) => void;
         renderToDOM: (change?: CHANGE_TYPE) => void;
-        getParentRef: (ref: string) => Object | Function | TemplateFnLike<number>;
+        getParentRef: (ref: string) => import("./template-manager.js").ComplexValue;
     };
 } & P;
 //# sourceMappingURL=custom-css-manager.d.ts.map

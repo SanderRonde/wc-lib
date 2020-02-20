@@ -28,13 +28,5 @@ export declare function inlineTypedCSS(text: string): string;
  * This saves some processing on the user's
  * end when the file is served
  */
-export declare function inlineTypedCSSPipe(): (file: {
-    isNull: () => boolean;
-    isStream: () => boolean;
-    contents: Buffer;
-}) => {
-    isNull: () => boolean;
-    isStream: () => boolean;
-    contents: Buffer;
-};
+export declare function inlineTypedCSSPipe(): import("stream").Transform;
 //# sourceMappingURL=inline-typed-css.d.ts.map

@@ -23,7 +23,8 @@ class ClassAttributePart {
     }
     setValue(value) {
         /* istanbul ignore else */
-        if (value !== this._config.noChange && (!this._isPrimitive(value) || value !== this.value)) {
+        if (value !== this._config.noChange &&
+            (!this._isPrimitive(value) || value !== this.value)) {
             this._pendingValue = value;
         }
     }
@@ -45,7 +46,8 @@ class ClassAttributePart {
         if (this._pendingValue === this._config.noChange) {
             return;
         }
-        if (typeof this._pendingValue === 'string' || typeof this._pendingValue === 'number') {
+        if (typeof this._pendingValue === 'string' ||
+            typeof this._pendingValue === 'number') {
             //Equality has already been checked, set value
             this.value = this._pendingValue + '';
             this.element.setAttribute(this.name, this._pendingValue + '');
@@ -95,7 +97,8 @@ class ComplexValuePart {
         if (this._pendingValue === this._config.noChange) {
             return;
         }
-        if (this.name === CUSTOM_CSS_PROP_NAME && !ComplexValuePart.__isTemplate(this._pendingValue)) {
+        if (this.name === CUSTOM_CSS_PROP_NAME &&
+            !ComplexValuePart.__isTemplate(this._pendingValue)) {
             console.warn('Attempting to use non TemplateFn value for custom-css property');
             this._pendingValue = new TemplateFn(null, 4 /* NEVER */, null);
         }
@@ -129,19 +132,23 @@ function getComponentEventPart(eventPart, config) {
             const newListener = this._pendingValue;
             const oldListener = this.value;
             const shouldRemoveListener = newListener == null ||
-                oldListener != null &&
+                (oldListener != null &&
                     (newListener.capture !== oldListener.capture ||
                         newListener.once !== oldListener.once ||
-                        newListener.passive !== oldListener.passive);
-            const shouldAddListener = newListener != null && (oldListener == null || shouldRemoveListener);
-            if (!('listen' in this.element) || !('clearListener' in this.element)) {
+                        newListener.passive !== oldListener.passive));
+            const shouldAddListener = newListener != null &&
+                (oldListener == null || shouldRemoveListener);
+            if (!('listen' in this.element) ||
+                !('clearListener' in this.element)) {
                 console.warn('Attempting to listen using webcomponent listener on non-webcomponent element', `Name: ${this.eventName}, element:`, this.element);
             }
-            if (shouldRemoveListener && 'clearListener' in this.element &&
+            if (shouldRemoveListener &&
+                'clearListener' in this.element &&
                 this.element.clearListener) {
                 this.element.clearListener(this.eventName);
             }
-            if (shouldAddListener && 'listen' in this.element &&
+            if (shouldAddListener &&
+                'listen' in this.element &&
                 this.element.listen) {
                 this.element.listen(this.eventName, this.handleEvent.bind(this));
             }
@@ -167,27 +174,37 @@ class ComplexTemplateProcessor {
         const prefix = name[0];
         if (prefix === '@') {
             if (name[1] === '@') {
-                return [new this._componentEventPart(element, name.slice(2), this.component)];
+                return [
+                    new this._componentEventPart(element, name.slice(2), this.component),
+                ];
             }
             else {
                 //Listeners
-                return [new this._config.EventPart(element, name.slice(1), this.component)];
+                return [
+                    new this._config.EventPart(element, name.slice(1), this.component),
+                ];
             }
         }
         else if (prefix === '?') {
             //Booleans
-            return [new this._config.BooleanAttributePart(element, name.slice(1), strings)];
+            return [
+                new this._config.BooleanAttributePart(element, name.slice(1), strings),
+            ];
         }
         else if (name === 'class') {
             //Classname attribute
-            return [new ClassAttributePart(element, name, strings, this._config)];
+            return [
+                new ClassAttributePart(element, name, strings, this._config),
+            ];
         }
         else if (prefix === '#' || name === CUSTOM_CSS_PROP_NAME) {
             //Objects, functions, templates, arrays
             if (prefix === '#') {
                 name = name.slice(1);
             }
-            return [new ComplexValuePart(element, name, strings, this.genRef, this._config)];
+            return [
+                new ComplexValuePart(element, name, strings, this.genRef, this._config),
+            ];
         }
         const committer = new this._config.AttributeCommitter(element, name, strings);
         return committer.parts;
@@ -209,7 +226,6 @@ class TemplateClass {
         }
         return (this._templateProcessor = new ComplexTemplateProcessor(this._self, this.genRef, TemplateClass._templateSettings));
     }
-    ;
     static get templateResult() {
         if (!this._templateSettings) {
             console.warn('Missing templater, please initialize it ' +
@@ -290,62 +306,12 @@ export const WebComponentTemplateManagerMixin = (superFn) => {
      * 	while still using the element itself's shared CSS
      */
     class WebComponentTemplateManager extends superFn {
-        /**
-         * Generate an HTML template based on the passed template literal.
-         * This will throw an error if
-         * `WebComponentTemplateManager.initComplexTemplateProvider` has
-         * not been called. If you do not wish to use the passed complex
-         * template provider, ignore the first argument to the
-         * `TemplateFn's` render function and use a custom templater.
-         *
-         * Can be called with
-    ```js
-    WebComponentTemplateManager.initComplexTemplateProvider({
-    TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange
-    });
-    ```
-        *
-        * @param {TemplateStringsArray} strings - The strings of the
-        * 	template literal
-        * @param {any[]} values - The values of the template literal
-        *
-        * @returns {TemplateResultLike} A result that, when passed
-        * 	to the renderer, renders the template to DOM
-        */
         generateHTMLTemplate(strings, ...values) {
             return new TemplateClass.templateResult(strings, values, 'html', templateClass(this).templateProcessor);
         }
-        /**
-         * Initializes a complex template provider. This allows
-         * for the special properties seen in `WebComponentTemplateManager's`
-         * documentation. If this is not configured, the first
-         * parameter to the `TemplateFn` render function will
-         * throw an error instead. When not configuring this,
-         * you should ignore the first argument to the
-         * `TemplateFn's` render function and instead use a
-         * custom templater
-         *
-         * @param {LitHTMLConfig} config - A config object containing
-         * 	the required lit-html constructs
-         */
         static initComplexTemplateProvider(config) {
             TemplateClass._templateSettings = config;
         }
-        /**
-         * Gets the value of a reference to a value.
-         *
-         * When a complex value is passed, a "global"
-         * reference is stored and indexed. Instead
-         * a string containing that index is passed.
-         * This function "decodes" that string and
-         * retrieves the globally stored value
-         *
-         * @param {string} ref - The reference's index
-         * 	along with the ref prefix (`___complex_ref`)
-         *
-         * @returns {ComplexValue} The complex value
-         * 	that is being referenced to by `ref`
-         */
         getRef(ref) {
             if (typeof ref !== 'string') {
                 console.warn('Invalid ref', ref, 'on', this);
@@ -354,16 +320,6 @@ export const WebComponentTemplateManagerMixin = (superFn) => {
             const refNumber = ~~ref.split(refPrefix)[1];
             return templateClass(this).reffed[refNumber];
         }
-        /**
-         * Gets the parent of this component and attempts
-         * to resolve the reference
-         *
-         * @param {string} ref - The reference's index
-         * 	along with the ref prefix (`___complex_ref`)
-         *
-         * @returns {ComplexValue} The complex value
-         * 	that is being referenced to by `ref`
-         */
         getParentRef(ref) {
             const parent = this.getParent();
             if (!parent) {
@@ -372,14 +328,6 @@ export const WebComponentTemplateManagerMixin = (superFn) => {
             }
             return parent.getRef(ref);
         }
-        /**
-         * Creates a reference to given value
-         *
-         * @param {ComplexValue} value - The value that should be referenced
-         *
-         * @returns {string} An string that represents
-         * 	a reference to the passed value
-         */
         genRef(value) {
             return templateClass(this).genRef(value);
         }
@@ -387,6 +335,8 @@ export const WebComponentTemplateManagerMixin = (superFn) => {
     __decorate([
         bindToClass
     ], WebComponentTemplateManager.prototype, "generateHTMLTemplate", null);
+    const __typecheck__ = WebComponentTemplateManager;
+    __typecheck__;
     return WebComponentTemplateManager;
 };
 //# sourceMappingURL=template-manager.js.map

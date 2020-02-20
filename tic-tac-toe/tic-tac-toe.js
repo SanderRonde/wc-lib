@@ -4,11 +4,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { ConfigurableWebComponent, Props, config, ComplexType } from '../modules/wc-lib/wc-lib.js';
+import { ConfigurableWebComponent, Props, config, ComplexType, } from '../modules/wc-lib/wc-lib.js';
 import { CellBlock } from './elements/cell-block/cell-block.js';
 import { TicTacToeHTML } from './tic-tac-toe.html.js';
 import { TicTacToeCSS } from './tic-tac-toe.css.js';
-export const languages = ['en', 'nl', 'es', 'de'];
+export const languages = [
+    'en',
+    'nl',
+    'es',
+    'de',
+];
 let TicTacToe = class TicTacToe extends ConfigurableWebComponent {
     constructor() {
         super(...arguments);
@@ -22,13 +27,11 @@ let TicTacToe = class TicTacToe extends ConfigurableWebComponent {
                     value: [
                         ["" /* NONE */, "" /* NONE */, "" /* NONE */],
                         ["" /* NONE */, "" /* NONE */, "" /* NONE */],
-                        ["" /* NONE */, "" /* NONE */, "" /* NONE */]
+                        ["" /* NONE */, "" /* NONE */, "" /* NONE */],
                     ],
-                    watchProperties: [
-                        '*.*'
-                    ]
-                }
-            }
+                    watchProperties: ['*.*'],
+                },
+            },
         });
     }
     _areSame(...values) {
@@ -44,7 +47,7 @@ let TicTacToe = class TicTacToe extends ConfigurableWebComponent {
     _onWin(winner) {
         this._frozen = true;
         this._winner = winner;
-        this.$["winner-banner"].classList.add("active" /* ACTIVE */);
+        this.$['winner-banner'].classList.add("active" /* ACTIVE */);
     }
     getWinner() {
         return this._winner;
@@ -58,7 +61,7 @@ let TicTacToe = class TicTacToe extends ConfigurableWebComponent {
         }
         // Check vertical
         for (let i = 0; i < this.props.board[0].length; i++) {
-            if (this._areSame(...this.props.board.map(r => r[i]))) {
+            if (this._areSame(...this.props.board.map((r) => r[i]))) {
                 return this._onWin(this.props.board[0][i]);
             }
         }
@@ -66,11 +69,13 @@ let TicTacToe = class TicTacToe extends ConfigurableWebComponent {
         // Just check if diagonals exist in these dimensions
         if (this.props.board.length !== this.props.board[0].length)
             return;
-        const indexArr = new Array(this.props.board.length).fill(0).map((_, i) => i);
-        if (this._areSame(...indexArr.map(i => this.props.board[i][i]))) {
+        const indexArr = new Array(this.props.board.length)
+            .fill(0)
+            .map((_, i) => i);
+        if (this._areSame(...indexArr.map((i) => this.props.board[i][i]))) {
             return this._onWin(this.props.board[0][0]);
         }
-        if (this._areSame(...indexArr.map(i => this.props.board[i][(this.props.board.length - 1) - i]))) {
+        if (this._areSame(...indexArr.map((i) => this.props.board[i][this.props.board.length - 1 - i]))) {
             return this._onWin(this.props.board[0][0]);
         }
     }
@@ -79,8 +84,7 @@ let TicTacToe = class TicTacToe extends ConfigurableWebComponent {
             return;
         this.props.board[cell.props.y][cell.props.x] =
             this._turn === "X" /* X */ ? "X" /* X */ : "O" /* O */;
-        this._turn = this._turn === "X" /* X */ ?
-            "O" /* O */ : "X" /* X */;
+        this._turn = this._turn === "X" /* X */ ? "O" /* O */ : "X" /* X */;
         this._checkWin();
     }
     firstRender() {
@@ -94,9 +98,7 @@ TicTacToe = __decorate([
         is: 'tic-tac-toe',
         css: TicTacToeCSS,
         html: TicTacToeHTML,
-        dependencies: [
-            CellBlock
-        ]
+        dependencies: [CellBlock],
     })
 ], TicTacToe);
 export { TicTacToe };

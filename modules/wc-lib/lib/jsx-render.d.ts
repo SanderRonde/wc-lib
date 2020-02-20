@@ -1,4 +1,4 @@
-import { Constructor } from "../classes/types.js";
+import { Constructor } from '../classes/types.js';
 /**
  * Converts JSX to a template-literal type representation
  *

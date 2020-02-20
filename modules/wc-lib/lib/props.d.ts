@@ -252,6 +252,7 @@ export interface PropComponent extends HTMLElementAttributes {
     renderToDOM(changeType: number): void;
     getParentRef?(ref: string): any;
     isMounted: boolean;
+    readonly isSSR?: boolean;
     fire<EV extends keyof PROP_EVENTS, R extends PROP_EVENTS[EV]['returnType']>(event: EV | any, ...params: PROP_EVENTS[EV]['args'] | any): R[];
     self: {
         mixins?: any[];
@@ -317,8 +318,8 @@ export declare class Props<C extends {
     reflect?: any;
     priv?: any;
 } | undefined = any> {
-    private __config;
-    constructor(__config: C);
+    __config?: C | undefined;
+    constructor(__config?: C | undefined);
     /**
      * Defines properties on this component
      *
@@ -365,9 +366,9 @@ export declare class Props<C extends {
      * is connected to the dom (`connectedCallback` is called).
      * This is only used by the library and has no other uses.
      *
-     * @param {HTMLElement} - The element that was connected
+     * @param {HTMLElementAttributes} - The element that was connected
      */
-    static onConnect(element: HTMLElement): void;
+    static onConnect(element: HTMLElementAttributes): void;
 }
 /**
  * Events that the props can trigger

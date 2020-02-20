@@ -1,2 +1,2 @@
-import { SimpleClock } from "./simple-clock.js";
+import { SimpleClock } from './simple-clock.js';
 SimpleClock.define();

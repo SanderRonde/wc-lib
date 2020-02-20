@@ -15,12 +15,12 @@ function supportsPassive() {
         var opts = Object.defineProperty({}, 'passive', {
             get: function () {
                 _supportsPassive = true;
-            }
+            },
         });
         /* istanbul ignore next */
         const tempFn = () => { };
-        window.addEventListener("testPassive", tempFn, opts);
-        window.removeEventListener("testPassive", tempFn, opts);
+        window.addEventListener('testPassive', tempFn, opts);
+        window.removeEventListener('testPassive', tempFn, opts);
     }
     catch (e) { }
     return _supportsPassive;
@@ -38,16 +38,15 @@ export var Listeners;
                 identifiers: new Map(),
                 elements: new Map(),
                 selfUnique: new Map(),
-                self: new Map()
+                self: new Map(),
             });
         }
-        const { elements: elementIDMap, identifiers: identifiersMap } = listenedToElements.get(base);
-        const usedMap = type === 'element' ?
-            elementIDMap : identifiersMap;
+        const { elements: elementIDMap, identifiers: identifiersMap, } = listenedToElements.get(base);
+        const usedMap = type === 'element' ? elementIDMap : identifiersMap;
         if (!usedMap.has(id)) {
             usedMap.set(id, {
                 element,
-                map: new Map()
+                map: new Map(),
             });
         }
         const { map: eventIDMap, element: listenedToElement } = usedMap.get(id);
@@ -74,7 +73,8 @@ export var Listeners;
         }
         return () => {
             /* istanbul ignore next */
-            if (eventIDMap.has(event) && eventIDMap.get(event) === boundListener) {
+            if (eventIDMap.has(event) &&
+                eventIDMap.get(event) === boundListener) {
                 listenedToElement.removeEventListener(event, boundListener);
                 eventIDMap.delete(event);
             }
@@ -211,7 +211,7 @@ export var Listeners;
             }
             if (!newMap.has(base)) {
                 // Create a link to some object to make sure
-                // the context is not the base itself 
+                // the context is not the base itself
                 // (as the user may want to use that)
                 // but is instead an object that is still
                 // linked to that base
@@ -251,7 +251,7 @@ export var Listeners;
                 identifiers: new Map(),
                 elements: new Map(),
                 selfUnique: new Map(),
-                self: new Map()
+                self: new Map(),
             });
         }
         const { selfUnique: selfEventMap } = listenedToElements.get(base);
@@ -264,7 +264,8 @@ export var Listeners;
         base.addEventListener(event, boundListener);
         return () => {
             /* istanbul ignore next */
-            if (selfEventMap.has(event) && selfEventMap.get(event) === boundListener) {
+            if (selfEventMap.has(event) &&
+                selfEventMap.get(event) === boundListener) {
                 base.removeEventListener(event, selfEventMap.get(event));
                 selfEventMap.delete(event);
             }
@@ -291,7 +292,7 @@ export var Listeners;
                 identifiers: new Map(),
                 elements: new Map(),
                 selfUnique: new Map(),
-                self: new Map()
+                self: new Map(),
             });
         }
         const { self: selfEventMap } = listenedToElements.get(base);
@@ -318,7 +319,9 @@ export var Listeners;
     Listeners.listenToComponent = listenToComponent;
     function removeListeners(element, map) {
         for (const [event, listeners] of map.entries()) {
-            for (const listener of Array.isArray(listeners) ? listeners : [listeners]) {
+            for (const listener of Array.isArray(listeners)
+                ? listeners
+                : [listeners]) {
                 element.removeEventListener(event, listener);
             }
         }
@@ -334,7 +337,7 @@ export var Listeners;
         if (!listenedToElements.has(base)) {
             return;
         }
-        const { elements, identifiers, self, selfUnique } = listenedToElements.get(base);
+        const { elements, identifiers, self, selfUnique, } = listenedToElements.get(base);
         for (const { map, element } of elements.values()) {
             removeListeners(element, map);
         }

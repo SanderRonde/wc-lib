@@ -23,6 +23,10 @@ export declare type DefaultVal<V, D = {}> = V extends undefined ? D : V;
  */
 export declare type DefaultValUnknown<V, D = {}> = V extends undefined ? D : V extends unknown ? D : V;
 /**
+ * Returns a different type if type is undefined or unknown
+ */
+export declare type FallbackExtends<V, F = {}> = V extends F ? V : F;
+/**
  * Infers props of a component from passed component['props']
  */
 export declare type InferProps<C extends {
@@ -68,7 +72,7 @@ declare type EventsToAttr<E> = {
  * Converts a customeventname->config map to a customeventname->function map
  */
 declare type CustomEventsToAttr<E extends EventListenerObj> = {
-    [EV in keyof E]: (...args: E[EV]["args"]) => E[EV]["returnType"];
+    [EV in keyof E]: (...args: E[EV]['args']) => E[EV]['returnType'];
 };
 declare type _Remove<A extends {
     [key: string]: any;
@@ -121,16 +125,16 @@ export declare type JSXDefinition<C extends {
     }>;
 }, ATTR = {}> = ATTR & Partial<OptionalProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>>> & Partial<RequiredProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>>> & {
     __listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
-    "@"?: Partial<EventsToAttr<HTMLElementEventMap>>;
+    '@'?: Partial<EventsToAttr<HTMLElementEventMap>>;
     __component_listeners?: Partial<CustomEventsToAttr<InferEvents<C>>>;
-    "@@"?: Partial<CustomEventsToAttr<InferEvents<C>>>;
+    '@@'?: Partial<CustomEventsToAttr<InferEvents<C>>>;
     __bools?: Partial<InferProps<C>>;
-    "?"?: Partial<InferProps<C>>;
+    '?'?: Partial<InferProps<C>>;
     __refs?: Partial<InferProps<C>>;
-    "#"?: Partial<InferProps<C>>;
+    '#'?: Partial<InferProps<C>>;
     id?: string;
     class?: string | ClassNamesArg | ClassNamesArg[];
-    "custom-css"?: TemplateFnLike;
+    'custom-css'?: TemplateFnLike;
 };
 /**
  * Intrinsic properties that can be used by the complex
@@ -138,15 +142,15 @@ export declare type JSXDefinition<C extends {
  */
 export interface JSXIntrinsicProps {
     __listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
-    "@"?: Partial<EventsToAttr<HTMLElementEventMap>>;
+    '@'?: Partial<EventsToAttr<HTMLElementEventMap>>;
 }
-export { WebComponentBaseMixinInstance, WebComponentBaseMixinClass, WebComponentBaseMixinSuper } from '../lib/base.js';
-export { WebComponentSuper, WebComponentMixinInstance, WebComponentMixinClass } from '../lib/component.js';
-export { WebComponentCustomCSSManagerMixinInstance, WebComponentCustomCSSManagerMixinClass, WebComponentCustomCSSManagerMixinSuper } from '../lib/custom-css-manager.js';
-export { WebComponentDefinerMixinInstance, WebComponentDefinerMixinClass, WebComponentDefinerMixinSuper } from '../lib/definer.js';
-export { WebComponentHierarchyManagerMixinInstance, WebComponentHierarchyManagerMixinClass, WebComponentHierarchyManagerMixinSuper } from '../lib/hierarchy-manager.js';
-export { WebComponentI18NManagerMixinInstance, WebComponentI18NManagerMixinClass, WebComponentI18NManagerMixinSuper } from '../lib/i18n-manager.js';
-export { WebComponentListenableMixinInstance, WebComponentListenableMixinClass, WebComponentListenableMixinSuper } from '../lib/listener.js';
-export { WebComponentTemplateManagerMixinInstance, WebComponentTemplateManagerMixinClass, WebComponentTemplateManagerMixinSuper } from '../lib/template-manager.js';
-export { WebComponentThemeManagerMixinInstance, WebComponentThemeManagerMixinClass, WebComponentThemeManagerMixinSuper } from '../lib/theme-manager.js';
+export { WebComponentBaseMixinInstance, WebComponentBaseTypeInstance, WebComponentBaseTypeStatic, WebComponentBaseMixinClass, WebComponentBaseMixinSuper, } from '../lib/base.js';
+export { WebComponentMixinInstance, WebComponentTypeInstance, WebComponentTypeStatic, WebComponentMixinClass, WebComponentSuper, } from '../lib/component.js';
+export { WebComponentCustomCSSManagerMixinInstance, WebComponentCustomCSSManagerTypeInstance, WebComponentCustomCSSManagerTypeStatic, WebComponentCustomCSSManagerMixinClass, WebComponentCustomCSSManagerMixinSuper, } from '../lib/custom-css-manager.js';
+export { WebComponentDefinerMixinInstance, WebComponentDefinerTypeInstance, WebComponentDefinerTypeStatic, WebComponentDefinerMixinClass, WebComponentDefinerMixinSuper, } from '../lib/definer.js';
+export { WebComponentHierarchyManagerMixinInstance, WebComponentHierarchyManagerTypeInstance, WebComponentHierarchyManagerTypeStatic, WebComponentHierarchyManagerMixinClass, WebComponentHierarchyManagerMixinSuper, } from '../lib/hierarchy-manager.js';
+export { WebComponentI18NManagerMixinInstance, WebComponentI18NManagerTypeInstance, WebComponentI18NManagerTypeStatic, WebComponentI18NManagerMixinClass, WebComponentI18NManagerMixinSuper, } from '../lib/i18n-manager.js';
+export { WebComponentListenableMixinInstance, WebComponentListenableTypeInstance, WebComponentListenableTypeStatic, WebComponentListenableMixinClass, WebComponentListenableMixinSuper, } from '../lib/listener.js';
+export { WebComponentTemplateManagerMixinInstance, WebComponentTemplateManagerTypeInstance, WebComponentTemplateManagerTypeStatic, WebComponentTemplateManagerMixinClass, WebComponentTemplateManagerMixinSuper, } from '../lib/template-manager.js';
+export { WebComponentThemeManagerMixinInstance, WebComponentThemeManagerTypeInstance, WebComponentThemeManagerTypeStatic, WebComponentThemeManagerMixinClass, WebComponentThemeManagerMixinSuper, } from '../lib/theme-manager.js';
 //# sourceMappingURL=types.d.ts.map

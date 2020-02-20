@@ -1,4 +1,5 @@
 import { Constructor, InferInstance, InferReturn, DefaultVal } from '../classes/types.js';
+import { ClassToObj } from './configurable.js';
 /**
  * Returns type['events']
  */
@@ -48,6 +49,69 @@ export declare type WebComponentListenableMixinClass = InferReturn<typeof WebCom
  */
 export declare type WebComponentListenableMixinSuper = Constructor<{}>;
 /**
+ * A standalone instance of the listener class
+ */
+export declare class WebComponentListenableTypeInstance<GA extends {
+    events?: EventListenerObj;
+} = {}, E extends EventListenerObj = GetEvents<GA>> {
+    /**
+     * A map that maps every event name to
+     * a set containing all of its listeners
+     *
+     * @readonly
+     */
+    get listenerMap(): ListenerSet<E>;
+    /**
+     * Listens for given event and fires
+     * the listener when it's triggered
+     *
+     * @template EV - The event's name
+     *
+     * @param {EV} event - The event's name
+     * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
+     * 	listener called when the event is fired
+     * @param {boolean} [once] - Whether to only
+     * 	call this listener once (false by default)
+     */
+    listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]['args']) => E[EV]['returnType'], once?: boolean): void;
+    /**
+     * Clears all listeners on this component for
+     * given event
+     *
+     * @template EV - The name of the event
+     *
+     * @param {EV} event - The name of the event to clear
+     * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
+     * 	specific listener to clear. If not passed, clears all
+     * 	listeners for the event
+     */
+    clearListener<EV extends keyof E>(event: EV, listener?: (...args: E[EV]['args']) => E[EV]['returnType']): void;
+    /**
+     * Fires given event on this component
+     * with given params, returning an array
+     * containing the return values of all
+     * triggered listeners
+     *
+     * @template EV - The event's name
+     * @template R - The return type of the
+     * 	event's listeners
+     *
+     * @param {EV} event - The event's name
+     * @param {E[EV]['args']} params - The parameters
+     * 	passed to the listeners when they are
+     * 	called
+     *
+     * @returns {R[]} An array containing the
+     * 	return values of all triggered
+     * 	listeners
+     */
+    fire<EV extends keyof E, R extends E[EV]['returnType']>(event: EV, ...params: E[EV]['args']): R[];
+}
+/**
+ * The static values of the listener class
+ */
+export declare type WebComponentListenableTypeStatic = ClassToObj<typeof WebComponentListenableTypeInstance>;
+/**
  * A mixin that, when applied, allows for listening
  * to and firing of events on a component or any other
  * class
@@ -60,58 +124,10 @@ export declare const WebComponentListenableMixin: <P extends Constructor<{}>>(su
     new <GA extends {
         events?: EventListenerObj | undefined;
     } = {}, E extends EventListenerObj = GetEvents<GA>>(...args: any[]): {
-        /**
-         * A map that maps every event name to
-         * a set containing all of its listeners
-         *
-         * @readonly
-         */
         readonly listenerMap: ListenerSet<E>;
-        /**
-         * Listens for given event and fires
-         * the listener when it's triggered
-         *
-         * @template EV - The event's name
-         *
-         * @param {EV} event - The event's name
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} listener - The
-         * 	listener called when the event is fired
-         * @param {boolean} [once] - Whether to only
-         * 	call this listener once (false by default)
-         */
         listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]["args"]) => E[EV]["returnType"], once?: boolean): void;
-        /**
-         * Clears all listeners on this component for
-         * given event
-         *
-         * @template EV - The name of the event
-         *
-         * @param {EV} event - The name of the event to clear
-         * @param {(...args: E[EV]['args']) => E[EV]['returnType']} [listener] - A
-         * 	specific listener to clear. If not passed, clears all
-         * 	listeners for the event
-         */
-        clearListener<EV extends keyof E>(event: EV, listener?: ((...args: E[EV]["args"]) => E[EV]["returnType"]) | undefined): void;
-        /**
-         * Fires given event on this component
-         * with given params, returning an array
-         * containing the return values of all
-         * triggered listeners
-         *
-         * @template EV - The event's name
-         * @template R - The return type of the
-         * 	event's listeners
-         *
-         * @param {EV} event - The event's name
-         * @param {E[EV]['args']} params - The parameters
-         * 	passed to the listeners when they are
-         * 	called
-         *
-         * @returns {R[]} An array containing the
-         * 	return values of all triggered
-         * 	listeners
-         */
-        fire<EV extends keyof E, R extends E[EV]["returnType"]>(event: EV, ...params: E[EV]["args"]): R[];
+        clearListener<EV_1 extends keyof E>(event: EV_1, listener?: ((...args: E[EV_1]["args"]) => E[EV_1]["returnType"]) | undefined): void;
+        fire<EV_2 extends keyof E, R extends E[EV_2]["returnType"]>(event: EV_2, ...params: E[EV_2]["args"]): R[];
     };
 } & P;
 //# sourceMappingURL=listener.d.ts.map

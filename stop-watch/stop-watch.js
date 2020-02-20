@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { ConfigurableWebComponent, Props, config } from '../modules/wc-lib/wc-lib.js';
+import { ConfigurableWebComponent, Props, config, } from '../modules/wc-lib/wc-lib.js';
 import { StopWatchHTML } from './stop-watch.html.js';
 import { StopWatchCSS } from './stop-watch.css.js';
 // 10 MS precision
@@ -17,15 +17,15 @@ let StopWatch = class StopWatch extends ConfigurableWebComponent {
             reflect: {
                 ms: {
                     type: "number" /* NUMBER */,
-                    value: 0
-                }
+                    value: 0,
+                },
             },
             priv: {
                 running: {
                     type: "bool" /* BOOL */,
-                    value: false
-                }
-            }
+                    value: false,
+                },
+            },
         });
     }
     formatTime(ms) {
@@ -56,7 +56,7 @@ StopWatch = __decorate([
     config({
         is: 'stop-watch',
         css: StopWatchCSS,
-        html: StopWatchHTML
+        html: StopWatchHTML,
     })
 ], StopWatch);
 export { StopWatch };

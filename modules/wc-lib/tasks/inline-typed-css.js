@@ -1,5 +1,6 @@
-import { AST } from "./get-ast";
-import { css } from "../lib/css";
+import * as through2 from 'through2';
+import { AST } from './get-ast';
+import { css } from '../lib/css';
 import * as ts from 'typescript';
 const visited = new WeakSet();
 class CSS {
@@ -33,7 +34,7 @@ class CSS {
                 return null;
             }
         });
-        if (basicArgs.some(v => v === null)) {
+        if (basicArgs.some((v) => v === null)) {
             return false;
         }
         this._try(() => {
@@ -63,11 +64,13 @@ class CSS {
 }
 function getCSSExpression(expr) {
     if (ts.isCallExpression(expr)) {
-        if (ts.isIdentifier(expr.expression) && expr.expression.text === 'css') {
+        if (ts.isIdentifier(expr.expression) &&
+            expr.expression.text === 'css') {
             return expr;
         }
     }
-    else if (!ts.isPropertyAccessExpression(expr) && !ts.isElementAccessExpression(expr)) {
+    else if (!ts.isPropertyAccessExpression(expr) &&
+        !ts.isElementAccessExpression(expr)) {
         return null;
     }
     return getCSSExpression(expr.expression);
@@ -98,8 +101,7 @@ function decodeCSSExpression(node, noStr = false) {
         }
         else {
             const stringLiteral = AST.resolveStringLiteral(activeNode.argumentExpression);
-            if (stringLiteral === null ||
-                typeof stringLiteral === 'number') {
+            if (stringLiteral === null || typeof stringLiteral === 'number') {
                 return null;
             }
             if (!css.access(stringLiteral)) {
@@ -123,7 +125,7 @@ function decodeCSSExpression(node, noStr = false) {
         return null;
     return {
         str: str,
-        lastNode: activeNode
+        lastNode: activeNode,
     };
 }
 /**
@@ -154,20 +156,20 @@ export function inlineTypedCSS(text) {
         throw new Error('Failed to create AST');
     }
     const replacements = [];
-    ast.forEachChild(child => AST.find({
+    ast.forEachChild((child) => AST.find({
         node: child,
         replacements,
         isExpr(node) {
-            return ts.isCallExpression(node) &&
+            return (ts.isCallExpression(node) &&
                 ts.isIdentifier(node.expression) &&
-                node.expression.escapedText === 'css';
+                node.expression.escapedText === 'css');
         },
         decodeExpr(node) {
             return decodeCSSExpression(node);
         },
         findExpr(node) {
             return getCSSExpression(node);
-        }
+        },
     }));
     return AST.applyReplacements(text, replacements);
 }
@@ -180,16 +182,16 @@ export function inlineTypedCSS(text) {
  * end when the file is served
  */
 export function inlineTypedCSSPipe() {
-    return function (file) {
-        if (file.isNull()) {
-            return file;
+    return through2.obj((file, _, cb) => {
+        // The else case is tested by gulp
+        /* istanbul ignore else */
+        if (Buffer.isBuffer(file)) {
+            file = Buffer.from(inlineTypedCSS(file.toString()));
         }
-        if (file.isStream()) {
-            throw new Error('Streaming not supported');
+        else if (file.isBuffer()) {
+            file.contents = Buffer.from(inlineTypedCSS(file.contents.toString()));
         }
-        file.contents = Buffer.from(inlineTypedCSS(file.contents.toString()));
-        return file;
-    };
+        cb(null, file);
+    });
 }
-;
 //# sourceMappingURL=inline-typed-css.js.map

@@ -22,6 +22,7 @@ export * from './lib/template-fn.js';
 export * from './lib/template-manager.js';
 export * from './lib/theme-manager.js';
 export * from './lib/util.js';
+export * from './lib/ssr/ssr.js';
 export * from './tasks/inline-typed-css.js';
 export * from './tasks/inline-i18n.js';
 //# sourceMappingURL=wc-lib.all.d.ts.map

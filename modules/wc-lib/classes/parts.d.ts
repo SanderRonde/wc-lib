@@ -6,7 +6,14 @@ export { WebComponentI18NManagerMixin } from '../lib/i18n-manager.js';
 export { WebComponentListenableMixin } from '../lib/listener.js';
 export { WebComponentDefinerMixin } from '../lib/definer.js';
 export { WebComponentMixin } from '../lib/component.js';
-export { WebComponentBaseMixin } from "../lib/base.js";
+export { WebComponentBaseMixin } from '../lib/base.js';
+export declare class FallbackHTMLElement {
+    attachShadow(_init: any): any;
+    get tagName(): string;
+    setAttribute(): void;
+    removeAttribute(): void;
+    hasAttribute(): boolean;
+}
 /**
  * The base element from which every webcomponent is extended.
  * This will always be HTMLElement regardless of the environment

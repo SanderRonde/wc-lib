@@ -14,9 +14,7 @@ JsxForm = __decorate([
         is: 'jsx-form',
         css: null,
         html: JsxFormHTML,
-        dependencies: [
-            JsxInput
-        ]
+        dependencies: [JsxInput],
     })
 ], JsxForm);
 export { JsxForm };

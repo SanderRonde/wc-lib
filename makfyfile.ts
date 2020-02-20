@@ -3,6 +3,19 @@ import { choice, cmd } from './types/makfy-extended';
 const choice = (_choice as unknown) as choice;
 const cmd = (_cmd as unknown) as cmd;
 
+cmd('clean')
+    .desc('Clean repo')
+    .run(async (exec) => {
+        await exec('rimraf ./.nyc_output');
+        await exec('rimraf ./build');
+        await exec('rimraf ./coverage');
+        await exec('rimraf ./instrumented');
+        await exec('rimraf ./instrumented-cjs');
+        await exec('rimraf ./examples/bundled');
+        await exec('rimraf ./examples/modules');
+        await exec('rimraf ./examples/ssr');
+    });
+
 cmd('compile')
     .desc('Compile source typescript')
     .args({

@@ -86,7 +86,7 @@
         "lit-html": "^1.1.0"
     },
     "scripts": {
-        "prepack": "makfy clean && makfy compile --dir all && gulp prepack",
+        "prepack": "makfy prepack",
         "pretty": "pretty-quick",
         "cypress": "node test/usage/test.js",
         "ava": "ava"

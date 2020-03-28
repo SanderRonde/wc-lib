@@ -87,6 +87,7 @@
     },
     "scripts": {
         "prepack": "makfy prepack",
+        "commands": "makfy --list",
         "pretty": "pretty-quick",
         "cypress": "node test/usage/test.js",
         "ava": "ava"

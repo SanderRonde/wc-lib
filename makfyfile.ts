@@ -345,8 +345,14 @@ cmd('coverage')
 cmd('prepack')
     .desc('Command to run before packaging, builds and runs prepack commands')
     .run(
+        '? cleaning',
+        '@clean',
         '? compiling TS',
         '@compile --dir all',
         '? removing flags',
-        'gulp prepack'
+        'gulp prepack',
+        '? creating bundle',
+        'rollup build/es/wc-lib.js --file build/wc-lib.bundle.js --format umd --name "wc-lib"',
+        '? minifiying',
+        'uglifyjs build/wc-lib.bundle.js -o build/wc-lib.bundle.min.js'
     );

@@ -10,9 +10,9 @@
     },
     "version": "1.1.4",
     "description": "A webcomponent framework",
-    "main": "build/es/wc-lib.js",
+    "main": "build/cjs/wc-lib.js",
     "browser": "build/es/wc-lib.js",
-    "module": "build/cjs/wc-lib.js",
+    "module": "build/es/wc-lib.js",
     "author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
     "license": "MIT",
     "files": [

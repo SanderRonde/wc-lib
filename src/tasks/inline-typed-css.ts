@@ -169,7 +169,7 @@ function decodeCSSExpression(
     if (str === null) return null;
 
     return {
-        str: str,
+        str: str!,
         lastNode: activeNode,
     };
 }

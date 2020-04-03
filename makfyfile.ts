@@ -6,18 +6,18 @@ const cmd = (_cmd as unknown) as cmd;
 cmd('clean')
     .desc('Clean repo')
     .run(async (exec) => {
-        await exec('rimraf ./.nyc_output');
-        await exec('rimraf ./build');
-        await exec('rimraf ./coverage');
-        await exec('rimraf ./instrumented');
-        await exec('rimraf ./instrumented-cjs');
-        await exec('rimraf ./examples/bundled');
-        await exec('rimraf ./examples/modules');
-        await exec('rimraf ./examples/ssr');
-        await exec('rimraf ./src/**/*.js');
-        await exec('rimraf ./src/**/*.d.ts');
-        await exec('rimraf ./src/**/*.map');
-        await exec('rimraf ./test/modules');
+        await exec('rimraf ./.nyc_output || echo "No files to delete"');
+        await exec('rimraf ./build || echo "No files to delete"');
+        await exec('rimraf ./coverage || echo "No files to delete"');
+        await exec('rimraf ./instrumented || echo "No files to delete"');
+        await exec('rimraf ./instrumented-cjs || echo "No files to delete"');
+        await exec('rimraf ./examples/bundled || echo "No files to delete"');
+        await exec('rimraf ./examples/modules || echo "No files to delete"');
+        await exec('rimraf ./examples/ssr || echo "No files to delete"');
+        await exec('rimraf ./src/**/*.js || echo "No files to delete"');
+        await exec('rimraf ./src/**/*.d.ts || echo "No files to delete"');
+        await exec('rimraf ./src/**/*.map || echo "No files to delete"');
+        await exec('rimraf ./test/modules || echo "No files to delete"');
     });
 
 cmd('compile')

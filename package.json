@@ -39,7 +39,7 @@
         "css": "^2.2.4",
         "htmlparser2": "^4.0.0",
         "through2": "^3.0.1",
-        "typescript": "^3.7.3"
+        "typescript": "^3.8.3"
     },
     "devDependencies": {
         "@ava/babel": "^1.0.1",

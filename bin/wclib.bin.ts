@@ -214,20 +214,10 @@ async function create(options: { [key: string]: string | boolean }) {
 
     const wclib = (() => {
         const wclibArg = options['wc-lib-path'] || options['wclib-path'];
-        if (typeof wclibArg === 'boolean') {
-            console.log('Please pass a path after the wc-lib param');
-            process.exit(1);
-            return 'wc-lib';
-        }
         return `../${wclibArg}` || 'wc-lib';
     })();
     const litHTML = (() => {
         const litHTMLArg = options['lit-html-path'] || options['lithtml-path'];
-        if (typeof litHTMLArg === 'boolean') {
-            console.log('Please pass a path after the wc-lib param');
-            process.exit(1);
-            return 'lit-html';
-        }
         return `../${litHTMLArg}` || 'lit-html';
     })();
 

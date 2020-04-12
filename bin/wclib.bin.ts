@@ -140,8 +140,13 @@ function parseArgs() {
                 const [key, val] = args[i].split('=');
                 options[key.slice(2)] = val;
             } else {
-                options[args[i].slice(2)] = args[i + 1];
-                i++;
+                const argName = args[i].slice(2);
+                if (argName === 'help') {
+                    options[argName] = true;
+                } else {
+                    options[argName] = args[i + 1];
+                    i++;
+                }
             }
         } else if (args[i].startsWith('-')) {
             options[args[i].slice(1)] = true;

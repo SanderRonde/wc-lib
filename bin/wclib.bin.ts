@@ -213,7 +213,7 @@ async function create(options: { [key: string]: string | boolean }) {
     console.log(green(`${name}\\`), green(checkmark()));
 
     const wclib = (() => {
-        const wclibArg = options['wc-lib-path'];
+        const wclibArg = options['wc-lib-path'] || options['wclib-path'];
         if (typeof wclibArg === 'boolean') {
             console.log('Please pass a path after the wc-lib param');
             process.exit(1);
@@ -222,7 +222,7 @@ async function create(options: { [key: string]: string | boolean }) {
         return `../${wclibArg}` || 'wc-lib';
     })();
     const litHTML = (() => {
-        const litHTMLArg = options['lit-html-path'];
+        const litHTMLArg = options['lit-html-path'] || options['lithtml-path'];
         if (typeof litHTMLArg === 'boolean') {
             console.log('Please pass a path after the wc-lib param');
             process.exit(1);

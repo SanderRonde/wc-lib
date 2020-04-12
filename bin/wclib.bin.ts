@@ -255,10 +255,10 @@ export async function main() {
         console.log('\t\t--name\t\tThe name of the new component');
         console.log('\t\t-q\t\tAdd code for a local querymap');
         console.log(
-            '\t\t--wc-lib-path\tThe path to the wc-lib installation (relative to cwd)'
+            '\t\t--wc-lib-path\tThe path to the wc-lib installation (relative to the new folder)'
         );
         console.log(
-            '\t\t--lit-html-path\tThe path to the lit-html installation (relative to cwd)'
+            '\t\t--lit-html-path\tThe path to the lit-html installation (relative to the new folder)'
         );
         process.exit(0);
     }

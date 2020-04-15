@@ -139,17 +139,34 @@ function validateName(name: string | boolean): name is string {
 
 export async function create() {
     const io = getIO('create', {
-        help: [IO_FORMAT.BOOLEAN, 'Show this help command', 'h'],
-        name: [IO_FORMAT.STRING, 'The name of the new component', 'n'],
-        querymap: [IO_FORMAT.BOOLEAN, 'Add code for a local querymap', 'q'],
-        'wc-lib-path': [
-            IO_FORMAT.STRING,
-            'The path to the wc-lib installation (relative to the new folder)',
-        ],
-        'lit-html-path': [
-            IO_FORMAT.STRING,
-            'The path to the lit-html installation (relative to the new folder)',
-        ],
+        help: {
+            type: IO_FORMAT.BOOLEAN,
+            description: 'Show this help command',
+            alternatives: ['h'],
+        },
+        name: {
+            type: IO_FORMAT.STRING,
+            description: 'The name of the new component',
+            alternatives: ['n'],
+            required: true,
+        },
+        querymap: {
+            type: IO_FORMAT.BOOLEAN,
+            description: 'Add code for a local querymap',
+            alternatives: ['q'],
+        },
+        'wc-lib-path': {
+            type: IO_FORMAT.STRING,
+            description:
+                'The path to the wc-lib installation (relative to the new folder)',
+            alternatives: ['wclib-path'],
+        },
+        'lit-html-path': {
+            type: IO_FORMAT.STRING,
+            description:
+                'The path to the lit-html installation (relative to the new folder)',
+            alternatives: ['lithtml-path'],
+        },
     });
 
     const name = io.name;

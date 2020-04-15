@@ -44,55 +44,29 @@ export const enum IO_FORMAT {
 }
 
 namespace IO {
-    /**
-     * Check if an argument with given name is present
-     *
-     * @param {string} name - The name of the argument
-     * @param {string} [short] - A short name for the argument
-     *
-     * @returns {boolean} Whether the argument was passed
-     */
-    function hasArg(name: string, short?: string): boolean {
-        for (let i = 0; i < process.argv.length; i++) {
-            const arg = process.argv[i];
-            if (arg === `--${name}` || (short && arg === `-${short}`)) {
-                return true;
-            }
+    function hasArg(name: string, ...alternatives: string[]): boolean {
+        for (const arg of [`--${name}`, ...alternatives]) {
+            if (process.argv.includes(arg)) return true;
         }
         return false;
     }
 
-    /**
-     * Get a string-type argument by name
-     *
-     * @param {string} name - The name of the argument
-     * @param {string} [short] - A short name for the argument
-     *
-     * @returns {string|void} The argument's value or undefined
-     */
-    function getArg(name: string, short?: string): string | void {
+    function getArg(name: string, ...alternatives: string[]): string | void {
         for (let i = process.argv.length - 1; i; i--) {
             const arg = process.argv[i];
-            if (arg === `--${name}` || (short && arg === `-${short}`)) {
-                return process.argv[i + 1];
-            } else if (arg.startsWith(`--${name}=`)) {
-                return arg.slice(3 + name.length);
+            for (const keyword of [`--${name}`, ...alternatives]) {
+                if (arg === keyword) {
+                    return process.argv[i + 1];
+                } else if (arg.startsWith(`${keyword}=`)) {
+                    return arg.slice(keyword.length + 1);
+                }
             }
         }
         return void 0;
     }
 
-    /**
-     * Get a number-type argument by name
-     *
-     * @param {string} name - The name of the argument
-     * @param {string} [short] - A short name for the argument
-     *
-     * @returns {number|void} A number-representation of the argument
-     * 	or undefined
-     */
-    function getNumArg(name: string, short?: string): number | void {
-        const arg = getArg(name, short);
+    function getNumArg(name: string, ...alternatives: string[]): number | void {
+        const arg = getArg(name, ...alternatives);
         if (arg === void 0) return void 0;
         return ~~arg;
     }
@@ -111,27 +85,34 @@ namespace IO {
         return obj;
     }
 
+    export interface ArgConfig {
+        type: IO_FORMAT;
+        description: string;
+        required?: boolean;
+        alternatives?: string[];
+    }
+
     export function printHelp<
         F extends {
-            [key: string]: [IO_FORMAT, string] | [IO_FORMAT, string, string];
+            [key: string]: ArgConfig;
         }
     >(command: string, format: F): never {
         console.log(`Usage of command "${command}"`);
         console.log('\n');
         for (const key in format) {
-            const [, description, short = undefined] = format[key];
-            if (!short) {
-                console.log(`\t--${key} - ${description}`);
-            } else {
-                console.log(`\t--${key}, -${short} - ${description}`);
-            }
+            const { alternatives = [], description, required } = format[key];
+            console.log(
+                `\t--${[key, ...alternatives].join(', ')} ${
+                    !required ? '(optional)' : ''
+                } - ${description}`
+            );
         }
         process.exit(0);
     }
 
     export function getIO<
         F extends {
-            [key: string]: [IO_FORMAT, string] | [IO_FORMAT, string, string];
+            [key: string]: ArgConfig;
         }
     >(
         command: string,
@@ -144,15 +125,18 @@ namespace IO {
         }
         return objFromEntries(
             Object.keys(format).map((key) => {
-                const [value, short = undefined] = format[key];
+                const { type, required, alternatives = [] } = format[key];
 
-                switch (value) {
+                if (required && !hasArg(key, ...alternatives)) {
+                    console.error(`Argument "${key}" is required`);
+                }
+                switch (type) {
                     case IO_FORMAT.BOOLEAN:
-                        return [key, hasArg(key, short)];
+                        return [key, hasArg(key, ...alternatives)];
                     case IO_FORMAT.NUMBER:
-                        return [key, getNumArg(key, short)];
+                        return [key, getNumArg(key, ...alternatives)];
                     case IO_FORMAT.STRING:
-                        return [key, getArg(key, short)];
+                        return [key, getArg(key, ...alternatives)];
                 }
             })
         ) as {
@@ -161,19 +145,17 @@ namespace IO {
     }
 }
 
-type GetIO<F> = F extends Array<any>
-    ? F[0] extends IO_FORMAT.BOOLEAN
-        ? boolean
-        : F[0] extends IO_FORMAT.STRING
-        ? string
-        : F[0] extends IO_FORMAT.NUMBER
-        ? number
-        : void
+type GetIO<F extends IO.ArgConfig> = F['type'] extends IO_FORMAT.BOOLEAN
+    ? boolean
+    : F['type'] extends IO_FORMAT.STRING
+    ? string
+    : F['type'] extends IO_FORMAT.NUMBER
+    ? number
     : void;
 
 export function getIO<
     F extends {
-        [key: string]: [IO_FORMAT, string] | [IO_FORMAT, string, string];
+        [key: string]: IO.ArgConfig;
     }
 >(
     command: string,

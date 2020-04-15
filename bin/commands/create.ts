@@ -1,0 +1,173 @@
+import { mkdir, writeFile } from './util';
+import * as path from 'path';
+
+function dashesToUppercase(name: string) {
+    let newName = '';
+    for (let i = 0; i < name.length; i++) {
+        if (name[i] === '-') {
+            newName += name[i + 1].toUpperCase();
+            i++;
+        } else {
+            newName += name[i];
+        }
+    }
+    return newName;
+}
+
+function capitalize(name: string) {
+    return name[0].toUpperCase() + name.slice(1);
+}
+
+const indexTemplate = (name: string, wclib: string, querymap: boolean) =>
+    `import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '${wclib}';\n${
+        querymap
+            ? `import { IDMap, ClassMap } from './${name}-querymap';\n`
+            : ''
+    }
+import { ${capitalize(dashesToUppercase(name))}HTML } from './${name}.html.js';
+import { ${capitalize(dashesToUppercase(name))}CSS } from './${name}.css.js';
+
+@config({
+	is: '${name}',
+	css: ${capitalize(dashesToUppercase(name))}CSS,
+	html: ${capitalize(dashesToUppercase(name))}HTML
+})
+export class ${capitalize(
+        dashesToUppercase(name)
+    )} extends ConfigurableWebComponent${
+        querymap
+            ? `<{
+	selectors: {
+		IDS: IDMap;
+		CLASSES: ClassMap;
+	}
+}>`
+            : ''
+    } {
+	props = Props.define(this, {
+		// ...
+	});
+
+	mounted() {
+		// ...
+	}
+
+	firstRender() {
+		// ...
+	}
+}`;
+
+const htmlTemplate = (name: string, wclib: string, lithtml: string) =>
+    `import { TemplateFn, CHANGE_TYPE } from '${wclib}';
+import { ${capitalize(dashesToUppercase(name))} } from './${name}.js';
+import { render } from '${lithtml}';
+
+export const ${capitalize(
+        dashesToUppercase(name)
+    )}HTML = new TemplateFn<${capitalize(
+        dashesToUppercase(name)
+    )}>(function (html, props) {
+	return html\`
+		<div></div>
+	\`
+}, CHANGE_TYPE.PROP, render);
+`;
+
+const cssTemplate = (name: string, wclib: string, lithtml: string) =>
+    `import { TemplateFn, CHANGE_TYPE } from '${wclib}';
+import { ${capitalize(dashesToUppercase(name))} } from './${name}.js';
+import { render } from '${lithtml}';
+
+export const ${capitalize(
+        dashesToUppercase(name)
+    )}CSS = new TemplateFn<${capitalize(
+        dashesToUppercase(name)
+    )}>(function (html) {
+	return html\`<style>
+		
+	</style>\`
+}, CHANGE_TYPE.THEME, render);
+`;
+
+function green(text: string) {
+    return `\u001b[32m${text}\u001b[39m`;
+}
+
+function checkmark() {
+    if (
+        process.platform !== 'win32' ||
+        process.env.CI ||
+        process.env.TERM === 'xterm-256color'
+    ) {
+        return 'âœ”';
+    } else {
+        return 'âˆš';
+    }
+}
+
+function validateName(name: string | boolean): name is string {
+    if (!name || typeof name !== 'string') {
+        console.log('Missing name, supply it with --name {name}');
+        process.exit(1);
+        return false;
+    }
+    const nameStr = name as string;
+    if (nameStr.indexOf('-') === -1) {
+        console.log('Webcomponent names need to contain a dash "-"');
+        process.exit(1);
+        return false;
+    }
+    if (/[A-Z]/.test(nameStr)) {
+        console.log(
+            'Webcomponent names can not contain uppercase ASCII characters.'
+        );
+        process.exit(1);
+        return false;
+    }
+    if (/^\d/i.test(nameStr)) {
+        console.log('Webcomponent names can not start with a digit.');
+        process.exit(1);
+        return false;
+    }
+    if (/^-/i.test(nameStr)) {
+        console.log('Webcomponent names can not start with a hyphen.');
+        process.exit(1);
+        return false;
+    }
+    return true;
+}
+
+export async function create(options: { [key: string]: string | boolean }) {
+    const name = options['name'];
+    if (!validateName(name)) return;
+
+    await mkdir(path.join(process.cwd(), name));
+    console.log(green(`${name}\\`), green(checkmark()));
+
+    const wclib = (() => {
+        const wclibArg = options['wc-lib-path'] || options['wclib-path'];
+        return `../${wclibArg}` || 'wc-lib';
+    })();
+    const litHTML = (() => {
+        const litHTMLArg = options['lit-html-path'] || options['lithtml-path'];
+        return `../${litHTMLArg}` || 'lit-html';
+    })();
+
+    await writeFile(
+        path.join(process.cwd(), name, `${name}.ts`),
+        indexTemplate(name, wclib, !!options['q'])
+    );
+    console.log(green(`\t${name}.ts`), green(checkmark()));
+
+    await writeFile(
+        path.join(process.cwd(), name, `${name}.html.ts`),
+        htmlTemplate(name, wclib, litHTML)
+    );
+    console.log(green(`\t${name}.html.ts`), green(checkmark()));
+
+    await writeFile(
+        path.join(process.cwd(), name, `${name}.css.ts`),
+        cssTemplate(name, wclib, litHTML)
+    );
+    console.log(green(`\t${name}.css.ts`), green(checkmark()));
+}

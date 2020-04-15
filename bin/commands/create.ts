@@ -140,8 +140,8 @@ function validateName(name: string | boolean): name is string {
 export async function create() {
     const io = getIO('create', {
         help: [IO_FORMAT.BOOLEAN, 'Show this help command', 'h'],
-        name: [IO_FORMAT.STRING, 'The name of the new component', '-n'],
-        querymap: [IO_FORMAT.BOOLEAN, 'Add code for a local querymap', '-q'],
+        name: [IO_FORMAT.STRING, 'The name of the new component', 'n'],
+        querymap: [IO_FORMAT.BOOLEAN, 'Add code for a local querymap', 'q'],
         'wc-lib-path': [
             IO_FORMAT.STRING,
             'The path to the wc-lib installation (relative to the new folder)',

@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from './util';
+import { mkdir, writeFile, getIO, IO_FORMAT } from './util';
 import * as path from 'path';
 
 function dashesToUppercase(name: string) {
@@ -137,25 +137,39 @@ function validateName(name: string | boolean): name is string {
     return true;
 }
 
-export async function create(options: { [key: string]: string | boolean }) {
-    const name = options['name'];
+export async function create() {
+    const io = getIO('create', {
+        help: [IO_FORMAT.BOOLEAN, 'Show this help command', 'h'],
+        name: [IO_FORMAT.STRING, 'The name of the new component', '-n'],
+        querymap: [IO_FORMAT.BOOLEAN, 'Add code for a local querymap', '-q'],
+        'wc-lib-path': [
+            IO_FORMAT.STRING,
+            'The path to the wc-lib installation (relative to the new folder)',
+        ],
+        'lit-html-path': [
+            IO_FORMAT.STRING,
+            'The path to the lit-html installation (relative to the new folder)',
+        ],
+    });
+
+    const name = io.name;
     if (!validateName(name)) return;
 
     await mkdir(path.join(process.cwd(), name));
     console.log(green(`${name}\\`), green(checkmark()));
 
     const wclib = (() => {
-        const wclibArg = options['wc-lib-path'] || options['wclib-path'];
+        const wclibArg = io['wc-lib-path'];
         return `../${wclibArg}` || 'wc-lib';
     })();
     const litHTML = (() => {
-        const litHTMLArg = options['lit-html-path'] || options['lithtml-path'];
+        const litHTMLArg = io['lit-html-path'];
         return `../${litHTMLArg}` || 'lit-html';
     })();
 
     await writeFile(
         path.join(process.cwd(), name, `${name}.ts`),
-        indexTemplate(name, wclib, !!options['q'])
+        indexTemplate(name, wclib, io.querymap)
     );
     console.log(green(`\t${name}.ts`), green(checkmark()));
 

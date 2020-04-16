@@ -23,8 +23,9 @@ const indexTemplate = (name: string, wclib: string, querymap: boolean) =>
         querymap
             ? `import { IDMap, ClassMap } from './${name}-querymap';\n`
             : ''
-    }
-import { ${capitalize(dashesToUppercase(name))}HTML } from './${name}.html.js';
+    }import { ${capitalize(
+        dashesToUppercase(name)
+    )}HTML } from './${name}.html.js';
 import { ${capitalize(dashesToUppercase(name))}CSS } from './${name}.css.js';
 
 @config({
@@ -137,35 +138,35 @@ function validateName(name: string | boolean): name is string {
     return true;
 }
 
-export async function create() {
+export async function commandCreate() {
     const io = getIO('create', {
         help: {
             type: IO_FORMAT.BOOLEAN,
             description: 'Show this help command',
-            alternatives: ['h'],
+            alternatives: ['-h'],
         },
         name: {
             type: IO_FORMAT.STRING,
             description: 'The name of the new component',
-            alternatives: ['n'],
+            alternatives: ['-n'],
             required: true,
         },
         querymap: {
             type: IO_FORMAT.BOOLEAN,
             description: 'Add code for a local querymap',
-            alternatives: ['q'],
+            alternatives: ['-q'],
         },
         'wc-lib-path': {
             type: IO_FORMAT.STRING,
             description:
                 'The path to the wc-lib installation (relative to the new folder)',
-            alternatives: ['wclib-path'],
+            alternatives: ['--wclib-path'],
         },
         'lit-html-path': {
             type: IO_FORMAT.STRING,
             description:
                 'The path to the lit-html installation (relative to the new folder)',
-            alternatives: ['lithtml-path'],
+            alternatives: ['--lithtml-path'],
         },
     });
 
@@ -177,11 +178,11 @@ export async function create() {
 
     const wclib = (() => {
         const wclibArg = io['wc-lib-path'];
-        return `../${wclibArg}` || 'wc-lib';
+        return wclibArg ? `../${wclibArg}` : 'wc-lib';
     })();
     const litHTML = (() => {
         const litHTMLArg = io['lit-html-path'];
-        return `../${litHTMLArg}` || 'lit-html';
+        return litHTMLArg ? `../${litHTMLArg}` : 'lit-html';
     })();
 
     await writeFile(

@@ -49,7 +49,7 @@ cmd('compile')
                 ]);
                 break;
             case 'bin':
-                await exec(`tsc -p bin/tsconfig.json ${watchArg}`);
+                await exec(`tsc -p ./tsconfig.bin.json ${watchArg}`);
                 break;
             case 'examples':
                 await exec(`tsc -p examples/tsconfig.json ${watchArg}`);

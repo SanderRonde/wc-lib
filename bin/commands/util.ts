@@ -1,4 +1,15 @@
+import * as path from 'path';
 import * as fs from 'fs';
+
+export function mkdirp(dirPath: string) {
+    dirPath.split(path.sep).reduce((prevPath, folder) => {
+        const currentPath = path.join(prevPath, folder, path.sep);
+        if (!fs.existsSync(currentPath)) {
+            fs.mkdirSync(currentPath);
+        }
+        return currentPath;
+    }, '');
+}
 
 export function mkdir(dirPath: string) {
     return new Promise((resolve) => {
@@ -32,6 +43,24 @@ export function writeFile(filePath: string, data: string) {
                     process.exit(1);
                 }
                 resolve();
+            }
+        );
+    });
+}
+
+export function readFile(filePath: string) {
+    return new Promise<string>((resolve) => {
+        fs.readFile(
+            filePath,
+            {
+                encoding: 'utf8',
+            },
+            (err, data) => {
+                if (err) {
+                    console.log(`Failed to read file "${filePath}"`);
+                    process.exit(1);
+                }
+                resolve(data);
             }
         );
     });
@@ -98,7 +127,7 @@ namespace IO {
         }
     >(command: string, format: F): never {
         console.log(`Usage of command "${command}"`);
-        console.log('\n');
+        console.log('');
         for (const key in format) {
             const { alternatives = [], description, required } = format[key];
             console.log(
@@ -120,7 +149,7 @@ namespace IO {
     ): {
         [key in keyof F]: GetIO<F[key]>;
     } {
-        if (hasArg('help', 'h')) {
+        if (hasArg('help', '-h')) {
             printHelp(command, format);
         }
         return objFromEntries(
@@ -148,9 +177,13 @@ namespace IO {
 type GetIO<F extends IO.ArgConfig> = F['type'] extends IO_FORMAT.BOOLEAN
     ? boolean
     : F['type'] extends IO_FORMAT.STRING
-    ? string
+    ? F['required'] extends boolean
+        ? string
+        : string | void
     : F['type'] extends IO_FORMAT.NUMBER
-    ? number
+    ? F['required'] extends boolean
+        ? number
+        : number | void
     : void;
 
 export function getIO<

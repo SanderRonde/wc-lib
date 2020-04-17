@@ -73,6 +73,12 @@ export interface WebComponentConfiguration {
      */
     readonly is: string;
     /**
+     * A description for this component
+     *
+     * @readonly
+     */
+    readonly description?: string;
+    /**
      * The templates(s) that will render this component's css
      *
      * @readonly
@@ -267,7 +273,14 @@ export type MixinFn<S, M, MM> = (
  * 	configuration for this component
  */
 export function config(config: WebComponentConfiguration) {
-    const { is, html, css = [], mixins = [], dependencies = [] } = config;
+    const {
+        is,
+        html,
+        description,
+        css = [],
+        mixins = [],
+        dependencies = [],
+    } = config;
     return <
         T,
         GA extends {
@@ -287,6 +300,7 @@ export function config(config: WebComponentConfiguration) {
         )) as typeof ConfigurableWebComponent;
         class WebComponentConfig extends targetComponent<GA, E, ELS> {
             static is = is;
+            static description = description;
             /* istanbul ignore next */
             static dependencies = [
                 ...(targetComponent.dependencies || []),

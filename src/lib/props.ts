@@ -478,6 +478,10 @@ export interface DefinePropTypeConfig extends DefineTypeConfig {
      * This value is not actually used in any way except for typing.
      */
     required?: boolean;
+    /**
+     * A description for this parameter
+     */
+    description?: string;
 }
 
 function getDefinePropConfig(
@@ -1253,6 +1257,7 @@ namespace PropsDefiner {
                 strict = false,
                 watchProperties = [],
                 reflectToSelf = true,
+                description,
             } = getDefinePropConfig(value);
             return {
                 watch,
@@ -1267,6 +1272,7 @@ namespace PropsDefiner {
                 propName,
                 defaultValue:
                     defaultValue !== undefined ? defaultValue : defaultValue2,
+                description: description || '',
             };
         }
 

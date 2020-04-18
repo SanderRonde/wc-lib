@@ -2,7 +2,7 @@
     "projectId": "adtg42",
     "port": 1250,
     "fixturesFolder": "test/usage/fixtures",
-    "integrationFolder": "test/usage/integration/lib",
+    "integrationFolder": "test/usage/integration",
     "pluginsFile": "test/usage/plugins",
     "screenshotsFolder": "temp/screenshots",
     "supportFile": "test/usage/support",

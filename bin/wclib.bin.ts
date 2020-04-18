@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { commandCreate } from './commands/create';
 import { commandInlineTypedCSS } from './commands/inline-typed-css';
+import { commandCreate } from './commands/create';
 
 function displayMainHelp() {
     console.log('Usage: wc-lib command-name [options]');

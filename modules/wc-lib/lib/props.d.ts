@@ -207,6 +207,10 @@ export interface DefinePropTypeConfig extends DefineTypeConfig {
      * This value is not actually used in any way except for typing.
      */
     required?: boolean;
+    /**
+     * A description for this parameter
+     */
+    description?: string;
 }
 /**
  * Converts casing to dashes

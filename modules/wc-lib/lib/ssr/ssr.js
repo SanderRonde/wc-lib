@@ -722,10 +722,9 @@ export var SSR;
                         : [element.css];
                     return templates.map((template) => {
                         const text = _tryRender(() => {
-                            var _a;
                             return (
                             /* istanbul ignore next */
-                            ((_a = template) === null || _a === void 0 ? void 0 : _a.renderAsText(11 /* ALWAYS */, instance)) || '');
+                            (template === null || template === void 0 ? void 0 : template.renderAsText(11 /* ALWAYS */, instance)) || '');
                         });
                         const cssTags = TextToTags._Parser.parse(text, {
                             tagBase: CSSTag,

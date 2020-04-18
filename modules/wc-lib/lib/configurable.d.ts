@@ -64,6 +64,12 @@ export interface WebComponentConfiguration {
      */
     readonly is: string;
     /**
+     * A description for this component
+     *
+     * @readonly
+     */
+    readonly description?: string;
+    /**
      * The templates(s) that will render this component's css
      *
      * @readonly

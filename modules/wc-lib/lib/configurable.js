@@ -90,7 +90,7 @@ export const ExtendableMixin = (_superFn) => FullWebComponent;
  * 	configuration for this component
  */
 export function config(config) {
-    const { is, html, css = [], mixins = [], dependencies = [] } = config;
+    const { is, html, description, css = [], mixins = [], dependencies = [], } = config;
     return (target) => {
         const targetComponent = (target);
         class WebComponentConfig extends targetComponent {
@@ -99,6 +99,7 @@ export function config(config) {
             }
         }
         WebComponentConfig.is = is;
+        WebComponentConfig.description = description;
         /* istanbul ignore next */
         WebComponentConfig.dependencies = [
             ...(targetComponent.dependencies || []),

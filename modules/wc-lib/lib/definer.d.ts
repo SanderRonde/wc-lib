@@ -198,9 +198,9 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         title: string;
         translate: boolean;
         click(): void;
-        addEventListener<K extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadend" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
+        addEventListener<K extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined): void;
-        removeEventListener<K_1 extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadend" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | EventListenerOptions | undefined): void;
+        removeEventListener<K_1 extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | EventListenerOptions | undefined): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions | undefined): void;
         readonly assignedSlot: HTMLSlotElement | null;
         readonly attributes: NamedNodeMap;
@@ -283,7 +283,7 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         readonly ownerDocument: Document | null;
         readonly parentElement: HTMLElement | null;
         readonly parentNode: (Node & ParentNode) | null;
-        readonly previousSibling: Node | null;
+        readonly previousSibling: ChildNode | null;
         textContent: string | null;
         appendChild<T extends Node>(newChild: T): T;
         cloneNode(deep?: boolean | undefined): Node;
@@ -385,7 +385,6 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         onload: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onloadeddata: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onloadedmetadata: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        onloadend: ((this: GlobalEventHandlers, ev: ProgressEvent<EventTarget>) => any) | null;
         onloadstart: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onlostpointercapture: ((this: GlobalEventHandlers, ev: PointerEvent) => any) | null;
         onmousedown: ((this: GlobalEventHandlers, ev: MouseEvent) => any) | null;
@@ -422,10 +421,10 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         onsuspend: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         ontimeupdate: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         ontoggle: ((this: GlobalEventHandlers, ev: Event) => any) | null;
-        ontouchcancel: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null;
-        ontouchend: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null;
-        ontouchmove: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null;
-        ontouchstart: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null;
+        ontouchcancel?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+        ontouchend?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+        ontouchmove?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
+        ontouchstart?: ((this: GlobalEventHandlers, ev: TouchEvent) => any) | null | undefined;
         ontransitioncancel: ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null;
         ontransitionend: ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null;
         ontransitionrun: ((this: GlobalEventHandlers, ev: TransitionEvent) => any) | null;
@@ -433,6 +432,7 @@ export declare const WebComponentDefinerMixin: <P extends Constructor<HTMLElemen
         onvolumechange: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onwaiting: ((this: GlobalEventHandlers, ev: Event) => any) | null;
         onwheel: ((this: GlobalEventHandlers, ev: WheelEvent) => any) | null;
+        autofocus: boolean;
         readonly dataset: DOMStringMap;
         nonce?: string | undefined;
         tabIndex: number;

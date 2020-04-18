@@ -1,4 +1,4 @@
-import { inlineTypedCSSPipe } from '../build/cjs/tasks/tasks';
+import { inlineTypedCSSPipe } from '../build/cjs/tasks';
 import { ssr } from '../build/cjs/lib/ssr/ssr';
 import { theme } from './tic-tac-toe/theme';
 const gulpClean = require('gulp-clean');

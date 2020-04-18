@@ -594,7 +594,7 @@ var PropsDefiner;
             const { key, value, reflectToAttr } = this._propertyConfig;
             const mapKey = key;
             const propName = casingToDashes(mapKey);
-            const { watch = true, coerce = false, defaultValue, value: defaultValue2, type: type, strict = false, watchProperties = [], reflectToSelf = true, } = getDefinePropConfig(value);
+            const { watch = true, coerce = false, defaultValue, value: defaultValue2, type: type, strict = false, watchProperties = [], reflectToSelf = true, description, } = getDefinePropConfig(value);
             return {
                 watch,
                 coerce,
@@ -607,6 +607,7 @@ var PropsDefiner;
                 reflectToAttr,
                 propName,
                 defaultValue: defaultValue !== undefined ? defaultValue : defaultValue2,
+                description: description || '',
             };
         }
         get config() {

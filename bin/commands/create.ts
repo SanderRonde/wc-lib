@@ -21,7 +21,7 @@ function capitalize(name: string) {
 const indexTemplate = (name: string, wclib: string, querymap: boolean) =>
     `import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '${wclib}';\n${
         querymap
-            ? `import { IDMap, ClassMap } from './${name}-querymap';\n`
+            ? `import { IDMapType, ClassMapType } from './${name}-querymap';\n`
             : ''
     }import { ${capitalize(
         dashesToUppercase(name)
@@ -39,8 +39,8 @@ export class ${capitalize(
         querymap
             ? `<{
 	selectors: {
-		IDS: IDMap;
-		CLASSES: ClassMap;
+		IDS: IDMapType;
+		CLASSES: ClassMapType;
 	}
 }>`
             : ''

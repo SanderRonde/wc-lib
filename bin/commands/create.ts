@@ -100,9 +100,9 @@ function checkmark() {
         process.env.CI ||
         process.env.TERM === 'xterm-256color'
     ) {
-        return 'âœ”';
+        return '✔';
     } else {
-        return 'âˆš';
+        return '√';
     }
 }
 

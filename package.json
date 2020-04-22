@@ -17,6 +17,7 @@
     "license": "MIT",
     "files": [
         "bin/bin.js",
+        "bin/wclib.bin.js",
         "build/**"
     ],
     "@std/esm": "cjs",

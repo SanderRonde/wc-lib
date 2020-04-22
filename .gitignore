@@ -71,6 +71,7 @@ instrumented/
 instrumented-cjs/
 .vscode
 bin/**/*.js
+bin/**/*.d.ts
 examples/**/*.js
 examples/modules/
 examples/bundled

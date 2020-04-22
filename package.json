@@ -16,8 +16,7 @@
     "author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
     "license": "MIT",
     "files": [
-        "bin/bin.js",
-        "bin/wclib.bin.js",
+        "bin/**/*.js",
         "build/**"
     ],
     "@std/esm": "cjs",

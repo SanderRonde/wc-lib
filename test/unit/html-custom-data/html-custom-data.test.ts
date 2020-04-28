@@ -314,6 +314,18 @@ baseComponents.forEach(({ component, name }) => {
 
     {
         // Joining
+        test('returns empty object if no data is passed', (t) => {
+            t.deepEqual(
+                joinCustomData(),
+                {
+                    version: 1.1,
+                    tags: [],
+                    globalAttributes: [],
+                    valueSets: [],
+                },
+                'value is "empty"'
+            );
+        });
         test('can merge custom data with nothing', (t) => {
             const customData: HTMLCustomData = {
                 version: 1.1,

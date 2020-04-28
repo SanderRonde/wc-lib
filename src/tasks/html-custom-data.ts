@@ -343,6 +343,14 @@ export function generateHTMLCustomData(
  * @returns {HTMLCustomData} The joined custom data
  */
 export function joinCustomData(...datas: HTMLCustomData[]): HTMLCustomData {
+    if (datas.length === 0)
+        return {
+            version: DEFAULT_VERSION,
+            tags: [],
+            globalAttributes: [],
+            valueSets: [],
+        };
+
     return {
         version: datas[0].version,
         tags: HTMLCustomData.Joining.joinTags(

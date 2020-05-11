@@ -98,6 +98,56 @@ function jsxRenderSpec(fixture: string) {
                         );
                     });
                 });
+                it("doesn't render junk", () => {
+                    cy.get('#test').then(([jsxEl]: JQuery<JSXElement>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.not.include('12345');
+                    });
+                });
+                it('displays a warning when rendering junk', () => {
+                    cy.window().then((window) => {
+                        const stub = cy.stub(
+                            window.console,
+                            'warn',
+                            (...args: any[]) => {
+                                expect(args[0]).to.be.equal(
+                                    'Unknown tag value'
+                                );
+                            }
+                        );
+
+                        cy.get('#test').then(([jsxEl]: JQuery<JSXElement>) => {
+                            jsxEl.renderToDOM();
+
+                            cy.wrap(stub).should('be.called');
+                        });
+                    });
+                });
+                it("renders functions that don't use attributes to text", () => {
+                    cy.get('#test').then(([jsxEl]: JQuery<JSXElement>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.include(
+                            '<div id="fnWithoutArgs"></div>'
+                        );
+                    });
+                });
+                it('renders functions that use attributes to text', () => {
+                    cy.get('#test').then(([jsxEl]: JQuery<JSXElement>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.include(
+                            '<div id="fnWithArgs" a="1" b="2"></div>'
+                        );
+                    });
+                });
             });
         });
         context('Special props', () => {

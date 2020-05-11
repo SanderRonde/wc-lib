@@ -38,5 +38,6 @@ export { LitHTMLConfig, TemplateResultLike } from './lib/template-manager.js';
 export * from './lib/util.js';
 export { noTheme } from './lib/theme-manager.js';
 export { css } from './lib/css.js';
+export { jsxToLiteral } from './lib/jsx-render';
 
 export { WebComponent } from './classes/full.js';

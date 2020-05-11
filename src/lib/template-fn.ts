@@ -52,14 +52,10 @@ export type Templater<R> = {
 };
 
 /**
- * The type of a templater that handles both
- * regular template literals and JSX elements.
- * The template literals through calling it as a
- * function and JSX elements through `templater.jsx(...)`
+ * The type of just the JSX templater function
  */
-export type JSXTemplater<R> = {
-    (strings: TemplateStringsArray, ...values: any[]): R;
-    jsx(
+export type JSXTemplateFunction<R> = {
+    (
         tag:
             | string
             | (Constructor<any> & {
@@ -70,6 +66,17 @@ export type JSXTemplater<R> = {
         } | null,
         ...children: (R | any)[]
     ): R;
+};
+
+/**
+ * The type of a templater that handles both
+ * regular template literals and JSX elements.
+ * The template literals through calling it as a
+ * function and JSX elements through `templater.jsx(...)`
+ */
+export type JSXTemplater<R> = {
+    (strings: TemplateStringsArray, ...values: any[]): R;
+    jsx: JSXTemplateFunction<R>;
 };
 
 /**

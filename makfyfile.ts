@@ -101,7 +101,7 @@ cmd('watch')
                         `tsc -p src/tsconfig.cjs.json -w --preserveWatchOutput`,
                         `tsc -p test/tsconfig.json -w --preserveWatchOutput`,
                         `tsc -p test/tsconfig.cjs.json -w --preserveWatchOutput`,
-                        `tsc -p bin/tsconfig.json ---preserveWatchOutput}`
+                        `tsc -p bin/tsconfig.json ---preserveWatchOutput`
                     )
                 );
         }

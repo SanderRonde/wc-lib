@@ -4,13 +4,13 @@
 [![npm version](https://badge.fury.io/js/wc-lib.svg)](https://badge.fury.io/js/wc-lib)
 [![codecov](https://codecov.io/gh/SanderRonde/wc-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/SanderRonde/wc-lib)
 
-A small library for creating webcomponents based around the idea of importing what you need, boasting 100% code coverage. Has out of the box support for server-sider rendering, I18N, themes, smart templates (that only render when they have to and that use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing, a smart custom property system that allows you to pass a reference to any value through HTML (yes even objects and HTML elements).
+A small library for creating webcomponents based around the idea of importing what you need, boasting 100% code coverage. Has out of the box support for server-sider rendering, I18N, themes, smart templates (that only render when they have to and that use [adopted stylesheets](https://wicg.github.io/construct-stylesheets/)), custom event listening/firing and a smart custom property system that allows you to pass a reference to any value through HTML (yes even objects and HTML elements).
 
 See below for more detailed explanations of these features, [check out the demo](https://wc-lib.sanderron.de/) or [install the npm package](https://www.npmjs.com/package/wc-lib)
 
 ## Getting started
 
-The easiest way to get started is to use the command-line tool to generate a component for you. First make sure to install the library through NPM or git as well as installing [lit-html](https://github.com/Polymer/lit-html). Then use the `wc-lib create --name "my-element"` command to generate a component in `./my-element`. At this point it's as simple as modifying the template files (`./my-element/my-element.html.ts` and `./my-element/my-element.css.ts`) to change what is rendered and the class definition itself (`./my-element/my-element.ts`) to change any properties and methods it has. Then make sure to call `MyElement.define()` somewhere in your code to make sure it's defined and at that point any `my-element` tags will render your element instead.
+The easiest way to get started is to use the command-line tool to generate a component for you. First make sure to install the library through npm or yarn as well as installing [lit-html](https://github.com/Polymer/lit-html). Then use the `wc-lib create --name "my-element"` command to generate a component in `./my-element`. At this point it's as simple as modifying the template files (`./my-element/my-element.html.ts` and `./my-element/my-element.css.ts`) to change what is rendered, and you can edit the class definition itself (`./my-element/my-element.ts`) to change any properties and methods it has. Then make sure to call `MyElement.define()` somewhere in your code to make sure it's defined and at that point any `<my-element>` tags will render your element instead.
 
 ## Examples
 
@@ -20,11 +20,11 @@ Check out the `/examples` directory for any example code or check them out [onli
 
 ### Server-side rendering
 
-Server side is easily done by passing the component to the `ssr` function with the props, attributes, i18n and theme you want. The resulting string is ready to be sent to the client. Thanks to webcomponents and shadowroots, loading the original JS and defining the component immediately "hydrates" the component. This replaces it with an actual webcomponent instance (intead of raw HTML) and allows for its JS to run.
+Server side is easily done by passing the component to the `ssr` function with the props, attributes, i18n and theme you want. The resulting string is ready to be sent to the client. Thanks to webcomponents and shadowroots, loading the original JS and defining the component immediately "hydrates" the component. This replaces it with an actual webcomponent instance (instead of raw HTML) and allows for its JS and handlers to run.
 
 ### Smart template system
 
-The templating system consists of two parts. The part renders them and the part that generates them (the part that features the custom properties). The part that renders them allows you to specify when to render certain templates. CSS stylesheets for example, don't need to be re-rendered when the language changes or when a property changes but they do need to be re-rendered when the theme changes. You can specify this for all templates (and you can choose multiple ones as well), making sure no unnecessary work is done. Stylesheets that are the same across all instances of a component are also merged into one, using [adopted stylesheets](https://wicg.github.io/construct-stylesheets/) to only render them once.
+The templating system consists of two parts. The part that renders them and the part that generates them (the part that features the custom properties). The part that renders them allows you to specify when to render certain templates. CSS stylesheets for example, don't need to be re-rendered when the language changes or when a property changes but they do need to be re-rendered when the theme changes. You can specify this for all templates (and you can choose multiple ones as well), making sure no unnecessary work is done. Stylesheets that are the same across all instances of a component are also merged into one, using [adopted stylesheets](https://wicg.github.io/construct-stylesheets/) to only update them once for all instances on the page.
 
 ### Custom properties
 
@@ -48,7 +48,7 @@ allows you to pass a reference to any value that is returned when `div['some-val
 
 ### I18N
 
-The i18n support only requires you to pass the path to your i18n files and a default language. Handling language changes, switching all elements on the page to that language, re-rendering them and handling any conflicts that might occur are all done by the library. Using the templating system, using i18n is as simple as the following line.
+The i18n support only requires you to pass the path to your i18n files and a default language. Handling language changes, switching all elements on the page to that language, re-rendering them and handling any conflicts that might occur is all done by the library. Using the templating system, using i18n is as simple as the following line.
 
 ```js
 html`
@@ -56,13 +56,13 @@ html`
 `;
 ```
 
-If you provide the library with typescript definitions for your i18n files, these keys will be typed as well, adding some more security.
+If you provide the library with typescript definitions for your i18n files, these keys will be typed as well, making sure you never end up with placeholders on the page.
 
-Changing languages is easy as well. Simply call this.setLang('newlang') on any component and the rest is done automatically.
+Changing languages is easy as well. Simply call `this.setLang('newlang')` on **any** component and the rest is done automatically for all elements on the page.
 
 ### Theming
 
-Theming support work similar to i18n support. It allows you to use the same theme globally, change them all at once and only re-render the templates that should be. Here's a small example:
+Theming support work similar to i18n support. It allows you to use the same theme globally, change them all at once and only re-render the templates that should be re-rendered. Here's a small example:
 
 ```js
 (html, props, theme) => {
@@ -78,35 +78,37 @@ Theming support work similar to i18n support. It allows you to use the same them
 };
 ```
 
+Again changing the theme is very easy. Simply call `this.setTheme('my-theme-name')` on **any** component and the rest is done automatically for all elements on the page.
+
 ### Custom events
 
 A simple event listener system with custom events allows you to listen to and fire custom events on components. The listener system also allows you to listen to specific child element IDs on re-render for example. This ensures that a listener is always present on the currently rendered version of the element. This takes away the pain of a templating system that re-renders elements often.
 
 ### Typescript
 
-This library is largely built around typescript support and being 100% sure your code is free of typos in the IDs, classes or attributes of elements.
+This library is largely built around typescript support and being 100% sure your code is free of typos in the IDs, classes or attributes of elements. This ensures you always know where and if things are being used, from i18n, to themes, properties and CSS. Basically everything can be typed.
 
 #### Properties
 
-The property system for example, allows you to define properties on an element along with types that are then enforced. This way you know for sure that you're accessing the right properties. (See [below](#props) for full list)
+The property system for example, allows you to define properties on an element along with types that are then enforced. This way you know for sure that you're accessing the right properties. (See [below](#props) for a full config list)
 
 #### Typed events
 
-The custom events that can be listened to for a given component can be specified in the class' type as well. This way you always know what events a specific component delivers and what arguments they have.
+The custom events that can be listened to for a given component can be specified in the class' type as well. This way you always know what events a specific component delivers and what arguments and return values they have.
 
 #### JSX
 
-The library also features support for JSX. Combining JSX with typed properties and events makes sure you even have type safety in your HTML, making sure you only pass the correct types of values to properties. **Note:** Make sure you have `{"jsx": "react", "jsxFactory": "html.jsx"}` in your tsconfig's compiler options since passing React elements won't work.
+The library also features support for JSX. Combining JSX with typed properties and events makes sure you even have type safety in your "HTML", ensuring you only pass the correct types of values to properties. **Note:** Put `{"jsx": "react", "jsxFactory": "html.jsx"}` in your tsconfig's compiler options since passing React elements won't work (React is not supported, only JSX is).
 
 #### HTML and CSS Typings
 
-Using [html-typings](https://github.com/SanderRonde/html-typings) (coincidentally created by the same author as this library), you can infer typings from your templates. Wc-lib then allows you to use these typings for a few things. The first is one is that every component has a `$` property that contains an id-mapped list of all of its children. When you pass the generated HTMl typings, this allows you to easily and reliably refer to child elements through `this.$.somechild`, while ensuring ID is correct but also returning the correct type (check the html-typings repo for more info).
+Using [html-typings](https://github.com/SanderRonde/html-typings) (coincidentally created by the same author as this library), you can infer typings from your templates. wc-lib then allows you to use these typings for a few things. The first is one is that every component has a `$` property that contains an id-mapped list of all of its children. When you pass the generated HTML typings, this allows you to easily and reliably refer to child elements through `this.$.somechild`, while ensuring ID is correct but also returning the correct type (check the html-typings repo/demo for more info).
 
-The second thing this is used for is for typed CSS. Something that often happens to websites is that they feature unused CSS. It can be very hard to get rid of this since you might never know if a click somewhere triggers some code that adds a class that is eventually used by your CSS. This is why this library allows you to use typed CSS. This way you only generate selectors that you know are actually in your HTML template. Here's an example:
+The second thing this is used for is for typed CSS. Something that often happens to websites is that they feature unused CSS. It can be very hard to get rid of this since you might never know if a click somewhere triggers some code that adds a class that is eventually used by your CSS. This is why this library allows you to use typed CSS. This way you only generate selectors that you know are actually used. Here's an example:
 
 ```js
 const enum STATES {
-	HOVER = 'hover'
+	TOGGLED = "toggled"
 }
 html`<style>
 	${css(this).id['something-red']} {
@@ -121,13 +123,13 @@ html`<style>
 		background-color: purple;
 	}
 
-	${css(this).class.button.toggle.hover} {
+	${css(this).class.button.toggle.toggled} {
 		font-weight: bold;
 	}
 </style>`;
 ```
 
-If any of these elements were to be removed from your HTML, you'd notice the type error and you could remove the offending CSS rule. You could also pass in enums. This can be great when combined with toggled classes. Say for example, that you have some code that applies a `hover` style to some button element. You could instead apply `STATES.HOVER`, after which you pass the `STATES` enum to the toggle types, which allows you to pick `hover` as a togglable state. This way your CSS can reference your code, adding even more type safety. It also has the benefit of removing the possibility of any typos in your CSS which can be a huge cause of frustration. See [below](#Typed-CSS) for full custom css documentation.
+If any of these elements (`#something-red, input, .purple, .button`) were to be removed from your HTML, you'd notice the type error and you could remove the offending CSS rule. You could also pass in enums. This can be great when combined with toggled classes. Say for example, that you have some code that applies a `toggled` style to some input element. You could instead apply `STATES.TOGGLED`, after which you pass the `STATES` enum to the toggle types, which allows you to pick `toggled` as a togglable state. This way your CSS can reference your code, adding even more type safety. It also has the benefit of removing the possibility of any typos in your CSS which can be a huge cause of frustration. See [below](#Typed-CSS) for the full custom css documentation.
 
 ## Reference
 
@@ -212,9 +214,9 @@ A property takes a single type (for example `PROP_TYPE.STRING`) or a config obje
 
 ### Typed-CSS
 
-The `css()` function itself can be called in two ways. Either with or without a parameter. If called with a parameter (which should be a component instance), the types are inferred from that parameter. If called without one, you should pass the type of that component as a generic argument (for example `css<MyComponent>()`) instead to make sure types can be inferred.
+The `css()` function itself can be called in two ways. Either with or without a parameter. If called with a parameter (which should be a component instance `this`), the types are inferred from that parameter. If called without one, you should pass the type of that component as a generic argument (for example `css<MyComponent>()`) instead to make sure types can be inferred.
 
-This function returns a class which we'll call `CSS` that can be chained off of. It has a few properties.
+The `css()` function returns a class which we'll call `CSS` that can be chained off of. It has a few properties.
 
 -   The `$`, `i` and `id` properties contain objects with the ID keys (previously passed through step one of Typed CSS) as its keys.
 -   The `class` and `c` properties do the same except with class keys.

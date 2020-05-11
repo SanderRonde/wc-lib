@@ -55,15 +55,18 @@ export type Templater<R> = {
  * The type of just the JSX templater function
  */
 export type JSXTemplateFunction<R> = {
-    (
+    <
+        A extends {
+            [key: string]: any;
+        }
+    >(
         tag:
             | string
+            | ((attrs?: A) => R)
             | (Constructor<any> & {
                   is: string;
               }),
-        attrs: {
-            [key: string]: any;
-        } | null,
+        attrs: A | null,
         ...children: (R | any)[]
     ): R;
 };

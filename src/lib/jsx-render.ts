@@ -80,13 +80,21 @@ function convertSpecialAttrs(
     return attrs;
 }
 
+export interface JSXElementLiteral {
+    readonly strings: TemplateStringsArray;
+    readonly values: ReadonlyArray<unknown>;
+}
+
 /**
  * Converts JSX to a template-literal type representation
  *
  * @template TR - The template result
+ * @template A - The type of the attributes
  *
- * @param {string|Constructor<any> & { is: string; }} tag - The tag
- * 	itself. Can either be a string or a class that can be constructed
+ * @param {string|((attrs?: A) => {strings: TemplateStringsArray;values: any[];})|Constructor<any> & { is: string; }} tag - The tag
+ * 	itself. Can either be a string, a class instance that contains an
+ *  `is` property that will be used, or a function that returns
+ *  a template result
  * @param {{ [key: string]: any; }|null} attrs - The attributes
  * 	of this tag
  * @param {(TR|any[]} children - Child of this template. Either
@@ -96,21 +104,35 @@ function convertSpecialAttrs(
  * @returns {{ strings: TemplateStringsArray; values: any[]; }} A
  * 	representation of the JSX element in template literal form
  */
-export function jsxToLiteral<TR>(
+export function jsxToLiteral<
+    TR,
+    A extends {
+        [key: string]: any;
+    }
+>(
     tag:
         | string
+        | ((attrs?: A) => JSXElementLiteral)
         | (Constructor<any> & {
               is: string;
           }),
-    attrs: {
-        [key: string]: any;
-    } | null,
+    attrs: A | null,
     ...children: (TR | any)[]
-): {
-    strings: TemplateStringsArray;
-    values: any[];
-} {
-    const tagName = typeof tag === 'string' ? tag : tag.is;
+): JSXElementLiteral {
+    let tagName: string;
+    if (typeof tag === 'string') {
+        tagName = tag;
+    } else if (
+        (typeof tag === 'object' || typeof tag === 'function') &&
+        'is' in tag
+    ) {
+        tagName = tag.is;
+    } else if (typeof tag === 'function') {
+        return (tag as (attrs?: A) => JSXElementLiteral)(attrs!);
+    } else {
+        console.warn('Unknown tag value');
+        return { strings: [] as any, values: [] };
+    }
     const strings: string[] = [];
     const values: any[] = [];
 

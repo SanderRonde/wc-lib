@@ -41,9 +41,12 @@ function convertSpecialAttrs(attrs) {
  * Converts JSX to a template-literal type representation
  *
  * @template TR - The template result
+ * @template A - The type of the attributes
  *
- * @param {string|Constructor<any> & { is: string; }} tag - The tag
- * 	itself. Can either be a string or a class that can be constructed
+ * @param {string|((attrs?: A) => {strings: TemplateStringsArray;values: any[];})|Constructor<any> & { is: string; }} tag - The tag
+ * 	itself. Can either be a string, a class instance that contains an
+ *  `is` property that will be used, or a function that returns
+ *  a template result
  * @param {{ [key: string]: any; }|null} attrs - The attributes
  * 	of this tag
  * @param {(TR|any[]} children - Child of this template. Either
@@ -54,7 +57,21 @@ function convertSpecialAttrs(attrs) {
  * 	representation of the JSX element in template literal form
  */
 export function jsxToLiteral(tag, attrs, ...children) {
-    const tagName = typeof tag === 'string' ? tag : tag.is;
+    let tagName;
+    if (typeof tag === 'string') {
+        tagName = tag;
+    }
+    else if ((typeof tag === 'object' || typeof tag === 'function') &&
+        'is' in tag) {
+        tagName = tag.is;
+    }
+    else if (typeof tag === 'function') {
+        return tag(attrs);
+    }
+    else {
+        console.warn('Unknown tag value');
+        return { strings: [], values: [] };
+    }
     const strings = [];
     const values = [];
     let openTagClosed = false;

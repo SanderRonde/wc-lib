@@ -220,6 +220,13 @@ export function generateHTMLCustomData(rootComponents, includeDependencies = tru
  * @returns {HTMLCustomData} The joined custom data
  */
 export function joinCustomData(...datas) {
+    if (datas.length === 0)
+        return {
+            version: DEFAULT_VERSION,
+            tags: [],
+            globalAttributes: [],
+            valueSets: [],
+        };
     return {
         version: datas[0].version,
         tags: HTMLCustomData.Joining.joinTags(...HTMLCustomData.Joining.flatten(datas.map((data) => {

@@ -44,6 +44,16 @@ export declare type Templater<R> = {
     (strings: TemplateStringsArray, ...values: any[]): R;
 };
 /**
+ * The type of just the JSX templater function
+ */
+export declare type JSXTemplateFunction<R> = {
+    <A extends {
+        [key: string]: any;
+    }>(tag: string | ((attrs?: A) => R) | (Constructor<any> & {
+        is: string;
+    }), attrs: A | null, ...children: (R | any)[]): R;
+};
+/**
  * The type of a templater that handles both
  * regular template literals and JSX elements.
  * The template literals through calling it as a
@@ -51,11 +61,7 @@ export declare type Templater<R> = {
  */
 export declare type JSXTemplater<R> = {
     (strings: TemplateStringsArray, ...values: any[]): R;
-    jsx(tag: string | (Constructor<any> & {
-        is: string;
-    }), attrs: {
-        [key: string]: any;
-    } | null, ...children: (R | any)[]): R;
+    jsx: JSXTemplateFunction<R>;
 };
 /**
  * A result that should be returned by the template

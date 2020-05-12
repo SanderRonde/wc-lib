@@ -1,4 +1,5 @@
-import { Constructor } from '../classes/types.js';
+import { Constructor, JSXIntrinsicProps } from '../classes/types.js';
+import { ClassNamesArg } from './shared.js';
 export interface JSXElementLiteral {
     readonly strings: TemplateStringsArray;
     readonly values: ReadonlyArray<unknown>;
@@ -27,4 +28,35 @@ export declare function jsxToLiteral<TR, A extends {
 }>(tag: string | ((attrs?: A) => JSXElementLiteral) | (Constructor<any> & {
     is: string;
 }), attrs: A | null, ...children: (TR | any)[]): JSXElementLiteral;
+/**
+ * A base JSX IntrinsicElements and ElementAttributesProperty.
+ * These can be used to quickly get JSX up and running without
+ * needing to use react's whole intrinsic elements set
+ *
+ * Example usage:
+ * ```ts
+ import { JSXBase } from 'wc-lib'
+  
+  declare global {
+    namespace JSX {
+       type IntrinsicElements = JSXBase.IntrinsicElements;
+       type ElementAttributesProperty = JSXBase.ElementAttributesProperty;
+    }
+  }
+  ```
+ */
+export declare namespace JSXBase {
+    type IntrinsicElements = {
+        [K in keyof HTMLElementTagNameMap]: Partial<HTMLElementTagNameMap[K]> & {
+            class?: ClassNamesArg;
+        } & JSXIntrinsicProps;
+    } & {
+        [K in keyof Omit<SVGElementTagNameMap, 'a'>]: Partial<SVGElementTagNameMap[K]> & {
+            class?: ClassNamesArg;
+        } & JSXIntrinsicProps;
+    };
+    interface ElementAttributesProperty {
+        jsxProps: 'jsxProps';
+    }
+}
 //# sourceMappingURL=jsx-render.d.ts.map

@@ -1,5 +1,6 @@
-import { Constructor } from '../classes/types.js';
+import { Constructor, JSXIntrinsicProps } from '../classes/types.js';
 import { casingToDashes } from './props.js';
+import { ClassNamesArg } from './shared.js';
 
 type Listeners = {
     [key: string]: (this: any, event: Event) => any;
@@ -205,4 +206,42 @@ export function jsxToLiteral<
         strings: arr as TemplateStringsArray,
         values,
     };
+}
+
+/**
+ * A base JSX IntrinsicElements and ElementAttributesProperty.
+ * These can be used to quickly get JSX up and running without
+ * needing to use react's whole intrinsic elements set
+ * 
+ * Example usage:
+ * ```ts
+ import { JSXBase } from 'wc-lib'
+  
+  declare global { 
+    namespace JSX {
+       type IntrinsicElements = JSXBase.IntrinsicElements;
+       type ElementAttributesProperty = JSXBase.ElementAttributesProperty;
+    }
+  }
+  ```
+ */
+export namespace JSXBase {
+    export type IntrinsicElements = {
+        [K in keyof HTMLElementTagNameMap]: Partial<
+            HTMLElementTagNameMap[K]
+        > & {
+            class?: ClassNamesArg;
+        } & JSXIntrinsicProps;
+    } &
+        {
+            [K in keyof Omit<SVGElementTagNameMap, 'a'>]: Partial<
+                SVGElementTagNameMap[K]
+            > & {
+                class?: ClassNamesArg;
+            } & JSXIntrinsicProps;
+        };
+
+    export interface ElementAttributesProperty {
+        jsxProps: 'jsxProps';
+    }
 }

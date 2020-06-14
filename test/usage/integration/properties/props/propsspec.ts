@@ -1069,7 +1069,7 @@ export function propsSpec(
                         cy.window().then((window) => {
                             cy.document().then((document) => {
                                 const stub = cy.stub(
-                                    window.console,
+                                    (window as any).console,
                                     'warn',
                                     (...args: any[]) => {
                                         expect(args[0]).to.be.equal(
@@ -1278,7 +1278,7 @@ export function propsSpec(
                                 cy.document().then((document) => {
                                     cy.window().then((window) => {
                                         const stub = cy.stub(
-                                            window.console,
+                                            (window as any).console,
                                             'warn',
                                             (...args: any[]) => {
                                                 expect(args[0]).to.be.equal(
@@ -1299,7 +1299,7 @@ export function propsSpec(
                                 cy.document().then((document) => {
                                     cy.window().then((window) => {
                                         const stub = cy.stub(
-                                            window.console,
+                                            (window as any).console,
                                             'warn',
                                             (...args: any[]) => {
                                                 expect(args[0]).to.be.equal(

@@ -45,7 +45,7 @@ context('Custom CSS Manager', function() {
             cy.document().then((document) => {
                 cy.window().then((window) => {
                     const stub = cy.stub(
-                        window.console,
+                        (window as any).console,
                         'warn',
                         (...args: any[]) => {
                             expect(args[0]).to.be.equal(

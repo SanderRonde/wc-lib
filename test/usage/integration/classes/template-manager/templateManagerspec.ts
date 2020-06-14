@@ -25,7 +25,7 @@ export function templateManagerSpec(fixtures: {
                 cy.document().then((document) => {
                     cy.window().then((window) => {
                         const stub = cy.stub(
-                            window.console,
+                            (window as any).console,
                             'warn',
                             (...args: any[]) => {
                                 expect(args[0]).to.contain(
@@ -256,7 +256,7 @@ export function templateManagerSpec(fixtures: {
                     cy.document().then((document) => {
                         cy.window().then((window) => {
                             const stub = cy.stub(
-                                window.console,
+                                (window as any).console,
                                 'warn',
                                 (...args: any[]) => {
                                     expect(args[0]).to.be.equal(
@@ -406,7 +406,7 @@ export function templateManagerSpec(fixtures: {
                 it('gives a warning when using an invalid ref type', () => {
                     cy.window().then((window) => {
                         const stub = cy.stub(
-                            window.console,
+                            (window as any).console,
                             'warn',
                             (...args: any[]) => {
                                 expect(args[0]).to.be.equal('Invalid ref');
@@ -432,7 +432,7 @@ export function templateManagerSpec(fixtures: {
                 it('gives a warning when a component has no parent and getParentRef is called', () => {
                     cy.window().then((window) => {
                         const warnStub = cy.stub(
-                            window.console,
+                            (window as any).console,
                             'warn',
                             (...args: any[]) => {
                                 expect(args[0]).to.be.equal(

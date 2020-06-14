@@ -110,7 +110,7 @@ function jsxRenderSpec(fixture: string) {
                 it('displays a warning when rendering junk', () => {
                     cy.window().then((window) => {
                         const stub = cy.stub(
-                            window.console,
+                            (window as any).console,
                             'warn',
                             (...args: any[]) => {
                                 expect(args[0]).to.be.equal(

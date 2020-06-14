@@ -237,6 +237,11 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.15**:
+
+-   Add JSX mode to command-line tool
+-   Make sure no TS warnings occur on initial creation (no unused params)
+
 **1.1.14**:
 
 -   Fix `required` option not doing anything for jsx proptypes

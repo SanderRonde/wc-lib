@@ -683,6 +683,18 @@ export function PropsElementFixtureFactory(
                         },
                     ],
                 },
+
+                deepWatchInvalidValues: {
+                    type: ComplexType<DeepObject>(),
+                    watch: true,
+                    watchProperties: ['**'],
+                    value: {
+                        a: {
+                            date: new Date(),
+                            regexp: new RegExp(''),
+                        },
+                    },
+                },
             },
         });
 

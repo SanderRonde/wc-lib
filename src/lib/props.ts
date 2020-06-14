@@ -655,6 +655,14 @@ namespace Watching {
         return proxy;
     }
 
+    function canWatchValue(value: any) {
+        return (
+            typeof value === 'object' &&
+            !(value instanceof Date) &&
+            !(value instanceof RegExp)
+        );
+    }
+
     function watchObjectLevel(
         obj: any,
         level: PathLevel,
@@ -699,7 +707,7 @@ namespace Watching {
                         (typeof prop !== 'symbol' && level.get(prop + '')) ||
                         level.get('*')!;
 
-                    if (nextLevel.map.size && typeof value === 'object') {
+                    if (nextLevel.map.size && canWatchValue(value)) {
                         // Watch this as well
                         value = watchObjectLevel(
                             value,
@@ -746,7 +754,7 @@ namespace Watching {
         for (const name of Object.keys(obj)) {
             if (
                 (level.has(name) || level.has('*')) &&
-                typeof obj[name] === 'object'
+                canWatchValue(obj[name])
             ) {
                 obj[name] = watchObjectLevel(
                     obj[name],

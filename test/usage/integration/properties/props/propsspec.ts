@@ -2260,6 +2260,28 @@ export function propsSpec(
                                 }
                             );
                         });
+                        it('does not watch non-watchable values', () => {
+                            cy.get('props-element').then(
+                                ([el]: JQuery<PropsElement>) => {
+                                    expect(el)
+                                        .to.have.property('props')
+                                        .to.have.property(
+                                            'deepWatchInvalidValues'
+                                        )
+                                        .to.have.property('a')
+                                        .to.have.property('date')
+                                        .to.be.instanceOf(Date);
+                                    expect(el)
+                                        .to.have.property('props')
+                                        .to.have.property(
+                                            'deepWatchInvalidValues'
+                                        )
+                                        .to.have.property('a')
+                                        .to.have.property('regexpe')
+                                        .to.be.instanceOf(RegExp);
+                                }
+                            );
+                        });
                     });
                 });
             });

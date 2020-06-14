@@ -79,3 +79,5 @@ examples/ssr
 
 TODO.*
 TODO
+test/types/*.js
+test/types/*.d.ts

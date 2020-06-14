@@ -19,7 +19,7 @@ function capitalize(name: string) {
 }
 
 const indexTemplate = (name: string, wclib: string, querymap: boolean) =>
-    `import { ConfigurableWebComponent, Props, PROP_TYPE, config } from '${wclib}';\n${
+    `import { ConfigurableWebComponent, Props, config } from '${wclib}';\n${
         querymap
             ? `import { IDMapType, ClassMapType } from './${name}-querymap';\n`
             : ''
@@ -48,14 +48,6 @@ export class ${capitalize(
 	props = Props.define(this, {
 		// ...
 	});
-
-	mounted() {
-		// ...
-	}
-
-	firstRender() {
-		// ...
-	}
 }`;
 
 const htmlTemplate = (
@@ -72,7 +64,7 @@ export const ${capitalize(
         dashesToUppercase(name)
     )}HTML = new TemplateFn<${capitalize(
         dashesToUppercase(name)
-    )}>(function (html, props) {
+    )}>(function (html, _props, _theme) {
 	return ${
         jsx
             ? `<div></div>`
@@ -92,7 +84,7 @@ export const ${capitalize(
         dashesToUppercase(name)
     )}CSS = new TemplateFn<${capitalize(
         dashesToUppercase(name)
-    )}>(function (html) {
+    )}>(function (html, _props, _theme) {
 	return html\`<style>
 		
 	</style>\`

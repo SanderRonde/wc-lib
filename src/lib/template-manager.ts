@@ -1,3 +1,10 @@
+import {
+    refPrefix,
+    Props,
+    PropConfigObject,
+    getDefinePropConfig,
+    ComplexType,
+} from './props.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { TemplateFn, CHANGE_TYPE, TemplateFnLike } from './template-fn.js';
@@ -7,7 +14,6 @@ import { bindToClass, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { RenderOptions } from 'lit-html/lib/render-options';
 import { classNames, ClassNamesArg } from './shared.js';
 import { ClassToObj } from './configurable.js';
-import { refPrefix } from './props.js';
 
 class ClassAttributePart implements Part {
     public value: any = undefined;
@@ -229,6 +235,32 @@ class ComplexTemplateProcessor implements TemplateProcessor {
         ));
     }
 
+    private _isComplexAttribute(element: Element, name: string) {
+        const propsComponent = element as WebComponentTemplateManagerMixinInstance & {
+            props?: Props;
+        };
+        /* istanbul ignore next */
+        if (!('props' in propsComponent) || !propsComponent.props) return false;
+
+        const props = propsComponent.props;
+        /* istanbul ignore next */
+        if (!props.__config) return false;
+        const propsConfig: {
+            reflect: PropConfigObject | void;
+            priv: PropConfigObject | void;
+        } = props.__config;
+
+        const joined: PropConfigObject = {
+            ...(propsConfig.reflect || {}),
+            ...(propsConfig.priv || {}),
+        };
+        if (!(name in joined)) return false;
+
+        const propConfig = getDefinePropConfig(joined[name]);
+
+        return propConfig.type === ComplexType();
+    }
+
     handleAttributeExpressions(
         element: Element,
         name: string,
@@ -268,7 +300,11 @@ class ComplexTemplateProcessor implements TemplateProcessor {
             return [
                 new ClassAttributePart(element, name, strings, this._config),
             ];
-        } else if (prefix === '#' || name === CUSTOM_CSS_PROP_NAME) {
+        } else if (
+            prefix === '#' ||
+            name === CUSTOM_CSS_PROP_NAME ||
+            this._isComplexAttribute(element, name)
+        ) {
             //Objects, functions, templates, arrays
             if (prefix === '#') {
                 name = name.slice(1);

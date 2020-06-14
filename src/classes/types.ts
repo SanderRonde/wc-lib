@@ -217,14 +217,9 @@ export type JSXDefinition<
             DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>
         >
     > &
-    Partial<
-        RequiredProps<
-            DefaultVal<
-                GetReflectPropConfig<InferPropConfig<C>>,
-                PropConfigObject
-            >,
-            DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>
-        >
+    RequiredProps<
+        DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>,
+        DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>
     > & {
         __listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
         '@'?: Partial<EventsToAttr<HTMLElementEventMap>>;

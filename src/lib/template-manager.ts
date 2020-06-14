@@ -129,7 +129,16 @@ class ComplexValuePart implements Part {
             this._pendingValue = new TemplateFn(null, CHANGE_TYPE.NEVER, null);
         }
 
-        this.element.setAttribute(this.name, this.genRef(this._pendingValue));
+        // Try and JSON parse it
+        try {
+            JSON.parse(this._pendingValue);
+            this.element.setAttribute(this.name, this._pendingValue);
+        } catch (e) {
+            this.element.setAttribute(
+                this.name,
+                this.genRef(this._pendingValue)
+            );
+        }
         this.value = this._pendingValue;
         this._pendingValue = this._config.noChange;
     }
@@ -251,6 +260,7 @@ class ComplexTemplateProcessor implements TemplateProcessor {
         } = props.__config;
 
         const joined: PropConfigObject = {
+            /* istanbul ignore next */
             ...(propsConfig.reflect || {}),
             ...(propsConfig.priv || {}),
         };

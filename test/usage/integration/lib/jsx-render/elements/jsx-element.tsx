@@ -297,3 +297,18 @@ export class JSXElement extends ConfigurableWebComponent {
 
     onEvent() {}
 }
+
+@config({
+    is: 'jsx-render-2',
+    html: new TemplateFn<JSXElement>(
+        function(html) {
+            return <div>{false && <div id="not-rendered"></div>}</div>;
+        },
+        CHANGE_TYPE.PROP,
+        render
+    ),
+    css: null,
+})
+export class JSXElement2 extends ConfigurableWebComponent {
+    onEvent() {}
+}

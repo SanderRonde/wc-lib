@@ -604,6 +604,14 @@ namespace Watching {
         return genProxyStructureLevel(pathParts);
     }
 
+    function canWatchValue(value: any) {
+        return (
+            typeof value === 'object' &&
+            !(value instanceof Date) &&
+            !(value instanceof RegExp)
+        );
+    }
+
     function createDeepProxy(obj: any, onAccessed: () => void) {
         const isArr = Array.isArray(obj);
 
@@ -625,7 +633,7 @@ namespace Watching {
                 })();
 
                 if (isPropChange) {
-                    if (typeof value === 'object' && value !== null) {
+                    if (canWatchValue(value) && value !== null) {
                         value = createDeepProxy(value, onAccessed);
                     }
                     const oldValue = obj[prop];
@@ -648,19 +656,11 @@ namespace Watching {
             },
         });
         for (const key of Object.keys(obj)) {
-            if (typeof obj[key] === 'object') {
+            if (canWatchValue(obj[key])) {
                 obj[key] = createDeepProxy(obj[key], onAccessed);
             }
         }
         return proxy;
-    }
-
-    function canWatchValue(value: any) {
-        return (
-            typeof value === 'object' &&
-            !(value instanceof Date) &&
-            !(value instanceof RegExp)
-        );
     }
 
     function watchObjectLevel(
@@ -801,10 +801,7 @@ namespace Watching {
         watch: boolean,
         watchProperties: string[]
     ) {
-        if (
-            typeof value === 'object' &&
-            (watch || watchProperties.length > 0)
-        ) {
+        if (canWatchValue(value) && (watch || watchProperties.length > 0)) {
             value = watchObject(
                 value,
                 watchProperties.length

@@ -143,7 +143,8 @@ export function jsxToLiteral<
     const hasAttrs = !!(
         newAttrs && Object.getOwnPropertyNames(newAttrs).length
     );
-    const hasChildren = !!children.length;
+    const filteredChildren = children.filter((child) => child !== false);
+    const hasChildren = !!filteredChildren.length;
 
     if (!hasAttrs && !hasChildren) {
         strings.push(`<${tagName}></${tagName}>`);
@@ -175,7 +176,10 @@ export function jsxToLiteral<
     }
 
     if (hasChildren) {
-        for (const child of children.slice(0, children.length - 1)) {
+        for (const child of filteredChildren.slice(
+            0,
+            filteredChildren.length - 1
+        )) {
             if (!openTagClosed) {
                 strings.push(`">`);
                 openTagClosed = true;
@@ -184,7 +188,7 @@ export function jsxToLiteral<
             values.push(child);
         }
 
-        values.push(children[children.length - 1]);
+        values.push(filteredChildren[filteredChildren.length - 1]);
         if (!openTagClosed) {
             strings.push(`">`);
             openTagClosed = true;

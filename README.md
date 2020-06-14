@@ -235,6 +235,13 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 **Note**: If at any time you see a question mark as a suggestion instead of something else you expected, you've probably done something wrong.
 
+## Changelog
+
+**1.1.14**:
+
+-   Fix `required` option not doing anything for jsx proptypes
+-   Update TS to 3.9.5
+
 ## License
 
 ```text

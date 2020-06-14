@@ -456,6 +456,36 @@ export function templateManagerSpec(fixtures: {
                         );
                     });
                 });
+                it('automatically applies complex if type is complex', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            cy.get('#complex')
+                                .shadowFind('#refTest3')
+                                .then(
+                                    ([el]: JQuery<ComplexReceiverElement>) => {
+                                        expect(el.props.parent).to.be.equal(
+                                            complex,
+                                            'complex attribute is set'
+                                        );
+                                    }
+                                );
+                        }
+                    );
+                });
+                it('does not automatically apply complex if type is not complex', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            cy.get('#complex')
+                                .shadowFind('#refTest4')
+                                .then(([el]: JQuery<TestElement>) => {
+                                    expect(el.getAttribute('x')).to.be.equal(
+                                        complex.toString(),
+                                        'regular attribute is set to stringified value'
+                                    );
+                                });
+                        }
+                    );
+                });
             });
             context('Other', () => {
                 it('sets an attribute normally when using non-special chars', () => {

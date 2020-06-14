@@ -148,6 +148,16 @@ function jsxRenderSpec(fixture: string) {
                         );
                     });
                 });
+                it('does not render "false"', () => {
+                    cy.get('#test2').then(([jsxEl]: JQuery<JSXElement>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.not.include('not-rendered');
+                        expect(textRender).to.not.include('false');
+                    });
+                });
             });
         });
         context('Special props', () => {
@@ -273,6 +283,22 @@ function jsxRenderSpec(fixture: string) {
 
                         cy.get('#test')
                             .shadowFind('#refs-name')
+                            .then(([el]: JQuery<SpecialPropClass>) => {
+                                expect(el).to.have.attr('complex');
+
+                                expect(
+                                    el.getParentRef(el.getAttribute('complex')!)
+                                ).to.be.equal(complex);
+                            });
+                    });
+                });
+                it('autodetects complex refs for complex attributes', () => {
+                    cy.get('#test').then(([el]: JQuery<JSXElement>) => {
+                        el.props.someComplex = {};
+                        const complex = el.props.someComplex;
+
+                        cy.get('#test')
+                            .shadowFind('#refs-name2')
                             .then(([el]: JQuery<SpecialPropClass>) => {
                                 expect(el).to.have.attr('complex');
 

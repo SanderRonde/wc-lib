@@ -219,6 +219,11 @@ export function complexElementFactory(base: any) {
                         id="refTest2"
                         #parent="${this}"
                     ></test-element>
+                    <complex-receiver-element
+                        id="refTest3"
+                        parent="${this}"
+                    ></complex-receiver-element>
+                    <test-element id="refTest4" x="${this}"></test-element>
                     <test-element id="regular" :key="${'value'}"></test-element>
                 `;
             },

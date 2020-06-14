@@ -258,6 +258,10 @@ function FnWithArgs(props: { a: number; b: number }) {
                         {...{ '#complex': props.someComplex }}
                         id="refs-name"
                     />
+                    <SpecialPropClass
+                        complex={props.someComplex}
+                        id="refs-name2"
+                    />
                     {html.jsx(12345 as any, null)}
                     <FnWithoutArgs />
                     <FnWithArgs a={1} b={2} />

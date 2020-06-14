@@ -1055,36 +1055,6 @@ export function propsSpec(
                                     });
                             });
                     });
-                    it('falls back to undefined when the JSON is invalid', () => {
-                        cy.get('props-element')
-                            .shadowFind('#invalid-json')
-                            .then(([receiver]: JQuery<ObjEl>) => {
-                                expect(receiver)
-                                    .to.have.property('props')
-                                    .to.have.property('complex')
-                                    .to.be.equal(undefined);
-                            });
-                    });
-                    it('shows a warning when the JSON is invalid', () => {
-                        cy.window().then((window) => {
-                            cy.document().then((document) => {
-                                const stub = cy.stub(
-                                    (window as any).console,
-                                    'warn',
-                                    (...args: any[]) => {
-                                        expect(args[0]).to.be.equal(
-                                            'Failed to parse complex JSON value'
-                                        );
-                                    }
-                                );
-                                const el = document.createElement(
-                                    'props-element'
-                                );
-                                document.body.appendChild(el);
-                                cy.wrap(stub).should('be.called');
-                            });
-                        });
-                    });
                     if (complex) {
                         it('can be set by setting the property', () => {
                             cy.get('props-element')

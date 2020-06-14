@@ -191,22 +191,22 @@ export declare const WebComponentHierarchyManagerMixin: <P extends Constructor<P
         registerChild<G extends GA["globalProps"] = {
             [key: string]: any;
         }>(element: HTMLElement): G;
-        globalProps<G_1 extends GA["globalProps"] = {
+        globalProps<G_2 extends GA["globalProps"] = {
             [key: string]: any;
-        }>(): GlobalPropsFunctions<DefaultVal<G_1, {
+        }>(): GlobalPropsFunctions<DefaultVal<G_2, {
             [key: string]: any;
         }>>;
         getRoot<T extends GA["root"] = {}>(): T;
         runGlobalFunction<E extends {}, R = any>(fn: (element: E) => R): R[];
-        getParent<T_1 extends GA["parent"] = {}>(): T_1 | null;
+        getParent<T_2 extends GA["parent"] = {}>(): T_2 | null;
         listenGP<GP extends GA["globalProps"] = {
             [key: string]: any;
-        }>(event: "globalPropChange", listener: (prop: keyof GP, newValue: GP[keyof GP], oldValue: GP[keyof GP]) => void, once?: boolean | undefined): void;
+        }>(event: 'globalPropChange', listener: (prop: keyof GP, newValue: GP[keyof GP], oldValue: GP[keyof GP]) => void, once?: boolean | undefined): void;
         listenGP<GP_1 extends GA["globalProps"] = {
             [key: string]: any;
-        }, K extends keyof GP_1 = any>(event: "globalPropChange", listener: (prop: K, newValue: GP_1[K], oldValue: GP_1[K]) => void, once?: boolean | undefined): void;
+        }, K extends keyof GP_1 = any>(event: 'globalPropChange', listener: (prop: K, newValue: GP_1[K], oldValue: GP_1[K]) => void, once?: boolean | undefined): void;
         listen: <EV extends string | number>(event: EV, listener: (...args: import("./listener.js").EventListenerObj[EV]["args"]) => import("./listener.js").EventListenerObj[EV]["returnType"], once?: boolean) => void;
-        fire: <EV_1 extends string | number, R_1 extends import("./listener.js").EventListenerObj[EV_1]["returnType"]>(event: EV_1, ...params: import("./listener.js").EventListenerObj[EV_1]["args"]) => R_1[];
+        fire: <EV_1 extends string | number, R_2 extends import("./listener.js").EventListenerObj[EV_1]["returnType"]>(event: EV_1, ...params: import("./listener.js").EventListenerObj[EV_1]["args"]) => R_2[];
         accessKey: string;
         readonly accessKeyLabel: string;
         autocapitalize: string;
@@ -224,9 +224,9 @@ export declare const WebComponentHierarchyManagerMixin: <P extends Constructor<P
         title: string;
         translate: boolean;
         click(): void;
-        addEventListener<K_1 extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
+        addEventListener<K_1 extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "change" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K_1, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_1]) => any, options?: boolean | AddEventListenerOptions | undefined): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined): void;
-        removeEventListener<K_2 extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "change" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K_2, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_2]) => any, options?: boolean | EventListenerOptions | undefined): void;
+        removeEventListener<K_2 extends "waiting" | "error" | "abort" | "cancel" | "progress" | "ended" | "input" | "select" | "fullscreenchange" | "fullscreenerror" | "animationcancel" | "animationend" | "animationiteration" | "animationstart" | "auxclick" | "blur" | "canplay" | "canplaythrough" | "change" | "click" | "close" | "contextmenu" | "cuechange" | "dblclick" | "drag" | "dragend" | "dragenter" | "dragexit" | "dragleave" | "dragover" | "dragstart" | "drop" | "durationchange" | "emptied" | "focus" | "focusin" | "focusout" | "gotpointercapture" | "invalid" | "keydown" | "keypress" | "keyup" | "load" | "loadeddata" | "loadedmetadata" | "loadstart" | "lostpointercapture" | "mousedown" | "mouseenter" | "mouseleave" | "mousemove" | "mouseout" | "mouseover" | "mouseup" | "pause" | "play" | "playing" | "pointercancel" | "pointerdown" | "pointerenter" | "pointerleave" | "pointermove" | "pointerout" | "pointerover" | "pointerup" | "ratechange" | "reset" | "resize" | "scroll" | "securitypolicyviolation" | "seeked" | "seeking" | "selectionchange" | "selectstart" | "stalled" | "submit" | "suspend" | "timeupdate" | "toggle" | "touchcancel" | "touchend" | "touchmove" | "touchstart" | "transitioncancel" | "transitionend" | "transitionrun" | "transitionstart" | "volumechange" | "wheel" | "copy" | "cut" | "paste">(type: K_2, listener: (this: HTMLElement, ev: HTMLElementEventMap[K_2]) => any, options?: boolean | EventListenerOptions | undefined): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions | undefined): void;
         readonly assignedSlot: HTMLSlotElement | null;
         readonly attributes: NamedNodeMap;
@@ -242,6 +242,7 @@ export declare const WebComponentHierarchyManagerMixin: <P extends Constructor<P
         onfullscreenchange: ((this: Element, ev: Event) => any) | null;
         onfullscreenerror: ((this: Element, ev: Event) => any) | null;
         outerHTML: string;
+        readonly ownerDocument: Document;
         readonly prefix: string | null;
         readonly scrollHeight: number;
         scrollLeft: number;
@@ -306,26 +307,25 @@ export declare const WebComponentHierarchyManagerMixin: <P extends Constructor<P
         readonly nodeName: string;
         readonly nodeType: number;
         nodeValue: string | null;
-        readonly ownerDocument: Document | null;
         readonly parentElement: HTMLElement | null;
         readonly parentNode: (Node & ParentNode) | null;
         readonly previousSibling: ChildNode | null;
         textContent: string | null;
-        appendChild<T_2 extends Node>(newChild: T_2): T_2;
+        appendChild<T_4 extends Node>(newChild: T_4): T_4;
         cloneNode(deep?: boolean | undefined): Node;
         compareDocumentPosition(other: Node): number;
         contains(other: Node | null): boolean;
         getRootNode(options?: GetRootNodeOptions | undefined): Node;
         hasChildNodes(): boolean;
-        insertBefore<T_3 extends Node>(newChild: T_3, refChild: Node | null): T_3;
+        insertBefore<T_5 extends Node>(newChild: T_5, refChild: Node | null): T_5;
         isDefaultNamespace(namespace: string | null): boolean;
         isEqualNode(otherNode: Node | null): boolean;
         isSameNode(otherNode: Node | null): boolean;
         lookupNamespaceURI(prefix: string | null): string | null;
         lookupPrefix(namespace: string | null): string | null;
         normalize(): void;
-        removeChild<T_4 extends Node>(oldChild: T_4): T_4;
-        replaceChild<T_5 extends Node>(newChild: Node, oldChild: T_5): T_5;
+        removeChild<T_6 extends Node>(oldChild: T_6): T_6;
+        replaceChild<T_7 extends Node>(newChild: Node, oldChild: T_7): T_7;
         readonly ATTRIBUTE_NODE: number;
         readonly CDATA_SECTION_NODE: number;
         readonly COMMENT_NODE: number;

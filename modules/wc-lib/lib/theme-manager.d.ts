@@ -131,9 +131,9 @@ export declare const WebComponentThemeManagerMixin: <P extends Constructor<Pick<
         getTheme<T extends GA["themes"] = {
             [key: string]: any;
         }>(): T[keyof T];
-        setTheme<N_1 extends GA["themes"] = {
+        setTheme<N_2 extends GA["themes"] = {
             [key: string]: any;
-        }>(themeName: Extract<keyof N_1, string>): void;
+        }>(themeName: Extract<keyof N_2, string>): void;
         renderToDOM: (change?: CHANGE_TYPE) => void;
         globalProps?: (<G extends {
             [key: string]: any;
@@ -155,15 +155,15 @@ export declare const WebComponentThemeManagerMixin: <P extends Constructor<Pick<
             }, K extends keyof GP_1 = any>(event: "globalPropChange", listener: (prop: K, newValue: GP_1[K], oldValue: GP_1[K]) => void, once?: boolean | undefined): void;
         } | undefined;
     };
-    initTheme<T_1 extends {
+    initTheme<T_2 extends {
         [name: string]: any;
     }>({ theme, defaultTheme, }: {
-        theme: T_1;
-        defaultTheme?: Extract<keyof T_1, string> | undefined;
+        theme: T_2;
+        defaultTheme?: Extract<keyof T_2, string> | undefined;
     }): void;
-    setDefaultTheme<T_2 extends {
+    setDefaultTheme<T_3 extends {
         [name: string]: any;
-    }>(name: Extract<keyof T_2, string>): void;
+    }>(name: Extract<keyof T_3, string>): void;
     __constructedCSSChanged(element: {
         self: any;
         getThemeName(): string;

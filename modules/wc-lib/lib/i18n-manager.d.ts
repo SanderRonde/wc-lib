@@ -234,7 +234,7 @@ export declare const WebComponentI18NManagerMixin: <P extends Constructor<Partia
         returner?: ((messagePromise: Promise<string>, placeHolder: string) => any) | undefined;
     })): void;
     __prom(key: string, ...values: any[]): Promise<string>;
-    __<R_1>(key: string, ...values: any[]): string | R_1;
+    __<R_2>(key: string, ...values: any[]): string | R_2;
     readonly langReady: Promise<void>;
 } & P;
 //# sourceMappingURL=i18n-manager.d.ts.map

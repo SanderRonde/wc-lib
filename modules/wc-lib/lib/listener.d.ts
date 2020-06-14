@@ -126,8 +126,8 @@ export declare const WebComponentListenableMixin: <P extends Constructor<{}>>(su
     } = {}, E extends EventListenerObj = GetEvents<GA>>(...args: any[]): {
         readonly listenerMap: ListenerSet<E>;
         listen<EV extends keyof E>(event: EV, listener: (...args: E[EV]["args"]) => E[EV]["returnType"], once?: boolean): void;
-        clearListener<EV_1 extends keyof E>(event: EV_1, listener?: ((...args: E[EV_1]["args"]) => E[EV_1]["returnType"]) | undefined): void;
-        fire<EV_2 extends keyof E, R extends E[EV_2]["returnType"]>(event: EV_2, ...params: E[EV_2]["args"]): R[];
+        clearListener<EV_2 extends keyof E>(event: EV_2, listener?: ((...args: E[EV_2]["args"]) => E[EV_2]["returnType"]) | undefined): void;
+        fire<EV_4 extends keyof E, R extends E[EV_4]["returnType"]>(event: EV_4, ...params: E[EV_4]["args"]): R[];
     };
 } & P;
 //# sourceMappingURL=listener.d.ts.map

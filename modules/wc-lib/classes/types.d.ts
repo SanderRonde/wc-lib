@@ -123,7 +123,7 @@ export declare type JSXDefinition<C extends {
         reflect?: PropConfigObject;
         priv?: PropConfigObject;
     }>;
-}, ATTR = {}> = ATTR & Partial<OptionalProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>>> & Partial<RequiredProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>>> & {
+}, ATTR = {}> = ATTR & Partial<OptionalProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>>> & RequiredProps<DefaultVal<GetReflectPropConfig<InferPropConfig<C>>, PropConfigObject>, DefaultVal<GetPrivPropConfig<InferPropConfig<C>>, PropConfigObject>> & {
     __listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
     '@'?: Partial<EventsToAttr<HTMLElementEventMap>>;
     __component_listeners?: Partial<CustomEventsToAttr<InferEvents<C>>>;

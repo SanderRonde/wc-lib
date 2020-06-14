@@ -58,7 +58,7 @@ export declare const WebComponentCustomCSSManagerMixin: <P extends Constructor<P
     new (...args: any[]): {
         isMounted: boolean;
         __hasCustomCSS(): boolean;
-        customCSS(): TemplateFnLike<number> | TemplateFnLike<number>[];
+        customCSS(): TemplateFnLike | TemplateFnLike[];
         getAttribute: (qualifiedName: string) => string | null;
         hasAttribute: (qualifiedName: string) => boolean;
         setAttribute: (qualifiedName: string, value: string) => void;

@@ -1,4 +1,4 @@
-import { WebComponentDefinerTypeInstance, WebComponentBaseTypeInstance, WebComponentListenableTypeInstance, WebComponentTypeInstance, WebComponentThemeManagerTypeInstance, WebComponentI18NManagerTypeInstance, WebComponentHierarchyManagerTypeInstance, WebComponentTemplateManagerTypeInstance } from './types';
+import { WebComponentDefinerTypeInstance, WebComponentDefinerTypeStatic, WebComponentBaseTypeInstance, WebComponentBaseTypeStatic, WebComponentListenableTypeInstance, WebComponentListenableTypeStatic, WebComponentTypeInstance, WebComponentTypeStatic, WebComponentThemeManagerTypeInstance, WebComponentThemeManagerTypeStatic, WebComponentI18NManagerTypeInstance, WebComponentI18NManagerTypeStatic, WebComponentHierarchyManagerTypeInstance, WebComponentHierarchyManagerTypeStatic, WebComponentTemplateManagerTypeInstance, WebComponentTemplateManagerTypeStatic } from './types';
 import { EventListenerObj, GetEvents } from '../lib/listener.js';
 import { SelectorMap, GetEls } from '../lib/component.js';
 declare const basicWebComponent: {
@@ -16,7 +16,7 @@ declare const basicWebComponent: {
         langs?: string | undefined;
         selectors?: SelectorMap | undefined;
     } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(...args: any[]): HTMLElement & WebComponentDefinerTypeInstance & WebComponentBaseTypeInstance & WebComponentListenableTypeInstance<GA, E> & WebComponentTypeInstance<GA, void, ELS>;
-    self(): Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentTypeInstance, never>;
+    self(): WebComponentDefinerTypeStatic & WebComponentBaseTypeStatic & WebComponentListenableTypeStatic & WebComponentTypeStatic;
 } & Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentTypeInstance, never>;
 /**
  * A component that only uses the most basic parts
@@ -44,7 +44,7 @@ declare const themingWebComponent: {
         langs?: string | undefined;
         selectors?: SelectorMap | undefined;
     } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(...args: any[]): HTMLElement & WebComponentDefinerTypeInstance & WebComponentBaseTypeInstance & WebComponentListenableTypeInstance<GA, E> & WebComponentThemeManagerTypeInstance<GA> & WebComponentTypeInstance<GA, void, ELS>;
-    self(): Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentThemeManagerTypeInstance, "__constructedCSSChanged" | "initTheme" | "setDefaultTheme"> & Pick<typeof WebComponentTypeInstance, never>;
+    self(): WebComponentDefinerTypeStatic & WebComponentBaseTypeStatic & WebComponentListenableTypeStatic & WebComponentThemeManagerTypeStatic & WebComponentTypeStatic;
 } & Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentThemeManagerTypeInstance, "__constructedCSSChanged" | "initTheme" | "setDefaultTheme"> & Pick<typeof WebComponentTypeInstance, never>;
 /**
  * A component that uses the basic parts combined
@@ -77,7 +77,7 @@ declare const i18NWebComponent: {
         langs?: string | undefined;
         selectors?: SelectorMap | undefined;
     } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(...args: any[]): HTMLElement & WebComponentDefinerTypeInstance & WebComponentBaseTypeInstance & WebComponentListenableTypeInstance<GA, E> & WebComponentI18NManagerTypeInstance<GA> & WebComponentTypeInstance<GA, void, ELS>;
-    self(): Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentI18NManagerTypeInstance, "initI18N" | "__prom" | "__" | "langReady"> & Pick<typeof WebComponentTypeInstance, never>;
+    self(): WebComponentDefinerTypeStatic & WebComponentBaseTypeStatic & WebComponentListenableTypeStatic & WebComponentI18NManagerTypeStatic & WebComponentTypeStatic;
 } & Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentI18NManagerTypeInstance, "initI18N" | "__prom" | "__" | "langReady"> & Pick<typeof WebComponentTypeInstance, never>;
 /**
  * A component that uses the basic parts combined
@@ -110,7 +110,7 @@ declare const complexTemplatingWebComponent: {
         langs?: string | undefined;
         selectors?: SelectorMap | undefined;
     } = {}, E extends EventListenerObj = GetEvents<GA>, ELS extends SelectorMap = GetEls<GA>>(...args: any[]): HTMLElement & WebComponentDefinerTypeInstance & WebComponentBaseTypeInstance & WebComponentListenableTypeInstance<GA, E> & WebComponentHierarchyManagerTypeInstance<GA> & WebComponentTemplateManagerTypeInstance & WebComponentTypeInstance<GA, void, ELS>;
-    self(): Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentHierarchyManagerTypeInstance, never> & Pick<typeof WebComponentTemplateManagerTypeInstance, "initComplexTemplateProvider"> & Pick<typeof WebComponentTypeInstance, never>;
+    self(): WebComponentDefinerTypeStatic & WebComponentBaseTypeStatic & WebComponentListenableTypeStatic & WebComponentHierarchyManagerTypeStatic & WebComponentTemplateManagerTypeStatic & WebComponentTypeStatic;
 } & Pick<typeof WebComponentDefinerTypeInstance, "dependencies" | "is" | "define"> & Pick<typeof WebComponentBaseTypeInstance, "html" | "css" | "__constructedCSSChanged"> & Pick<typeof WebComponentListenableTypeInstance, never> & Pick<typeof WebComponentHierarchyManagerTypeInstance, never> & Pick<typeof WebComponentTemplateManagerTypeInstance, "initComplexTemplateProvider"> & Pick<typeof WebComponentTypeInstance, never>;
 /**
  * A component that uses the basic parts combined

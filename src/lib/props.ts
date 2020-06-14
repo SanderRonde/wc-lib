@@ -484,7 +484,16 @@ export interface DefinePropTypeConfig extends DefineTypeConfig {
     description?: string;
 }
 
-function getDefinePropConfig(
+/**
+ * Get the prop config from a propconfig property.
+ * Converts the type|config format to always be config
+ *
+ * @param {DefinePropTypes | DefinePropTypeConfig} value - The
+ *  value to check
+ *
+ * @returns {DefinePropTypeConfig} A prop config object
+ */
+export function getDefinePropConfig(
     value: DefinePropTypes | DefinePropTypeConfig
 ): DefinePropTypeConfig {
     if (typeof value === 'object' && 'type' in value) {

@@ -58,7 +58,12 @@ export class ${capitalize(
 	}
 }`;
 
-const htmlTemplate = (name: string, wclib: string, lithtml: string) =>
+const htmlTemplate = (
+    name: string,
+    wclib: string,
+    lithtml: string,
+    jsx: boolean
+) =>
     `import { TemplateFn, CHANGE_TYPE } from '${wclib}';
 import { ${capitalize(dashesToUppercase(name))} } from './${name}.js';
 import { render } from '${lithtml}';
@@ -68,9 +73,13 @@ export const ${capitalize(
     )}HTML = new TemplateFn<${capitalize(
         dashesToUppercase(name)
     )}>(function (html, props) {
-	return html\`
+	return ${
+        jsx
+            ? `<div></div>`
+            : `html\`
 		<div></div>
-	\`
+	\``
+    }
 }, CHANGE_TYPE.PROP, render);
 `;
 
@@ -156,6 +165,11 @@ export async function commandCreate() {
             description: 'Add code for a local querymap',
             alternatives: ['-q'],
         },
+        jsx: {
+            type: IO_FORMAT.BOOLEAN,
+            description: 'Generate JSX code',
+            alternatives: ['-j'],
+        },
         'wc-lib-path': {
             type: IO_FORMAT.STRING,
             description:
@@ -192,8 +206,8 @@ export async function commandCreate() {
     console.log(green(`\t${name}.ts`), green(checkmark()));
 
     await writeFile(
-        path.join(process.cwd(), name, `${name}.html.ts`),
-        htmlTemplate(name, wclib, litHTML)
+        path.join(process.cwd(), name, `${name}.html.${io.jsx ? 'tsx' : 'ts'}`),
+        htmlTemplate(name, wclib, litHTML, io.jsx)
     );
     console.log(green(`\t${name}.html.ts`), green(checkmark()));
 

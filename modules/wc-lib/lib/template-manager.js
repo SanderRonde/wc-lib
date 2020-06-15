@@ -4,10 +4,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+import { refPrefix, getDefinePropConfig, ComplexType, } from './props.js';
 import { TemplateFn } from './template-fn.js';
 import { bindToClass, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { classNames } from './shared.js';
-import { refPrefix } from './props.js';
 class ClassAttributePart {
     constructor(element, name, strings, _config) {
         this.element = element;
@@ -102,7 +102,14 @@ class ComplexValuePart {
             console.warn('Attempting to use non TemplateFn value for custom-css property');
             this._pendingValue = new TemplateFn(null, 4 /* NEVER */, null);
         }
-        this.element.setAttribute(this.name, this.genRef(this._pendingValue));
+        // Try and JSON parse it
+        try {
+            JSON.parse(this._pendingValue);
+            this.element.setAttribute(this.name, this._pendingValue);
+        }
+        catch (e) {
+            this.element.setAttribute(this.name, this.genRef(this._pendingValue));
+        }
         this.value = this._pendingValue;
         this._pendingValue = this._config.noChange;
     }
@@ -170,6 +177,22 @@ class ComplexTemplateProcessor {
         }
         return (this.__componentEventPart = getComponentEventPart(this._config.EventPart, this._config));
     }
+    _isComplexAttribute(element, name) {
+        const propsComponent = element;
+        /* istanbul ignore next */
+        if (!('props' in propsComponent) || !propsComponent.props)
+            return false;
+        const props = propsComponent.props;
+        /* istanbul ignore next */
+        if (!props.__config)
+            return false;
+        const propsConfig = props.__config;
+        const joined = Object.assign(Object.assign({}, (propsConfig.reflect || {})), (propsConfig.priv || {}));
+        if (!(name in joined))
+            return false;
+        const propConfig = getDefinePropConfig(joined[name]);
+        return propConfig.type === ComplexType();
+    }
     handleAttributeExpressions(element, name, strings) {
         const prefix = name[0];
         if (prefix === '@') {
@@ -197,7 +220,9 @@ class ComplexTemplateProcessor {
                 new ClassAttributePart(element, name, strings, this._config),
             ];
         }
-        else if (prefix === '#' || name === CUSTOM_CSS_PROP_NAME) {
+        else if (prefix === '#' ||
+            name === CUSTOM_CSS_PROP_NAME ||
+            this._isComplexAttribute(element, name)) {
             //Objects, functions, templates, arrays
             if (prefix === '#') {
                 name = name.slice(1);

@@ -94,7 +94,16 @@ const complex = Symbol('complex type');
 export function ComplexType() {
     return complex;
 }
-function getDefinePropConfig(value) {
+/**
+ * Get the prop config from a propconfig property.
+ * Converts the type|config format to always be config
+ *
+ * @param {DefinePropTypes | DefinePropTypeConfig} value - The
+ *  value to check
+ *
+ * @returns {DefinePropTypeConfig} A prop config object
+ */
+export function getDefinePropConfig(value) {
     if (typeof value === 'object' && 'type' in value) {
         const data = value;
         return data;
@@ -182,6 +191,11 @@ var Watching;
         }
         return genProxyStructureLevel(pathParts);
     }
+    function canWatchValue(value) {
+        return (typeof value === 'object' &&
+            !(value instanceof Date) &&
+            !(value instanceof RegExp));
+    }
     function createDeepProxy(obj, onAccessed) {
         const isArr = Array.isArray(obj);
         const proxy = new Proxy(obj, {
@@ -201,7 +215,7 @@ var Watching;
                     }
                 })();
                 if (isPropChange) {
-                    if (typeof value === 'object' && value !== null) {
+                    if (canWatchValue(value) && value !== null) {
                         value = createDeepProxy(value, onAccessed);
                     }
                     const oldValue = obj[prop];
@@ -225,7 +239,7 @@ var Watching;
             },
         });
         for (const key of Object.keys(obj)) {
-            if (typeof obj[key] === 'object') {
+            if (canWatchValue(obj[key])) {
                 obj[key] = createDeepProxy(obj[key], onAccessed);
             }
         }
@@ -264,7 +278,7 @@ var Watching;
                 if (isPropChange) {
                     const nextLevel = (typeof prop !== 'symbol' && level.get(prop + '')) ||
                         level.get('*');
-                    if (nextLevel.map.size && typeof value === 'object') {
+                    if (nextLevel.map.size && canWatchValue(value)) {
                         // Watch this as well
                         value = watchObjectLevel(value, nextLevel.map, onAccessed);
                     }
@@ -305,7 +319,7 @@ var Watching;
         });
         for (const name of Object.keys(obj)) {
             if ((level.has(name) || level.has('*')) &&
-                typeof obj[name] === 'object') {
+                canWatchValue(obj[name])) {
                 obj[name] = watchObjectLevel(obj[name], (level.get(name) || level.get('*')).map, onAccessed);
             }
         }
@@ -330,8 +344,7 @@ var Watching;
         }
     }
     function watchValue(render, value, watch, watchProperties) {
-        if (typeof value === 'object' &&
-            (watch || watchProperties.length > 0)) {
+        if (canWatchValue(value) && (watch || watchProperties.length > 0)) {
             value = watchObject(value, watchProperties.length
                 ? getProxyStructure(watchProperties)
                 : new Map([

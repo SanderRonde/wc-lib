@@ -113,6 +113,12 @@ export class SpecialPropClass extends ConfigurableWebComponent<
                 watch: false,
             },
         },
+        priv: {
+            complexpriv: {
+                type: ComplexType<{}>(),
+                watch: false,
+            },
+        },
     });
 }
 
@@ -261,6 +267,10 @@ function FnWithArgs(props: { a: number; b: number }) {
                     <SpecialPropClass
                         complex={props.someComplex}
                         id="refs-name2"
+                    />
+                    <SpecialPropClass
+                        complexpriv={props.someComplex}
+                        id="refs-name3"
                     />
                     {html.jsx(12345 as any, null)}
                     <FnWithoutArgs />

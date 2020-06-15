@@ -306,6 +306,15 @@ function jsxRenderSpec(fixture: string) {
                                     el.getParentRef(el.getAttribute('complex')!)
                                 ).to.be.equal(complex);
                             });
+                        cy.get('#test')
+                            .shadowFind('#refs-name3')
+                            .then(([el]: JQuery<SpecialPropClass>) => {
+                                expect(el).to.have.attr('complex');
+
+                                expect(
+                                    el.getParentRef(el.getAttribute('complex')!)
+                                ).to.be.equal(complex);
+                            });
                     });
                 });
             });

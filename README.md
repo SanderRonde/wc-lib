@@ -237,6 +237,12 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.16**:
+
+-   Now autodetects complex attributes, allowing you to use them without prefacing with `#`
+-   Ignores JSX children with the value `false`. So that `{condition && <div></div>}` is possible
+-   Don't deeply watch RegExps and Dates
+
 **1.1.15**:
 
 -   Add JSX mode to command-line tool

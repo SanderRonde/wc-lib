@@ -260,9 +260,8 @@ class ComplexTemplateProcessor implements TemplateProcessor {
         } = props.__config;
 
         const joined: PropConfigObject = {
-            /* istanbul ignore next */
-            ...(propsConfig.reflect || {}),
-            ...(propsConfig.priv || {}),
+            ...propsConfig.reflect,
+            ...propsConfig.priv,
         };
         if (!(name in joined)) return false;
 

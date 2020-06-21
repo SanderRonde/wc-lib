@@ -156,7 +156,7 @@ function getComponentEventPart(
         constructor(
             element: WebComponentTemplateManagerMixinInstance | Element,
             eventName: string,
-            eventContext?: EventTarget
+            eventContext: EventTarget
         ) {
             super(element, eventName, eventContext);
             this.element = element;
@@ -224,10 +224,7 @@ function getComponentEventPart(
 
         handleEvent(...args: any[]) {
             if (typeof this.value === 'function') {
-                return this.value.call(
-                    this.eventContext || this.element,
-                    ...args
-                );
+                return this.value.call(this.eventContext, ...args);
             } else {
                 return (this.value as {
                     handleEvent(...args: any[]): void;

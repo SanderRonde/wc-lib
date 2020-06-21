@@ -162,6 +162,14 @@ function getComponentEventPart(eventPart, config) {
             this.value = newListener;
             this._pendingValue = config.noChange;
         }
+        handleEvent(...args) {
+            if (typeof this.value === 'function') {
+                return this.value.call(this.eventContext, ...args);
+            }
+            else {
+                return this.value.handleEvent(...args);
+            }
+        }
     };
 }
 class ComplexTemplateProcessor {
@@ -187,7 +195,7 @@ class ComplexTemplateProcessor {
         if (!props.__config)
             return false;
         const propsConfig = props.__config;
-        const joined = Object.assign(Object.assign({}, (propsConfig.reflect || {})), (propsConfig.priv || {}));
+        const joined = Object.assign(Object.assign({}, propsConfig.reflect), propsConfig.priv);
         if (!(name in joined))
             return false;
         const propConfig = getDefinePropConfig(joined[name]);

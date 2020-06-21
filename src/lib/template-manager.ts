@@ -221,6 +221,19 @@ function getComponentEventPart(
             this.value = newListener;
             this._pendingValue = config.noChange as any;
         }
+
+        handleEvent(...args: any[]) {
+            if (typeof this.value === 'function') {
+                return this.value.call(
+                    this.eventContext || this.element,
+                    ...args
+                );
+            } else {
+                return (this.value as {
+                    handleEvent(...args: any[]): void;
+                }).handleEvent(...args);
+            }
+        }
     };
 }
 

@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.17**:
+
+-   Fix bug with multiple args not working for custom event listeners
+
 **1.1.16**:
 
 -   Now autodetects complex attributes, allowing you to use them without prefacing with `#`

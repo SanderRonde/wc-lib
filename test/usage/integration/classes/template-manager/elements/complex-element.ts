@@ -18,7 +18,8 @@ import { TestElement } from '../../elements/test-element.js';
 export declare class EventTriggeringElement extends ConfigurableWebComponent<{
     events: {
         ev: {
-            args: [number];
+            args: [number, number];
+            returnType: number | void;
         };
     };
 }> {}
@@ -34,6 +35,7 @@ export declare class BooleanElement extends ConfigurableWebComponent {
 export declare class ComplexElement extends ConfigurableWebComponent {
     clickHandler(_arg?: any): void;
     customClickHandler(_num: number): void;
+    handleEvent(_arg?: any): void;
 }
 
 export declare class WrongElementListen extends ConfigurableWebComponent {}
@@ -131,44 +133,56 @@ export function complexElementFactory(base: any) {
                     ></test-element>
                     <event-triggering-element
                         id="customEventTest"
-                        @@ev="${(arg: number) => {
+                        @@ev="${(arg1: number, arg2: number) => {
                             // Done so the function can be stubbed
-                            return this.customClickHandler(arg);
+                            return this.customClickHandler(arg1, arg2);
                         }}"
                     ></event-triggering-element>
                     <event-triggering-element
                         id="customEventDirective"
-                        @@ev="${resolveDirectiveWith((arg: number) => {
-                            // Done so the function can be stubbed
-                            return this.customClickHandler(arg);
-                        })}"
+                        @@ev="${resolveDirectiveWith(
+                            (arg1: number, arg2: number) => {
+                                // Done so the function can be stubbed
+                                return this.customClickHandler(arg1, arg2);
+                            }
+                        )}"
                     ></event-triggering-element>
                     <event-triggering-element
                         id="customEventReplaced"
                         @@ev="${changeValueDirective(
-                            (arg: number) => {
+                            (arg1: number) => {
                                 // Done so the function can be stubbed
-                                return this.customClickHandler(arg + 1);
+                                return this.customClickHandler(arg1 + 1);
                             },
-                            (arg: number) => {
+                            (arg1: number) => {
                                 // Done so the function can be stubbed
-                                return this.customClickHandler(arg + 2);
+                                return this.customClickHandler(arg1 + 2);
                             }
                         )}"
                     ></event-triggering-element>
                     <event-triggering-element
                         id="customEventRemoved"
-                        @@ev="${changeValueDirective((arg: number) => {
-                            // Done so the function can be stubbed
-                            return this.customClickHandler(arg);
-                        }, null)}"
+                        @@ev="${changeValueDirective(
+                            (arg1: number, arg2: number) => {
+                                // Done so the function can be stubbed
+                                return this.customClickHandler(arg1, arg2);
+                            },
+                            null
+                        )}"
                     ></event-triggering-element>
                     <event-triggering-element
                         id="customEventDefined"
-                        @@ev="${changeValueDirective(null, (arg: number) => {
-                            // Done so the function can be stubbed
-                            return this.customClickHandler(arg);
-                        })}"
+                        @@ev="${changeValueDirective(
+                            null,
+                            (arg1: number, arg2: number) => {
+                                // Done so the function can be stubbed
+                                return this.customClickHandler(arg1, arg2);
+                            }
+                        )}"
+                    ></event-triggering-element>
+                    <event-triggering-element
+                        id="handleEvent"
+                        @@ev="${this}"
                     ></event-triggering-element>
                     <!-- {} is truthy -->
                     <boolean-element
@@ -242,7 +256,11 @@ export function complexElementFactory(base: any) {
             // Will be stubbed
         }
 
-        customClickHandler(_num: number) {
+        customClickHandler(_num1: number, _num2?: number) {
+            // Will be stubbed
+        }
+
+        handleEvent(_arg?: any) {
             // Will be stubbed
         }
     }

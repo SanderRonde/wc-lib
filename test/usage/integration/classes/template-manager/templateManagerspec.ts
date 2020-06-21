@@ -113,15 +113,17 @@ export function templateManagerSpec(fixtures: {
                 it('fires the handler when a custom event is fired', () => {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
-                            const arg = Math.random();
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
                             const clickStub = cy
                                 .stub(complex, 'customClickHandler')
-                                .withArgs(arg);
+                                .withArgs(arg1, arg2);
                             cy.get('#complex')
                                 .shadowFind('#customEventTest')
                                 .then(
                                     ([el]: JQuery<EventTriggeringElement>) => {
-                                        el.fire('ev', arg);
+                                        console.log('here');
+                                        el.fire('ev', arg1, arg2);
                                         expect(clickStub).to.be.called;
                                     }
                                 );
@@ -131,15 +133,16 @@ export function templateManagerSpec(fixtures: {
                 it('can be a directive', () => {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
-                            const arg = Math.random();
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
                             const clickStub = cy
                                 .stub(complex, 'customClickHandler')
-                                .withArgs(arg);
+                                .withArgs(arg1, arg2);
                             cy.get('#complex')
                                 .shadowFind('#customEventDirective')
                                 .then(
                                     ([el]: JQuery<EventTriggeringElement>) => {
-                                        el.fire('ev', arg);
+                                        el.fire('ev', arg1, arg2);
                                         expect(clickStub).to.be.called;
                                     }
                                 );
@@ -149,7 +152,8 @@ export function templateManagerSpec(fixtures: {
                 it('only uses the latest listener', () => {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
-                            const arg = Math.random();
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
                             let wasCalled: boolean = false;
                             const clickStub = cy.stub(
                                 complex,
@@ -157,12 +161,12 @@ export function templateManagerSpec(fixtures: {
                                 (value: number) => {
                                     if (wasCalled) {
                                         expect(value).to.be.equal(
-                                            arg + 2,
+                                            arg1 + 2,
                                             'registered the newest listener'
                                         );
                                     } else {
                                         expect(value).to.be.equal(
-                                            arg + 1,
+                                            arg1 + 1,
                                             'is still using the old listener'
                                         );
                                         wasCalled = true;
@@ -173,7 +177,7 @@ export function templateManagerSpec(fixtures: {
                                 .shadowFind('#customEventReplaced')
                                 .then(
                                     ([el]: JQuery<EventTriggeringElement>) => {
-                                        el.fire('ev', arg);
+                                        el.fire('ev', arg1, arg2);
                                         expect(clickStub).to.be.calledOnce;
                                         cy.wait(1000);
                                         cy.get('#complex')
@@ -182,7 +186,7 @@ export function templateManagerSpec(fixtures: {
                                                 ([el]: JQuery<
                                                     EventTriggeringElement
                                                 >) => {
-                                                    el.fire('ev', arg);
+                                                    el.fire('ev', arg1, arg2);
                                                     expect(clickStub).to.be
                                                         .calledTwice;
                                                 }
@@ -195,15 +199,16 @@ export function templateManagerSpec(fixtures: {
                 it('can remove the listener', () => {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
-                            const arg = Math.random();
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
                             const clickStub = cy
                                 .stub(complex, 'customClickHandler')
-                                .withArgs(arg);
+                                .withArgs(arg1, arg2);
                             cy.get('#complex')
                                 .shadowFind('#customEventRemoved')
                                 .then(
                                     ([el]: JQuery<EventTriggeringElement>) => {
-                                        el.fire('ev', arg);
+                                        el.fire('ev', arg1, arg2);
                                         expect(clickStub).to.be.calledOnce;
                                         cy.wait(1000);
                                         cy.get('#complex')
@@ -212,7 +217,7 @@ export function templateManagerSpec(fixtures: {
                                                 ([el]: JQuery<
                                                     EventTriggeringElement
                                                 >) => {
-                                                    el.fire('ev', arg);
+                                                    el.fire('ev', arg1, arg2);
                                                     expect(clickStub).to.be
                                                         .calledOnce;
                                                 }
@@ -225,15 +230,16 @@ export function templateManagerSpec(fixtures: {
                 it('can add the listener', () => {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
-                            const arg = Math.random();
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
                             const clickStub = cy
                                 .stub(complex, 'customClickHandler')
-                                .withArgs(arg);
+                                .withArgs(arg1, arg2);
                             cy.get('#complex')
                                 .shadowFind('#customEventDefined')
                                 .then(
                                     ([el]: JQuery<EventTriggeringElement>) => {
-                                        el.fire('ev', arg);
+                                        el.fire('ev', arg1, arg2);
                                         expect(clickStub).to.not.be.called;
                                         cy.wait(1000);
                                         cy.get('#complex')
@@ -242,11 +248,84 @@ export function templateManagerSpec(fixtures: {
                                                 ([el]: JQuery<
                                                     EventTriggeringElement
                                                 >) => {
-                                                    el.fire('ev', arg);
+                                                    el.fire('ev', arg1, arg2);
                                                     expect(clickStub).to.be
                                                         .calledOnce;
                                                 }
                                             );
+                                    }
+                                );
+                        }
+                    );
+                });
+                it('can use handleEvent', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
+                            const clickStub = cy
+                                .stub(complex, 'handleEvent')
+                                .withArgs(arg1, arg2);
+                            cy.get('#complex')
+                                .shadowFind('#handleEvent')
+                                .then(
+                                    ([el]: JQuery<EventTriggeringElement>) => {
+                                        el.fire('ev', arg1, arg2);
+                                        expect(clickStub).to.be.called;
+                                    }
+                                );
+                        }
+                    );
+                });
+                it('captures the return value with functions', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
+                            const retval = Math.random();
+                            const clickStub = cy
+                                .stub(complex, 'customClickHandler')
+                                .withArgs(arg1, arg2)
+                                .returns(retval);
+                            cy.get('#complex')
+                                .shadowFind('#customEventTest')
+                                .then(
+                                    ([el]: JQuery<EventTriggeringElement>) => {
+                                        const fireReturned = el.fire(
+                                            'ev',
+                                            arg1,
+                                            arg2
+                                        );
+                                        expect(clickStub).to.be.called;
+                                        expect(fireReturned).to.have.length(1);
+                                        expect(fireReturned).to.include(retval);
+                                    }
+                                );
+                        }
+                    );
+                });
+                it('captures the return value with handleEvent', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
+                            const retval = Math.random();
+                            const clickStub = cy
+                                .stub(complex, 'handleEvent')
+                                .withArgs(arg1, arg2)
+                                .returns(retval);
+                            cy.get('#complex')
+                                .shadowFind('#handleEvent')
+                                .then(
+                                    ([el]: JQuery<EventTriggeringElement>) => {
+                                        const fireReturned = el.fire(
+                                            'ev',
+                                            arg1,
+                                            arg2
+                                        );
+                                        expect(clickStub).to.be.called;
+                                        expect(fireReturned).to.have.length(1);
+                                        expect(fireReturned).to.include(retval);
                                     }
                                 );
                         }

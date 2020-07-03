@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.18**:
+
+-   Fix typing issue for JSX
+
 **1.1.17**:
 
 -   Fix bug with multiple args not working for custom event listeners

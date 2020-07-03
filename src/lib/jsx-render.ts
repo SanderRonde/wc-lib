@@ -231,17 +231,21 @@ export function jsxToLiteral<
  */
 export namespace JSXBase {
     export type IntrinsicElements = {
-        [K in keyof HTMLElementTagNameMap]: Partial<
-            HTMLElementTagNameMap[K]
+        [K in keyof HTMLElementTagNameMap]: Omit<
+            Partial<HTMLElementTagNameMap[K]>,
+            'style'
         > & {
             class?: ClassNamesArg;
+            style?: Partial<CSSStyleDeclaration>;
         } & JSXIntrinsicProps;
     } &
         {
-            [K in keyof Omit<SVGElementTagNameMap, 'a'>]: Partial<
-                SVGElementTagNameMap[K]
+            [K in keyof Omit<SVGElementTagNameMap, 'a'>]: Omit<
+                Partial<SVGElementTagNameMap[K]>,
+                'style'
             > & {
                 class?: ClassNamesArg;
+                style?: Partial<CSSStyleDeclaration>;
             } & JSXIntrinsicProps;
         };
 

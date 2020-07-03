@@ -425,7 +425,7 @@ export function templateManagerSpec(fixtures: {
                         .shadowFind('#styleTestObj')
                         .then(([el]: JQuery<HTMLDivElement>) => {
                             expect(el.getAttribute('style')).to.be.equal(
-                                'color: red; background-color: blue',
+                                'color: red; background-color: blue;',
                                 'applies style correctly'
                             );
                         });
@@ -435,7 +435,7 @@ export function templateManagerSpec(fixtures: {
                         .shadowFind('#styleDirective')
                         .then(([el]: JQuery<HTMLDivElement>) => {
                             expect(el.getAttribute('style')).to.be.equal(
-                                'color: red; background-color: blue',
+                                'color: red; background-color: blue;',
                                 'applies style correctly'
                             );
                         });

@@ -221,6 +221,20 @@ export function complexElementFactory(base: any) {
                         id="classDirective"
                         class="${resolveDirectiveWith('a b c')}"
                     ></div>
+                    <div
+                        id="styleTestObj"
+                        style="${{ color: 'red', backgroundColor: 'blue' }}"
+                    ></div>
+                    <div
+                        id="styleTestString"
+                        style="${'color: red; background-color: blue;'}"
+                    ></div>
+                    <div
+                        id="styleDirective"
+                        style="${resolveDirectiveWith(
+                            'color: red; background-color: blue;'
+                        )}"
+                    ></div>
                     <complex-receiver-element
                         id="refTest"
                         #parent="${this}"

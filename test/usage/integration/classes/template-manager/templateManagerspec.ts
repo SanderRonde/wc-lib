@@ -409,6 +409,38 @@ export function templateManagerSpec(fixtures: {
                         });
                 });
             });
+            context('Style', () => {
+                it('applies the style object correctly', () => {
+                    cy.get('#complex')
+                        .shadowFind('#styleTestObj')
+                        .then(([el]: JQuery<HTMLDivElement>) => {
+                            expect(el.getAttribute('style')).to.be.equal(
+                                'color: red; background-color: blue;',
+                                'applies style correctly'
+                            );
+                        });
+                });
+                it('applies the style string correctly', () => {
+                    cy.get('#complex')
+                        .shadowFind('#styleTestObj')
+                        .then(([el]: JQuery<HTMLDivElement>) => {
+                            expect(el.getAttribute('style')).to.be.equal(
+                                'color: red; background-color: blue',
+                                'applies style correctly'
+                            );
+                        });
+                });
+                it('can be a directive', () => {
+                    cy.get('#complex')
+                        .shadowFind('#styleDirective')
+                        .then(([el]: JQuery<HTMLDivElement>) => {
+                            expect(el.getAttribute('style')).to.be.equal(
+                                'color: red; background-color: blue',
+                                'applies style correctly'
+                            );
+                        });
+                });
+            });
             context('Complex Values', () => {
                 it('passes complex references', () => {
                     cy.get('#complex').then(

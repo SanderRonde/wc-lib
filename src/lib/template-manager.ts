@@ -76,6 +76,74 @@ class ClassAttributePart implements Part {
     }
 }
 
+class StyleAttributePart implements Part {
+    public value: any = undefined;
+    private _pendingValue: any = undefined;
+
+    constructor(
+        public element: Element,
+        public name: string,
+        public strings: string[],
+        private _config: LitHTMLConfig
+    ) {}
+
+    private _isPrimitive(value: any): boolean {
+        return (
+            value === null ||
+            !(typeof value === 'object' || typeof value === 'function')
+        );
+    }
+
+    setValue(value: any): void {
+        /* istanbul ignore else */
+        if (
+            value !== this._config.noChange &&
+            (!this._isPrimitive(value) || value !== this.value)
+        ) {
+            this._pendingValue = value;
+        }
+    }
+
+    private _toDashes(camelCase: string): string {
+        return camelCase
+            .replace(/([a-z\d])([A-Z])/g, '$1-$2')
+            .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1-$2')
+            .toLowerCase();
+    }
+
+    private _getStyleString(args: Partial<CSSStyleDeclaration>) {
+        const arr: string[] = [];
+        for (const key in args) {
+            arr.push(`${this._toDashes(key)}: ${args[key]};`);
+        }
+        return arr.join(' ');
+    }
+
+    commit() {
+        while (this._config.isDirective(this._pendingValue)) {
+            const directive = this._pendingValue;
+            this._pendingValue = this._config.noChange;
+            directive(this);
+        }
+        /* istanbul ignore if */
+        if (this._pendingValue === this._config.noChange) {
+            return;
+        }
+        if (
+            typeof this._pendingValue === 'string' ||
+            typeof this._pendingValue === 'number'
+        ) {
+            //Equality has already been checked, set value
+            this.value = this._pendingValue + '';
+            this.element.setAttribute(this.name, this._pendingValue + '');
+        } else {
+            const styleString = this._getStyleString(this._pendingValue);
+            this.element.setAttribute(this.name, styleString);
+        }
+        this._pendingValue = this._config.noChange;
+    }
+}
+
 class ComplexValuePart implements Part {
     public value: any = undefined;
     private _pendingValue: any = undefined;
@@ -318,6 +386,11 @@ class ComplexTemplateProcessor implements TemplateProcessor {
             //Classname attribute
             return [
                 new ClassAttributePart(element, name, strings, this._config),
+            ];
+        } else if (name === 'style') {
+            //Style attribute
+            return [
+                new StyleAttributePart(element, name, strings, this._config),
             ];
         } else if (
             prefix === '#' ||

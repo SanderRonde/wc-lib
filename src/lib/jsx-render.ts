@@ -236,7 +236,7 @@ export namespace JSXBase {
             'style'
         > & {
             class?: ClassNamesArg;
-            style?: Partial<CSSStyleDeclaration>;
+            style?: Partial<CSSStyleDeclaration> | string;
         } & JSXIntrinsicProps;
     } &
         {
@@ -245,7 +245,7 @@ export namespace JSXBase {
                 'style'
             > & {
                 class?: ClassNamesArg;
-                style?: Partial<CSSStyleDeclaration>;
+                style?: Partial<CSSStyleDeclaration> | string;
             } & JSXIntrinsicProps;
         };
 

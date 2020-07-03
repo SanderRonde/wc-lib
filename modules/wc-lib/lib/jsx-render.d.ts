@@ -47,12 +47,14 @@ export declare function jsxToLiteral<TR, A extends {
  */
 export declare namespace JSXBase {
     type IntrinsicElements = {
-        [K in keyof HTMLElementTagNameMap]: Partial<HTMLElementTagNameMap[K]> & {
+        [K in keyof HTMLElementTagNameMap]: Omit<Partial<HTMLElementTagNameMap[K]>, 'style'> & {
             class?: ClassNamesArg;
+            style?: Partial<CSSStyleDeclaration>;
         } & JSXIntrinsicProps;
     } & {
-        [K in keyof Omit<SVGElementTagNameMap, 'a'>]: Partial<SVGElementTagNameMap[K]> & {
+        [K in keyof Omit<SVGElementTagNameMap, 'a'>]: Omit<Partial<SVGElementTagNameMap[K]>, 'style'> & {
             class?: ClassNamesArg;
+            style?: Partial<CSSStyleDeclaration>;
         } & JSXIntrinsicProps;
     };
     interface ElementAttributesProperty {

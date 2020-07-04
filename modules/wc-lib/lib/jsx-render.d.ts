@@ -49,12 +49,12 @@ export declare namespace JSXBase {
     type IntrinsicElements = {
         [K in keyof HTMLElementTagNameMap]: Omit<Partial<HTMLElementTagNameMap[K]>, 'style'> & {
             class?: ClassNamesArg;
-            style?: Partial<CSSStyleDeclaration>;
+            style?: Partial<CSSStyleDeclaration> | string;
         } & JSXIntrinsicProps;
     } & {
         [K in keyof Omit<SVGElementTagNameMap, 'a'>]: Omit<Partial<SVGElementTagNameMap[K]>, 'style'> & {
             class?: ClassNamesArg;
-            style?: Partial<CSSStyleDeclaration>;
+            style?: Partial<CSSStyleDeclaration> | string;
         } & JSXIntrinsicProps;
     };
     interface ElementAttributesProperty {

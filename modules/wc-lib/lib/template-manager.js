@@ -59,6 +59,62 @@ class ClassAttributePart {
         this._pendingValue = this._config.noChange;
     }
 }
+class StyleAttributePart {
+    constructor(element, name, strings, _config) {
+        this.element = element;
+        this.name = name;
+        this.strings = strings;
+        this._config = _config;
+        this.value = undefined;
+        this._pendingValue = undefined;
+    }
+    _isPrimitive(value) {
+        return (value === null ||
+            !(typeof value === 'object' || typeof value === 'function'));
+    }
+    setValue(value) {
+        /* istanbul ignore else */
+        if (value !== this._config.noChange &&
+            (!this._isPrimitive(value) || value !== this.value)) {
+            this._pendingValue = value;
+        }
+    }
+    _toDashes(camelCase) {
+        return camelCase
+            .replace(/([a-z\d])([A-Z])/g, '$1-$2')
+            .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1-$2')
+            .toLowerCase();
+    }
+    _getStyleString(args) {
+        const arr = [];
+        for (const key in args) {
+            arr.push(`${this._toDashes(key)}: ${args[key]};`);
+        }
+        return arr.join(' ');
+    }
+    commit() {
+        while (this._config.isDirective(this._pendingValue)) {
+            const directive = this._pendingValue;
+            this._pendingValue = this._config.noChange;
+            directive(this);
+        }
+        /* istanbul ignore if */
+        if (this._pendingValue === this._config.noChange) {
+            return;
+        }
+        if (typeof this._pendingValue === 'string' ||
+            typeof this._pendingValue === 'number') {
+            //Equality has already been checked, set value
+            this.value = this._pendingValue + '';
+            this.element.setAttribute(this.name, this._pendingValue + '');
+        }
+        else {
+            const styleString = this._getStyleString(this._pendingValue);
+            this.element.setAttribute(this.name, styleString);
+        }
+        this._pendingValue = this._config.noChange;
+    }
+}
 class ComplexValuePart {
     constructor(element, name, strings, genRef, _config) {
         this.element = element;
@@ -226,6 +282,12 @@ class ComplexTemplateProcessor {
             //Classname attribute
             return [
                 new ClassAttributePart(element, name, strings, this._config),
+            ];
+        }
+        else if (name === 'style') {
+            //Style attribute
+            return [
+                new StyleAttributePart(element, name, strings, this._config),
             ];
         }
         else if (prefix === '#' ||

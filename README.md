@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.19**:
+
+-   Convert style object to string automatically
+
 **1.1.18**:
 
 -   Fix typing issue for JSX

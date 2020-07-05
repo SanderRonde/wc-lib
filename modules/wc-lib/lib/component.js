@@ -96,7 +96,7 @@ export const WebComponentMixin = (superFn) => {
             return priv.getIdMapSnapshot(this);
         }
         $$(selector) {
-            return this.root.querySelectorAll(selector);
+            return [...this.root.querySelectorAll(selector)];
         }
         connectedCallback() {
             super.connectedCallback();

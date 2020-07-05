@@ -66,7 +66,8 @@ export function jsxToLiteral(tag, attrs, ...children) {
         tagName = tag.is;
     }
     else if (typeof tag === 'function') {
-        return tag(attrs);
+        /* istanbul ignore next */
+        return tag(attrs || {});
     }
     else {
         console.warn('Unknown tag value');

@@ -42,6 +42,12 @@ export interface SelectorMap {
         [key: string]: HTMLElement | SVGElement;
     };
     /**
+     * All child elements of this component by selector
+     */
+    SELECTORS?: {
+        [key: string]: HTMLElement | SVGElement;
+    };
+    /**
      * All child elements of this component by tag name
      */
     TAGS?: {
@@ -222,14 +228,15 @@ export declare class WebComponentTypeInstance<
      * @returns {NodeListOf<HTMLElement|SVGElement|E>} A list of
      * 	nodes that are the result of this query
      */
+    $$<K extends keyof ELS['SELECTORS']>(selector: K): ELS['SELECTORS'][K][];
     $$<K extends keyof HTMLElementTagNameMap>(
         selector: K
-    ): NodeListOf<HTMLElementTagNameMap[K]>;
+    ): HTMLElementTagNameMap[K][];
     $$<K extends keyof SVGElementTagNameMap>(
         selector: K
-    ): NodeListOf<SVGElementTagNameMap[K]>;
-    $$<E extends Element = Element>(selector: string): NodeListOf<E>;
-    $$(selector: string): NodeListOf<HTMLElement>;
+    ): SVGElementTagNameMap[K][];
+    $$<E extends Element = Element>(selector: string): E[];
+    $$(selector: string): HTMLElement[];
 
     /**
      * Called when the component is mounted to the dom.
@@ -371,13 +378,13 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
 
         $$<K extends keyof HTMLElementTagNameMap>(
             selector: K
-        ): NodeListOf<HTMLElementTagNameMap[K]>;
+        ): HTMLElementTagNameMap[K][];
         $$<K extends keyof SVGElementTagNameMap>(
             selector: K
-        ): NodeListOf<SVGElementTagNameMap[K]>;
-        $$<E extends Element = Element>(selector: string): NodeListOf<E>;
-        $$(selector: string): NodeListOf<HTMLElement> {
-            return this.root.querySelectorAll(selector);
+        ): SVGElementTagNameMap[K][];
+        $$<E extends Element = Element>(selector: string): E[];
+        $$(selector: string): HTMLElement[] {
+            return [...this.root.querySelectorAll(selector)] as HTMLElement[];
         }
 
         connectedCallback() {

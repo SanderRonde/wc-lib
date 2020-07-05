@@ -47,7 +47,7 @@ export class TemplateFn {
             componentTemplateMap.set(component, new WeakMap());
         }
         const templateMap = componentTemplateMap.get(component);
-        if (this.changeOn & 4 /* NEVER */) {
+        if (this.changeOn === 4 /* NEVER */) {
             //Never change, return the only render
             const cached = templateMap.get(this);
             if (cached) {

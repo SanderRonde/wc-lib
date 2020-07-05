@@ -31,6 +31,7 @@ class I18NClass {
                     I18NClass.currentLang = lang;
                 }
             }
+            I18NClass.currentLang = lang;
             if (this._elementLang !== lang) {
                 this._elementLang = lang;
                 if (delayRender) {

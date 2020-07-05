@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.20**:
+
+-   Type `.$$(...)` selection
+
 **1.1.19**:
 
 -   Convert style object to string automatically

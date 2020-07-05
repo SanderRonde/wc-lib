@@ -426,7 +426,7 @@ export class TemplateFn<
             componentTemplateMap.set(component, new WeakMap());
         }
         const templateMap = componentTemplateMap.get(component)!;
-        if (this.changeOn & CHANGE_TYPE.NEVER) {
+        if (this.changeOn === CHANGE_TYPE.NEVER) {
             //Never change, return the only render
             const cached = templateMap.get(this);
             if (cached) {

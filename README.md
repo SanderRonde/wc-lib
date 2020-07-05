@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.21**:
+
+-   Only ignore renders if `changeOn === CHANGE_TYPE.NEVER`, not on `changeOn & CHANGE_TYPE.NEVER`
+
 **1.1.20**:
 
 -   Type `.$$(...)` selection

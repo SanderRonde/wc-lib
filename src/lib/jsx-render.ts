@@ -129,7 +129,8 @@ export function jsxToLiteral<
     ) {
         tagName = tag.is;
     } else if (typeof tag === 'function') {
-        return (tag as (attrs?: A) => JSXElementLiteral)(attrs!);
+        /* istanbul ignore next */
+        return (tag as (attrs?: A) => JSXElementLiteral)(attrs || {});
     } else {
         console.warn('Unknown tag value');
         return { strings: [] as any, values: [] };

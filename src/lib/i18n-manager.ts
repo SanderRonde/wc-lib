@@ -75,8 +75,9 @@ class I18NClass<
             if (I18NClass.__loadingLang === lang) {
                 I18NClass.currentLang = lang;
             }
+        } else {
+            I18NClass.currentLang = lang;
         }
-        I18NClass.currentLang = lang;
         if (this._elementLang !== lang) {
             this._elementLang = lang;
             if (delayRender) {

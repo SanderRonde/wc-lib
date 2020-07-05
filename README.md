@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.23**:
+
+-   Fix bug with language only being updated if it's unloaded
+
 **1.1.22**:
 
 -   Set default value for JSX component attributes

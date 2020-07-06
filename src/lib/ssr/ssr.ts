@@ -881,7 +881,9 @@ export namespace SSR {
                         ) {
                             attributes[attributeName] = attributeValue;
                         } else {
-                            overrides[attributeName] = _ComplexRender.markerGet(
+                            overrides[
+                                attributeName
+                            ] = _ComplexRender.markerGetValue(
                                 markers,
                                 attributeValue
                             );
@@ -1371,16 +1373,27 @@ export namespace SSR {
                 }
 
                 export function markerHas(markers: _MarkerArr[], value: any) {
-                    for (const [marker] of markers) {
-                        if (marker === value) return true;
-                    }
-                    return false;
+                    return markerGetAll(markers, value).length > 0;
                 }
 
-                export function markerGet(markers: _MarkerArr[], value: any) {
-                    for (const [marker, markerValue] of markers) {
-                        if (marker === value) return markerValue;
-                    }
+                export function markerGetValue(
+                    markers: _MarkerArr[],
+                    value: string
+                ) {
+                    return markers
+                        .filter(([marker]) => {
+                            return value.includes(marker);
+                        })
+                        .map(([, markerValue]) => markerValue)[0];
+                }
+
+                export function markerGetAll(
+                    markers: _MarkerArr[],
+                    value: string
+                ) {
+                    return markers.filter(([marker]) => {
+                        return value.includes(marker);
+                    });
                 }
 
                 export function _markerSet(
@@ -1409,37 +1422,41 @@ export namespace SSR {
                     markers: _MarkerArr[]
                 ) {
                     if (tag.type === 'TEXT') {
-                        const markerKey = tag.content.trim();
-                        if (!markerHas(markers, markerKey)) {
+                        const value = tag.content.trim();
+                        if (!markerHas(markers, value)) {
                             return;
                         }
 
-                        const marked = markerGet(markers, markerKey);
+                        const markedArr = markerGetAll(markers, value);
                         // Check if there is an object-like in the DOM
-                        const {
-                            isComplex,
-                            str,
-                            markers: contentMarkers,
-                        } = _complexContentToString(marked);
-                        markers.push(...contentMarkers);
+                        markedArr.forEach(([markedKey, markedValue]) => {
+                            const {
+                                isComplex,
+                                str,
+                                markers: contentMarkers,
+                            } = _complexContentToString(markedValue);
+                            markers.push(...contentMarkers);
 
-                        if (isComplex) {
-                            _markerSet(markers, markerKey, str!);
-                        }
+                            if (isComplex) {
+                                _markerSet(markers, markedKey, str!);
+                            }
+                        });
                     } else {
                         const attrValues = { ...tag.attributes };
                         for (const attrName in tag.attributes) {
                             const attrValue = tag.attributes[attrName];
                             if (!markerHas(markers, attrValue)) continue;
 
-                            const marked = markerGet(markers, attrValue);
+                            const marked = markerGetAll(markers, attrValue).map(
+                                ([, val]) => val
+                            );
 
                             if (attrName === 'class') {
                                 const classString = classNames(marked);
                                 attrValues[attrName] = classString;
                                 _markerSet(markers, attrValue, classString);
                             } else {
-                                _markerSet(markers, attrValue, marked, {
+                                _markerSet(markers, attrValue, marked[0], {
                                     isTag: true,
                                     attrName,
                                 });
@@ -1455,7 +1472,7 @@ export namespace SSR {
                                 _markerSet(
                                     markers,
                                     attrValue,
-                                    markerGet(markers, attrValue),
+                                    markerGetValue(markers, attrValue),
                                     {
                                         forceMarker: true,
                                     }

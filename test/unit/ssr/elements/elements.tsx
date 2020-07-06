@@ -6,6 +6,7 @@ import {
     PROP_TYPE,
     WebComponent,
     ComplexType,
+    JSXBase,
 } from '../../../../build/cjs/wc-lib.js';
 import {
     render as _render,
@@ -21,6 +22,13 @@ import {
     // @ts-ignore
 } from '../../../modules/lit-html.js';
 import { html as htmlType, render as renderType } from 'lit-html';
+
+declare global {
+    namespace JSX {
+        type IntrinsicElements = JSXBase.IntrinsicElements;
+        type ElementAttributesProperty = JSXBase.ElementAttributesProperty;
+    }
+}
 
 const html = _html as typeof htmlType;
 const render = _render as typeof renderType;
@@ -1138,6 +1146,69 @@ export function elementFactory<
         }
     }
 
+    @config({
+        is: 'jsx-element',
+        html: new TemplateFn<JSXElement>(
+            (html) => {
+                return <div id="some-id"></div>;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    //@ts-ignore
+    class JSXElement extends typedBase {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'jsx-element-children',
+        html: new TemplateFn<JSXElementChildren>(
+            (html) => {
+                return (
+                    <div>
+                        <div />
+                        <div></div>
+                    </div>
+                );
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [],
+    })
+    //@ts-ignore
+    class JSXElementChildren extends typedBase {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
+        is: 'jsx-element-components',
+        html: new TemplateFn<JSXElementComponents>(
+            (html) => {
+                return (
+                    <div>
+                        <JSXElement />
+                        <JSXElement></JSXElement>
+                    </div>
+                );
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [JSXElement],
+    })
+    //@ts-ignore
+    class JSXElementComponents extends typedBase {
+        constructor() {
+            super();
+        }
+    }
+
     return {
         SimpleElement,
         NoIs,
@@ -1174,5 +1245,8 @@ export function elementFactory<
         ComplexPropUser,
         ComplexPropReceiver,
         ScriptTag,
+        JSXElement,
+        JSXElementChildren,
+        JSXElementComponents,
     };
 }

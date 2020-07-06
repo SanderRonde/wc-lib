@@ -66,7 +66,7 @@ cmd('compile')
 cmd('watch')
     .desc('Watch compile typescript files')
     .args({
-        dir: choice(['es', 'cjs', 'test-es', 'test-cjs', 'bin', 'all'], 'es'),
+        dir: choice(['es', 'cjs', 'test-es', 'test-cjs', 'all'], 'es'),
         noclear: flag(),
     })
     .argsDesc({
@@ -90,9 +90,6 @@ cmd('watch')
             case 'test-cjs':
                 await exec(`tsc -p test/tsconfig.cjs.json -w ${clearArg}`);
                 break;
-            case 'bin':
-                await exec(`tsc -p bin/tsconfig.json -w ${clearArg}`);
-                break;
             case 'all':
                 await exec(
                     escape(
@@ -100,8 +97,7 @@ cmd('watch')
                         `tsc -p src/tsconfig.json -w --preserveWatchOutput`,
                         `tsc -p src/tsconfig.cjs.json -w --preserveWatchOutput`,
                         `tsc -p test/tsconfig.json -w --preserveWatchOutput`,
-                        `tsc -p test/tsconfig.cjs.json -w --preserveWatchOutput`,
-                        `tsc -p bin/tsconfig.json --preserveWatchOutput`
+                        `tsc -p test/tsconfig.cjs.json -w --preserveWatchOutput`
                     )
                 );
         }

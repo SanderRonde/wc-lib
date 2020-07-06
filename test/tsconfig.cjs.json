@@ -19,6 +19,8 @@
         "strictNullChecks": true,
         "strictBindCallApply": true,
         "baseUrl": "../",
+        "jsx": "react",
+        "jsxFactory": "html.jsx",
         "paths": {
             "../instrumented/*": ["src/"]
         }

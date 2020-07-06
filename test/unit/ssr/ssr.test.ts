@@ -125,6 +125,9 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         ComplexPropUser,
         ComplexPropReceiver,
         ScriptTag,
+        JSXElement,
+        JSXElementChildren,
+        JSXElementComponents,
     } = elementFactory(component, isComplex);
 
     const test = genTestFn(name);
@@ -214,6 +217,35 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             );
 
             root.assertFormat([NestedTag.is, [[NestedTag.is, [['div', []]]]]]);
+        });
+    }
+
+    {
+        // JSX
+        test('JSX element with no children can be rendered', (t) => {
+            const root = toTestTags(t, ssr(JSXElement));
+
+            root.assertChildren(1);
+
+            root[0].assertTagName('div');
+        });
+        test('JSX element with multiple children can be rendered', (t) => {
+            const root = toTestTags(t, ssr(JSXElementChildren));
+
+            root.assertChildren(1);
+            root[0].assertChildren(2);
+
+            root[0][0].assertTagName('div');
+            root[0][1].assertTagName('div');
+        });
+        test('JSX element with components as children can be rendered', (t) => {
+            const root = toTestTags(t, ssr(JSXElementComponents));
+
+            root.assertChildren(1);
+            root[0].assertChildren(2);
+
+            root[0][0].assertTagName(JSXElement.is);
+            root[0][1].assertTagName(JSXElement.is);
         });
     }
 

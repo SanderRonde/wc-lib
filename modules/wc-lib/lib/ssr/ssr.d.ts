@@ -295,7 +295,8 @@ export declare namespace SSR {
                     markers: _MarkerArr[];
                 };
                 function markerHas(markers: _MarkerArr[], value: any): boolean;
-                function markerGet(markers: _MarkerArr[], value: any): any;
+                function markerGetValue(markers: _MarkerArr[], value: string): any;
+                function markerGetAll(markers: _MarkerArr[], value: string): _MarkerArr[];
                 function _markerSet(markers: _MarkerArr[], keyMarker: string, value: any, config?: _MarkerMeta): void;
                 function _applyComplexToTag(tag: Tag | TextTag, markers: _MarkerArr[]): void;
                 function _complexRenderedToText(renderedTemplate: any): {

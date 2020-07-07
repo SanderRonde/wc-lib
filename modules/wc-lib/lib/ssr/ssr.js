@@ -615,7 +615,7 @@ export var SSR;
                             attributes[attributeName] = attributeValue;
                         }
                         else {
-                            overrides[attributeName] = _ComplexRender.markerGet(markers, attributeValue);
+                            overrides[attributeName] = _ComplexRender.markerGetValue(markers, attributeValue);
                         }
                     }
                     return {
@@ -946,20 +946,23 @@ export var SSR;
                 }
                 _ComplexRender._complexContentToString = _complexContentToString;
                 function markerHas(markers, value) {
-                    for (const [marker] of markers) {
-                        if (marker === value)
-                            return true;
-                    }
-                    return false;
+                    return markerGetAll(markers, value).length > 0;
                 }
                 _ComplexRender.markerHas = markerHas;
-                function markerGet(markers, value) {
-                    for (const [marker, markerValue] of markers) {
-                        if (marker === value)
-                            return markerValue;
-                    }
+                function markerGetValue(markers, value) {
+                    return markers
+                        .filter(([marker]) => {
+                        return value.includes(marker);
+                    })
+                        .map(([, markerValue]) => markerValue)[0];
                 }
-                _ComplexRender.markerGet = markerGet;
+                _ComplexRender.markerGetValue = markerGetValue;
+                function markerGetAll(markers, value) {
+                    return markers.filter(([marker]) => {
+                        return value.includes(marker);
+                    });
+                }
+                _ComplexRender.markerGetAll = markerGetAll;
                 function _markerSet(markers, keyMarker, value, config) {
                     for (let i = 0; i < markers.length; i++) {
                         const [marker] = markers[i];
@@ -975,17 +978,19 @@ export var SSR;
                 _ComplexRender._markerSet = _markerSet;
                 function _applyComplexToTag(tag, markers) {
                     if (tag.type === 'TEXT') {
-                        const markerKey = tag.content.trim();
-                        if (!markerHas(markers, markerKey)) {
+                        const value = tag.content.trim();
+                        if (!markerHas(markers, value)) {
                             return;
                         }
-                        const marked = markerGet(markers, markerKey);
+                        const markedArr = markerGetAll(markers, value);
                         // Check if there is an object-like in the DOM
-                        const { isComplex, str, markers: contentMarkers, } = _complexContentToString(marked);
-                        markers.push(...contentMarkers);
-                        if (isComplex) {
-                            _markerSet(markers, markerKey, str);
-                        }
+                        markedArr.forEach(([markedKey, markedValue]) => {
+                            const { isComplex, str, markers: contentMarkers, } = _complexContentToString(markedValue);
+                            markers.push(...contentMarkers);
+                            if (isComplex) {
+                                _markerSet(markers, markedKey, str);
+                            }
+                        });
                     }
                     else {
                         const attrValues = Object.assign({}, tag.attributes);
@@ -993,14 +998,14 @@ export var SSR;
                             const attrValue = tag.attributes[attrName];
                             if (!markerHas(markers, attrValue))
                                 continue;
-                            const marked = markerGet(markers, attrValue);
+                            const marked = markerGetAll(markers, attrValue).map(([, val]) => val);
                             if (attrName === 'class') {
                                 const classString = classNames(marked);
                                 attrValues[attrName] = classString;
                                 _markerSet(markers, attrValue, classString);
                             }
                             else {
-                                _markerSet(markers, attrValue, marked, {
+                                _markerSet(markers, attrValue, marked[0], {
                                     isTag: true,
                                     attrName,
                                 });
@@ -1012,7 +1017,7 @@ export var SSR;
                                 const attrValue = tag.attributes[attrName];
                                 if (!markerHas(markers, attrValue))
                                     continue;
-                                _markerSet(markers, attrValue, markerGet(markers, attrValue), {
+                                _markerSet(markers, attrValue, markerGetValue(markers, attrValue), {
                                     forceMarker: true,
                                 });
                             }

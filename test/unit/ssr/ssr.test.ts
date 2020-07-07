@@ -726,6 +726,31 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertTagName('style');
             t.true(root[0][0].content.includes('red'), 'theme is used');
         });
+        test('themeName can be passed', (t) => {
+            const themeName = 'somethemename';
+            const root = toTestTags(
+                t,
+                ssr(ThemeUser, {
+                    theme: {
+                        color: 'red',
+                    },
+                    themeName,
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(ThemeUser.is);
+            root.assertChildren(2);
+            root[0].assertTag();
+            root[0].assertTagName('style');
+            t.true(root[0][0].content.includes('red'), 'theme is used');
+
+            root[1].assertTag();
+            root[1].assertTagName('div');
+            root[1].assertChildren(1);
+            root[1][0].assertText();
+            root[1][0].assertContent(themeName);
+        });
         test('scripts are rendered as well', (t) => {
             const root = toTestTags(t, ssr(ScriptTag));
 
@@ -1294,6 +1319,35 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[4].assertChildren(1);
             root[4][0].assertText();
             root[4][0].assertContent(defaultI18n['known_key']);
+        });
+        test('getLang() can be used', (t) => {
+            const language = 'somelanguage';
+            const root = toTestTags(
+                t,
+                ssr(I18nComponent, {
+                    i18n: defaultI18n,
+                    lang: language,
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(I18nComponent.is);
+            root.assertChildren(9);
+
+            root[0].assertTagName('div');
+            root[0].assertChildren(1);
+            root[0][0].assertText();
+            root[0][0].assertContent(defaultI18n['known_key']);
+
+            root[4].assertTagName('div');
+            root[4].assertChildren(1);
+            root[4][0].assertText();
+            root[4][0].assertContent(defaultI18n['known_key']);
+
+            root[8].assertTagName('div');
+            root[8].assertChildren(1);
+            root[8][0].assertText();
+            root[8][0].assertContent(language);
         });
         test('__prom returns a promise', (t) => {
             const root = toTestTags(

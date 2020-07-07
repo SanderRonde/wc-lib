@@ -1093,6 +1093,7 @@ export function elementFactory<
                     </div>
                     <div>${this.constructor.__('unknown_key')}</div>
                     <div>${this.constructor.__('values', 'a', 'b', 'c')}</div>
+                    <div>${this.getLang()}</div>
                 `;
             },
             CHANGE_TYPE.NEVER,
@@ -1115,7 +1116,7 @@ export function elementFactory<
         html: new TemplateFn<ThemeUser>(
             function() {
                 return html`
-                    <div></div>
+                    <div>${this.getThemeName()}</div>
                 `;
             },
             CHANGE_TYPE.NEVER,

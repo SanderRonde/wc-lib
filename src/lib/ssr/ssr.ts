@@ -159,14 +159,18 @@ export namespace SSR {
     }
 
     export interface DocumentConfig {
-        theme?: SSR.BaseTypes.Theme;
         i18n?: any;
+        lang?: string;
+        themeName?: string;
+        theme?: SSR.BaseTypes.Theme;
         getMessage?: GetMessageFunction;
     }
 
     export class DocumentSession {
         _i18n?: any;
+        _lang?: string;
         _theme?: SSR.BaseTypes.Theme;
+        _themeName?: string;
         _getMessage?: GetMessageFunction;
 
         _cssIdentifierMap: MergableWeakMap<
@@ -182,18 +186,34 @@ export namespace SSR {
 
         _elementMap: BaseTypes.DependencyMap = {};
 
-        constructor({ i18n, theme, getMessage }: DocumentConfig = {}) {
+        constructor({
+            i18n,
+            theme,
+            getMessage,
+            lang,
+            themeName,
+        }: DocumentConfig = {}) {
             this._i18n = i18n;
+            this._lang = lang;
             this._theme = theme;
+            this._themeName = themeName;
             this._getMessage = getMessage;
         }
 
         /**
          * Merge a config into this SSR session, prioritizing config over current state
          */
-        mergeConfig({ i18n, theme, getMessage }: DocumentConfig) {
+        mergeConfig({
+            i18n,
+            theme,
+            getMessage,
+            lang,
+            themeName,
+        }: DocumentConfig) {
             this._i18n = i18n || this._i18n;
+            this._lang = lang || this._lang;
             this._theme = theme || this._theme;
+            this._themeName = themeName || this._themeName;
             this._getMessage = getMessage || this._getMessage;
             return this;
         }
@@ -381,6 +401,12 @@ export namespace SSR {
                 }
                 getTheme() {
                     return session._theme;
+                }
+                getThemeName() {
+                    return session._themeName;
+                }
+                getLang() {
+                    return session._lang;
                 }
                 private static _getI18n(key: string, ...values: any[]) {
                     if (!session._i18n) return undefined;
@@ -1641,6 +1667,8 @@ export namespace SSR {
             props,
             theme,
             getMessage,
+            lang,
+            themeName,
         }: SSRConfig<C, I>
     ): string {
         documentSession._elementMap = {
@@ -1649,7 +1677,7 @@ export namespace SSR {
         };
         const session = documentSession
             .clone()
-            .mergeConfig({ i18n, theme, getMessage });
+            .mergeConfig({ i18n, theme, getMessage, lang, themeName });
 
         return _Rendering.render(
             element,
@@ -1669,12 +1697,14 @@ export interface SSRConfig<
     C extends SSR.BaseTypes.BaseClass,
     I extends InferInstance<C>
 > {
-    props?: Partial<I['props']>;
-    attributes?: SSR.BaseTypes.Attributes;
-    theme?: SSR.BaseTypes.Theme;
     i18n?: any;
-    documentSession?: SSR.DocumentSession;
+    lang?: string;
+    themeName?: string;
+    props?: Partial<I['props']>;
+    theme?: SSR.BaseTypes.Theme;
     getMessage?: SSR.GetMessageFunction;
+    documentSession?: SSR.DocumentSession;
+    attributes?: SSR.BaseTypes.Attributes;
 }
 
 /**
@@ -1688,6 +1718,8 @@ export interface SSRConfig<
  * @param { { [key: string]: any } } [config.props] - Props to pass to the element
  * @param { { [key: string]: any } } [config.attributes] - HTML attributes to apply to the element
  * @param { { [key: string]: any } } [config.theme] - A theme to apply to the element
+ * @param { { [key: string]: any } } [config.themeName] - The name of the theme for the element
+ * @param { { [key: string]: any } } [config.lang] - The language for the element
  * @param { any } [config.i18n] - The i8n to apply to the element
  * @param { SSR.GetMessageFunction } [config.getMessage] - The
  *  function called when an i18n message is fetched

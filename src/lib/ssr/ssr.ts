@@ -482,19 +482,11 @@ export namespace SSR {
             return text;
         }
 
-        export function _dashesToCasing(name: string) {
-            if (name.indexOf('-') === -1) return name;
-
-            let newStr = '';
-            for (let i = 0; i < name.length; i++) {
-                if (name[i] === '-') {
-                    newStr += name[i + 1].toUpperCase();
-                    i++;
-                } else {
-                    newStr += name[i];
-                }
-            }
-            return newStr;
+        export function _casingToDashes(name: string) {
+            return name
+                .replace(/([a-z\d])([A-Z])/g, '$1-$2')
+                .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1-$2')
+                .toLowerCase();
         }
 
         export function stringify(attributes: BaseTypes.Attributes) {
@@ -505,7 +497,7 @@ export namespace SSR {
             const parts = [];
             for (const key in attributes) {
                 parts.push(
-                    `${_dashesToCasing(key)}="${_toString(
+                    `${_casingToDashes(key)}="${_toString(
                         attributes[key]
                     ).replace(/"/g, '&quot;')}"`
                 );
@@ -1050,7 +1042,7 @@ export namespace SSR {
                                 if (!rule.selectors) return line;
                                 rule.selectors = rule.selectors.map(
                                     (selector) => {
-                                        return `${prefix}-${selector}`;
+                                        return `.${prefix}${selector}`;
                                     }
                                 );
                                 return rule;
@@ -1157,7 +1149,7 @@ export namespace SSR {
 
                             return {
                                 newTag: tag,
-                                stop: tag.tagName.includes('-'),
+                                stop: false,
                             };
                         });
                     });
@@ -1617,14 +1609,19 @@ export namespace SSR {
                         ...attribs,
                     }
                 );
-                const children = Replacement.replace(tags, session, markers);
                 const cssApplied = _CSS.getCSSApplied(
                     element,
                     instance,
                     tagName,
-                    children,
+                    tags,
                     session
                 );
+                const children = Replacement.replace(
+                    cssApplied,
+                    session,
+                    markers
+                );
+
                 return new Tag({
                     tagName,
                     attributes: {
@@ -1633,7 +1630,7 @@ export namespace SSR {
                         ...instance._attributes,
                     },
                     isSelfClosing: false,
-                    children: cssApplied,
+                    children: children,
                 });
             }
         }

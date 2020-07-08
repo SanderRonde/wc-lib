@@ -647,6 +647,16 @@ export namespace SSR {
                         );
                 }
 
+                walkBottomUp(
+                    handler: (tag: Tag) => ParsedTag | void
+                ): ParsedTag {
+                    this.setChildren(
+                        this.children.map((c) => c.walkBottomUp(handler))
+                    );
+
+                    return handler(this) || this;
+                }
+
                 walkAll(
                     handler: <T extends Tag | TextTag>(tag: T) => T | void
                 ): ParsedTag {
@@ -686,6 +696,10 @@ export namespace SSR {
                 }
 
                 walk() {
+                    return this;
+                }
+
+                walkBottomUp() {
                     return this;
                 }
 
@@ -917,10 +931,7 @@ export namespace SSR {
                     tag: Tag,
                     session: DocumentSession,
                     markers: _ComplexRender._MarkerArr[]
-                ): {
-                    newTag: ParsedTag;
-                    stop: boolean;
-                } | void {
+                ): ParsedTag | void {
                     if (
                         !tag.tagName.includes('-') ||
                         !session._elementMap.hasOwnProperty(tag.tagName)
@@ -939,10 +950,7 @@ export namespace SSR {
                         session
                     );
                     Slots.applySlots(newTag, tag);
-                    return {
-                        newTag,
-                        stop: true,
-                    };
+                    return newTag;
                 }
 
                 export function replace(
@@ -951,7 +959,7 @@ export namespace SSR {
                     markers: _ComplexRender._MarkerArr[]
                 ) {
                     return tags.map((t) =>
-                        t.walk((tag) => {
+                        t.walkBottomUp((tag) => {
                             return _mapTag(tag, session, markers);
                         })
                     );

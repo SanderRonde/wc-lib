@@ -541,7 +541,7 @@ export namespace SSR {
                 } else if (key in priv) {
                     privateProps[key] = attributes[key];
                 } else {
-                    attribs[key] = attribs[key];
+                    attribs[key] = attributes[key];
                 }
             }
 

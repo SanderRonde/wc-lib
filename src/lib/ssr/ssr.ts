@@ -1066,7 +1066,7 @@ export namespace SSR {
                 export function _parseElementCSS(
                     element: BaseTypes.BaseClass,
                     instance: BaseTypes.BaseClassInstance
-                ): CSSTag[][] {
+                ): Tag[][] {
                     /* istanbul ignore next */
                     if (!element.css) return [];
                     const templates = Array.isArray(element.css)
@@ -1096,7 +1096,17 @@ export namespace SSR {
                         styleTags.forEach((t) =>
                             t.setChangeOn(template.changeOn)
                         );
-                        return styleTags;
+                        return styleTags.map(
+                            (styleTag) =>
+                                new Tag({
+                                    attributes: {
+                                        'data-type': 'css',
+                                    },
+                                    children: [styleTag],
+                                    isSelfClosing: false,
+                                    tagName: 'span',
+                                })
+                        );
                     });
                 }
 
@@ -1120,12 +1130,13 @@ export namespace SSR {
                 }
 
                 export function _addCSSPrefixes(
-                    templates: CSSTag[][],
+                    templates: Tag[][],
                     uniqueID: string,
                     componentID: string
                 ) {
-                    return templates.map((template) => {
-                        return template.map((sheet) => {
+                    return templates.map((templateWrappers) => {
+                        return templateWrappers.map((templateWrapper) => {
+                            const sheet = templateWrapper.children[0] as CSSTag;
                             const prefix = sheet.elementGlobal
                                 ? componentID
                                 : uniqueID;
@@ -1134,7 +1145,7 @@ export namespace SSR {
                                 tag.addPrefix(prefix);
                                 tag.stringify();
                             });
-                            return sheet;
+                            return templateWrapper;
                         });
                     });
                 }
@@ -1208,11 +1219,17 @@ export namespace SSR {
                     return [
                         ...(isFirstElementRender
                             ? _flatten(
-                                  prefixedCSS.filter((s) => s.elementGlobal)
+                                  prefixedCSS.filter(
+                                      (s) =>
+                                          (s.children[0] as CSSTag)
+                                              .elementGlobal
+                                  )
                               )
                             : []),
                         ..._flatten(
-                            prefixedCSS.filter((s) => !s.elementGlobal)
+                            prefixedCSS.filter(
+                                (s) => !(s.children[0] as CSSTag).elementGlobal
+                            )
                         ),
                         ...htmlPrefixed,
                     ];
@@ -1614,12 +1631,19 @@ export namespace SSR {
                     instance,
                     element.html
                 );
-                const tags = _Parser.parse(str);
+                const htmlTag = new Tag({
+                    attributes: {
+                        'data-type': 'html',
+                    },
+                    children: _Parser.parse(str),
+                    isSelfClosing: false,
+                    tagName: 'span',
+                });
                 if (
                     isRoot &&
-                    _Rendering.TextToTags.Replacement.Slots.findSlotReceivers(
-                        tags
-                    ).unnamed
+                    _Rendering.TextToTags.Replacement.Slots.findSlotReceivers([
+                        htmlTag,
+                    ]).unnamed
                 ) {
                     throw new Error(
                         "Root element can't have unnamed slots as children"
@@ -1636,7 +1660,7 @@ export namespace SSR {
                     element,
                     instance,
                     tagName,
-                    tags,
+                    [htmlTag],
                     session
                 );
                 const children = Replacement.replace(

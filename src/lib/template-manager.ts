@@ -76,7 +76,7 @@ class ClassAttributePart implements Part {
     }
 }
 
-class StyleAttributePart implements Part {
+export class StyleAttributePart implements Part {
     public value: any = undefined;
     private _pendingValue: any = undefined;
 
@@ -104,14 +104,14 @@ class StyleAttributePart implements Part {
         }
     }
 
-    private _toDashes(camelCase: string): string {
+    private static _toDashes(camelCase: string): string {
         return camelCase
             .replace(/([a-z\d])([A-Z])/g, '$1-$2')
             .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1-$2')
             .toLowerCase();
     }
 
-    private _getStyleString(args: Partial<CSSStyleDeclaration>) {
+    public static getStyleString(args: Partial<CSSStyleDeclaration>) {
         const arr: string[] = [];
         for (const key in args) {
             arr.push(`${this._toDashes(key)}: ${args[key]};`);
@@ -137,7 +137,9 @@ class StyleAttributePart implements Part {
             this.value = this._pendingValue + '';
             this.element.setAttribute(this.name, this._pendingValue + '');
         } else {
-            const styleString = this._getStyleString(this._pendingValue);
+            const styleString = StyleAttributePart.getStyleString(
+                this._pendingValue
+            );
             this.element.setAttribute(this.name, styleString);
         }
         this._pendingValue = this._config.noChange;

@@ -15,7 +15,7 @@ import {
     WebComponentTypeStatic,
 } from '../../classes/types';
 import { CHANGE_TYPE, TemplateFnLike } from '../template-fn';
-import { ComplexValue } from '../template-manager';
+import { ComplexValue, StyleAttributePart } from '../template-manager';
 import { classNames } from '../shared';
 import { Props } from '../props';
 
@@ -1473,6 +1473,21 @@ export namespace SSR {
                                 const classString = classNames(marked);
                                 attrValues[attrName] = classString;
                                 _markerSet(markers, attrValue, classString);
+                            } else if (attrName === 'style') {
+                                const markedValue = marked[0];
+                                const value = (() => {
+                                    if (
+                                        typeof markedValue === 'string' ||
+                                        typeof markedValue === 'number'
+                                    ) {
+                                        return markedValue;
+                                    }
+                                    return StyleAttributePart.getStyleString(
+                                        markedValue
+                                    );
+                                })();
+                                attrValues[attrName] = value;
+                                _markerSet(markers, attrValue, value);
                             } else {
                                 _markerSet(markers, attrValue, marked[0], {
                                     isTag: true,

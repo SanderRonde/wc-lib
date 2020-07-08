@@ -1050,7 +1050,7 @@ export namespace SSR {
                                 if (!rule.selectors) return line;
                                 rule.selectors = rule.selectors.map(
                                     (selector) => {
-                                        return `.${prefix}${selector}`;
+                                        return `${selector}.${prefix}`;
                                     }
                                 );
                                 return rule;

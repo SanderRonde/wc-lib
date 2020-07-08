@@ -202,7 +202,7 @@ export declare class WebComponentTypeInstance<
     /**
      * Whether this component is being server-side rendered
      */
-    get isSSr(): boolean;
+    get isSSR(): boolean;
 
     /**
      * An object that contains all children

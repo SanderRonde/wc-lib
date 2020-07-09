@@ -134,13 +134,13 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Children
-        test('a single child can be rendered', (t) => {
-            const root = toTestTags(t, ssr(SingleChild));
+        test('a single child can be rendered', async (t) => {
+            const root = toTestTags(t, await ssr(SingleChild));
 
             root.assertFormat([SingleChild.is, [['div', []]]]);
         });
-        test('multiple children are rendered', (t) => {
-            const root = toTestTags(t, ssr(MultiChild));
+        test('multiple children are rendered', async (t) => {
+            const root = toTestTags(t, await ssr(MultiChild));
 
             root.assertFormat([
                 MultiChild.is,
@@ -152,16 +152,16 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('text is rendered', (t) => {
-            const root = toTestTags(t, ssr(NestedChild));
+        test('text is rendered', async (t) => {
+            const root = toTestTags(t, await ssr(NestedChild));
 
             root.assertTag();
             root.assertChildren(3);
 
             root[0][0][0].c[0].assertText();
         });
-        test('nested children are rendered', (t) => {
-            const root = toTestTags(t, ssr(NestedChild));
+        test('nested children are rendered', async (t) => {
+            const root = toTestTags(t, await ssr(NestedChild));
 
             root.assertFormat([
                 NestedChild.is,
@@ -172,8 +172,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('other different tags can be rendered as children', (t) => {
-            const root = toTestTags(t, ssr(DifferentChild));
+        test('other different tags can be rendered as children', async (t) => {
+            const root = toTestTags(t, await ssr(DifferentChild));
 
             root.assertTag();
             root.assertTagName(DifferentChild.is);
@@ -186,8 +186,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0][0].assertTag();
             root[0][0].assertTagName('div');
         });
-        test('a different tag can be rendered as a child multiple times', (t) => {
-            const root = toTestTags(t, ssr(DifferentChild));
+        test('a different tag can be rendered as a child multiple times', async (t) => {
+            const root = toTestTags(t, await ssr(DifferentChild));
 
             root.assertFormat([
                 DifferentChild.is,
@@ -198,8 +198,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('other tags are not expanded when not defined', (t) => {
-            const root = toTestTags(t, ssr(UndefinedChild));
+        test('other tags are not expanded when not defined', async (t) => {
+            const root = toTestTags(t, await ssr(UndefinedChild));
 
             root.assertFormat([
                 UndefinedChild.is,
@@ -210,10 +210,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('the same tag can be its own (optional) child', (t) => {
+        test('the same tag can be its own (optional) child', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(NestedTag, { props: { child: true } })
+                await ssr(NestedTag, { props: { child: true } })
             );
 
             root.assertFormat([NestedTag.is, [[NestedTag.is, [['div', []]]]]]);
@@ -223,15 +223,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
     {
         if (isComplex) {
             // JSX
-            test('JSX element with no children can be rendered', (t) => {
-                const root = toTestTags(t, ssr(JSXElement));
+            test('JSX element with no children can be rendered', async (t) => {
+                const root = toTestTags(t, await ssr(JSXElement));
 
                 root.assertChildren(1);
 
                 root[0].assertTagName('div');
             });
-            test('JSX element with multiple children can be rendered', (t) => {
-                const root = toTestTags(t, ssr(JSXElementChildren));
+            test('JSX element with multiple children can be rendered', async (t) => {
+                const root = toTestTags(t, await ssr(JSXElementChildren));
 
                 root.assertChildren(1);
                 root[0].assertChildren(2);
@@ -239,8 +239,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 root[0][0].assertTagName('div');
                 root[0][1].assertTagName('div');
             });
-            test('JSX element with components as children can be rendered', (t) => {
-                const root = toTestTags(t, ssr(JSXElementComponents));
+            test('JSX element with components as children can be rendered', async (t) => {
+                const root = toTestTags(t, await ssr(JSXElementComponents));
 
                 root.assertChildren(1);
                 root[0].assertChildren(2);
@@ -253,13 +253,13 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Tagname
-        test('element with tagname gets its tag name', (t) => {
-            const root = toTestTags(t, ssr(SimpleElement));
+        test('element with tagname gets its tag name', async (t) => {
+            const root = toTestTags(t, await ssr(SimpleElement));
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
         });
-        test('element without tagname gets default tagname', (t) => {
-            const root = toTestTags(t, ssr(NoIs));
+        test('element without tagname gets default tagname', async (t) => {
+            const root = toTestTags(t, await ssr(NoIs));
 
             root.assertTag();
             root.assertTagName('wclib-element0');
@@ -267,8 +267,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.c[0].assertTag();
         });
-        test('a child element without an is property keeps its tagname', (t) => {
-            const root = toTestTags(t, ssr(ParentElementSame));
+        test('a child element without an is property keeps its tagname', async (t) => {
+            const root = toTestTags(t, await ssr(ParentElementSame));
 
             root.assertTag();
             root.assertTagName(ParentElementSame.is);
@@ -277,8 +277,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertTagName('no-is');
             root[1].assertTagName('no-is');
         });
-        test('another element without a tagname gets a different tagname', (t) => {
-            const root = toTestTags(t, ssr(ParentElementDifferent));
+        test('another element without a tagname gets a different tagname', async (t) => {
+            const root = toTestTags(t, await ssr(ParentElementDifferent));
 
             root.assertTag();
             root.assertTagName(ParentElementDifferent.is);
@@ -291,25 +291,28 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Attributes
-        test('attributes on the elements are applied', (t) => {
+        test('attributes on the elements are applied', async (t) => {
             const attributes = {
                 a: 'b',
                 c: 'd',
                 e: '"f"',
             };
-            const root = toTestTags(t, ssr(SimpleElement, { attributes }));
+            const root = toTestTags(
+                t,
+                await ssr(SimpleElement, { attributes })
+            );
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
             root.assertAttributes(attributes);
         });
-        test('no attributes are applied when no attributes are passed', (t) => {
-            const root = toTestTags(t, ssr(SimpleElement));
+        test('no attributes are applied when no attributes are passed', async (t) => {
+            const root = toTestTags(t, await ssr(SimpleElement));
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
             root.assertAttributes({});
         });
-        test('attributes are applied to children', (t) => {
-            const root = toTestTags(t, ssr(WithAttributes));
+        test('attributes are applied to children', async (t) => {
+            const root = toTestTags(t, await ssr(WithAttributes));
 
             root.assertFormat([WithAttributes.is, [['div', []]]]);
             root.assertAttributes({});
@@ -322,10 +325,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 false
             );
         });
-        test('non-strings are converted to strings', (t) => {
+        test('non-strings are converted to strings', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(SimpleElement, {
+                await ssr(SimpleElement, {
                     attributes: {
                         a: 0,
                         c: /x/,
@@ -341,10 +344,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 e: 'true',
             });
         });
-        test('iterables have their values converted to strings', (t) => {
+        test('iterables have their values converted to strings', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(SimpleElement, {
+                await ssr(SimpleElement, {
                     attributes: {
                         a: [0, 1, 2],
                         c: [/x/, /y/, /z/],
@@ -364,12 +367,12 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 g: 'abc',
             });
         });
-        test('dashes are replaced with uppercase letters', (t) => {
+        test('dashes are replaced with uppercase letters', async (t) => {
             const attributes = {
                 'with-dashes': 'abc',
                 withoutdashes: 'def',
             };
-            const html = ssr(SimpleElement, { attributes });
+            const html = await ssr(SimpleElement, { attributes });
             const root = toTestTags(t, html);
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
@@ -387,8 +390,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Autoclosing
-        test('autoclosing tags are still autoclosing', (t) => {
-            const root = toTestTags(t, ssr(AutoClosing));
+        test('autoclosing tags are still autoclosing', async (t) => {
+            const root = toTestTags(t, await ssr(AutoClosing));
 
             root.assertTag();
             root.assertTagName(AutoClosing.is);
@@ -403,8 +406,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[3].assertAttribute('a', 'b');
             root[4].assertAttribute('b', 'c');
         });
-        test('not autoclosing tags are not autoclosing', (t) => {
-            const root = toTestTags(t, ssr(SimpleElement));
+        test('not autoclosing tags are not autoclosing', async (t) => {
+            const root = toTestTags(t, await ssr(SimpleElement));
 
             root.assertFormat([SimpleElement.is, [['div', []]]]);
 
@@ -414,10 +417,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Props
-        test('properties are applied in render', (t) => {
+        test('properties are applied in render', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(WithProps, {
+                await ssr(WithProps, {
                     props: {
                         x: 1,
                         y: 2,
@@ -437,10 +440,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('properties are applied in render when only private props are set', (t) => {
+        test('properties are applied in render when only private props are set', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(WithPrivProps, {
+                await ssr(WithPrivProps, {
                     props: {
                         a: 3,
                         b: 4,
@@ -456,10 +459,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('missing props are not set', (t) => {
+        test('missing props are not set', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(WithProps, {
+                await ssr(WithProps, {
                     props: {
                         y: 2,
                         b: 4,
@@ -477,10 +480,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('extra props are ignored', (t) => {
+        test('extra props are ignored', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(WithProps, {
+                await ssr(WithProps, {
                     props: {
                         y: 2,
                         b: 4,
@@ -500,10 +503,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('default props are applied when no values are passed', (t) => {
+        test('default props are applied when no values are passed', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(WithProps, {
+                await ssr(WithProps, {
                     props: {
                         x: 1,
                         a: 3,
@@ -521,10 +524,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('reflective props are reflected to the element', (t) => {
+        test('reflective props are reflected to the element', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(WithProps, {
+                await ssr(WithProps, {
                     props: {
                         x: 1,
                         y: 2,
@@ -537,10 +540,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertAttribute('x', '1');
             root.assertAttribute('y', '2');
         });
-        test('non-reflective props are hidden', (t) => {
+        test('non-reflective props are hidden', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(WithProps, {
+                await ssr(WithProps, {
                     props: {
                         x: 1,
                         y: 2,
@@ -553,16 +556,16 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertDoesNotHaveAttribute('a');
             root.assertDoesNotHaveAttribute('b');
         });
-        test('works fine with an empty props object', (t) => {
-            const root = toTestTags(t, ssr(SimpleElementEmptyProps));
+        test('works fine with an empty props object', async (t) => {
+            const root = toTestTags(t, await ssr(SimpleElementEmptyProps));
 
             root.assertFormat([SimpleElementEmptyProps.is, [['div', []]]]);
         });
         if (isComplex) {
-            test('passes on complex props', (t) => {
+            test('passes on complex props', async (t) => {
                 const root = toTestTags(
                     t,
-                    ssr(ComplexPropReceiver, {
+                    await ssr(ComplexPropReceiver, {
                         props: {
                             x: 2,
                             y: {
@@ -587,8 +590,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // CSS
-        test('css stylesheet is rendered', (t) => {
-            const root = toTestTags(t, ssr(WithCSS));
+        test('css stylesheet is rendered', async (t) => {
+            const root = toTestTags(t, await ssr(WithCSS));
 
             root.assertTag();
             root.assertTagName(WithCSS.is);
@@ -602,8 +605,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertTagName('style');
             root[1].assertTagName('style');
         });
-        test('css contains rules', (t) => {
-            const root = toTestTags(t, ssr(WithCSS));
+        test('css contains rules', async (t) => {
+            const root = toTestTags(t, await ssr(WithCSS));
 
             root.assertTag();
             root.assertTagName(WithCSS.is);
@@ -627,8 +630,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 'Style rule is rendered'
             );
         });
-        test('existing classnames are not removed', (t) => {
-            const root = toTestTags(t, ssr(WithCSS));
+        test('existing classnames are not removed', async (t) => {
+            const root = toTestTags(t, await ssr(WithCSS));
 
             root.assertTag();
             root.assertTagName(WithCSS.is);
@@ -637,8 +640,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[2].assertHasClasses('b');
             root[3].assertHasClasses('b', 'c', 'd');
         });
-        test('element-global classnames are applied', (t) => {
-            const root = toTestTags(t, ssr(MultiCSS));
+        test('element-global classnames are applied', async (t) => {
+            const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
@@ -654,8 +657,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[1][1].assertHasClasses('css-with-css');
             root[1][1].assertDoesNotHaveClasses('css-multi-css');
         });
-        test('element-specific classnames are applied', (t) => {
-            const root = toTestTags(t, ssr(MultiCSS));
+        test('element-specific classnames are applied', async (t) => {
+            const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
@@ -671,8 +674,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[1][1].assertHasClasses('css-with-css-1');
             root[1][1].assertDoesNotHaveClasses('css-multi-css');
         });
-        test('CHANGE_TYPE.THEME and CHANGE_TYPE.NEVER are only rendered once', (t) => {
-            const root = toTestTags(t, ssr(MultiCSS));
+        test('CHANGE_TYPE.THEME and CHANGE_TYPE.NEVER are only rendered once', async (t) => {
+            const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
@@ -687,8 +690,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[1].assertChildren(3);
             root[1][1].assertTagName('div');
         });
-        test('other change type stylesheets are rendered multiple times', (t) => {
-            const root = toTestTags(t, ssr(MultiCSS));
+        test('other change type stylesheets are rendered multiple times', async (t) => {
+            const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
@@ -709,10 +712,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 'rendered correct stylesheet'
             );
         });
-        test('themes can be passed', (t) => {
+        test('themes can be passed', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(ThemeUser, {
+                await ssr(ThemeUser, {
                     theme: {
                         color: 'red',
                     },
@@ -726,11 +729,11 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertTagName('style');
             t.true(root[0][0].content.includes('red'), 'theme is used');
         });
-        test('themeName can be passed', (t) => {
+        test('themeName can be passed', async (t) => {
             const themeName = 'somethemename';
             const root = toTestTags(
                 t,
-                ssr(ThemeUser, {
+                await ssr(ThemeUser, {
                     theme: {
                         color: 'red',
                     },
@@ -751,8 +754,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[1][0].assertText();
             root[1][0].assertContent(themeName);
         });
-        test('scripts are rendered as well', (t) => {
-            const root = toTestTags(t, ssr(ScriptTag));
+        test('scripts are rendered as well', async (t) => {
+            const root = toTestTags(t, await ssr(ScriptTag));
 
             root.assertTag();
             root.assertTagName(ScriptTag.is);
@@ -769,16 +772,16 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Statelessness
-        test('renders are stateless by default - unnamed tag test', (t) => {
-            const root = toTestTags(t, ssr(NoIs));
-            const root2 = toTestTags(t, ssr(NoIs));
+        test('renders are stateless by default - unnamed tag test', async (t) => {
+            const root = toTestTags(t, await ssr(NoIs));
+            const root2 = toTestTags(t, await ssr(NoIs));
 
             root.assertTagName('wclib-element0');
             root2.assertTagName('wclib-element0');
         });
-        test('renders are stateless by default - tagname map test', (t) => {
-            const root = toTestTags(t, ssr(DifferentChild));
-            const root2 = toTestTags(t, ssr(UndefinedChild));
+        test('renders are stateless by default - tagname map test', async (t) => {
+            const root = toTestTags(t, await ssr(DifferentChild));
+            const root2 = toTestTags(t, await ssr(UndefinedChild));
 
             root.assertTagName(DifferentChild.is);
             root2.assertTagName(UndefinedChild.is);
@@ -801,27 +804,27 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('renders are stateless by default - css test', (t) => {
-            const root = toTestTags(t, ssr(WithCSS));
-            const root2 = toTestTags(t, ssr(WithCSS));
+        test('renders are stateless by default - css test', async (t) => {
+            const root = toTestTags(t, await ssr(WithCSS));
+            const root2 = toTestTags(t, await ssr(WithCSS));
 
             root.assertTagName(WithCSS.is);
             root2.assertTagName(WithCSS.is);
             root.assertChildren(4);
             root2.assertChildren(4);
         });
-        test('renders can have state if set explicitly - unnamed tag test', (t) => {
+        test('renders can have state if set explicitly - unnamed tag test', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
                 t,
-                ssr(NoIs, {
+                await ssr(NoIs, {
                     documentSession: session,
                 })
             );
             const root2 = toTestTags(
                 t,
-                ssr(NoIs, {
+                await ssr(NoIs, {
                     documentSession: session,
                 })
             );
@@ -829,18 +832,18 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTagName('wclib-element0');
             root2.assertTagName('wclib-element1');
         });
-        test('renders can have state if set explicitly - tagname map test', (t) => {
+        test('renders can have state if set explicitly - tagname map test', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
                 t,
-                ssr(DifferentChild, {
+                await ssr(DifferentChild, {
                     documentSession: session,
                 })
             );
             const root2 = toTestTags(
                 t,
-                ssr(UndefinedChild, {
+                await ssr(UndefinedChild, {
                     documentSession: session,
                 })
             );
@@ -866,18 +869,18 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('renders can have state if set explicitly - css test', (t) => {
+        test('renders can have state if set explicitly - css test', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
                 t,
-                ssr(WithCSS, {
+                await ssr(WithCSS, {
                     documentSession: session,
                 })
             );
             const root2 = toTestTags(
                 t,
-                ssr(WithCSS, {
+                await ssr(WithCSS, {
                     documentSession: session,
                 })
             );
@@ -891,10 +894,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Errors
-        test('errors during rendering are captured', (t) => {
+        test('errors during rendering are captured', async (t) => {
             const err = t.throws<SSR.Errors.RenderError>(
-                () => {
-                    toTestTags(t, ssr(RenderError));
+                async () => {
+                    toTestTags(t, await ssr(RenderError));
                 },
                 {
                     message: /Error while rendering component on the server: Error, oh no/,
@@ -905,10 +908,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             t.true(err.source instanceof Error, 'source is an error');
             t.is(err.stack, err.source.stack, 'stack is copied over');
         });
-        test('errors during CSS parsing are captured', (t) => {
+        test('errors during CSS parsing are captured', async (t) => {
             const err = t.throws<SSR.Errors.CSSParseError>(
-                () => {
-                    toTestTags(t, ssr(CSSError));
+                async () => {
+                    toTestTags(t, await ssr(CSSError));
                 },
                 {
                     message: /Error while parsing rendered CSS/,
@@ -924,8 +927,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     if (isComplex) {
         // Complex
-        test('the class attribute is applied', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('the class attribute is applied', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -935,8 +938,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertTagName('div');
             root[0].assertHasClasses('a', 'b');
         });
-        test('strings are joined', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('strings are joined', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -947,8 +950,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[1].assertChildren(1);
             root[1][0].assertContent('abcd');
         });
-        test('numbers are joined', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('numbers are joined', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -959,8 +962,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[2].assertChildren(1);
             root[2][0].assertContent('1234');
         });
-        test('nested arrays are joined', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('nested arrays are joined', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -971,8 +974,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[3].assertChildren(1);
             root[3][0].assertContent('abcd');
         });
-        test('template arrays are joined', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('template arrays are joined', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -986,8 +989,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[4][1].assertChildren(1);
             root[4][1][0].assertContent('2');
         });
-        test('boolean attributes are applied', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('boolean attributes are applied', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -998,8 +1001,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[5].assertDoesNotHaveAttributes('prop', 'prop2', 'prop3');
             root[5].assertHasAttributes('prop4', 'prop5', 'prop6');
         });
-        test('complex values are removed altogether', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('complex values are removed altogether', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -1017,8 +1020,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 'prop6'
             );
         });
-        test('regular objects are turned into strings', (t) => {
-            const root = toTestTags(t, ssr(ComplexTag));
+        test('regular objects are turned into strings', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
 
             root.assertTag();
             root.assertTagName(ComplexTag.is);
@@ -1030,8 +1033,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[7][0].assertText();
             root[7][0].assertContent('[object Object][object Object]');
         });
-        test('non-lit-html pure text tags are still rendered to text', (t) => {
-            const root = toTestTags(t, ssr(TextTag));
+        test('non-lit-html pure text tags are still rendered to text', async (t) => {
+            const root = toTestTags(t, await ssr(TextTag));
 
             root.assertTag();
             root.assertTagName(TextTag.is);
@@ -1039,8 +1042,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertText();
             root[0].assertContent('some text');
         });
-        test('non-lit-html object text tags are still rendered to text', (t) => {
-            const root = toTestTags(t, ssr(ObjTextTag));
+        test('non-lit-html object text tags are still rendered to text', async (t) => {
+            const root = toTestTags(t, await ssr(ObjTextTag));
 
             root.assertTag();
             root.assertTagName(ObjTextTag.is);
@@ -1048,8 +1051,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertText();
             root[0].assertContent('more text');
         });
-        test('complex values are still passed on to components', (t) => {
-            const root = toTestTags(t, ssr(ComplexPropUser));
+        test('complex values are still passed on to components', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexPropUser));
 
             root.assertTag();
             root.assertTagName(ComplexPropUser.is);
@@ -1067,8 +1070,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0][0][2].assertChildren(1);
             root[0][0][2][0].assertContent('b');
         });
-        test('complex values are passed on to nested templates', (t) => {
-            const root = toTestTags(t, ssr(ComplexPropUser));
+        test('complex values are passed on to nested templates', async (t) => {
+            const root = toTestTags(t, await ssr(ComplexPropUser));
 
             root.assertFormat([
                 ComplexPropUser.is,
@@ -1106,8 +1109,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Slots
-        test("empty default slots don't use the default value", (t) => {
-            const root = toTestTags(t, ssr(DefaultSlotUserEmpty));
+        test("empty default slots don't use the default value", async (t) => {
+            const root = toTestTags(t, await ssr(DefaultSlotUserEmpty));
 
             root.assertFormat([
                 DefaultSlotUserEmpty.is,
@@ -1123,8 +1126,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('default slot values can be filled', (t) => {
-            const root = toTestTags(t, ssr(DefaultSlotUser));
+        test('default slot values can be filled', async (t) => {
+            const root = toTestTags(t, await ssr(DefaultSlotUser));
 
             root.assertFormat([
                 DefaultSlotUser.is,
@@ -1140,8 +1143,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('only the first default slot is used for slotting', (t) => {
-            const root = toTestTags(t, ssr(DefaultSlotMultiUser));
+        test('only the first default slot is used for slotting', async (t) => {
+            const root = toTestTags(t, await ssr(DefaultSlotMultiUser));
 
             root.assertFormat([
                 DefaultSlotMultiUser.is,
@@ -1158,8 +1161,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('multiple tags can be put into a default slot', (t) => {
-            const root = toTestTags(t, ssr(DefaultSlotUserMulti));
+        test('multiple tags can be put into a default slot', async (t) => {
+            const root = toTestTags(t, await ssr(DefaultSlotUserMulti));
 
             root.assertFormat([
                 DefaultSlotUserMulti.is,
@@ -1181,8 +1184,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('named slots are filled with their values', (t) => {
-            const root = toTestTags(t, ssr(NamedSlotUser));
+        test('named slots are filled with their values', async (t) => {
+            const root = toTestTags(t, await ssr(NamedSlotUser));
 
             root.assertTagName(NamedSlotUser.is);
             root.assertChildren(1);
@@ -1199,8 +1202,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0][5][0].assertTagName('span');
             root[0][5][0][0].assertContent('c-content');
         });
-        test('unnamed values are ignored when no slot exists for them', (t) => {
-            const root = toTestTags(t, ssr(NamedSlotUser));
+        test('unnamed values are ignored when no slot exists for them', async (t) => {
+            const root = toTestTags(t, await ssr(NamedSlotUser));
 
             root.assertFormat([
                 NamedSlotUser.is,
@@ -1220,8 +1223,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('empty named slots use the default value', (t) => {
-            const root = toTestTags(t, ssr(BothSlotsUser));
+        test('empty named slots use the default value', async (t) => {
+            const root = toTestTags(t, await ssr(BothSlotsUser));
 
             root.assertTagName(BothSlotsUser.is);
             root.assertChildren(1);
@@ -1231,15 +1234,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0][1].assertChildren(1);
             root[0][1][0].assertContent('default-a');
         });
-        test('tags with the wrong slot name are ignored when no default slot exists', (t) => {
-            const root = toTestTags(t, ssr(BothSlotsUser));
+        test('tags with the wrong slot name are ignored when no default slot exists', async (t) => {
+            const root = toTestTags(t, await ssr(BothSlotsUser));
 
             root.assertTagName(BothSlotsUser.is);
             root.assertChildren(1);
             root[0].assertChildren(7);
         });
-        test('tags with the wrong slot name are still ignored if a default slot exists', (t) => {
-            const root = toTestTags(t, ssr(BothSlotsUser));
+        test('tags with the wrong slot name are still ignored if a default slot exists', async (t) => {
+            const root = toTestTags(t, await ssr(BothSlotsUser));
 
             root.assertTagName(BothSlotsUser.is);
             root.assertChildren(1);
@@ -1251,8 +1254,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0][3][0].assertChildren();
             root[0][3][0][0].assertContent('default-content');
         });
-        test('default slots and named slots can work together', (t) => {
-            const root = toTestTags(t, ssr(BothSlotsUser));
+        test('default slots and named slots can work together', async (t) => {
+            const root = toTestTags(t, await ssr(BothSlotsUser));
 
             root.assertFormat([
                 BothSlotsUser.is,
@@ -1272,15 +1275,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('root can have named slots as children', (t) => {
-            t.notThrows(() => {
-                toTestTags(t, ssr(NamedSlot));
+        test('root can have named slots as children', async (t) => {
+            t.notThrows(async () => {
+                toTestTags(t, await ssr(NamedSlot));
             });
         });
-        test("root can't have unnamed slots as children", (t) => {
+        test("root can't have unnamed slots as children", async (t) => {
             t.throws(
-                () => {
-                    toTestTags(t, ssr(DefaultSlot));
+                async () => {
+                    toTestTags(t, await ssr(DefaultSlot));
                 },
                 {
                     message:
@@ -1298,10 +1301,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         };
 
         // I18N
-        test('valid entries are displayed when using __', (t) => {
+        test('valid entries are displayed when using __', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     i18n: defaultI18n,
                 })
             );
@@ -1320,11 +1323,11 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[4][0].assertText();
             root[4][0].assertContent(defaultI18n['known_key']);
         });
-        test('getLang() can be used', (t) => {
+        test('getLang() can be used', async (t) => {
             const language = 'somelanguage';
             const root = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     i18n: defaultI18n,
                     lang: language,
                 })
@@ -1349,10 +1352,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[8][0].assertText();
             root[8][0].assertContent(language);
         });
-        test('__prom returns a promise', (t) => {
+        test('__prom returns a promise', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     i18n: defaultI18n,
                 })
             );
@@ -1371,10 +1374,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[5][0].assertText();
             root[5][0].assertContent('true');
         });
-        test('unknown keys display nothing by default when using __', (t) => {
+        test('unknown keys display nothing by default when using __', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     i18n: defaultI18n,
                 })
             );
@@ -1389,10 +1392,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[6].assertTagName('div');
             root[6].assertChildren(0);
         });
-        test('unknown keys can display fallback when using getMessage', (t) => {
+        test('unknown keys can display fallback when using getMessage', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     i18n: defaultI18n,
                     getMessage(langFile, key) {
                         if (key in langFile) return langFile[key];
@@ -1415,10 +1418,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[6][0].assertText();
             root[6][0].assertContent('{{unknown_key}}');
         });
-        test('values can be passed along when using getMessage', (t) => {
+        test('values can be passed along when using getMessage', async (t) => {
             const root = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     i18n: defaultI18n,
                     getMessage(langFile, key, values) {
                         if (!(key in langFile)) {
@@ -1443,8 +1446,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[7][0].assertText();
             root[7][0].assertContent('text a,b,c');
         });
-        test('is empty when no i18n is passed', (t) => {
-            const root = toTestTags(t, ssr(I18nComponent, {}));
+        test('is empty when no i18n is passed', async (t) => {
+            const root = toTestTags(t, await ssr(I18nComponent, {}));
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
@@ -1460,7 +1463,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
     {
         // Sessions
-        test('theme can be passed through session', (t) => {
+        test('theme can be passed through session', async (t) => {
             const session = createSSRSession({
                 theme: {
                     color: 'red',
@@ -1469,13 +1472,13 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             const root1 = toTestTags(
                 t,
-                ssr(ThemeUser, {
+                await ssr(ThemeUser, {
                     documentSession: session,
                 })
             );
             const root2 = toTestTags(
                 t,
-                ssr(ThemeUser, {
+                await ssr(ThemeUser, {
                     documentSession: session,
                 })
             );
@@ -1489,7 +1492,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 t.true(root[0][0].content.includes('red'), 'theme is used');
             });
         });
-        test('i18n and getMessage can be passed through session', (t) => {
+        test('i18n and getMessage can be passed through session', async (t) => {
             const session = createSSRSession({
                 i18n: {
                     known_key: 'text',
@@ -1503,13 +1506,13 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             const root1 = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     documentSession: session,
                 })
             );
             const root2 = toTestTags(
                 t,
-                ssr(I18nComponent, {
+                await ssr(I18nComponent, {
                     documentSession: session,
                 })
             );
@@ -1530,7 +1533,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 root[4][0].assertContent('text-postfix');
             });
         });
-        test('render config overrides session theme and only once', (t) => {
+        test('render config overrides session theme and only once', async (t) => {
             const session = createSSRSession({
                 theme: {
                     color: 'red',
@@ -1539,7 +1542,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             const root1 = toTestTags(
                 t,
-                ssr(ThemeUser, {
+                await ssr(ThemeUser, {
                     documentSession: session,
                     theme: {
                         color: 'blue',
@@ -1548,7 +1551,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             );
             const root2 = toTestTags(
                 t,
-                ssr(ThemeUser, {
+                await ssr(ThemeUser, {
                     documentSession: session,
                 })
             );
@@ -1567,7 +1570,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root2[0].assertTagName('style');
             t.true(root2[0][0].content.includes('red'), 'theme is used');
         });
-        test('render config overrides session theme i18n and getMessage and only once', (t) => {
+        test('render config overrides session theme i18n and getMessage and only once', async (t) => {
             const session = createSSRSession({
                 i18n: {
                     known_key: 'text',
@@ -1579,7 +1582,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 },
             });
 
-            const content = ssr(I18nComponent, {
+            const content = await ssr(I18nComponent, {
                 documentSession: session,
                 i18n: {
                     known_key: 'text2',
@@ -1591,7 +1594,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 },
             });
             const root1 = toTestTags(t, content);
-            const content2 = ssr(I18nComponent, {
+            const content2 = await ssr(I18nComponent, {
                 documentSession: session,
             });
             const root2 = toTestTags(t, content2);
@@ -1624,7 +1627,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root2[4][0].assertText();
             root2[4][0].assertContent('text-postfix');
         });
-        test('sessions can be manually merged into with configs', (t) => {
+        test('sessions can be manually merged into with configs', async (t) => {
             const session = createSSRSession({
                 theme: {
                     color: 'red',
@@ -1638,7 +1641,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             const root = toTestTags(
                 t,
-                ssr(ThemeUser, {
+                await ssr(ThemeUser, {
                     documentSession: session.merge(session2),
                 })
             );
@@ -1650,19 +1653,19 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0].assertTagName('style');
             t.true(root[0][0].content.includes('blue'), 'theme is used');
         });
-        test('sessions can be manually merged into with maps', (t) => {
+        test('sessions can be manually merged into with maps', async (t) => {
             const session = createSSRSession();
             const session2 = createSSRSession();
 
             const root = toTestTags(
                 t,
-                ssr(NoIs, {
+                await ssr(NoIs, {
                     documentSession: session,
                 })
             );
             const root2 = toTestTags(
                 t,
-                ssr(NoIs, {
+                await ssr(NoIs, {
                     documentSession: session2,
                 })
             );
@@ -1672,7 +1675,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             const root3 = toTestTags(
                 t,
-                ssr(NoIs, {
+                await ssr(NoIs, {
                     documentSession: SSR.DocumentSession.merge(
                         session,
                         session2
@@ -1687,7 +1690,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         // Mergables
         {
             // Mergable weakmap
-            test('weakmap - set values can be retrieved', (t) => {
+            test('weakmap - set values can be retrieved', async (t) => {
                 const map = new SSR.MergableWeakMap();
 
                 const key = {};
@@ -1695,7 +1698,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 map.set(key, 'value');
                 t.is(map.get(key), 'value', 'value was set');
             });
-            test('weakmap - deleted keys no longer exist', (t) => {
+            test('weakmap - deleted keys no longer exist', async (t) => {
                 const map = new SSR.MergableWeakMap();
 
                 const key = {};
@@ -1704,7 +1707,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 map.delete(key);
                 t.true(map.get(key) === undefined, 'key was deleted');
             });
-            test('weakmap - the presence of keys can be checked with has', (t) => {
+            test('weakmap - the presence of keys can be checked with has', async (t) => {
                 const map = new SSR.MergableWeakMap();
 
                 const key = {};
@@ -1712,7 +1715,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 map.set(key, 'value');
                 t.true(map.has(key), 'value was set');
             });
-            test('weakmap - cloned maps contain the values of the source', (t) => {
+            test('weakmap - cloned maps contain the values of the source', async (t) => {
                 const map = new SSR.MergableWeakMap();
 
                 const key = {};
@@ -1722,7 +1725,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 const clone = map.clone();
                 t.is(clone.get(key), 'value', 'value was set');
             });
-            test('weakmap - changing a cloned map does not change the original', (t) => {
+            test('weakmap - changing a cloned map does not change the original', async (t) => {
                 const map = new SSR.MergableWeakMap();
 
                 const key = {};
@@ -1734,7 +1737,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 clone.set(key2, 'value');
                 t.false(map.has(key2), 'value was not set in the original');
             });
-            test('weakmap - merged maps contain the values of both', (t) => {
+            test('weakmap - merged maps contain the values of both', async (t) => {
                 const map1 = new SSR.MergableWeakMap();
                 const map2 = new SSR.MergableWeakMap();
 
@@ -1751,7 +1754,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 t.true(merged.has(key1), 'map contains key');
                 t.true(merged.has(key2), 'map contains key');
             });
-            test('weakmap - delete returns value based on whether something was deleted', (t) => {
+            test('weakmap - delete returns value based on whether something was deleted', async (t) => {
                 const map = new SSR.MergableWeakMap();
 
                 const key = {};
@@ -1764,7 +1767,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         }
         {
             // Mergable weakset
-            test('weakset - set values can be retrieved', (t) => {
+            test('weakset - set values can be retrieved', async (t) => {
                 const set = new SSR.MergableWeakSet();
 
                 const key = {};
@@ -1772,7 +1775,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 set.add(key);
                 t.true(set.has(key), 'value was set');
             });
-            test('weakset - deleted keys no longer exist', (t) => {
+            test('weakset - deleted keys no longer exist', async (t) => {
                 const set = new SSR.MergableWeakSet();
 
                 const key = {};
@@ -1781,7 +1784,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 set.delete(key);
                 t.false(set.has(key), 'key was deleted');
             });
-            test('weakset - cloned sets contain the values of the source', (t) => {
+            test('weakset - cloned sets contain the values of the source', async (t) => {
                 const set = new SSR.MergableWeakSet();
 
                 const key = {};
@@ -1791,7 +1794,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 const clone = set.clone();
                 t.true(clone.has(key), 'value was set');
             });
-            test('weakset - changing a cloned set does not change the original', (t) => {
+            test('weakset - changing a cloned set does not change the original', async (t) => {
                 const set = new SSR.MergableWeakSet();
 
                 const key = {};
@@ -1803,7 +1806,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 clone.add(key2);
                 t.false(set.has(key2), 'value was not set in the original');
             });
-            test('weakset - merged sets contain the values of both', (t) => {
+            test('weakset - merged sets contain the values of both', async (t) => {
                 const set1 = new SSR.MergableWeakSet();
                 const set2 = new SSR.MergableWeakSet();
 

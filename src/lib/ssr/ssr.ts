@@ -166,12 +166,17 @@ export namespace SSR {
         getMessage?: GetMessageFunction;
     }
 
+    interface PaddedDocumentConfig extends DocumentConfig {
+        doWait?: boolean;
+    }
+
     export class DocumentSession {
         _i18n?: any;
         _lang?: string;
         _theme?: SSR.BaseTypes.Theme;
         _themeName?: string;
         _getMessage?: GetMessageFunction;
+        _doWait?: boolean;
 
         _cssIdentifierMap: MergableWeakMap<
             BaseTypes.BaseClass,
@@ -192,10 +197,12 @@ export namespace SSR {
             getMessage,
             lang,
             themeName,
-        }: DocumentConfig = {}) {
+            doWait,
+        }: PaddedDocumentConfig = {}) {
             this._i18n = i18n;
             this._lang = lang;
             this._theme = theme;
+            this._doWait = doWait;
             this._themeName = themeName;
             this._getMessage = getMessage;
         }
@@ -209,10 +216,12 @@ export namespace SSR {
             getMessage,
             lang,
             themeName,
-        }: DocumentConfig) {
+            doWait,
+        }: PaddedDocumentConfig) {
             this._i18n = i18n || this._i18n;
             this._lang = lang || this._lang;
             this._theme = theme || this._theme;
+            this._doWait = doWait || this._doWait;
             this._themeName = themeName || this._themeName;
             this._getMessage = getMessage || this._getMessage;
             return this;
@@ -496,6 +505,7 @@ export namespace SSR {
 
             const parts = [];
             for (const key in attributes) {
+                if (!/[a-z].*/.test(key)) continue;
                 parts.push(
                     `${_casingToDashes(key)}="${_toString(
                         attributes[key]
@@ -554,6 +564,19 @@ export namespace SSR {
     }
 
     export namespace _Rendering {
+        export namespace _Util {
+            export async function mapAsyncInOrder<I, R>(
+                arr: I[],
+                handler: (item: I) => Promise<R>
+            ): Promise<R[]> {
+                const results: R[] = [];
+                for (const item of arr) {
+                    results.push(await handler(item));
+                }
+                return results;
+            }
+        }
+
         export namespace Dependencies {
             export function buildMap(
                 element: BaseTypes.BaseClass,
@@ -585,6 +608,7 @@ export namespace SSR {
                 public isSelfClosing: boolean;
                 private _children: (Tag | TextTag)[];
                 public config: Partial<TagConfig> = {};
+                private _slotted: boolean = false;
 
                 public readonly type = 'TAG';
 
@@ -623,6 +647,15 @@ export namespace SSR {
                     return this;
                 }
 
+                get slotted() {
+                    return this._slotted;
+                }
+
+                setSlotChildren(children: (Tag | TextTag)[]) {
+                    this._slotted = true;
+                    return this.setChildren(children);
+                }
+
                 walk(
                     handler: (
                         tag: Tag
@@ -647,20 +680,24 @@ export namespace SSR {
                         );
                 }
 
-                walkBottomUp(
-                    handler: (tag: Tag) => ParsedTag | void
-                ): ParsedTag {
+                async walkBottomUp(
+                    handler: (tag: Tag) => Promise<ParsedTag | void>
+                ): Promise<ParsedTag> {
                     this.setChildren(
-                        this.children.map((c) => c.walkBottomUp(handler))
+                        await _Util.mapAsyncInOrder(this.children, (child) =>
+                            child.walkBottomUp(handler)
+                        )
                     );
 
-                    return handler(this) || this;
+                    return (await handler(this)) || this;
                 }
 
-                walkAll(
-                    handler: <T extends Tag | TextTag>(tag: T) => T | void
-                ): ParsedTag {
-                    const result = handler(this);
+                async walkAll(
+                    handler: <T extends Tag | TextTag>(
+                        tag: T
+                    ) => Promise<T | void>
+                ): Promise<ParsedTag> {
+                    const result = await handler(this);
 
                     /* istanbul ignore next */
                     const newTag = result || this;
@@ -668,7 +705,10 @@ export namespace SSR {
                     return newTag
                         .copy()
                         .setChildren(
-                            newTag.children.map((c) => c.walkAll(handler))
+                            await _Util.mapAsyncInOrder(
+                                newTag.children,
+                                (child) => child.walkAll(handler)
+                            )
                         );
                 }
 
@@ -699,14 +739,16 @@ export namespace SSR {
                     return this;
                 }
 
-                walkBottomUp() {
+                async walkBottomUp() {
                     return this;
                 }
 
-                walkAll(
-                    handler: <T extends Tag | TextTag>(tag: T) => T | void
-                ): ParsedTag {
-                    return handler(this) || this;
+                async walkAll(
+                    handler: <T extends Tag | TextTag>(
+                        tag: T
+                    ) => Promise<T | void>
+                ): Promise<ParsedTag> {
+                    return (await handler(this)) || this;
                 }
 
                 toText() {
@@ -825,6 +867,9 @@ export namespace SSR {
                         root.forEach((t) =>
                             t.walk((tag) => {
                                 if (tag.tagName === 'slot') {
+                                    if (tag.slotted) {
+                                        return { newTag: tag, stop: true };
+                                    }
                                     if (tag.attributes.hasOwnProperty('name')) {
                                         const {
                                             name: slotName,
@@ -888,7 +933,9 @@ export namespace SSR {
                         }
 
                         if (receivers.unnamed) {
-                            receivers.unnamed.setChildren(slottables.unnamed);
+                            receivers.unnamed.setSlotChildren(
+                                slottables.unnamed
+                            );
                         }
                     }
 
@@ -899,9 +946,10 @@ export namespace SSR {
                     }
                 }
 
-                export function _applyOverriddenAttributes(
+                export async function _applyOverriddenAttributes(
                     tag: Tag,
-                    markers: _ComplexRender._MarkerArr[]
+                    markers: _ComplexRender._MarkerArr[],
+                    session: DocumentSession
                 ) {
                     const overrides: BaseTypes.Attributes = {};
                     const attributes: BaseTypes.TextAttributes = {};
@@ -909,15 +957,19 @@ export namespace SSR {
                     for (const attributeName in tag.attributes) {
                         const attributeValue = tag.attributes[attributeName];
                         if (
-                            !_ComplexRender.markerHas(markers, attributeValue)
+                            !(await _ComplexRender.markerHas(
+                                markers,
+                                attributeValue
+                            ))
                         ) {
                             attributes[attributeName] = attributeValue;
                         } else {
                             overrides[
                                 attributeName
-                            ] = _ComplexRender.markerGetValue(
+                            ] = await _ComplexRender.markerGetValue(
                                 markers,
-                                attributeValue
+                                attributeValue,
+                                session._doWait || false
                             );
                         }
                     }
@@ -927,11 +979,11 @@ export namespace SSR {
                     };
                 }
 
-                export function _mapTag(
+                export async function _mapTag(
                     tag: Tag,
                     session: DocumentSession,
                     markers: _ComplexRender._MarkerArr[]
-                ): ParsedTag | void {
+                ): Promise<ParsedTag | void> {
                     if (
                         !tag.tagName.includes('-') ||
                         !session._elementMap.hasOwnProperty(tag.tagName)
@@ -942,8 +994,8 @@ export namespace SSR {
                     const {
                         attributes,
                         overrides: props,
-                    } = _applyOverriddenAttributes(tag, markers);
-                    const newTag = elementToTag(
+                    } = await _applyOverriddenAttributes(tag, markers, session);
+                    const newTag = await elementToTag(
                         element,
                         props,
                         attributes,
@@ -953,12 +1005,12 @@ export namespace SSR {
                     return newTag;
                 }
 
-                export function replace(
+                export async function replace(
                     tags: ParsedTag[],
                     session: DocumentSession,
                     markers: _ComplexRender._MarkerArr[]
                 ) {
-                    return tags.map((t) =>
+                    return await _Util.mapAsyncInOrder(tags, (t) =>
                         t.walkBottomUp((tag) => {
                             return _mapTag(tag, session, markers);
                         })
@@ -1050,6 +1102,34 @@ export namespace SSR {
                                 if (!rule.selectors) return line;
                                 rule.selectors = rule.selectors.map(
                                     (selector) => {
+                                        return selector
+                                            .split(' ')
+                                            .map((part) => part.trim())
+                                            .filter((v) => v.length)
+                                            .map((rulePart) => {
+                                                if (rulePart === '*')
+                                                    return prefix;
+                                                if (
+                                                    rulePart.length === 1 &&
+                                                    /[a-z|A-Z]/.test(rulePart)
+                                                )
+                                                    return rulePart;
+
+                                                if (rulePart.includes(':')) {
+                                                    const pseudo = rulePart.includes(
+                                                        '::'
+                                                    )
+                                                        ? '::'
+                                                        : ':';
+                                                    const [
+                                                        prePseudo,
+                                                        pseudoSelector,
+                                                    ] = rulePart.split(pseudo);
+                                                    return `${prePseudo}.${prefix}${pseudo}${pseudoSelector}`;
+                                                }
+                                                return `${rulePart}.${prefix}`;
+                                            })
+                                            .join(' ');
                                         return `${selector}.${prefix}`;
                                     }
                                 );
@@ -1324,19 +1404,23 @@ export namespace SSR {
                     return str;
                 }
 
-                export function _finalMarkedToString(
+                export async function _finalMarkedToString(
                     strings: string[],
-                    markers: _MarkerArr[]
-                ): string {
+                    markers: _MarkerArr[],
+                    session: DocumentSession
+                ): Promise<string> {
                     const result: string[] = [strings[0]];
                     for (let i = 0; i < strings.length - 1; i++) {
                         const [marker, value, config] = markers[i];
+                        const evaluatedValue = session._doWait
+                            ? await value
+                            : value;
                         if (config.isTag && config.attrName.startsWith('?')) {
                             result[result.length - 1] = _getPreAttrRemoved(
                                 result,
                                 config
                             );
-                            if (value) {
+                            if (evaluatedValue) {
                                 result.push(`${config.attrName.slice(1)}="`);
                                 result.push(_ensurePostQuote(strings[i + 1]));
                             } else {
@@ -1346,7 +1430,7 @@ export namespace SSR {
                             result.push(marker, strings[i + 1]);
                         } else if (
                             config.isTag &&
-                            !_Attributes._isPrimitive(value)
+                            !_Attributes._isPrimitive(evaluatedValue)
                         ) {
                             // Delete it altogether
                             result[result.length - 1] = _getPreAttrRemoved(
@@ -1355,37 +1439,44 @@ export namespace SSR {
                             );
                             result.push(_ensureNoPostQuote(strings[i + 1]));
                         } else {
-                            result.push(value, strings[i + 1]);
+                            result.push(evaluatedValue, strings[i + 1]);
                         }
                     }
                     return result.join('');
                 }
 
-                export function _complexContentToString(
-                    content: any
-                ): {
+                export async function _complexContentToString(
+                    content: any,
+                    session: DocumentSession
+                ): Promise<{
                     isComplex: boolean;
                     str?: string;
                     markers: _MarkerArr[];
-                } {
+                }> {
                     if (!_Attributes._isPrimitive(content)) {
                         if (Array.isArray(content)) {
-                            const mappedContent = content.map((v) => {
-                                const {
-                                    isComplex,
-                                    str,
-                                    markers,
-                                } = _complexContentToString(v);
-                                if (isComplex)
-                                    return {
+                            const mappedContent = await _Util.mapAsyncInOrder(
+                                content,
+                                async (v) => {
+                                    const {
+                                        isComplex,
                                         str,
                                         markers,
+                                    } = await _complexContentToString(
+                                        v,
+                                        session
+                                    );
+                                    if (isComplex)
+                                        return {
+                                            str,
+                                            markers,
+                                        };
+                                    return {
+                                        str: v,
+                                        markers: [],
                                     };
-                                return {
-                                    str: v,
-                                    markers: [],
-                                };
-                            });
+                                }
+                            );
                             const joinedStrings = mappedContent
                                 .map((c) => c.str)
                                 .join('');
@@ -1402,9 +1493,10 @@ export namespace SSR {
                             };
                         }
                         if ('values' in content && 'strings' in content) {
-                            const { markers, str } = _complexRenderedToText(
-                                content
-                            );
+                            const {
+                                markers,
+                                str,
+                            } = await _complexRenderedToText(content, session);
                             return {
                                 isComplex: true,
                                 str,
@@ -1415,28 +1507,48 @@ export namespace SSR {
                     return { isComplex: false, markers: [] };
                 }
 
-                export function markerHas(markers: _MarkerArr[], value: any) {
-                    return markerGetAll(markers, value).length > 0;
+                export async function markerHas(
+                    markers: _MarkerArr[],
+                    value: any
+                ) {
+                    return (
+                        (await markerGetAll(markers, value, false)).length > 0
+                    );
                 }
 
-                export function markerGetValue(
+                export async function markerGetValue(
                     markers: _MarkerArr[],
-                    value: string
+                    value: string,
+                    doWait: boolean
                 ) {
-                    return markers
+                    const markerValue = markers
                         .filter(([marker]) => {
                             return value.includes(marker);
                         })
                         .map(([, markerValue]) => markerValue)[0];
+                    if (doWait) {
+                        return await markerValue;
+                    }
+                    return markerValue;
                 }
 
-                export function markerGetAll(
+                export async function markerGetAll(
                     markers: _MarkerArr[],
-                    value: string
+                    value: string,
+                    doWait: boolean
                 ) {
-                    return markers.filter(([marker]) => {
+                    const values = markers.filter(([marker]) => {
                         return value.includes(marker);
                     });
+                    if (doWait) {
+                        return await Promise.all(
+                            values.map(async ([key, value]) => [
+                                key,
+                                await value,
+                            ])
+                        );
+                    }
+                    return values;
                 }
 
                 export function _markerSet(
@@ -1460,39 +1572,55 @@ export namespace SSR {
                     }
                 }
 
-                export function _applyComplexToTag(
+                export async function _applyComplexToTag(
                     tag: Tag | TextTag,
-                    markers: _MarkerArr[]
+                    markers: _MarkerArr[],
+                    session: DocumentSession
                 ) {
                     if (tag.type === 'TEXT') {
                         const value = tag.content.trim();
-                        if (!markerHas(markers, value)) {
+                        if (!(await markerHas(markers, value))) {
                             return;
                         }
 
-                        const markedArr = markerGetAll(markers, value);
+                        const markedArr = await markerGetAll(
+                            markers,
+                            value,
+                            session._doWait || false
+                        );
                         // Check if there is an object-like in the DOM
-                        markedArr.forEach(([markedKey, markedValue]) => {
-                            const {
-                                isComplex,
-                                str,
-                                markers: contentMarkers,
-                            } = _complexContentToString(markedValue);
-                            markers.push(...contentMarkers);
+                        await _Util.mapAsyncInOrder(
+                            markedArr,
+                            async ([markedKey, markedValue]) => {
+                                const {
+                                    isComplex,
+                                    str,
+                                    markers: contentMarkers,
+                                } = await _complexContentToString(
+                                    markedValue,
+                                    session
+                                );
+                                markers.push(...contentMarkers);
 
-                            if (isComplex) {
-                                _markerSet(markers, markedKey, str!);
+                                if (isComplex) {
+                                    _markerSet(markers, markedKey, str!);
+                                }
                             }
-                        });
+                        );
                     } else {
                         const attrValues = { ...tag.attributes };
                         for (const attrName in tag.attributes) {
                             const attrValue = tag.attributes[attrName];
-                            if (!markerHas(markers, attrValue)) continue;
+                            if (!(await markerHas(markers, attrValue)))
+                                continue;
 
-                            const marked = markerGetAll(markers, attrValue).map(
-                                ([, val]) => val
-                            );
+                            const marked = (
+                                await markerGetAll(
+                                    markers,
+                                    attrValue,
+                                    session._doWait || false
+                                )
+                            ).map(([, val]) => val);
 
                             if (attrName === 'class') {
                                 const classString = classNames(marked);
@@ -1525,12 +1653,17 @@ export namespace SSR {
                             for (const attrName in tag.attributes) {
                                 const attrValue = tag.attributes[attrName];
 
-                                if (!markerHas(markers, attrValue)) continue;
+                                if (!(await markerHas(markers, attrValue)))
+                                    continue;
 
                                 _markerSet(
                                     markers,
                                     attrValue,
-                                    markerGetValue(markers, attrValue),
+                                    markerGetValue(
+                                        markers,
+                                        attrValue,
+                                        session._doWait || false
+                                    ),
                                     {
                                         forceMarker: true,
                                     }
@@ -1542,12 +1675,13 @@ export namespace SSR {
                     }
                 }
 
-                export function _complexRenderedToText(
-                    renderedTemplate: any
-                ): {
+                export async function _complexRenderedToText(
+                    renderedTemplate: any,
+                    session: DocumentSession
+                ): Promise<{
                     str: string;
                     markers: _MarkerArr[];
-                } {
+                }> {
                     // Render to text with markers inserted
                     const textRenderedMarked = _templateToMarkedString(
                         renderedTemplate
@@ -1556,28 +1690,34 @@ export namespace SSR {
                     // Check if values at those markers contain anything special
                     const parsedMarked = _Parser.parse(textRenderedMarked.text);
                     for (const parsedTag of parsedMarked) {
-                        parsedTag.walkAll((tag) => {
-                            _applyComplexToTag(tag, textRenderedMarked.markers);
+                        await parsedTag.walkAll(async (tag) => {
+                            await _applyComplexToTag(
+                                tag,
+                                textRenderedMarked.markers,
+                                session
+                            );
                         });
                     }
 
                     // Convert the old template to text again with new values
                     return {
-                        str: _finalMarkedToString(
+                        str: await _finalMarkedToString(
                             renderedTemplate.strings,
-                            textRenderedMarked.markers
+                            textRenderedMarked.markers,
+                            session
                         ),
                         markers: textRenderedMarked.markers,
                     };
                 }
 
-                export function renderToText(
+                export async function renderToText(
                     instance: BaseTypes.BaseClassInstance,
-                    template: TemplateFnLike<number> | null
-                ): {
+                    template: TemplateFnLike<number> | null,
+                    session: DocumentSession
+                ): Promise<{
                     str: string;
                     markers: _MarkerArr[];
-                } {
+                }> {
                     /* istanbul ignore next */
                     if (!template)
                         return {
@@ -1604,17 +1744,20 @@ export namespace SSR {
                         };
                     }
 
-                    return _complexRenderedToText(renderedTemplate);
+                    return await _complexRenderedToText(
+                        renderedTemplate,
+                        session
+                    );
                 }
             }
 
-            export function elementToTag(
+            export async function elementToTag(
                 element: BaseTypes.BaseClass,
                 props: BaseTypes.Props,
                 attribs: BaseTypes.Attributes,
                 session: DocumentSession,
                 isRoot: boolean = false
-            ): Tag {
+            ): Promise<Tag> {
                 const tagName =
                     element.is ||
                     `wclib-element${session._unnamedElements.amount++}`;
@@ -1627,9 +1770,10 @@ export namespace SSR {
                 );
                 const instance = new wrappedClass();
 
-                const { str, markers } = _ComplexRender.renderToText(
+                const { str, markers } = await _ComplexRender.renderToText(
                     instance,
-                    element.html
+                    element.html,
+                    session
                 );
                 const htmlTag = new Tag({
                     attributes: {
@@ -1663,7 +1807,7 @@ export namespace SSR {
                     [htmlTag],
                     session
                 );
-                const children = Replacement.replace(
+                const children = await Replacement.replace(
                     cssApplied,
                     session,
                     markers
@@ -1682,13 +1826,13 @@ export namespace SSR {
             }
         }
 
-        export function render<C extends BaseTypes.BaseClass>(
+        export async function render<C extends BaseTypes.BaseClass>(
             element: C,
             props: BaseTypes.Props,
             attributes: BaseTypes.Attributes,
             session: DocumentSession
-        ): string {
-            const dom = TextToTags.elementToTag(
+        ): Promise<string> {
+            const dom = await TextToTags.elementToTag(
                 element,
                 props,
                 attributes,
@@ -1698,8 +1842,7 @@ export namespace SSR {
             return dom.toText();
         }
     }
-
-    export function renderElement<
+    export async function renderElement<
         C extends BaseTypes.BaseClass,
         I extends InferInstance<C>
     >(
@@ -1713,17 +1856,18 @@ export namespace SSR {
             getMessage,
             lang,
             themeName,
+            await: doWait = false,
         }: SSRConfig<C, I>
-    ): string {
+    ): Promise<string> {
         documentSession._elementMap = {
             ...documentSession._elementMap,
             ..._Rendering.Dependencies.buildMap(element),
         };
         const session = documentSession
             .clone()
-            .mergeConfig({ i18n, theme, getMessage, lang, themeName });
+            .mergeConfig({ i18n, theme, getMessage, lang, themeName, doWait });
 
-        return _Rendering.render(
+        return await _Rendering.render(
             element,
             props || {},
             attributes || {},
@@ -1749,6 +1893,7 @@ export interface SSRConfig<
     getMessage?: SSR.GetMessageFunction;
     documentSession?: SSR.DocumentSession;
     attributes?: SSR.BaseTypes.Attributes;
+    await?: boolean;
 }
 
 /**
@@ -1768,14 +1913,15 @@ export interface SSRConfig<
  * @param { SSR.GetMessageFunction } [config.getMessage] - The
  *  function called when an i18n message is fetched
  * @param {SSR.DocumentSession} [config.documentSession] - The document session to use (remembers theme and i18n)
+ * @param { boolean } [config.await] - Whether to await template values
  *
- * @returns {string} The rendered element
+ * @returns {Promise<string>} The rendered element
  */
-export function ssr<
+export async function ssr<
     C extends SSR.BaseTypes.BaseClass,
     I extends InferInstance<C>
->(element: C, config: SSRConfig<C, I> = {}): string {
-    return SSR.renderElement(element, config);
+>(element: C, config: SSRConfig<C, I> = {}): Promise<string> {
+    return await SSR.renderElement(element, config);
 }
 
 /**

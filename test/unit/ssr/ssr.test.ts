@@ -137,7 +137,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         test('a single child can be rendered', async (t) => {
             const root = toTestTags(t, await ssr(SingleChild));
 
-            root.assertFormat([SingleChild.is, [['div', []]]]);
+            root.assertFormat([SingleChild.is, [['span', [['div', []]]]]]);
         });
         test('multiple children are rendered', async (t) => {
             const root = toTestTags(t, await ssr(MultiChild));
@@ -145,10 +145,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 MultiChild.is,
                 [
-                    ['div', []],
-                    ['div', []],
-                    ['div', []],
-                    ['div', []],
+                    [
+                        'span',
+                        [
+                            ['div', []],
+                            ['div', []],
+                            ['div', []],
+                            ['div', []],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -156,9 +161,9 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(t, await ssr(NestedChild));
 
             root.assertTag();
-            root.assertChildren(3);
+            root[0].assertChildren(3);
 
-            root[0][0][0].c[0].assertText();
+            root[0][0][0][0].c[0].assertText();
         });
         test('nested children are rendered', async (t) => {
             const root = toTestTags(t, await ssr(NestedChild));
@@ -166,9 +171,14 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 NestedChild.is,
                 [
-                    ['div', [['div', [['div', ['test']]]]]],
-                    ['div', []],
-                    ['span', [['div', [['br', []]]]]],
+                    [
+                        'span',
+                        [
+                            ['div', [['div', [['div', ['test']]]]]],
+                            ['div', []],
+                            ['span', [['div', [['br', []]]]]],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -177,14 +187,14 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(DifferentChild.is);
-            root.assertChildren(3);
-
-            root[0].assertTag();
-            root[0].assertTagName('simple-element');
-            root[0].assertChildren();
+            root[0].assertChildren(3);
 
             root[0][0].assertTag();
-            root[0][0].assertTagName('div');
+            root[0][0].assertTagName('simple-element');
+            root[0][0].assertChildren();
+
+            root[0][0][0][0].assertTag();
+            root[0][0][0][0].assertTagName('div');
         });
         test('a different tag can be rendered as a child multiple times', async (t) => {
             const root = toTestTags(t, await ssr(DifferentChild));
@@ -192,9 +202,14 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 DifferentChild.is,
                 [
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
+                    [
+                        'span',
+                        [
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -204,9 +219,14 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 UndefinedChild.is,
                 [
-                    ['simple-element', []],
-                    ['simple-element', []],
-                    ['simple-element', []],
+                    [
+                        'span',
+                        [
+                            ['simple-element', []],
+                            ['simple-element', []],
+                            ['simple-element', []],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -216,7 +236,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 await ssr(NestedTag, { props: { child: true } })
             );
 
-            root.assertFormat([NestedTag.is, [[NestedTag.is, [['div', []]]]]]);
+            root.assertFormat([
+                NestedTag.is,
+                [['span', [[NestedTag.is, [['span', [['div', []]]]]]]]],
+            ]);
         });
     }
 
@@ -226,27 +249,27 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             test('JSX element with no children can be rendered', async (t) => {
                 const root = toTestTags(t, await ssr(JSXElement));
 
-                root.assertChildren(1);
+                root[0].assertChildren(1);
 
-                root[0].assertTagName('div');
+                root[0][0].assertTagName('div');
             });
             test('JSX element with multiple children can be rendered', async (t) => {
                 const root = toTestTags(t, await ssr(JSXElementChildren));
 
-                root.assertChildren(1);
-                root[0].assertChildren(2);
+                root[0].assertChildren(1);
+                root[0][0].assertChildren(2);
 
-                root[0][0].assertTagName('div');
-                root[0][1].assertTagName('div');
+                root[0][0][0].assertTagName('div');
+                root[0][0][1].assertTagName('div');
             });
             test('JSX element with components as children can be rendered', async (t) => {
                 const root = toTestTags(t, await ssr(JSXElementComponents));
 
-                root.assertChildren(1);
-                root[0].assertChildren(2);
+                root[0].assertChildren(1);
+                root[0][0].assertChildren(2);
 
-                root[0][0].assertTagName(JSXElement.is);
-                root[0][1].assertTagName(JSXElement.is);
+                root[0][0][0].assertTagName(JSXElement.is);
+                root[0][0][1].assertTagName(JSXElement.is);
             });
         }
     }
@@ -256,36 +279,36 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         test('element with tagname gets its tag name', async (t) => {
             const root = toTestTags(t, await ssr(SimpleElement));
 
-            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
         });
         test('element without tagname gets default tagname', async (t) => {
             const root = toTestTags(t, await ssr(NoIs));
 
             root.assertTag();
             root.assertTagName('wclib-element0');
-            root.assertChildren(1);
+            root[0].assertChildren(1);
 
-            root.c[0].assertTag();
+            root[0].c[0].assertTag();
         });
         test('a child element without an is property keeps its tagname', async (t) => {
             const root = toTestTags(t, await ssr(ParentElementSame));
 
             root.assertTag();
             root.assertTagName(ParentElementSame.is);
-            root.assertChildren(2);
+            root[0].assertChildren(2);
 
-            root[0].assertTagName('no-is');
-            root[1].assertTagName('no-is');
+            root[0][0].assertTagName('no-is');
+            root[0][1].assertTagName('no-is');
         });
         test('another element without a tagname gets a different tagname', async (t) => {
             const root = toTestTags(t, await ssr(ParentElementDifferent));
 
             root.assertTag();
             root.assertTagName(ParentElementDifferent.is);
-            root.assertChildren(2);
+            root[0].assertChildren(2);
 
-            root[0].assertTagName('simple-element');
-            root[1].assertTagName('simple-element-x');
+            root[0][0].assertTagName('simple-element');
+            root[0][1].assertTagName('simple-element-x');
         });
     }
 
@@ -302,21 +325,21 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 await ssr(SimpleElement, { attributes })
             );
 
-            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
             root.assertAttributes(attributes);
         });
         test('no attributes are applied when no attributes are passed', async (t) => {
             const root = toTestTags(t, await ssr(SimpleElement));
 
-            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
             root.assertAttributes({});
         });
         test('attributes are applied to children', async (t) => {
             const root = toTestTags(t, await ssr(WithAttributes));
 
-            root.assertFormat([WithAttributes.is, [['div', []]]]);
+            root.assertFormat([WithAttributes.is, [['span', [['div', []]]]]]);
             root.assertAttributes({});
-            root[0].assertAttributes(
+            root[0][0].assertAttributes(
                 {
                     a: 'b',
                     c: 'd',
@@ -337,7 +360,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 })
             );
 
-            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
             root.assertAttributes({
                 a: '0',
                 c: '/x/',
@@ -358,7 +381,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 })
             );
 
-            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
             root.assertAttributes({
                 a: '012',
                 c: '/x//y//z/',
@@ -367,23 +390,25 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 g: 'abc',
             });
         });
-        test('dashes are replaced with uppercase letters', async (t) => {
+        test('uppercase letters are replaced with dashes', async (t) => {
             const attributes = {
                 'with-dashes': 'abc',
                 withoutdashes: 'def',
+                withUppercase: 'ghi',
             };
             const html = await ssr(SimpleElement, { attributes });
             const root = toTestTags(t, html);
 
-            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
             root.assertAttributes({
                 // HTML parsing removes casing
-                withdashes: 'abc',
+                'with-dashes': 'abc',
                 withoutdashes: 'def',
+                'with-uppercase': 'ghi',
             });
             t.true(
-                html.indexOf('withDashes') > -1,
-                'attribute is now partially uppercase'
+                html.indexOf('with-uppercase') > -1,
+                'attribute is now partially dashed'
             );
         });
     }
@@ -395,23 +420,23 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(AutoClosing.is);
-            root.assertChildren(5);
+            root[0].assertChildren(5);
 
-            root[0].assertAutoClosing();
-            root[1].assertAutoClosing();
-            root[2].assertAutoClosing();
-            root[3].assertAutoClosing();
-            root[4].assertAutoClosing();
+            root[0][0].assertAutoClosing();
+            root[0][1].assertAutoClosing();
+            root[0][2].assertAutoClosing();
+            root[0][3].assertAutoClosing();
+            root[0][4].assertAutoClosing();
 
-            root[3].assertAttribute('a', 'b');
-            root[4].assertAttribute('b', 'c');
+            root[0][3].assertAttribute('a', 'b');
+            root[0][4].assertAttribute('b', 'c');
         });
         test('not autoclosing tags are not autoclosing', async (t) => {
             const root = toTestTags(t, await ssr(SimpleElement));
 
-            root.assertFormat([SimpleElement.is, [['div', []]]]);
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
 
-            root[0].assertAutoClosing(false);
+            root[0][0].assertAutoClosing(false);
         });
     }
 
@@ -433,10 +458,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 WithProps.is,
                 [
-                    ['div', ['1']],
-                    ['div', ['2']],
-                    ['div', ['3']],
-                    ['div', ['4']],
+                    [
+                        'span',
+                        [
+                            ['div', ['1']],
+                            ['div', ['2']],
+                            ['div', ['3']],
+                            ['div', ['4']],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -454,8 +484,13 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 WithPrivProps.is,
                 [
-                    ['div', ['3']],
-                    ['div', ['4']],
+                    [
+                        'span',
+                        [
+                            ['div', ['3']],
+                            ['div', ['4']],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -473,10 +508,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 WithProps.is,
                 [
-                    ['div', ['?']],
-                    ['div', ['2']],
-                    ['div', ['?']],
-                    ['div', ['4']],
+                    [
+                        'span',
+                        [
+                            ['div', ['?']],
+                            ['div', ['2']],
+                            ['div', ['?']],
+                            ['div', ['4']],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -496,10 +536,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 WithProps.is,
                 [
-                    ['div', ['?']],
-                    ['div', ['2']],
-                    ['div', ['?']],
-                    ['div', ['4']],
+                    [
+                        'span',
+                        [
+                            ['div', ['?']],
+                            ['div', ['2']],
+                            ['div', ['?']],
+                            ['div', ['4']],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -517,10 +562,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 WithProps.is,
                 [
-                    ['div', ['1']],
-                    ['div', ['5']],
-                    ['div', ['3']],
-                    ['div', ['5']],
+                    [
+                        'span',
+                        [
+                            ['div', ['1']],
+                            ['div', ['5']],
+                            ['div', ['3']],
+                            ['div', ['5']],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -559,7 +609,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         test('works fine with an empty props object', async (t) => {
             const root = toTestTags(t, await ssr(SimpleElementEmptyProps));
 
-            root.assertFormat([SimpleElementEmptyProps.is, [['div', []]]]);
+            root.assertFormat([
+                SimpleElementEmptyProps.is,
+                [['span', [['div', []]]]],
+            ]);
         });
         if (isComplex) {
             test('passes on complex props', async (t) => {
@@ -579,9 +632,14 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 root.assertFormat([
                     ComplexPropReceiver.is,
                     [
-                        ['div', ['2']],
-                        ['div', ['2']],
-                        ['div', ['b']],
+                        [
+                            'span',
+                            [
+                                ['div', ['2']],
+                                ['div', ['2']],
+                                ['div', ['b']],
+                            ],
+                        ],
                     ],
                 ]);
             });
@@ -595,38 +653,49 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(WithCSS.is);
-            root.assertChildren(4);
+            root.assertChildren(3);
 
-            root[2].assertTagName('div');
-            root[2].assertAttribute('id', 'a');
-            root[3].assertTagName('div');
-            root[3].assertAttribute('id', 'c');
+            root[0].assertTagName('span');
+            root[0].assertAttribute('data-type', 'css');
+            root[0][0].assertTagName('style');
+            root[1].assertTagName('span');
+            root[1].assertAttribute('data-type', 'css');
+            root[1][0].assertTagName('style');
 
-            root[0].assertTagName('style');
-            root[1].assertTagName('style');
+            root[2].assertTagName('span');
+            root[2].assertAttribute('data-type', 'html');
+
+            root[2][0].assertTagName('div');
+            root[2][0].assertAttribute('id', 'a');
+            root[2][1].assertTagName('div');
+            root[2][1].assertAttribute('id', 'c');
         });
         test('css contains rules', async (t) => {
             const root = toTestTags(t, await ssr(WithCSS));
 
             root.assertTag();
             root.assertTagName(WithCSS.is);
-            root.assertChildren(4);
+            root.assertChildren(3);
 
-            root[0].assertTagName('style');
-            root[1].assertTagName('style');
+            root[0].assertTagName('span');
+            root[0].assertAttribute('data-type', 'css');
+            root[0][0].assertTagName('style');
+            root[1].assertTagName('span');
+            root[1].assertAttribute('data-type', 'css');
+            root[1][0].assertTagName('style');
 
-            root[0].assertChildren(1);
-            root[0][0].assertText();
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
 
-            root[1].assertChildren(1);
-            root[1][0].assertText();
+            root[1][0].assertChildren(1);
+            root[1][0][0].assertText();
 
             t.true(
-                root[0][0].content.includes('color: red'),
+                root[0][0][0].content.includes('color: red'),
                 'Style rule is rendered'
             );
             t.true(
-                root[1][0].content.includes('color: blue'),
+                root[1][0][0].content.includes('color: blue'),
                 'Style rule is rendered'
             );
         });
@@ -635,80 +704,81 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(WithCSS.is);
-            root.assertChildren(4);
+            root.assertChildren(3);
 
-            root[2].assertHasClasses('b');
-            root[3].assertHasClasses('b', 'c', 'd');
+            root[2][0].assertHasClasses('b');
+            root[2][1].assertHasClasses('b', 'c', 'd');
         });
         test('element-global classnames are applied', async (t) => {
             const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
-            root.assertChildren(2);
+            root[0].assertChildren(2);
 
-            root.forEach((c) => c.assertTagName('with-css'));
+            root[0].forEach((c) => c.assertTagName('with-css'));
 
-            root[0].assertChildren(4);
-            root[0][2].assertHasClasses('css-with-css');
-            root[0][2].assertDoesNotHaveClasses('css-multi-css');
+            root[0][0][2].assertChildren(2);
+            root[0][0][2][0].assertHasClasses('css-with-css');
+            root[0][0][2][0].assertDoesNotHaveClasses('css-multi-css');
 
-            root[1].assertChildren(3);
-            root[1][1].assertHasClasses('css-with-css');
-            root[1][1].assertDoesNotHaveClasses('css-multi-css');
+            root[0][1][1].assertChildren(2);
+            root[0][1][1][1].assertHasClasses('css-with-css');
+            root[0][1][1][1].assertDoesNotHaveClasses('css-multi-css');
         });
         test('element-specific classnames are applied', async (t) => {
             const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
-            root.assertChildren(2);
+            root[0].assertChildren(2);
 
-            root.forEach((c) => c.assertTagName('with-css'));
+            root[0].forEach((c) => c.assertTagName('with-css'));
 
-            root[0].assertChildren(4);
-            root[0][2].assertHasClasses('css-with-css-0');
-            root[0][2].assertDoesNotHaveClasses('css-multi-css');
+            root[0][0][2].assertChildren(2);
+            root[0][0][2][0].assertHasClasses('css-with-css-0');
+            root[0][0][2][0].assertDoesNotHaveClasses('css-multi-css');
 
-            root[1].assertChildren(3);
-            root[1][1].assertHasClasses('css-with-css-1');
-            root[1][1].assertDoesNotHaveClasses('css-multi-css');
+            root[0][1][1].assertChildren(2);
+            root[0][1][1][1].assertHasClasses('css-with-css-1');
+            root[0][1][1][1].assertDoesNotHaveClasses('css-multi-css');
         });
         test('CHANGE_TYPE.THEME and CHANGE_TYPE.NEVER are only rendered once', async (t) => {
             const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
-            root.assertChildren(2);
+            root[0].assertChildren(2);
 
-            root.forEach((c) => c.assertTagName('with-css'));
+            root[0].forEach((c) => c.assertTagName('with-css'));
 
-            root[0].assertChildren(4);
-            root[0][0].assertTagName('style');
-            root[0][1].assertTagName('style');
+            root[0][0].assertChildren(3);
+            root[0][0][0][0].assertTagName('style');
+            root[0][0][1][0].assertTagName('style');
 
-            root[1].assertChildren(3);
-            root[1][1].assertTagName('div');
+            root[0][1].assertChildren(2);
+            root[0][1][1][0].assertTagName('div');
         });
         test('other change type stylesheets are rendered multiple times', async (t) => {
             const root = toTestTags(t, await ssr(MultiCSS));
 
             root.assertTag();
             root.assertTagName(MultiCSS.is);
-            root.assertChildren(2);
+            root[0].assertChildren(2);
 
-            root.forEach((c) => c.assertTagName('with-css'));
+            root[0].forEach((c) => c.assertTagName('with-css'));
 
-            root[0].assertChildren(4);
-            root[0][0].assertTagName('style');
-            root[0][1].assertTagName('style');
+            root[0][0].assertChildren(3);
+            root[0][0][0][0].assertTagName('style');
+            root[0][0][1][0].assertTagName('style');
 
-            root[1].assertChildren(3);
-            root[1][0].assertTagName('style');
-            root[1][0].assertChildren(1);
-            root[1][0][0].assertText();
+            root[0][1].assertChildren(2);
+            root[0][1][0][0].assertTagName('style');
+            root[0][1][0][0].assertChildren(1);
+            root[0][1][0][0][0].assertText();
+
             t.true(
-                root[1][0][0].content.includes('color: blue'),
+                root[0][1][0][0][0].content.includes('color: blue'),
                 'rendered correct stylesheet'
             );
         });
@@ -726,8 +796,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTagName(ThemeUser.is);
             root.assertChildren(2);
             root[0].assertTag();
-            root[0].assertTagName('style');
-            t.true(root[0][0].content.includes('red'), 'theme is used');
+            root[0][0].assertTagName('style');
+            t.true(root[0][0][0].content.includes('red'), 'theme is used');
         });
         test('themeName can be passed', async (t) => {
             const themeName = 'somethemename';
@@ -745,28 +815,28 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTagName(ThemeUser.is);
             root.assertChildren(2);
             root[0].assertTag();
-            root[0].assertTagName('style');
-            t.true(root[0][0].content.includes('red'), 'theme is used');
+            root[0][0].assertTagName('style');
+            t.true(root[0][0][0].content.includes('red'), 'theme is used');
 
             root[1].assertTag();
-            root[1].assertTagName('div');
-            root[1].assertChildren(1);
-            root[1][0].assertText();
-            root[1][0].assertContent(themeName);
+            root[1][0].assertTagName('div');
+            root[1][0].assertChildren(1);
+            root[1][0][0].assertText();
+            root[1][0][0].assertContent(themeName);
         });
         test('scripts are rendered as well', async (t) => {
             const root = toTestTags(t, await ssr(ScriptTag));
 
             root.assertTag();
             root.assertTagName(ScriptTag.is);
-            root.assertChildren(2);
-            root[0].assertTag();
-            root[0].assertTagName('div');
-            root[1].assertTag();
-            root[1].assertTagName('script');
-            root[1].assertChildren(1);
-            root[1][0].assertText();
-            root[1][0].assertContent("console.log('some code');");
+            root[0].assertChildren(2);
+            root[0][0].assertTag();
+            root[0][0].assertTagName('div');
+            root[0][1].assertTag();
+            root[0][1].assertTagName('script');
+            root[0][1].assertChildren(1);
+            root[0][1][0].assertText();
+            root[0][1][0].assertContent("console.log('some code');");
         });
     }
 
@@ -789,18 +859,28 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 DifferentChild.is,
                 [
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
+                    [
+                        'span',
+                        [
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                        ],
+                    ],
                 ],
             ]);
             // Elements are still undefined
             root2.assertFormat([
                 UndefinedChild.is,
                 [
-                    ['simple-element', []],
-                    ['simple-element', []],
-                    ['simple-element', []],
+                    [
+                        'span',
+                        [
+                            ['simple-element', []],
+                            ['simple-element', []],
+                            ['simple-element', []],
+                        ],
+                    ],
                 ],
             ]);
         });
@@ -810,10 +890,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTagName(WithCSS.is);
             root2.assertTagName(WithCSS.is);
-            root.assertChildren(4);
-            root2.assertChildren(4);
+            root.assertChildren(3);
+            root2.assertChildren(3);
         });
-        test('renders can have state if set explicitly - unnamed tag test', async (t) => {
+        test('renders can have state if set explicitly - unnamed tag test.skip', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
@@ -832,7 +912,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTagName('wclib-element0');
             root2.assertTagName('wclib-element1');
         });
-        test('renders can have state if set explicitly - tagname map test', async (t) => {
+        test('renders can have state if set explicitly - tagname map test.skip', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
@@ -854,22 +934,32 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertFormat([
                 DifferentChild.is,
                 [
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
+                    [
+                        'span',
+                        [
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                        ],
+                    ],
                 ],
             ]);
             // Elements are now defined
             root2.assertFormat([
                 UndefinedChild.is,
                 [
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
-                    ['simple-element', [['div', []]]],
+                    [
+                        'span',
+                        [
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                            ['simple-element', [['span', [['div', []]]]]],
+                        ],
+                    ],
                 ],
             ]);
         });
-        test('renders can have state if set explicitly - css test', async (t) => {
+        test('renders can have state if set explicitly - css test.skip', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
@@ -887,15 +977,15 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTagName(WithCSS.is);
             root2.assertTagName(WithCSS.is);
-            root.assertChildren(4);
-            root2.assertChildren(3);
+            root.assertChildren(3);
+            root2.assertChildren(2);
         });
     }
 
     {
         // Errors
         test('errors during rendering are captured', async (t) => {
-            const err = t.throws<SSR.Errors.RenderError>(
+            const err = await t.throwsAsync<SSR.Errors.RenderError>(
                 async () => {
                     toTestTags(t, await ssr(RenderError));
                 },
@@ -909,7 +999,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             t.is(err.stack, err.source.stack, 'stack is copied over');
         });
         test('errors during CSS parsing are captured', async (t) => {
-            const err = t.throws<SSR.Errors.CSSParseError>(
+            const err = await t.throwsAsync<SSR.Errors.CSSParseError>(
                 async () => {
                     toTestTags(t, await ssr(CSSError));
                 },
@@ -933,10 +1023,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(1);
-            root[0].assertTag();
-            root[0].assertTagName('div');
-            root[0].assertHasClasses('a', 'b');
+            root[0].assertMinChildren(1);
+            root[0][0].assertTag();
+            root[0][0].assertTagName('div');
+            root[0][0].assertHasClasses('a', 'b');
         });
         test('strings are joined', async (t) => {
             const root = toTestTags(t, await ssr(ComplexTag));
@@ -944,11 +1034,11 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(2);
-            root[1].assertTag();
-            root[1].assertTagName('div');
-            root[1].assertChildren(1);
-            root[1][0].assertContent('abcd');
+            root[0].assertMinChildren(2);
+            root[0][1].assertTag();
+            root[0][1].assertTagName('div');
+            root[0][1].assertChildren(1);
+            root[0][1][0].assertContent('abcd');
         });
         test('numbers are joined', async (t) => {
             const root = toTestTags(t, await ssr(ComplexTag));
@@ -956,11 +1046,11 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(3);
-            root[2].assertTag();
-            root[2].assertTagName('div');
-            root[2].assertChildren(1);
-            root[2][0].assertContent('1234');
+            root[0].assertMinChildren(3);
+            root[0][2].assertTag();
+            root[0][2].assertTagName('div');
+            root[0][2].assertChildren(1);
+            root[0][2][0].assertContent('1234');
         });
         test('nested arrays are joined', async (t) => {
             const root = toTestTags(t, await ssr(ComplexTag));
@@ -968,11 +1058,11 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(4);
-            root[3].assertTag();
-            root[3].assertTagName('div');
-            root[3].assertChildren(1);
-            root[3][0].assertContent('abcd');
+            root[0].assertMinChildren(4);
+            root[0][3].assertTag();
+            root[0][3].assertTagName('div');
+            root[0][3].assertChildren(1);
+            root[0][3][0].assertContent('abcd');
         });
         test('template arrays are joined', async (t) => {
             const root = toTestTags(t, await ssr(ComplexTag));
@@ -980,14 +1070,14 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(5);
-            root[4].assertTag();
-            root[4].assertTagName('div');
-            root[4].assertChildren(2);
-            root[4][0].assertChildren(1);
-            root[4][0][0].assertContent('1');
-            root[4][1].assertChildren(1);
-            root[4][1][0].assertContent('2');
+            root[0].assertMinChildren(5);
+            root[0][4].assertTag();
+            root[0][4].assertTagName('div');
+            root[0][4].assertChildren(2);
+            root[0][4][0].assertChildren(1);
+            root[0][4][0][0].assertContent('1');
+            root[0][4][1].assertChildren(1);
+            root[0][4][1][0].assertContent('2');
         });
         test('boolean attributes are applied', async (t) => {
             const root = toTestTags(t, await ssr(ComplexTag));
@@ -995,11 +1085,11 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(6);
-            root[5].assertTag();
-            root[5].assertTagName('div');
-            root[5].assertDoesNotHaveAttributes('prop', 'prop2', 'prop3');
-            root[5].assertHasAttributes('prop4', 'prop5', 'prop6');
+            root[0].assertMinChildren(6);
+            root[0][5].assertTag();
+            root[0][5].assertTagName('div');
+            root[0][5].assertDoesNotHaveAttributes('prop', 'prop2', 'prop3');
+            root[0][5].assertHasAttributes('prop4', 'prop5', 'prop6');
         });
         test('complex values are removed altogether', async (t) => {
             const root = toTestTags(t, await ssr(ComplexTag));
@@ -1007,10 +1097,10 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(7);
-            root[6].assertTag();
-            root[6].assertTagName('div');
-            root[6].assertDoesNotHaveAttributes(
+            root[0].assertMinChildren(7);
+            root[0][6].assertTag();
+            root[0][6].assertTagName('div');
+            root[0][6].assertDoesNotHaveAttributes(
                 'prop',
                 'prop2',
                 'prop3',
@@ -1026,49 +1116,49 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ComplexTag.is);
 
-            root.assertMinChildren(8);
-            root[7].assertTag();
-            root[7].assertTagName('div');
-            root[7].assertChildren(1);
-            root[7][0].assertText();
-            root[7][0].assertContent('[object Object][object Object]');
+            root[0].assertMinChildren(8);
+            root[0][7].assertTag();
+            root[0][7].assertTagName('div');
+            root[0][7].assertChildren(1);
+            root[0][7][0].assertText();
+            root[0][7][0].assertContent('[object Object][object Object]');
         });
         test('non-lit-html pure text tags are still rendered to text', async (t) => {
             const root = toTestTags(t, await ssr(TextTag));
 
             root.assertTag();
             root.assertTagName(TextTag.is);
-            root.assertChildren(1);
-            root[0].assertText();
-            root[0].assertContent('some text');
+            root[0].assertChildren(1);
+            root[0][0].assertText();
+            root[0][0].assertContent('some text');
         });
         test('non-lit-html object text tags are still rendered to text', async (t) => {
             const root = toTestTags(t, await ssr(ObjTextTag));
 
             root.assertTag();
             root.assertTagName(ObjTextTag.is);
-            root.assertChildren(1);
-            root[0].assertText();
-            root[0].assertContent('more text');
+            root[0].assertChildren(1);
+            root[0][0].assertText();
+            root[0][0].assertContent('more text');
         });
         test('complex values are still passed on to components', async (t) => {
             const root = toTestTags(t, await ssr(ComplexPropUser));
 
             root.assertTag();
             root.assertTagName(ComplexPropUser.is);
-            root.assertMinChildren(1);
-            root[0].assertTag();
-            root[0].assertTagName('div');
-            root[0].assertChildren(1);
+            root[0].assertMinChildren(1);
             root[0][0].assertTag();
-            root[0][0].assertTagName('complex-prop-receiver');
-            root[0][0].assertChildren(3);
-            root[0][0][0].assertChildren(1);
-            root[0][0][0][0].assertContent('2');
-            root[0][0][1].assertChildren(1);
-            root[0][0][1][0].assertContent('2');
-            root[0][0][2].assertChildren(1);
-            root[0][0][2][0].assertContent('b');
+            root[0][0].assertTagName('div');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertTag();
+            root[0][0][0].assertTagName('complex-prop-receiver');
+            root[0][0][0][0].assertChildren(3);
+            root[0][0][0][0][0].assertChildren(1);
+            root[0][0][0][0][0][0].assertContent('2');
+            root[0][0][0][0][1].assertChildren(1);
+            root[0][0][0][0][1][0].assertContent('2');
+            root[0][0][0][0][2].assertChildren(1);
+            root[0][0][0][0][2][0].assertContent('b');
         });
         test('complex values are passed on to nested templates', async (t) => {
             const root = toTestTags(t, await ssr(ComplexPropUser));
@@ -1077,30 +1167,45 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ComplexPropUser.is,
                 [
                     [
-                        'div',
+                        'span',
                         [
                             [
-                                'complex-prop-receiver',
+                                'div',
                                 [
-                                    ['div', ['2']],
-                                    ['div', ['2']],
-                                    ['div', ['b']],
+                                    [
+                                        'complex-prop-receiver',
+                                        [
+                                            [
+                                                'span',
+                                                [
+                                                    ['div', ['2']],
+                                                    ['div', ['2']],
+                                                    ['div', ['b']],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
                                 ],
                             ],
+                            [
+                                'div',
+                                [2, 3, 4, 5].map((num) => {
+                                    return [
+                                        'complex-prop-receiver',
+                                        [
+                                            [
+                                                'span',
+                                                [
+                                                    ['div', [`${num}`]],
+                                                    ['div', [`${num}`]],
+                                                    ['div', ['b']],
+                                                ],
+                                            ],
+                                        ],
+                                    ] as TestTagFormat;
+                                }),
+                            ],
                         ],
-                    ],
-                    [
-                        'div',
-                        [2, 3, 4, 5].map((num) => {
-                            return [
-                                'complex-prop-receiver',
-                                [
-                                    ['div', [`${num}`]],
-                                    ['div', [`${num}`]],
-                                    ['div', ['b']],
-                                ],
-                            ] as TestTagFormat;
-                        }),
                     ],
                 ],
             ]);
@@ -1116,11 +1221,21 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 DefaultSlotUserEmpty.is,
                 [
                     [
-                        'default-slot',
+                        'span',
                         [
-                            ['div', []],
-                            ['slot', []],
-                            ['div', []],
+                            [
+                                'default-slot',
+                                [
+                                    [
+                                        'span',
+                                        [
+                                            ['div', []],
+                                            ['slot', []],
+                                            ['div', []],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -1133,11 +1248,21 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 DefaultSlotUser.is,
                 [
                     [
-                        'default-slot',
+                        'span',
                         [
-                            ['div', []],
-                            ['slot', [['span', ['content']]]],
-                            ['div', []],
+                            [
+                                'default-slot',
+                                [
+                                    [
+                                        'span',
+                                        [
+                                            ['div', []],
+                                            ['slot', [['span', ['content']]]],
+                                            ['div', []],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -1150,12 +1275,22 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 DefaultSlotMultiUser.is,
                 [
                     [
-                        'default-slot-multi',
+                        'span',
                         [
-                            ['div', []],
-                            ['slot', [['span', ['content']]]],
-                            ['slot', [['div', ['default2']]]],
-                            ['div', []],
+                            [
+                                'default-slot-multi',
+                                [
+                                    [
+                                        'span',
+                                        [
+                                            ['div', []],
+                                            ['slot', [['span', ['content']]]],
+                                            ['slot', [['div', ['default2']]]],
+                                            ['div', []],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -1168,17 +1303,27 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 DefaultSlotUserMulti.is,
                 [
                     [
-                        'default-slot',
+                        'span',
                         [
-                            ['div', []],
                             [
-                                'slot',
+                                'default-slot',
                                 [
-                                    ['span', ['content']],
-                                    ['span', ['content2']],
+                                    [
+                                        'span',
+                                        [
+                                            ['div', []],
+                                            [
+                                                'slot',
+                                                [
+                                                    ['span', ['content']],
+                                                    ['span', ['content2']],
+                                                ],
+                                            ],
+                                            ['div', []],
+                                        ],
+                                    ],
                                 ],
                             ],
-                            ['div', []],
                         ],
                     ],
                 ],
@@ -1188,19 +1333,19 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(t, await ssr(NamedSlotUser));
 
             root.assertTagName(NamedSlotUser.is);
-            root.assertChildren(1);
-            root[0].assertMinChildren(7);
-            root[0][1].assertTag();
-            root[0][1].assertTagName('slot');
-            root[0][1][0].assertTag();
-            root[0][1][0].assertTagName('span');
-            root[0][1][0][0].assertContent('a-content');
+            root[0].assertChildren(1);
+            root[0][0][0].assertMinChildren(7);
+            root[0][0][0][1].assertTag();
+            root[0][0][0][1].assertTagName('slot');
+            root[0][0][0][1][0].assertTag();
+            root[0][0][0][1][0].assertTagName('span');
+            root[0][0][0][1][0][0].assertContent('a-content');
 
-            root[0][5].assertTag();
-            root[0][5].assertTagName('slot');
-            root[0][5][0].assertTag();
-            root[0][5][0].assertTagName('span');
-            root[0][5][0][0].assertContent('c-content');
+            root[0][0][0][5].assertTag();
+            root[0][0][0][5].assertTagName('slot');
+            root[0][0][0][5][0].assertTag();
+            root[0][0][0][5][0].assertTagName('span');
+            root[0][0][0][5][0][0].assertContent('c-content');
         });
         test('unnamed values are ignored when no slot exists for them', async (t) => {
             const root = toTestTags(t, await ssr(NamedSlotUser));
@@ -1209,15 +1354,25 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 NamedSlotUser.is,
                 [
                     [
-                        'named-slot',
+                        'span',
                         [
-                            ['div', []],
-                            ['slot', [['span', ['a-content']]]],
-                            ['div', []],
-                            ['slot', []],
-                            ['div', []],
-                            ['slot', [['span', ['c-content']]]],
-                            ['div', []],
+                            [
+                                'named-slot',
+                                [
+                                    [
+                                        'span',
+                                        [
+                                            ['div', []],
+                                            ['slot', [['span', ['a-content']]]],
+                                            ['div', []],
+                                            ['slot', []],
+                                            ['div', []],
+                                            ['slot', [['span', ['c-content']]]],
+                                            ['div', []],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
@@ -1227,32 +1382,32 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             const root = toTestTags(t, await ssr(BothSlotsUser));
 
             root.assertTagName(BothSlotsUser.is);
-            root.assertChildren(1);
-            root[0].assertMinChildren(2);
-            root[0][1].assertTag();
-            root[0][1].assertTagName('slot');
-            root[0][1].assertChildren(1);
-            root[0][1][0].assertContent('default-a');
+            root[0].assertChildren(1);
+            root[0][0][0].assertMinChildren(2);
+            root[0][0][0][1].assertTag();
+            root[0][0][0][1].assertTagName('slot');
+            root[0][0][0][1].assertChildren(1);
+            root[0][0][0][1][0].assertContent('default-a');
         });
         test('tags with the wrong slot name are ignored when no default slot exists', async (t) => {
             const root = toTestTags(t, await ssr(BothSlotsUser));
 
             root.assertTagName(BothSlotsUser.is);
-            root.assertChildren(1);
-            root[0].assertChildren(7);
+            root[0].assertChildren(1);
+            root[0][0][0].assertChildren(7);
         });
         test('tags with the wrong slot name are still ignored if a default slot exists', async (t) => {
             const root = toTestTags(t, await ssr(BothSlotsUser));
 
             root.assertTagName(BothSlotsUser.is);
-            root.assertChildren(1);
-            root[0].assertChildren(7);
-            root[0][3].assertTag();
-            root[0][3].assertTagName('slot');
-            root[0][3].assertChildren(1);
-            root[0][3][0].assertTagName('span');
-            root[0][3][0].assertChildren();
-            root[0][3][0][0].assertContent('default-content');
+            root[0].assertChildren(1);
+            root[0][0][0].assertChildren(7);
+            root[0][0][0][3].assertTag();
+            root[0][0][0][3].assertTagName('slot');
+            root[0][0][0][3].assertChildren(1);
+            root[0][0][0][3][0].assertTagName('span');
+            root[0][0][0][3][0].assertChildren();
+            root[0][0][0][3][0][0].assertContent('default-content');
         });
         test('default slots and named slots can work together', async (t) => {
             const root = toTestTags(t, await ssr(BothSlotsUser));
@@ -1261,27 +1416,40 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 BothSlotsUser.is,
                 [
                     [
-                        'both-slots',
+                        'span',
                         [
-                            ['div', []],
-                            ['slot', ['default-a']],
-                            ['div', []],
-                            ['slot', [['span', ['default-content']]]],
-                            ['div', []],
-                            ['slot', [['span', ['c-content']]]],
-                            ['div', []],
+                            [
+                                'both-slots',
+                                [
+                                    [
+                                        'span',
+                                        [
+                                            ['div', []],
+                                            ['slot', ['default-a']],
+                                            ['div', []],
+                                            [
+                                                'slot',
+                                                [['span', ['default-content']]],
+                                            ],
+                                            ['div', []],
+                                            ['slot', [['span', ['c-content']]]],
+                                            ['div', []],
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
             ]);
         });
         test('root can have named slots as children', async (t) => {
-            t.notThrows(async () => {
+            await t.notThrowsAsync(async () => {
                 toTestTags(t, await ssr(NamedSlot));
             });
         });
         test("root can't have unnamed slots as children", async (t) => {
-            t.throws(
+            await t.throwsAsync(
                 async () => {
                     toTestTags(t, await ssr(DefaultSlot));
                 },
@@ -1311,17 +1479,17 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
-            root.assertMinChildren(5);
+            root[0].assertMinChildren(5);
 
-            root[0].assertTagName('div');
-            root[0].assertChildren(1);
-            root[0][0].assertText();
-            root[0][0].assertContent(defaultI18n['known_key']);
+            root[0][0].assertTagName('div');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+            root[0][0][0].assertContent(defaultI18n['known_key']);
 
-            root[4].assertTagName('div');
-            root[4].assertChildren(1);
-            root[4][0].assertText();
-            root[4][0].assertContent(defaultI18n['known_key']);
+            root[0][4].assertTagName('div');
+            root[0][4].assertChildren(1);
+            root[0][4][0].assertText();
+            root[0][4][0].assertContent(defaultI18n['known_key']);
         });
         test('getLang() can be used', async (t) => {
             const language = 'somelanguage';
@@ -1335,22 +1503,22 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
-            root.assertChildren(9);
+            root[0].assertChildren(9);
 
-            root[0].assertTagName('div');
-            root[0].assertChildren(1);
-            root[0][0].assertText();
-            root[0][0].assertContent(defaultI18n['known_key']);
+            root[0][0].assertTagName('div');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+            root[0][0][0].assertContent(defaultI18n['known_key']);
 
-            root[4].assertTagName('div');
-            root[4].assertChildren(1);
-            root[4][0].assertText();
-            root[4][0].assertContent(defaultI18n['known_key']);
+            root[0][4].assertTagName('div');
+            root[0][4].assertChildren(1);
+            root[0][4][0].assertText();
+            root[0][4][0].assertContent(defaultI18n['known_key']);
 
-            root[8].assertTagName('div');
-            root[8].assertChildren(1);
-            root[8][0].assertText();
-            root[8][0].assertContent(language);
+            root[0][8].assertTagName('div');
+            root[0][8].assertChildren(1);
+            root[0][8][0].assertText();
+            root[0][8][0].assertContent(language);
         });
         test('__prom returns a promise', async (t) => {
             const root = toTestTags(
@@ -1362,17 +1530,17 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
-            root.assertMinChildren(6);
+            root[0].assertMinChildren(6);
 
-            root[1].assertTagName('div');
-            root[1].assertChildren(1);
-            root[1][0].assertText();
-            root[1][0].assertContent('true');
+            root[0][1].assertTagName('div');
+            root[0][1].assertChildren(1);
+            root[0][1][0].assertText();
+            root[0][1][0].assertContent('true');
 
-            root[5].assertTagName('div');
-            root[5].assertChildren(1);
-            root[5][0].assertText();
-            root[5][0].assertContent('true');
+            root[0][5].assertTagName('div');
+            root[0][5].assertChildren(1);
+            root[0][5][0].assertText();
+            root[0][5][0].assertContent('true');
         });
         test('unknown keys display nothing by default when using __', async (t) => {
             const root = toTestTags(
@@ -1384,13 +1552,13 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
-            root.assertMinChildren(7);
+            root[0].assertMinChildren(7);
 
-            root[2].assertTagName('div');
-            root[2].assertChildren(0);
+            root[0][2].assertTagName('div');
+            root[0][2].assertChildren(0);
 
-            root[6].assertTagName('div');
-            root[6].assertChildren(0);
+            root[0][6].assertTagName('div');
+            root[0][6].assertChildren(0);
         });
         test('unknown keys can display fallback when using getMessage', async (t) => {
             const root = toTestTags(
@@ -1406,17 +1574,17 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
-            root.assertMinChildren(7);
+            root[0].assertMinChildren(7);
 
-            root[2].assertTagName('div');
-            root[2].assertChildren(1);
-            root[2][0].assertText();
-            root[2][0].assertContent('{{unknown_key}}');
+            root[0][2].assertTagName('div');
+            root[0][2].assertChildren(1);
+            root[0][2][0].assertText();
+            root[0][2][0].assertContent('{{unknown_key}}');
 
-            root[6].assertTagName('div');
-            root[6].assertChildren(1);
-            root[6][0].assertText();
-            root[6][0].assertContent('{{unknown_key}}');
+            root[0][6].assertTagName('div');
+            root[0][6].assertChildren(1);
+            root[0][6][0].assertText();
+            root[0][6][0].assertContent('{{unknown_key}}');
         });
         test('values can be passed along when using getMessage', async (t) => {
             const root = toTestTags(
@@ -1434,30 +1602,30 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
-            root.assertMinChildren(8);
+            root[0].assertMinChildren(8);
 
-            root[3].assertTagName('div');
-            root[3].assertChildren(1);
-            root[3][0].assertText();
-            root[3][0].assertContent('text a,b,c');
+            root[0][3].assertTagName('div');
+            root[0][3].assertChildren(1);
+            root[0][3][0].assertText();
+            root[0][3][0].assertContent('text a,b,c');
 
-            root[7].assertTagName('div');
-            root[7].assertChildren(1);
-            root[7][0].assertText();
-            root[7][0].assertContent('text a,b,c');
+            root[0][7].assertTagName('div');
+            root[0][7].assertChildren(1);
+            root[0][7][0].assertText();
+            root[0][7][0].assertContent('text a,b,c');
         });
         test('is empty when no i18n is passed', async (t) => {
             const root = toTestTags(t, await ssr(I18nComponent, {}));
 
             root.assertTag();
             root.assertTagName(I18nComponent.is);
-            root.assertMinChildren(5);
+            root[0].assertMinChildren(5);
 
-            root[0].assertTagName('div');
-            root[0].assertChildren(0);
+            root[0][0].assertTagName('div');
+            root[0][0].assertChildren(0);
 
-            root[4].assertTagName('div');
-            root[4].assertChildren(0);
+            root[0][4].assertTagName('div');
+            root[0][4].assertChildren(0);
         });
     }
 
@@ -1487,9 +1655,9 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 root.assertTag();
                 root.assertTagName(ThemeUser.is);
                 root.assertChildren(2);
-                root[0].assertTag();
-                root[0].assertTagName('style');
-                t.true(root[0][0].content.includes('red'), 'theme is used');
+                root[0][0].assertTag();
+                root[0][0].assertTagName('style');
+                t.true(root[0][0][0].content.includes('red'), 'theme is used');
             });
         });
         test('i18n and getMessage can be passed through session', async (t) => {
@@ -1520,17 +1688,17 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             [root1, root2].forEach((root) => {
                 root.assertTag();
                 root.assertTagName(I18nComponent.is);
-                root.assertMinChildren(8);
+                root[0].assertMinChildren(8);
 
-                root[0].assertTagName('div');
-                root[0].assertChildren(1);
-                root[0][0].assertText();
-                root[0][0].assertContent('text-postfix');
+                root[0][0].assertTagName('div');
+                root[0][0].assertChildren(1);
+                root[0][0][0].assertText();
+                root[0][0][0].assertContent('text-postfix');
 
-                root[4].assertTagName('div');
-                root[4].assertChildren(1);
-                root[4][0].assertText();
-                root[4][0].assertContent('text-postfix');
+                root[0][4].assertTagName('div');
+                root[0][4].assertChildren(1);
+                root[0][4][0].assertText();
+                root[0][4][0].assertContent('text-postfix');
             });
         });
         test('render config overrides session theme and only once', async (t) => {
@@ -1559,16 +1727,16 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root1.assertTag();
             root1.assertTagName(ThemeUser.is);
             root1.assertChildren(2);
-            root1[0].assertTag();
-            root1[0].assertTagName('style');
-            t.true(root1[0][0].content.includes('blue'), 'theme is used');
+            root1[0][0].assertTag();
+            root1[0][0].assertTagName('style');
+            t.true(root1[0][0][0].content.includes('blue'), 'theme is used');
 
             root2.assertTag();
             root2.assertTagName(ThemeUser.is);
             root2.assertChildren(2);
-            root2[0].assertTag();
-            root2[0].assertTagName('style');
-            t.true(root2[0][0].content.includes('red'), 'theme is used');
+            root2[0][0].assertTag();
+            root2[0][0].assertTagName('style');
+            t.true(root2[0][0][0].content.includes('red'), 'theme is used');
         });
         test('render config overrides session theme i18n and getMessage and only once', async (t) => {
             const session = createSSRSession({
@@ -1601,31 +1769,31 @@ baseComponents.forEach(({ component, isComplex, name }) => {
 
             root1.assertTag();
             root1.assertTagName(I18nComponent.is);
-            root1.assertMinChildren(8);
+            root1[0].assertMinChildren(8);
 
-            root1[0].assertTagName('div');
-            root1[0].assertChildren(1);
-            root1[0][0].assertText();
-            root1[0][0].assertContent('text2-postfix2');
+            root1[0][0].assertTagName('div');
+            root1[0][0].assertChildren(1);
+            root1[0][0][0].assertText();
+            root1[0][0][0].assertContent('text2-postfix2');
 
-            root1[4].assertTagName('div');
-            root1[4].assertChildren(1);
-            root1[4][0].assertText();
-            root1[4][0].assertContent('text2-postfix2');
+            root1[0][4].assertTagName('div');
+            root1[0][4].assertChildren(1);
+            root1[0][4][0].assertText();
+            root1[0][4][0].assertContent('text2-postfix2');
 
             root2.assertTag();
             root2.assertTagName(I18nComponent.is);
-            root2.assertMinChildren(8);
+            root2[0].assertMinChildren(8);
 
-            root2[0].assertTagName('div');
-            root2[0].assertChildren(1);
-            root2[0][0].assertText();
-            root2[0][0].assertContent('text-postfix');
+            root2[0][0].assertTagName('div');
+            root2[0][0].assertChildren(1);
+            root2[0][0][0].assertText();
+            root2[0][0][0].assertContent('text-postfix');
 
-            root2[4].assertTagName('div');
-            root2[4].assertChildren(1);
-            root2[4][0].assertText();
-            root2[4][0].assertContent('text-postfix');
+            root2[0][4].assertTagName('div');
+            root2[0][4].assertChildren(1);
+            root2[0][4][0].assertText();
+            root2[0][4][0].assertContent('text-postfix');
         });
         test('sessions can be manually merged into with configs', async (t) => {
             const session = createSSRSession({
@@ -1649,9 +1817,9 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTag();
             root.assertTagName(ThemeUser.is);
             root.assertChildren(2);
-            root[0].assertTag();
-            root[0].assertTagName('style');
-            t.true(root[0][0].content.includes('blue'), 'theme is used');
+            root[0][0].assertTag();
+            root[0][0].assertTagName('style');
+            t.true(root[0][0][0].content.includes('blue'), 'theme is used');
         });
         test('sessions can be manually merged into with maps', async (t) => {
             const session = createSSRSession();

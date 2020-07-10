@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.26**:
+
+-   Fix a whole bunch of server-side-rendering bugs
+
 **1.1.25**:
 
 -   Fix issue with rendering multiple templates as a single node's child

@@ -8,7 +8,7 @@
         "type": "git",
         "url": "https://github.com/SanderRonde/wc-lib.git"
     },
-    "version": "1.1.25",
+    "version": "1.1.26",
     "description": "A webcomponent framework",
     "main": "build/cjs/wc-lib.js",
     "browser": "build/es/wc-lib.js",

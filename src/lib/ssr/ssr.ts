@@ -1108,10 +1108,10 @@ export namespace SSR {
                                             .filter((v) => v.length)
                                             .map((rulePart) => {
                                                 if (rulePart === '*')
-                                                    return prefix;
+                                                    return `.${prefix}`;
                                                 if (
                                                     rulePart.length === 1 &&
-                                                    /[a-z|A-Z]/.test(rulePart)
+                                                    !/[a-z|A-Z]/.test(rulePart)
                                                 )
                                                     return rulePart;
 
@@ -1130,7 +1130,6 @@ export namespace SSR {
                                                 return `${rulePart}.${prefix}`;
                                             })
                                             .join(' ');
-                                        return `${selector}.${prefix}`;
                                     }
                                 );
                                 return rule;

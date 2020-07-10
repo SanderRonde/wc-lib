@@ -293,7 +293,7 @@ cmd('coverage')
     .run(async (exec, { subset }) => {
         await exec('? clearing previous coverage');
         await exec('rimraf ./.nyc_output');
-        if (subset === 'unit') {
+        if (subset === 'unit' || subset == 'all') {
             await exec(
                 '? generating CJS lit-html bundle at test/modules/lit-html.js'
             );

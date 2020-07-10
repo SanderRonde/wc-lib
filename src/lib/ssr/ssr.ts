@@ -505,7 +505,7 @@ export namespace SSR {
 
             const parts = [];
             for (const key in attributes) {
-                if (!/[a-z].*/.test(key)) continue;
+                if (!/^[a-z].*/.test(key)) continue;
                 parts.push(
                     `${_casingToDashes(key)}="${_toString(
                         attributes[key]

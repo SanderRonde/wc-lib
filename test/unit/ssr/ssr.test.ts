@@ -411,6 +411,19 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 'attribute is now partially dashed'
             );
         });
+        test.only('attributes that are invalid in HTML are ignored', async (t) => {
+            const attributes = {
+                '#invalid': 'abc',
+                valid: 'def',
+            };
+            const html = await ssr(SimpleElement, { attributes });
+            const root = toTestTags(t, html);
+
+            root.assertFormat([SimpleElement.is, [['span', [['div', []]]]]]);
+            root.assertAttributes({
+                valid: 'def',
+            });
+        });
     }
 
     {

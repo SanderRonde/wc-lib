@@ -1079,6 +1079,28 @@ export function elementFactory<
     }
 
     @config({
+        is: 'nested-slots',
+        html: new TemplateFn<BothSlotsUser>(
+            () => {
+                return html`
+                    <default-slot>
+                        <default-slot-user></default-slot-user>
+                    </default-slot>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [DefaultSlot, DefaultSlotUser],
+    })
+    //@ts-ignore
+    class NestedSlots extends typedBase {
+        constructor() {
+            super();
+        }
+    }
+
+    @config({
         is: 'i18n-user',
         html: new TemplateFn<I18nComponent>(
             function() {
@@ -1249,5 +1271,6 @@ export function elementFactory<
         JSXElement,
         JSXElementChildren,
         JSXElementComponents,
+        NestedSlots,
     };
 }

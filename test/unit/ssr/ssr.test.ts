@@ -128,6 +128,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         JSXElement,
         JSXElementChildren,
         JSXElementComponents,
+        NestedSlots,
     } = elementFactory(component, isComplex);
 
     const test = genTestFn(name);
@@ -1472,6 +1473,39 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                     instanceOf: Error,
                 }
             );
+        });
+        test('nested slots are not re-slotted', async (t) => {
+            const root = toTestTags(t, await ssr(NestedSlots));
+
+            root.assertTagName(NestedSlots.is);
+            root.assertChildren(1);
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('default-slot');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertTagName('span');
+            root[0][0][0].assertChildren(3);
+            root[0][0][0][0].assertTagName('div');
+            root[0][0][0][2].assertTagName('div');
+
+            root[0][0][0][1].assertTagName('slot');
+            root[0][0][0][1].assertChildren(1);
+            root[0][0][0][1][0].assertTagName('default-slot-user');
+            root[0][0][0][1][0].assertChildren(1);
+            root[0][0][0][1][0][0].assertTagName('span');
+            root[0][0][0][1][0][0].assertChildren(1);
+            root[0][0][0][1][0][0][0].assertTagName('default-slot');
+            root[0][0][0][1][0][0][0].assertChildren(1);
+            root[0][0][0][1][0][0][0][0].assertTagName('span');
+            root[0][0][0][1][0][0][0][0].assertChildren(3);
+            root[0][0][0][1][0][0][0][0][0].assertTagName('div');
+            root[0][0][0][1][0][0][0][0][2].assertTagName('div');
+
+            root[0][0][0][1][0][0][0][0][1].assertTagName('slot');
+            root[0][0][0][1][0][0][0][0][1].assertChildren(1);
+            root[0][0][0][1][0][0][0][0][1][0].assertTagName('span');
+            root[0][0][0][1][0][0][0][0][1][0].assertChildren(1);
+            root[0][0][0][1][0][0][0][0][1][0][0].assertText();
+            root[0][0][0][1][0][0][0][0][1][0][0].assertContent('content');
         });
     }
 

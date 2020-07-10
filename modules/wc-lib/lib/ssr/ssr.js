@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { parse as parseCSS, stringify as stringifyCSS, } from 'css';
 import { Parser as HTMLParser, DomHandler } from 'htmlparser2';
+import { StyleAttributePart } from '../template-manager';
 import { classNames } from '../shared';
 import { Props } from '../props';
 /**
@@ -137,7 +138,7 @@ export var SSR;
     }
     SSR.MergableWeakSet = MergableWeakSet;
     class DocumentSession {
-        constructor({ i18n, theme, getMessage } = {}) {
+        constructor({ i18n, theme, getMessage, lang, themeName, doWait, } = {}) {
             this._cssIdentifierMap = new MergableWeakMap();
             this._sheetSet = new MergableWeakSet();
             // This is an object so that references to it are updated
@@ -146,15 +147,21 @@ export var SSR;
             };
             this._elementMap = {};
             this._i18n = i18n;
+            this._lang = lang;
             this._theme = theme;
+            this._doWait = doWait;
+            this._themeName = themeName;
             this._getMessage = getMessage;
         }
         /**
          * Merge a config into this SSR session, prioritizing config over current state
          */
-        mergeConfig({ i18n, theme, getMessage }) {
+        mergeConfig({ i18n, theme, getMessage, lang, themeName, doWait, }) {
             this._i18n = i18n || this._i18n;
+            this._lang = lang || this._lang;
             this._theme = theme || this._theme;
+            this._doWait = doWait || this._doWait;
+            this._themeName = themeName || this._themeName;
             this._getMessage = getMessage || this._getMessage;
             return this;
         }
@@ -261,6 +268,12 @@ export var SSR;
                 getTheme() {
                     return session._theme;
                 }
+                getThemeName() {
+                    return session._themeName;
+                }
+                getLang() {
+                    return session._lang;
+                }
                 static _getI18n(key, ...values) {
                     if (!session._i18n)
                         return undefined;
@@ -319,29 +332,22 @@ export var SSR;
             return text;
         }
         _Attributes._toString = _toString;
-        function _dashesToCasing(name) {
-            if (name.indexOf('-') === -1)
-                return name;
-            let newStr = '';
-            for (let i = 0; i < name.length; i++) {
-                if (name[i] === '-') {
-                    newStr += name[i + 1].toUpperCase();
-                    i++;
-                }
-                else {
-                    newStr += name[i];
-                }
-            }
-            return newStr;
+        function _casingToDashes(name) {
+            return name
+                .replace(/([a-z\d])([A-Z])/g, '$1-$2')
+                .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1-$2')
+                .toLowerCase();
         }
-        _Attributes._dashesToCasing = _dashesToCasing;
+        _Attributes._casingToDashes = _casingToDashes;
         function stringify(attributes) {
             if (Object.keys(attributes).length === 0) {
                 return '';
             }
             const parts = [];
             for (const key in attributes) {
-                parts.push(`${_dashesToCasing(key)}="${_toString(attributes[key]).replace(/"/g, '&quot;')}"`);
+                if (!/^[a-z].*/.test(key))
+                    continue;
+                parts.push(`${_casingToDashes(key)}="${_toString(attributes[key]).replace(/"/g, '&quot;')}"`);
             }
             return ` ${parts.join(' ')}`;
         }
@@ -375,7 +381,7 @@ export var SSR;
                     privateProps[key] = attributes[key];
                 }
                 else {
-                    attribs[key] = attribs[key];
+                    attribs[key] = attributes[key];
                 }
             }
             return {
@@ -388,6 +394,19 @@ export var SSR;
     })(_Properties = SSR._Properties || (SSR._Properties = {}));
     let _Rendering;
     (function (_Rendering) {
+        let _Util;
+        (function (_Util) {
+            function mapAsyncInOrder(arr, handler) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    const results = [];
+                    for (const item of arr) {
+                        results.push(yield handler(item));
+                    }
+                    return results;
+                });
+            }
+            _Util.mapAsyncInOrder = mapAsyncInOrder;
+        })(_Util = _Rendering._Util || (_Rendering._Util = {}));
         let Dependencies;
         (function (Dependencies) {
             function buildMap(element, map = {}) {
@@ -407,6 +426,7 @@ export var SSR;
             class Tag {
                 constructor({ tagName, attributes, isSelfClosing, children, }) {
                     this.config = {};
+                    this._slotted = false;
                     this.type = 'TAG';
                     this.tagName = tagName;
                     this.attributes = attributes;
@@ -428,6 +448,13 @@ export var SSR;
                     this._children = children;
                     return this;
                 }
+                get slotted() {
+                    return this._slotted;
+                }
+                setSlotChildren(children) {
+                    this._slotted = true;
+                    return this.setChildren(children);
+                }
                 walk(handler) {
                     const result = handler(this);
                     const { stop, newTag } = result || {
@@ -441,13 +468,21 @@ export var SSR;
                         .copy()
                         .setChildren(newTag.children.map((c) => c.walk(handler)));
                 }
+                walkBottomUp(handler) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        this.setChildren(yield _Util.mapAsyncInOrder(this.children, (child) => child.walkBottomUp(handler)));
+                        return (yield handler(this)) || this;
+                    });
+                }
                 walkAll(handler) {
-                    const result = handler(this);
-                    /* istanbul ignore next */
-                    const newTag = result || this;
-                    return newTag
-                        .copy()
-                        .setChildren(newTag.children.map((c) => c.walkAll(handler)));
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const result = yield handler(this);
+                        /* istanbul ignore next */
+                        const newTag = result || this;
+                        return newTag
+                            .copy()
+                            .setChildren(yield _Util.mapAsyncInOrder(newTag.children, (child) => child.walkAll(handler)));
+                    });
                 }
                 toText() {
                     if (this.isSelfClosing && this.children.length === 0) {
@@ -465,8 +500,15 @@ export var SSR;
                 walk() {
                     return this;
                 }
+                walkBottomUp() {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        return this;
+                    });
+                }
                 walkAll(handler) {
-                    return handler(this) || this;
+                    return __awaiter(this, void 0, void 0, function* () {
+                        return (yield handler(this)) || this;
+                    });
                 }
                 toText() {
                     return this.content;
@@ -543,6 +585,9 @@ export var SSR;
                         };
                         root.forEach((t) => t.walk((tag) => {
                             if (tag.tagName === 'slot') {
+                                if (tag.slotted) {
+                                    return { newTag: tag, stop: true };
+                                }
                                 if (tag.attributes.hasOwnProperty('name')) {
                                     const { name: slotName, } = tag.attributes;
                                     slots.named[slotName] =
@@ -595,7 +640,7 @@ export var SSR;
                             }
                         }
                         if (receivers.unnamed) {
-                            receivers.unnamed.setChildren(slottables.unnamed);
+                            receivers.unnamed.setSlotChildren(slottables.unnamed);
                         }
                     }
                     Slots._replaceSlots = _replaceSlots;
@@ -606,42 +651,45 @@ export var SSR;
                     }
                     Slots.applySlots = applySlots;
                 })(Slots = Replacement.Slots || (Replacement.Slots = {}));
-                function _applyOverriddenAttributes(tag, markers) {
-                    const overrides = {};
-                    const attributes = {};
-                    for (const attributeName in tag.attributes) {
-                        const attributeValue = tag.attributes[attributeName];
-                        if (!_ComplexRender.markerHas(markers, attributeValue)) {
-                            attributes[attributeName] = attributeValue;
+                function _applyOverriddenAttributes(tag, markers, session) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const overrides = {};
+                        const attributes = {};
+                        for (const attributeName in tag.attributes) {
+                            const attributeValue = tag.attributes[attributeName];
+                            if (!(yield _ComplexRender.markerHas(markers, attributeValue))) {
+                                attributes[attributeName] = attributeValue;
+                            }
+                            else {
+                                overrides[attributeName] = yield _ComplexRender.markerGetValue(markers, attributeValue, session._doWait || false);
+                            }
                         }
-                        else {
-                            overrides[attributeName] = _ComplexRender.markerGetValue(markers, attributeValue);
-                        }
-                    }
-                    return {
-                        overrides,
-                        attributes,
-                    };
+                        return {
+                            overrides,
+                            attributes,
+                        };
+                    });
                 }
                 Replacement._applyOverriddenAttributes = _applyOverriddenAttributes;
                 function _mapTag(tag, session, markers) {
-                    if (!tag.tagName.includes('-') ||
-                        !session._elementMap.hasOwnProperty(tag.tagName))
-                        return;
-                    const element = session._elementMap[tag.tagName];
-                    const { attributes, overrides: props, } = _applyOverriddenAttributes(tag, markers);
-                    const newTag = elementToTag(element, props, attributes, session);
-                    Slots.applySlots(newTag, tag);
-                    return {
-                        newTag,
-                        stop: true,
-                    };
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (!tag.tagName.includes('-') ||
+                            !session._elementMap.hasOwnProperty(tag.tagName))
+                            return;
+                        const element = session._elementMap[tag.tagName];
+                        const { attributes, overrides: props, } = yield _applyOverriddenAttributes(tag, markers, session);
+                        const newTag = yield elementToTag(element, props, attributes, session);
+                        Slots.applySlots(newTag, tag);
+                        return newTag;
+                    });
                 }
                 Replacement._mapTag = _mapTag;
                 function replace(tags, session, markers) {
-                    return tags.map((t) => t.walk((tag) => {
-                        return _mapTag(tag, session, markers);
-                    }));
+                    return __awaiter(this, void 0, void 0, function* () {
+                        return yield _Util.mapAsyncInOrder(tags, (t) => t.walkBottomUp((tag) => {
+                            return _mapTag(tag, session, markers);
+                        }));
+                    });
                 }
                 Replacement.replace = replace;
             })(Replacement = TextToTags.Replacement || (TextToTags.Replacement = {}));
@@ -703,7 +751,26 @@ export var SSR;
                             if (!rule.selectors)
                                 return line;
                             rule.selectors = rule.selectors.map((selector) => {
-                                return `${prefix}-${selector}`;
+                                return selector
+                                    .split(' ')
+                                    .map((part) => part.trim())
+                                    .filter((v) => v.length)
+                                    .map((rulePart) => {
+                                    if (rulePart === '*')
+                                        return `.${prefix}`;
+                                    if (rulePart.length === 1 &&
+                                        !/[a-z|A-Z]/.test(rulePart))
+                                        return rulePart;
+                                    if (rulePart.includes(':')) {
+                                        const pseudo = rulePart.includes('::')
+                                            ? '::'
+                                            : ':';
+                                        const [prePseudo, pseudoSelector,] = rulePart.split(pseudo);
+                                        return `${prePseudo}.${prefix}${pseudo}${pseudoSelector}`;
+                                    }
+                                    return `${rulePart}.${prefix}`;
+                                })
+                                    .join(' ');
                             });
                             return rule;
                         });
@@ -734,7 +801,14 @@ export var SSR;
                             return t.type === 'TAG';
                         });
                         styleTags.forEach((t) => t.setChangeOn(template.changeOn));
-                        return styleTags;
+                        return styleTags.map((styleTag) => new Tag({
+                            attributes: {
+                                'data-type': 'css',
+                            },
+                            children: [styleTag],
+                            isSelfClosing: false,
+                            tagName: 'span',
+                        }));
                     });
                 }
                 _CSS._parseElementCSS = _parseElementCSS;
@@ -752,8 +826,9 @@ export var SSR;
                 }
                 _CSS._generateComponentID = _generateComponentID;
                 function _addCSSPrefixes(templates, uniqueID, componentID) {
-                    return templates.map((template) => {
-                        return template.map((sheet) => {
+                    return templates.map((templateWrappers) => {
+                        return templateWrappers.map((templateWrapper) => {
+                            const sheet = templateWrapper.children[0];
                             const prefix = sheet.elementGlobal
                                 ? componentID
                                 : uniqueID;
@@ -761,7 +836,7 @@ export var SSR;
                                 tag.addPrefix(prefix);
                                 tag.stringify();
                             });
-                            return sheet;
+                            return templateWrapper;
                         });
                     });
                 }
@@ -780,7 +855,7 @@ export var SSR;
                             tag.attributes.class = classNames.join(' ');
                             return {
                                 newTag: tag,
-                                stop: tag.tagName.includes('-'),
+                                stop: false,
                             };
                         });
                     });
@@ -809,9 +884,10 @@ export var SSR;
                     session._sheetSet.add(element);
                     return [
                         ...(isFirstElementRender
-                            ? _flatten(prefixedCSS.filter((s) => s.elementGlobal))
+                            ? _flatten(prefixedCSS.filter((s) => s.children[0]
+                                .elementGlobal))
                             : []),
-                        ..._flatten(prefixedCSS.filter((s) => !s.elementGlobal)),
+                        ..._flatten(prefixedCSS.filter((s) => !s.children[0].elementGlobal)),
                         ...htmlPrefixed,
                     ];
                 }
@@ -876,90 +952,116 @@ export var SSR;
                     return str;
                 }
                 _ComplexRender._ensureNoPostQuote = _ensureNoPostQuote;
-                function _finalMarkedToString(strings, markers) {
-                    const result = [strings[0]];
-                    for (let i = 0; i < strings.length - 1; i++) {
-                        const [marker, value, config] = markers[i];
-                        if (config.isTag && config.attrName.startsWith('?')) {
-                            result[result.length - 1] = _getPreAttrRemoved(result, config);
-                            if (value) {
-                                result.push(`${config.attrName.slice(1)}="`);
-                                result.push(_ensurePostQuote(strings[i + 1]));
+                function _finalMarkedToString(strings, markers, session) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const result = [strings[0]];
+                        for (let i = 0; i < strings.length - 1; i++) {
+                            const [marker, value, config] = markers[i];
+                            const evaluatedValue = session._doWait
+                                ? yield value
+                                : value;
+                            if (config.isTag && config.attrName.startsWith('?')) {
+                                result[result.length - 1] = _getPreAttrRemoved(result, config);
+                                if (evaluatedValue) {
+                                    result.push(`${config.attrName.slice(1)}="`);
+                                    result.push(_ensurePostQuote(strings[i + 1]));
+                                }
+                                else {
+                                    result.push(_ensureNoPostQuote(strings[i + 1]));
+                                }
                             }
-                            else {
+                            else if (config.forceMarker) {
+                                result.push(marker, strings[i + 1]);
+                            }
+                            else if (config.isTag &&
+                                !_Attributes._isPrimitive(evaluatedValue)) {
+                                // Delete it altogether
+                                result[result.length - 1] = _getPreAttrRemoved(result, config);
                                 result.push(_ensureNoPostQuote(strings[i + 1]));
                             }
+                            else {
+                                result.push(evaluatedValue, strings[i + 1]);
+                            }
                         }
-                        else if (config.forceMarker) {
-                            result.push(marker, strings[i + 1]);
-                        }
-                        else if (config.isTag &&
-                            !_Attributes._isPrimitive(value)) {
-                            // Delete it altogether
-                            result[result.length - 1] = _getPreAttrRemoved(result, config);
-                            result.push(_ensureNoPostQuote(strings[i + 1]));
-                        }
-                        else {
-                            result.push(value, strings[i + 1]);
-                        }
-                    }
-                    return result.join('');
+                        return result.join('');
+                    });
                 }
                 _ComplexRender._finalMarkedToString = _finalMarkedToString;
-                function _complexContentToString(content) {
-                    if (!_Attributes._isPrimitive(content)) {
-                        if (Array.isArray(content)) {
-                            const mappedContent = content.map((v) => {
-                                const { isComplex, str, markers, } = _complexContentToString(v);
-                                if (isComplex)
+                function _complexContentToString(content, session) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (!_Attributes._isPrimitive(content)) {
+                            if (Array.isArray(content)) {
+                                const mappedContent = yield _Util.mapAsyncInOrder(content, (v) => __awaiter(this, void 0, void 0, function* () {
+                                    const { isComplex, str, markers, } = yield _complexContentToString(v, session);
+                                    if (isComplex)
+                                        return {
+                                            str,
+                                            markers,
+                                        };
                                     return {
-                                        str,
-                                        markers,
+                                        str: v,
+                                        markers: [],
                                     };
+                                }));
+                                const joinedStrings = mappedContent
+                                    .map((c) => c.str)
+                                    .join('');
+                                const joinedMarkers = mappedContent.reduce((prev, current) => {
+                                    return [...prev, ...current.markers];
+                                }, []);
                                 return {
-                                    str: v,
-                                    markers: [],
+                                    isComplex: true,
+                                    str: joinedStrings,
+                                    markers: joinedMarkers,
                                 };
-                            });
-                            const joinedStrings = mappedContent
-                                .map((c) => c.str)
-                                .join('');
-                            const joinedMarkers = mappedContent.reduce((prev, current) => {
-                                return [...prev, ...current.markers];
-                            }, []);
-                            return {
-                                isComplex: true,
-                                str: joinedStrings,
-                                markers: joinedMarkers,
-                            };
+                            }
+                            if ('values' in content && 'strings' in content) {
+                                const { markers, str, } = yield _complexRenderedToText(content, session);
+                                return {
+                                    isComplex: true,
+                                    str,
+                                    markers,
+                                };
+                            }
                         }
-                        if ('values' in content && 'strings' in content) {
-                            const { markers, str } = _complexRenderedToText(content);
-                            return {
-                                isComplex: true,
-                                str,
-                                markers,
-                            };
-                        }
-                    }
-                    return { isComplex: false, markers: [] };
+                        return { isComplex: false, markers: [] };
+                    });
                 }
                 _ComplexRender._complexContentToString = _complexContentToString;
                 function markerHas(markers, value) {
-                    return markerGetAll(markers, value).length > 0;
+                    return __awaiter(this, void 0, void 0, function* () {
+                        return ((yield markerGetAll(markers, value, false)).length > 0);
+                    });
                 }
                 _ComplexRender.markerHas = markerHas;
-                function markerGetValue(markers, value) {
-                    return markers
-                        .filter(([marker]) => {
-                        return value.includes(marker);
-                    })
-                        .map(([, markerValue]) => markerValue)[0];
+                function markerGetValue(markers, value, doWait) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const markerValue = markers
+                            .filter(([marker]) => {
+                            return value.includes(marker);
+                        })
+                            .map(([, markerValue]) => markerValue)[0];
+                        if (doWait) {
+                            return yield markerValue;
+                        }
+                        return markerValue;
+                    });
                 }
                 _ComplexRender.markerGetValue = markerGetValue;
-                function markerGetAll(markers, value) {
-                    return markers.filter(([marker]) => {
-                        return value.includes(marker);
+                function markerGetAll(markers, value, doWait) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const values = markers.filter(([marker]) => {
+                            return value.includes(marker);
+                        });
+                        if (doWait) {
+                            return yield Promise.all(values.map(([key, value]) => __awaiter(this, void 0, void 0, function* () {
+                                return [
+                                    key,
+                                    yield value,
+                                ];
+                            })));
+                        }
+                        return values;
                     });
                 }
                 _ComplexRender.markerGetAll = markerGetAll;
@@ -976,130 +1078,163 @@ export var SSR;
                     }
                 }
                 _ComplexRender._markerSet = _markerSet;
-                function _applyComplexToTag(tag, markers) {
-                    if (tag.type === 'TEXT') {
-                        const value = tag.content.trim();
-                        if (!markerHas(markers, value)) {
-                            return;
+                function _applyComplexToTag(tag, markers, session) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        if (tag.type === 'TEXT') {
+                            const value = tag.content.trim();
+                            if (!(yield markerHas(markers, value))) {
+                                return;
+                            }
+                            const markedArr = yield markerGetAll(markers, value, session._doWait || false);
+                            // Check if there is an object-like in the DOM
+                            yield _Util.mapAsyncInOrder(markedArr, ([markedKey, markedValue]) => __awaiter(this, void 0, void 0, function* () {
+                                const { isComplex, str, markers: contentMarkers, } = yield _complexContentToString(markedValue, session);
+                                markers.push(...contentMarkers);
+                                if (isComplex) {
+                                    _markerSet(markers, markedKey, str);
+                                }
+                            }));
                         }
-                        const markedArr = markerGetAll(markers, value);
-                        // Check if there is an object-like in the DOM
-                        markedArr.forEach(([markedKey, markedValue]) => {
-                            const { isComplex, str, markers: contentMarkers, } = _complexContentToString(markedValue);
-                            markers.push(...contentMarkers);
-                            if (isComplex) {
-                                _markerSet(markers, markedKey, str);
-                            }
-                        });
-                    }
-                    else {
-                        const attrValues = Object.assign({}, tag.attributes);
-                        for (const attrName in tag.attributes) {
-                            const attrValue = tag.attributes[attrName];
-                            if (!markerHas(markers, attrValue))
-                                continue;
-                            const marked = markerGetAll(markers, attrValue).map(([, val]) => val);
-                            if (attrName === 'class') {
-                                const classString = classNames(marked);
-                                attrValues[attrName] = classString;
-                                _markerSet(markers, attrValue, classString);
-                            }
-                            else {
-                                _markerSet(markers, attrValue, marked[0], {
-                                    isTag: true,
-                                    attrName,
-                                });
-                            }
-                        }
-                        if (tag.tagName.includes('-')) {
-                            // Output markers and resolve to map
+                        else {
+                            const attrValues = Object.assign({}, tag.attributes);
                             for (const attrName in tag.attributes) {
                                 const attrValue = tag.attributes[attrName];
-                                if (!markerHas(markers, attrValue))
+                                if (!(yield markerHas(markers, attrValue)))
                                     continue;
-                                _markerSet(markers, attrValue, markerGetValue(markers, attrValue), {
-                                    forceMarker: true,
-                                });
+                                const marked = (yield markerGetAll(markers, attrValue, session._doWait || false)).map(([, val]) => val);
+                                if (attrName === 'class') {
+                                    const classString = classNames(marked);
+                                    attrValues[attrName] = classString;
+                                    _markerSet(markers, attrValue, classString);
+                                }
+                                else if (attrName === 'style') {
+                                    const markedValue = marked[0];
+                                    const value = (() => {
+                                        if (typeof markedValue === 'string' ||
+                                            typeof markedValue === 'number') {
+                                            return markedValue;
+                                        }
+                                        return StyleAttributePart.getStyleString(markedValue);
+                                    })();
+                                    attrValues[attrName] = value;
+                                    _markerSet(markers, attrValue, value);
+                                }
+                                else {
+                                    _markerSet(markers, attrValue, marked[0], {
+                                        isTag: true,
+                                        attrName,
+                                    });
+                                }
                             }
-                            tag.config.attributeOverride = attrValues;
+                            if (tag.tagName.includes('-')) {
+                                // Output markers and resolve to map
+                                for (const attrName in tag.attributes) {
+                                    const attrValue = tag.attributes[attrName];
+                                    if (!(yield markerHas(markers, attrValue)))
+                                        continue;
+                                    _markerSet(markers, attrValue, markerGetValue(markers, attrValue, session._doWait || false), {
+                                        forceMarker: true,
+                                    });
+                                }
+                                tag.config.attributeOverride = attrValues;
+                            }
                         }
-                    }
+                    });
                 }
                 _ComplexRender._applyComplexToTag = _applyComplexToTag;
-                function _complexRenderedToText(renderedTemplate) {
-                    // Render to text with markers inserted
-                    const textRenderedMarked = _templateToMarkedString(renderedTemplate);
-                    // Check if values at those markers contain anything special
-                    const parsedMarked = _Parser.parse(textRenderedMarked.text);
-                    for (const parsedTag of parsedMarked) {
-                        parsedTag.walkAll((tag) => {
-                            _applyComplexToTag(tag, textRenderedMarked.markers);
-                        });
-                    }
-                    // Convert the old template to text again with new values
-                    return {
-                        str: _finalMarkedToString(renderedTemplate.strings, textRenderedMarked.markers),
-                        markers: textRenderedMarked.markers,
-                    };
+                function _complexRenderedToText(renderedTemplate, session) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        // Render to text with markers inserted
+                        const textRenderedMarked = _templateToMarkedString(renderedTemplate);
+                        // Check if values at those markers contain anything special
+                        const parsedMarked = _Parser.parse(textRenderedMarked.text);
+                        for (const parsedTag of parsedMarked) {
+                            yield parsedTag.walkAll((tag) => __awaiter(this, void 0, void 0, function* () {
+                                yield _applyComplexToTag(tag, textRenderedMarked.markers, session);
+                            }));
+                        }
+                        // Convert the old template to text again with new values
+                        return {
+                            str: yield _finalMarkedToString(renderedTemplate.strings, textRenderedMarked.markers, session),
+                            markers: textRenderedMarked.markers,
+                        };
+                    });
                 }
                 _ComplexRender._complexRenderedToText = _complexRenderedToText;
-                function renderToText(instance, template) {
-                    /* istanbul ignore next */
-                    if (!template)
-                        return {
-                            str: '',
-                            markers: [],
-                        };
-                    const renderedTemplate = _tryRender(() => {
-                        return template.renderTemplate(11 /* ALWAYS */, instance);
+                function renderToText(instance, template, session) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        /* istanbul ignore next */
+                        if (!template)
+                            return {
+                                str: '',
+                                markers: [],
+                            };
+                        const renderedTemplate = _tryRender(() => {
+                            return template.renderTemplate(11 /* ALWAYS */, instance);
+                        });
+                        if (typeof renderedTemplate !== 'object' ||
+                            !('values' in renderedTemplate) ||
+                            !('strings' in renderedTemplate)) {
+                            return {
+                                str: template.renderAsText(11 /* ALWAYS */, instance),
+                                markers: [],
+                            };
+                        }
+                        return yield _complexRenderedToText(renderedTemplate, session);
                     });
-                    if (typeof renderedTemplate !== 'object' ||
-                        !('values' in renderedTemplate) ||
-                        !('strings' in renderedTemplate)) {
-                        return {
-                            str: template.renderAsText(11 /* ALWAYS */, instance),
-                            markers: [],
-                        };
-                    }
-                    return _complexRenderedToText(renderedTemplate);
                 }
                 _ComplexRender.renderToText = renderToText;
             })(_ComplexRender = TextToTags._ComplexRender || (TextToTags._ComplexRender = {}));
             function elementToTag(element, props, attribs, session, isRoot = false) {
-                const tagName = element.is ||
-                    `wclib-element${session._unnamedElements.amount++}`;
-                const wrappedClass = BaseTypes._createBase(element, tagName, props, attribs, session);
-                const instance = new wrappedClass();
-                const { str, markers } = _ComplexRender.renderToText(instance, element.html);
-                const tags = _Parser.parse(str);
-                if (isRoot &&
-                    _Rendering.TextToTags.Replacement.Slots.findSlotReceivers(tags).unnamed) {
-                    throw new Error("Root element can't have unnamed slots as children");
-                }
-                const { attributes, publicProps } = _Properties.splitAttributes(instance, Object.assign(Object.assign({}, props), attribs));
-                const children = Replacement.replace(tags, session, markers);
-                const cssApplied = _CSS.getCSSApplied(element, instance, tagName, children, session);
-                return new Tag({
-                    tagName,
-                    attributes: Object.assign(Object.assign(Object.assign({}, attributes), publicProps), instance._attributes),
-                    isSelfClosing: false,
-                    children: cssApplied,
+                return __awaiter(this, void 0, void 0, function* () {
+                    const tagName = element.is ||
+                        `wclib-element${session._unnamedElements.amount++}`;
+                    const wrappedClass = BaseTypes._createBase(element, tagName, props, attribs, session);
+                    const instance = new wrappedClass();
+                    const { str, markers } = yield _ComplexRender.renderToText(instance, element.html, session);
+                    const htmlTag = new Tag({
+                        attributes: {
+                            'data-type': 'html',
+                        },
+                        children: _Parser.parse(str),
+                        isSelfClosing: false,
+                        tagName: 'span',
+                    });
+                    if (isRoot &&
+                        _Rendering.TextToTags.Replacement.Slots.findSlotReceivers([
+                            htmlTag,
+                        ]).unnamed) {
+                        throw new Error("Root element can't have unnamed slots as children");
+                    }
+                    const { attributes, publicProps } = _Properties.splitAttributes(instance, Object.assign(Object.assign({}, props), attribs));
+                    const cssApplied = _CSS.getCSSApplied(element, instance, tagName, [htmlTag], session);
+                    const children = yield Replacement.replace(cssApplied, session, markers);
+                    return new Tag({
+                        tagName,
+                        attributes: Object.assign(Object.assign(Object.assign({}, attributes), publicProps), instance._attributes),
+                        isSelfClosing: false,
+                        children: children,
+                    });
                 });
             }
             TextToTags.elementToTag = elementToTag;
         })(TextToTags = _Rendering.TextToTags || (_Rendering.TextToTags = {}));
         function render(element, props, attributes, session) {
-            const dom = TextToTags.elementToTag(element, props, attributes, session, true);
-            return dom.toText();
+            return __awaiter(this, void 0, void 0, function* () {
+                const dom = yield TextToTags.elementToTag(element, props, attributes, session, true);
+                return dom.toText();
+            });
         }
         _Rendering.render = render;
     })(_Rendering = SSR._Rendering || (SSR._Rendering = {}));
-    function renderElement(element, { attributes, documentSession = new DocumentSession(), i18n, props, theme, getMessage, }) {
-        documentSession._elementMap = Object.assign(Object.assign({}, documentSession._elementMap), _Rendering.Dependencies.buildMap(element));
-        const session = documentSession
-            .clone()
-            .mergeConfig({ i18n, theme, getMessage });
-        return _Rendering.render(element, props || {}, attributes || {}, session);
+    function renderElement(element, { attributes, documentSession = new DocumentSession(), i18n, props, theme, getMessage, lang, themeName, await: doWait = false, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            documentSession._elementMap = Object.assign(Object.assign({}, documentSession._elementMap), _Rendering.Dependencies.buildMap(element));
+            const session = documentSession
+                .clone()
+                .mergeConfig({ i18n, theme, getMessage, lang, themeName, doWait });
+            return yield _Rendering.render(element, props || {}, attributes || {}, session);
+        });
     }
     SSR.renderElement = renderElement;
 })(SSR || (SSR = {}));
@@ -1114,15 +1249,20 @@ export var SSR;
  * @param { { [key: string]: any } } [config.props] - Props to pass to the element
  * @param { { [key: string]: any } } [config.attributes] - HTML attributes to apply to the element
  * @param { { [key: string]: any } } [config.theme] - A theme to apply to the element
+ * @param { { [key: string]: any } } [config.themeName] - The name of the theme for the element
+ * @param { { [key: string]: any } } [config.lang] - The language for the element
  * @param { any } [config.i18n] - The i8n to apply to the element
  * @param { SSR.GetMessageFunction } [config.getMessage] - The
  *  function called when an i18n message is fetched
  * @param {SSR.DocumentSession} [config.documentSession] - The document session to use (remembers theme and i18n)
+ * @param { boolean } [config.await] - Whether to await template values
  *
- * @returns {string} The rendered element
+ * @returns {Promise<string>} The rendered element
  */
 export function ssr(element, config = {}) {
-    return SSR.renderElement(element, config);
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield SSR.renderElement(element, config);
+    });
 }
 /**
  * Create a document rendering session. Pass the returned document to `ssr` to

@@ -53,6 +53,7 @@ export declare type JSXTemplateFunction<R> = {
         is: string;
     }), attrs: A | null, ...children: (R | any)[]): R;
 };
+export declare const Fragment: unique symbol;
 /**
  * The type of a templater that handles both
  * regular template literals and JSX elements.
@@ -62,6 +63,8 @@ export declare type JSXTemplateFunction<R> = {
 export declare type JSXTemplater<R> = {
     (strings: TemplateStringsArray, ...values: any[]): R;
     jsx: JSXTemplateFunction<R>;
+    Fragment: () => typeof Fragment;
+    F: () => typeof Fragment;
 };
 /**
  * A result that should be returned by the template

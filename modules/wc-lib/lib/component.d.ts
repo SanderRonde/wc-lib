@@ -104,7 +104,7 @@ export declare class WebComponentTypeInstance<GA extends {
     /**
      * Whether this component is being server-side rendered
      */
-    get isSSr(): boolean;
+    get isSSR(): boolean;
     /**
      * An object that contains all children
      * of this element mapped by their ID.

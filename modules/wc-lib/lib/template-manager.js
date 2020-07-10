@@ -59,7 +59,7 @@ class ClassAttributePart {
         this._pendingValue = this._config.noChange;
     }
 }
-class StyleAttributePart {
+export class StyleAttributePart {
     constructor(element, name, strings, _config) {
         this.element = element;
         this.name = name;
@@ -79,13 +79,13 @@ class StyleAttributePart {
             this._pendingValue = value;
         }
     }
-    _toDashes(camelCase) {
+    static _toDashes(camelCase) {
         return camelCase
             .replace(/([a-z\d])([A-Z])/g, '$1-$2')
             .replace(/([A-Z]+)([A-Z][a-z\d]+)/g, '$1-$2')
             .toLowerCase();
     }
-    _getStyleString(args) {
+    static getStyleString(args) {
         const arr = [];
         for (const key in args) {
             arr.push(`${this._toDashes(key)}: ${args[key]};`);
@@ -109,7 +109,7 @@ class StyleAttributePart {
             this.element.setAttribute(this.name, this._pendingValue + '');
         }
         else {
-            const styleString = this._getStyleString(this._pendingValue);
+            const styleString = StyleAttributePart.getStyleString(this._pendingValue);
             this.element.setAttribute(this.name, styleString);
         }
         this._pendingValue = this._config.noChange;

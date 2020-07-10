@@ -3,43 +3,43 @@
 		<title>Themed component</title>
 	</head>
 	<body>
-		<themed-component><style>css-themed-component-#horizontal-centerer {
+		<themed-component><span data-type="css"><style>#horizontal-centerer.css-themed-component {
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
-css-themed-component-#vertical-centerer {
+#vertical-centerer.css-themed-component {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-css-themed-component-#background {
+#background.css-themed-component {
   width: 90vw;
   height: 90vw;
   background-color: rgb(222, 222, 222);
 }
 
-css-themed-component-#primary {
+#primary.css-themed-component {
   color: rgb(3, 169, 244);
 }
 
-css-themed-component-#secondary {
+#secondary.css-themed-component {
   color: ;
 }
 
-css-themed-component-#regular {
+#regular.css-themed-component {
   color: ;
 }
 
-css-themed-component-.theme-option {
+.theme-option.css-themed-component {
   font-weight: normal;
 }
 
-css-themed-component-.theme-option.active {
+.theme-option.active.css-themed-component {
   font-weight: bold;
-}</style>
+}</style></span><span data-type="html" class="css-themed-component-0 css-themed-component">
             <div id="horizontal-centerer" class="css-themed-component-0 css-themed-component">
                 <div id="vertical-centerer" class="css-themed-component-0 css-themed-component">
                     <div id="background" class="css-themed-component-0 css-themed-component">
@@ -55,7 +55,7 @@ css-themed-component-.theme-option.active {
                     </div>
                 </div>
             </div>
-        </themed-component>
+        </span></themed-component>
 		<script type="module" src="./index.js"></script>
 	</body>
 </html>

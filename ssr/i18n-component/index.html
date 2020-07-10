@@ -3,10 +3,10 @@
 		<title>I18N Example</title>
 	</head>
 	<body>
-		<i18n-component><style>css-i18n-component-button,
-css-i18n-component-#input {
+		<i18n-component><span data-type="css"><style>button.css-i18n-component,
+#input.css-i18n-component {
   display: inline-block;
-}</style>
+}</style></span><span data-type="html" class="css-i18n-component-0 css-i18n-component">
 		<div class="css-i18n-component-0 css-i18n-component">What is your name</div>
 		<div class="css-i18n-component-0 css-i18n-component">
 			<label for="input" class="css-i18n-component-0 css-i18n-component">My name is
@@ -16,7 +16,7 @@ css-i18n-component-#input {
 		<button class="css-i18n-component-0 css-i18n-component">{{set_lang_to}}</button>
 		<button class="css-i18n-component-0 css-i18n-component">{{set_lang_to}}</button>
 		<button class="css-i18n-component-0 css-i18n-component">{{set_lang_to}}</button>
-	</i18n-component>
+	</span></i18n-component>
 		<script type="module" src="./index.js"></script>
 	</body>
 </html>

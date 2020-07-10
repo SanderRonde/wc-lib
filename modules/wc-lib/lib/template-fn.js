@@ -1,4 +1,5 @@
 import { jsxToLiteral } from './jsx-render.js';
+export const Fragment = Symbol('fragment');
 /**
  * Maps templaters -> components -> functions -> results
  */
@@ -43,6 +44,7 @@ export class TemplateFn {
             const { strings, values } = jsxToLiteral(tag, attrs, ...children);
             return templater(strings, ...values);
         };
+        jsxAddedTemplate.Fragment = jsxAddedTemplate.F = () => Fragment;
         if (!componentTemplateMap.has(component)) {
             componentTemplateMap.set(component, new WeakMap());
         }

@@ -1,4 +1,5 @@
 import { casingToDashes } from './props.js';
+import { Fragment } from './template-fn.js';
 function convertSpecialAttrs(attrs) {
     if (!attrs)
         return attrs;
@@ -59,15 +60,31 @@ function convertSpecialAttrs(attrs) {
 export function jsxToLiteral(tag, attrs, ...children) {
     let tagName;
     if (typeof tag === 'string') {
+        // Just a regular string
         tagName = tag;
     }
     else if ((typeof tag === 'object' || typeof tag === 'function') &&
         'is' in tag) {
+        // A webcomponent
         tagName = tag.is;
     }
     else if (typeof tag === 'function') {
+        // Functional component
         /* istanbul ignore next */
-        return tag(attrs || {});
+        const returnValue = tag(attrs || {});
+        if (returnValue !== Fragment) {
+            // Regular functional component return value
+            return returnValue;
+        }
+        // Fragment
+        const filteredChildren = children.filter((child) => child !== false);
+        const strings = new Array(filteredChildren.length + 1).fill('');
+        const stringsArr = strings;
+        stringsArr.raw = strings;
+        return {
+            strings: stringsArr,
+            values: filteredChildren,
+        };
     }
     else {
         console.warn('Unknown tag value');

@@ -1,8 +1,23 @@
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { TemplateFnLike } from './template-fn.js';
+import { Part } from 'lit-html';
 import { WebComponentListenableMixinInstance } from './listener.js';
 import { ClassToObj } from './configurable.js';
+export declare class StyleAttributePart implements Part {
+    element: Element;
+    name: string;
+    strings: string[];
+    private _config;
+    value: any;
+    private _pendingValue;
+    constructor(element: Element, name: string, strings: string[], _config: LitHTMLConfig);
+    private _isPrimitive;
+    setValue(value: any): void;
+    private static _toDashes;
+    static getStyleString(args: Partial<CSSStyleDeclaration>): string;
+    commit(): void;
+}
 declare class PartLike {
     constructor(...args: any[]);
     value: unknown;

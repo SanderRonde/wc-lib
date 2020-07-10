@@ -1,5 +1,6 @@
 import { Constructor, JSXIntrinsicProps } from '../classes/types.js';
 import { ClassNamesArg } from './shared.js';
+import { Fragment } from './template-fn.js';
 export interface JSXElementLiteral {
     readonly strings: TemplateStringsArray;
     readonly values: ReadonlyArray<unknown>;
@@ -25,7 +26,7 @@ export interface JSXElementLiteral {
  */
 export declare function jsxToLiteral<TR, A extends {
     [key: string]: any;
-}>(tag: string | ((attrs?: A) => JSXElementLiteral) | (Constructor<any> & {
+}>(tag: string | ((attrs?: A) => JSXElementLiteral) | (() => typeof Fragment) | (Constructor<any> & {
     is: string;
 }), attrs: A | null, ...children: (TR | any)[]): JSXElementLiteral;
 /**

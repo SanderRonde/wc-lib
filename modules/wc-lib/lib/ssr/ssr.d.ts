@@ -11,7 +11,7 @@ import { ComplexValue } from '../template-manager';
  * should or should not be imported.
  */
 export declare namespace SSR {
-    namespace Errors {
+    export namespace Errors {
         class RenderError extends Error {
             source: Error;
             constructor(message: string, source: Error);
@@ -24,7 +24,7 @@ export declare namespace SSR {
         function _renderError(e: Error): never;
         function _cssParseError(e: Error, file: string): never;
     }
-    class MergableWeakMap<K extends object, V> implements WeakMap<K, V> {
+    export class MergableWeakMap<K extends object, V> implements WeakMap<K, V> {
         private _maps;
         merge(map: MergableWeakMap<K, V>): this;
         delete(key: K): boolean;
@@ -34,7 +34,7 @@ export declare namespace SSR {
         clone(): MergableWeakMap<K, V>;
         [Symbol.toStringTag]: string;
     }
-    class MergableWeakSet<T extends object> implements WeakSet<T> {
+    export class MergableWeakSet<T extends object> implements WeakSet<T> {
         private _sets;
         merge(set: MergableWeakSet<T>): this;
         delete(value: T): boolean;
@@ -43,29 +43,37 @@ export declare namespace SSR {
         clone(): MergableWeakSet<T>;
         [Symbol.toStringTag]: string;
     }
-    interface GetMessageFunction {
+    export interface GetMessageFunction {
         (langFile: any, key: string, values: any[]): string | Promise<string>;
     }
-    interface DocumentConfig {
-        theme?: SSR.BaseTypes.Theme;
+    export interface DocumentConfig {
         i18n?: any;
+        lang?: string;
+        themeName?: string;
+        theme?: SSR.BaseTypes.Theme;
         getMessage?: GetMessageFunction;
     }
-    class DocumentSession {
+    interface PaddedDocumentConfig extends DocumentConfig {
+        doWait?: boolean;
+    }
+    export class DocumentSession {
         _i18n?: any;
+        _lang?: string;
         _theme?: SSR.BaseTypes.Theme;
+        _themeName?: string;
         _getMessage?: GetMessageFunction;
+        _doWait?: boolean;
         _cssIdentifierMap: MergableWeakMap<BaseTypes.BaseClass, number>;
         _sheetSet: MergableWeakSet<BaseTypes.BaseClass>;
         _unnamedElements: {
             amount: number;
         };
         _elementMap: BaseTypes.DependencyMap;
-        constructor({ i18n, theme, getMessage }?: DocumentConfig);
+        constructor({ i18n, theme, getMessage, lang, themeName, doWait, }?: PaddedDocumentConfig);
         /**
          * Merge a config into this SSR session, prioritizing config over current state
          */
-        mergeConfig({ i18n, theme, getMessage }: DocumentConfig): this;
+        mergeConfig({ i18n, theme, getMessage, lang, themeName, doWait, }: PaddedDocumentConfig): this;
         /**
          * Merge a document session into this one, prioritizing the merged one
          *
@@ -92,7 +100,7 @@ export declare namespace SSR {
          */
         static merge<T extends DocumentSession>(target: T, ...sessions: DocumentSession[]): T;
     }
-    namespace BaseTypes {
+    export namespace BaseTypes {
         interface BaseClassInstance extends WebComponentBaseTypeInstance, WebComponentTypeInstance {
             getTheme?(): Theme;
             genRef?(value: ComplexValue): string;
@@ -131,22 +139,25 @@ export declare namespace SSR {
             };
         }>(klass: C, tagName: string, props: BaseTypes.Props, attributes: BaseTypes.Attributes, session: DocumentSession): BaseClassExtended;
     }
-    namespace _Attributes {
+    export namespace _Attributes {
         type Primitive = null | undefined | boolean | number | string | Symbol | bigint;
         function _isPrimitive(value: unknown): value is Primitive;
         function _isIterable(value: unknown): value is Iterable<unknown>;
         function _toString(value: any): string;
-        function _dashesToCasing(name: string): string;
+        function _casingToDashes(name: string): string;
         function stringify(attributes: BaseTypes.Attributes): string;
     }
-    namespace _Properties {
+    export namespace _Properties {
         function splitAttributes<A extends BaseTypes.Attributes>(element: BaseTypes.BaseClassInstance, attributes: A): {
             attributes: BaseTypes.Attributes;
             publicProps: BaseTypes.Attributes;
             privateProps: BaseTypes.Attributes;
         };
     }
-    namespace _Rendering {
+    export namespace _Rendering {
+        namespace _Util {
+            function mapAsyncInOrder<I, R>(arr: I[], handler: (item: I) => Promise<R>): Promise<R[]>;
+        }
         namespace Dependencies {
             function buildMap(element: BaseTypes.BaseClass, map?: BaseTypes.DependencyMap): BaseTypes.DependencyMap;
         }
@@ -162,6 +173,7 @@ export declare namespace SSR {
                 isSelfClosing: boolean;
                 private _children;
                 config: Partial<TagConfig>;
+                private _slotted;
                 readonly type = "TAG";
                 constructor({ tagName, attributes, isSelfClosing, children, }: {
                     tagName: string;
@@ -172,11 +184,14 @@ export declare namespace SSR {
                 get children(): (Tag | TextTag)[];
                 copy(): Tag;
                 setChildren(children: (Tag | TextTag)[]): this;
+                get slotted(): boolean;
+                setSlotChildren(children: (Tag | TextTag)[]): this;
                 walk(handler: (tag: Tag) => {
                     newTag: ParsedTag;
                     stop: boolean;
                 } | void): ParsedTag;
-                walkAll(handler: <T extends Tag | TextTag>(tag: T) => T | void): ParsedTag;
+                walkBottomUp(handler: (tag: Tag) => Promise<ParsedTag | void>): Promise<ParsedTag>;
+                walkAll(handler: <T extends Tag | TextTag>(tag: T) => Promise<T | void>): Promise<ParsedTag>;
                 toText(): string;
             }
             class TextTag {
@@ -186,7 +201,8 @@ export declare namespace SSR {
                     content: string;
                 });
                 walk(): this;
-                walkAll(handler: <T extends Tag | TextTag>(tag: T) => T | void): ParsedTag;
+                walkBottomUp(): Promise<this>;
+                walkAll(handler: <T extends Tag | TextTag>(tag: T) => Promise<T | void>): Promise<ParsedTag>;
                 toText(): string;
             }
             type ParsedTag = Tag | TextTag;
@@ -215,15 +231,12 @@ export declare namespace SSR {
                     function _replaceSlots(receivers: SlotReceivers, slottables: Slottables): void;
                     function applySlots(element: Tag, lightDOM: Tag): void;
                 }
-                function _applyOverriddenAttributes(tag: Tag, markers: _ComplexRender._MarkerArr[]): {
+                function _applyOverriddenAttributes(tag: Tag, markers: _ComplexRender._MarkerArr[], session: DocumentSession): Promise<{
                     overrides: BaseTypes.Props;
                     attributes: BaseTypes.Props;
-                };
-                function _mapTag(tag: Tag, session: DocumentSession, markers: _ComplexRender._MarkerArr[]): {
-                    newTag: ParsedTag;
-                    stop: boolean;
-                } | void;
-                function replace(tags: ParsedTag[], session: DocumentSession, markers: _ComplexRender._MarkerArr[]): (Tag | TextTag)[];
+                }>;
+                function _mapTag(tag: Tag, session: DocumentSession, markers: _ComplexRender._MarkerArr[]): Promise<ParsedTag | void>;
+                function replace(tags: ParsedTag[], session: DocumentSession, markers: _ComplexRender._MarkerArr[]): Promise<(Tag | TextTag)[]>;
             }
             namespace _CSS {
                 class CSSTag extends TextToTags.Tag {
@@ -256,10 +269,10 @@ export declare namespace SSR {
                     addPrefix(prefix: string): void;
                     stringify(): void;
                 }
-                function _parseElementCSS(element: BaseTypes.BaseClass, instance: BaseTypes.BaseClassInstance): CSSTag[][];
+                function _parseElementCSS(element: BaseTypes.BaseClass, instance: BaseTypes.BaseClassInstance): Tag[][];
                 function _generateUniqueID(element: BaseTypes.BaseClass, tagName: string, session: DocumentSession): string;
                 function _generateComponentID(tagName: string): string;
-                function _addCSSPrefixes(templates: CSSTag[][], uniqueID: string, componentID: string): CSSTag[][];
+                function _addCSSPrefixes(templates: Tag[][], uniqueID: string, componentID: string): Tag[][];
                 function _addHTMLPrefixes(tags: ParsedTag[], uniqueID: string, componentID: string): (Tag | TextTag)[];
                 function _flatten<V>(values: (V | V[])[]): V[];
                 function getCSSApplied(element: BaseTypes.BaseClass, instance: BaseTypes.BaseClassInstance, tagName: string, children: ParsedTag[], session: DocumentSession): (Tag | TextTag)[];
@@ -288,31 +301,32 @@ export declare namespace SSR {
                 function _getPreAttrRemoved(resultStrings: string[], config: _MarkerArr[2]): string;
                 function _ensurePostQuote(str: string): string;
                 function _ensureNoPostQuote(str: string): string;
-                function _finalMarkedToString(strings: string[], markers: _MarkerArr[]): string;
-                function _complexContentToString(content: any): {
+                function _finalMarkedToString(strings: string[], markers: _MarkerArr[], session: DocumentSession): Promise<string>;
+                function _complexContentToString(content: any, session: DocumentSession): Promise<{
                     isComplex: boolean;
                     str?: string;
                     markers: _MarkerArr[];
-                };
-                function markerHas(markers: _MarkerArr[], value: any): boolean;
-                function markerGetValue(markers: _MarkerArr[], value: string): any;
-                function markerGetAll(markers: _MarkerArr[], value: string): _MarkerArr[];
+                }>;
+                function markerHas(markers: _MarkerArr[], value: any): Promise<boolean>;
+                function markerGetValue(markers: _MarkerArr[], value: string, doWait: boolean): Promise<any>;
+                function markerGetAll(markers: _MarkerArr[], value: string, doWait: boolean): Promise<any[][]>;
                 function _markerSet(markers: _MarkerArr[], keyMarker: string, value: any, config?: _MarkerMeta): void;
-                function _applyComplexToTag(tag: Tag | TextTag, markers: _MarkerArr[]): void;
-                function _complexRenderedToText(renderedTemplate: any): {
+                function _applyComplexToTag(tag: Tag | TextTag, markers: _MarkerArr[], session: DocumentSession): Promise<void>;
+                function _complexRenderedToText(renderedTemplate: any, session: DocumentSession): Promise<{
                     str: string;
                     markers: _MarkerArr[];
-                };
-                function renderToText(instance: BaseTypes.BaseClassInstance, template: TemplateFnLike<number> | null): {
+                }>;
+                function renderToText(instance: BaseTypes.BaseClassInstance, template: TemplateFnLike<number> | null, session: DocumentSession): Promise<{
                     str: string;
                     markers: _MarkerArr[];
-                };
+                }>;
             }
-            function elementToTag(element: BaseTypes.BaseClass, props: BaseTypes.Props, attribs: BaseTypes.Attributes, session: DocumentSession, isRoot?: boolean): Tag;
+            function elementToTag(element: BaseTypes.BaseClass, props: BaseTypes.Props, attribs: BaseTypes.Attributes, session: DocumentSession, isRoot?: boolean): Promise<Tag>;
         }
-        function render<C extends BaseTypes.BaseClass>(element: C, props: BaseTypes.Props, attributes: BaseTypes.Attributes, session: DocumentSession): string;
+        function render<C extends BaseTypes.BaseClass>(element: C, props: BaseTypes.Props, attributes: BaseTypes.Attributes, session: DocumentSession): Promise<string>;
     }
-    function renderElement<C extends BaseTypes.BaseClass, I extends InferInstance<C>>(element: C, { attributes, documentSession, i18n, props, theme, getMessage, }: SSRConfig<C, I>): string;
+    export function renderElement<C extends BaseTypes.BaseClass, I extends InferInstance<C>>(element: C, { attributes, documentSession, i18n, props, theme, getMessage, lang, themeName, await: doWait, }: SSRConfig<C, I>): Promise<string>;
+    export {};
 }
 /**
  * The base class that can be rendered using server side rendering
@@ -320,12 +334,15 @@ export declare namespace SSR {
 export interface SSRBaseClass extends SSR.BaseTypes.BaseClass {
 }
 export interface SSRConfig<C extends SSR.BaseTypes.BaseClass, I extends InferInstance<C>> {
-    props?: Partial<I['props']>;
-    attributes?: SSR.BaseTypes.Attributes;
-    theme?: SSR.BaseTypes.Theme;
     i18n?: any;
-    documentSession?: SSR.DocumentSession;
+    lang?: string;
+    themeName?: string;
+    props?: Partial<I['props']>;
+    theme?: SSR.BaseTypes.Theme;
     getMessage?: SSR.GetMessageFunction;
+    documentSession?: SSR.DocumentSession;
+    attributes?: SSR.BaseTypes.Attributes;
+    await?: boolean;
 }
 /**
  * Render a single element to a string that can be written to a server's client. If no
@@ -338,14 +355,17 @@ export interface SSRConfig<C extends SSR.BaseTypes.BaseClass, I extends InferIns
  * @param { { [key: string]: any } } [config.props] - Props to pass to the element
  * @param { { [key: string]: any } } [config.attributes] - HTML attributes to apply to the element
  * @param { { [key: string]: any } } [config.theme] - A theme to apply to the element
+ * @param { { [key: string]: any } } [config.themeName] - The name of the theme for the element
+ * @param { { [key: string]: any } } [config.lang] - The language for the element
  * @param { any } [config.i18n] - The i8n to apply to the element
  * @param { SSR.GetMessageFunction } [config.getMessage] - The
  *  function called when an i18n message is fetched
  * @param {SSR.DocumentSession} [config.documentSession] - The document session to use (remembers theme and i18n)
+ * @param { boolean } [config.await] - Whether to await template values
  *
- * @returns {string} The rendered element
+ * @returns {Promise<string>} The rendered element
  */
-export declare function ssr<C extends SSR.BaseTypes.BaseClass, I extends InferInstance<C>>(element: C, config?: SSRConfig<C, I>): string;
+export declare function ssr<C extends SSR.BaseTypes.BaseClass, I extends InferInstance<C>>(element: C, config?: SSRConfig<C, I>): Promise<string>;
 /**
  * Create a document rendering session. Pass the returned document to `ssr` to
  *  preserve the state of the document, avoiding conflicts

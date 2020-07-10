@@ -3,61 +3,61 @@
 		<title>Tic Tac Toe</title>
 	</head>
 	<body style="margin: 0; overflow: hidden;">
-		<tic-tac-toe><style>css-tic-tac-toe-.vertical-centerer,
-css-tic-tac-toe-.horizontal-centerer {
+		<tic-tac-toe><span data-type="css"><style>.vertical-centerer.css-tic-tac-toe,
+.horizontal-centerer.css-tic-tac-toe {
   display: flex;
   justify-content: center;
 }
 
-css-tic-tac-toe-.vertical-centerer {
+.vertical-centerer.css-tic-tac-toe {
   flex-direction: column;
   height: 100%;
 }
 
-css-tic-tac-toe-.horizontal-centerer {
+.horizontal-centerer.css-tic-tac-toe {
   flex-direction: row;
 }
 
-css-tic-tac-toe-#main {
+#main.css-tic-tac-toe {
   background-color: rgb(222, 222, 222);
   height: 100%;
 }
 
-css-tic-tac-toe-table {
+table.css-tic-tac-toe {
   border: none;
   border-collapse: collapse;
 }
 
-css-tic-tac-toe-td {
+td.css-tic-tac-toe {
   border-top: 0.3vw solid rgb(3, 169, 244);
   border-left: 0.3vw solid rgb(3, 169, 244);
 }
 
-css-tic-tac-toe-td:first-child {
+td.css-tic-tac-toe:first-child {
   border-left: none;
 }
 
-css-tic-tac-toe-tr:first-child td {
+tr.css-tic-tac-toe:first-child td.css-tic-tac-toe {
   border-top: none;
 }
 
-css-tic-tac-toe-#container {
+#container.css-tic-tac-toe {
   opacity: 0;
   transition: opacity 500ms ease-in;
 }
 
-css-tic-tac-toe-#container.active {
+#container.active.css-tic-tac-toe {
   opacity: 1;
 }
 
-css-tic-tac-toe-#lang-switcher {
+#lang-switcher.css-tic-tac-toe {
   position: absolute;
   right: 0.5vw;
   top: 0.5vw;
 }
 
-css-tic-tac-toe-.language,
-css-tic-tac-toe-.theme-preview {
+.language.css-tic-tac-toe,
+.theme-preview.css-tic-tac-toe {
   height: 2vw;
   width: 2vw;
   border: 0.16vw solid transparent;
@@ -66,12 +66,12 @@ css-tic-tac-toe-.theme-preview {
   margin-left: 0.16vw;
 }
 
-css-tic-tac-toe-.language.active,
-css-tic-tac-toe-.theme-preview.active {
+.language.active.css-tic-tac-toe,
+.theme-preview.active.css-tic-tac-toe {
   border: 0.16vw solid rgb(3, 169, 244);
 }
 
-css-tic-tac-toe-#theme-switcher {
+#theme-switcher.css-tic-tac-toe {
   position: absolute;
   right: 0.5vw;
   bottom: 0.5vw;
@@ -79,7 +79,7 @@ css-tic-tac-toe-#theme-switcher {
   flex-direction: row;
 }
 
-css-tic-tac-toe-#winner-banner {
+#winner-banner.css-tic-tac-toe {
   position: absolute;
   width: 100vw;
   pointer-events: none;
@@ -88,18 +88,18 @@ css-tic-tac-toe-#winner-banner {
   transition: transform 500ms ease-in;
 }
 
-css-tic-tac-toe-#winner-banner.active {
+#winner-banner.active.css-tic-tac-toe {
   transform: translateY(0);
 }
 
-css-tic-tac-toe-#winner-text {
+#winner-text.css-tic-tac-toe {
   font-size: 200%;
   font-family: sans-serif;
   border-bottom: 0.3vw solid rgb(3, 169, 244);
   display: inline;
   pointer-events: all;
   color: rgb(21, 21, 21);
-}</style>
+}</style></span><span data-type="html" class="css-tic-tac-toe-0 css-tic-tac-toe">
             <div id="lang-switcher" class="css-tic-tac-toe-0 css-tic-tac-toe">
                 
                         <img class="language css-tic-tac-toe-0 css-tic-tac-toe" src="images/en.png" title="Change language"/>
@@ -130,8 +130,8 @@ css-tic-tac-toe-#winner-text {
                                 <tr class="row css-tic-tac-toe-0 css-tic-tac-toe">
                                     
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="0" state=""><style>css-cell-block-#topLeft,
-css-cell-block-#topRight {
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="0" state=""><span data-type="css"><style>#topLeft.css-cell-block,
+#topRight.css-cell-block {
   width: 10vw;
   height: 0.3vw;
   background-color: rgb(3, 169, 244);
@@ -141,15 +141,15 @@ css-cell-block-#topRight {
   border-radius: 1vw;
 }
 
-css-cell-block-#topLeft {
+#topLeft.css-cell-block {
   transform: rotate(45deg);
 }
 
-css-cell-block-#topRight {
+#topRight.css-cell-block {
   transform: rotate(-45deg);
 }
 
-css-cell-block-#circle {
+#circle.css-cell-block {
   height: 6vw;
   width: 6vw;
   border: 0.3vw solid rgb(3, 169, 244);
@@ -160,26 +160,26 @@ css-cell-block-#circle {
   position: absolute;
 }
 
-css-cell-block-#cellContainer {
+#cellContainer.css-cell-block {
   width: 7.2vw;
   height: 7.2vw;
   padding: 1.5vw;
 }
 
-css-cell-block-#cell.state-none {
+#cell.state-none.css-cell-block {
   cursor: pointer;
 }
 
-css-cell-block-#x,
-css-cell-block-#o {
+#x.css-cell-block,
+#o.css-cell-block {
   opacity: 0;
   transition: opacity 300ms ease-in;
 }
 
-css-cell-block-#cell.state-x #x,
-css-cell-block-#cell.state-o #o {
+#cell.state-x.css-cell-block #x.css-cell-block,
+#cell.state-o.css-cell-block #o.css-cell-block {
   opacity: 1;
-}</style>
+}</style></span><span data-type="html" class="css-cell-block-0 css-cell-block">
             <div id="cell" class="state-none css-cell-block-0 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-0 css-cell-block">
                     <div id="x" class="css-cell-block-0 css-cell-block">
@@ -191,11 +191,11 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="0" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="0" state=""><span data-type="html" class="css-cell-block-1 css-cell-block">
             <div id="cell" class="state-none css-cell-block-1 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-1 css-cell-block">
                     <div id="x" class="css-cell-block-1 css-cell-block">
@@ -207,11 +207,11 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="0" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="0" state=""><span data-type="html" class="css-cell-block-2 css-cell-block">
             <div id="cell" class="state-none css-cell-block-2 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-2 css-cell-block">
                     <div id="x" class="css-cell-block-2 css-cell-block">
@@ -223,7 +223,7 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                 </tr>
@@ -231,7 +231,7 @@ css-cell-block-#cell.state-o #o {
                                 <tr class="row css-tic-tac-toe-0 css-tic-tac-toe">
                                     
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="1" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="1" state=""><span data-type="html" class="css-cell-block-3 css-cell-block">
             <div id="cell" class="state-none css-cell-block-3 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-3 css-cell-block">
                     <div id="x" class="css-cell-block-3 css-cell-block">
@@ -243,11 +243,11 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="1" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="1" state=""><span data-type="html" class="css-cell-block-4 css-cell-block">
             <div id="cell" class="state-none css-cell-block-4 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-4 css-cell-block">
                     <div id="x" class="css-cell-block-4 css-cell-block">
@@ -259,11 +259,11 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="1" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="1" state=""><span data-type="html" class="css-cell-block-5 css-cell-block">
             <div id="cell" class="state-none css-cell-block-5 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-5 css-cell-block">
                     <div id="x" class="css-cell-block-5 css-cell-block">
@@ -275,7 +275,7 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                 </tr>
@@ -283,7 +283,7 @@ css-cell-block-#cell.state-o #o {
                                 <tr class="row css-tic-tac-toe-0 css-tic-tac-toe">
                                     
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="2" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="2" state=""><span data-type="html" class="css-cell-block-6 css-cell-block">
             <div id="cell" class="state-none css-cell-block-6 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-6 css-cell-block">
                     <div id="x" class="css-cell-block-6 css-cell-block">
@@ -295,11 +295,11 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="2" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="2" state=""><span data-type="html" class="css-cell-block-7 css-cell-block">
             <div id="cell" class="state-none css-cell-block-7 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-7 css-cell-block">
                     <div id="x" class="css-cell-block-7 css-cell-block">
@@ -311,11 +311,11 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                             <td class="css-tic-tac-toe-0 css-tic-tac-toe">
-                                                <cell-block @@click="undefined" class="css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="2" state="">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="2" state=""><span data-type="html" class="css-cell-block-8 css-cell-block">
             <div id="cell" class="state-none css-cell-block-8 css-cell-block">
                 <div id="cellContainer" class="css-cell-block-8 css-cell-block">
                     <div id="x" class="css-cell-block-8 css-cell-block">
@@ -327,7 +327,7 @@ css-cell-block-#cell.state-o #o {
                     </div>
                 </div>
             </div>
-        </cell-block>
+        </span></cell-block>
                                             </td>
                                         
                                 </tr>
@@ -335,7 +335,7 @@ css-cell-block-#cell.state-o #o {
                     </table>
                 </div>
             </div>
-        </tic-tac-toe>
+        </span></tic-tac-toe>
 		<script type="module" src="./index.js"></script>
 	</body>
 </html>

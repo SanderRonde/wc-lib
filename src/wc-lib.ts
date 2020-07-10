@@ -29,7 +29,6 @@ export {
     PROP_TYPE,
     ComplexType,
     DefinePropTypeConfig,
-    awaitConnected,
     hookIntoConnect,
     Props,
 } from './lib/props.js';

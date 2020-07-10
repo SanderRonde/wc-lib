@@ -889,26 +889,6 @@ const connectMap = new WeakMap<HTMLElementAttributes, any>();
 const connectedElements = new WeakSet<HTMLElementAttributes>();
 
 /**
- * Waits for the element to be connected to the DOM
- * (`connectedCallback` was called)
- *
- * @param {HTMLElement} el - The element for which
- * to wait for it to be connected to the DOM.
- *
- * @returns {Promise<void>} - A promise that resolves when
- * 	the element has been connected
- */
-export async function awaitConnected(el: HTMLElement): Promise<void> {
-    /* istanbul ignore next */
-    if (connectedElements.has(el)) return;
-    await new Promise(async (resolve) => {
-        const arr = connectMap.get(el) || [];
-        arr.push(resolve);
-        connectMap.set(el, arr);
-    });
-}
-
-/**
  * Hooks into the `connectedCallback` function of the element
  * and runs the passed function in it
  *
@@ -1574,7 +1554,7 @@ namespace PropsDefiner {
             element.runQueued();
             connectedElements.add(component);
         } else {
-            awaitConnected(component as any).then(() => {
+            hookIntoConnect(component as any, () => {
                 element.runQueued();
             });
         }

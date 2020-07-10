@@ -306,7 +306,7 @@ gulp.task(
                     }
 
                     // There's currently just one theme, use that one for all example elements
-                    const rendered = ssr(mainExport, {
+                    const rendered = await ssr(mainExport, {
                         theme: theme['light'],
                         i18n: I18N_FILE,
                         getMessage: I18N_GET_MESSAGE,

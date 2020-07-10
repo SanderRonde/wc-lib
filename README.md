@@ -237,6 +237,14 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.28**:
+
+-   Apply attributes set before component connect immediately in its `onConnect` function (before rendering).
+
+**1.1.27**:
+
+-   Add JSX fragments (`html.Fragment` or `html.F`)
+
 **1.1.26**:
 
 -   Fix a whole bunch of server-side-rendering bugs

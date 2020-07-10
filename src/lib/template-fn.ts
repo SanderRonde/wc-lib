@@ -71,6 +71,8 @@ export type JSXTemplateFunction<R> = {
     ): R;
 };
 
+export const Fragment = Symbol('fragment');
+
 /**
  * The type of a templater that handles both
  * regular template literals and JSX elements.
@@ -80,6 +82,8 @@ export type JSXTemplateFunction<R> = {
 export type JSXTemplater<R> = {
     (strings: TemplateStringsArray, ...values: any[]): R;
     jsx: JSXTemplateFunction<R>;
+    Fragment: () => typeof Fragment;
+    F: () => typeof Fragment;
 };
 
 /**
@@ -421,6 +425,7 @@ export class TemplateFn<
             const { strings, values } = jsxToLiteral(tag, attrs, ...children);
             return templater!(strings, ...values);
         };
+        jsxAddedTemplate.Fragment = jsxAddedTemplate.F = () => Fragment;
 
         if (!componentTemplateMap.has(component)) {
             componentTemplateMap.set(component, new WeakMap());

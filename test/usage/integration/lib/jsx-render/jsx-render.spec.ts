@@ -2,6 +2,8 @@ import {
     OtherClass,
     JSXElement,
     SpecialPropClass,
+    JSXElement3,
+    JSXElement4,
 } from './elements/jsx-element.js';
 import { CHANGE_TYPE } from '../../../../../build/es/wc-lib.js';
 import { getLibFixture } from '../../../lib/testing.js';
@@ -58,6 +60,26 @@ function jsxRenderSpec(fixture: string) {
                         );
                         expect(textRender).to.include(
                             '<div x="x" y="1" id="simple"></div>'
+                        );
+                    });
+                });
+                it('can use html.Fragment', () => {
+                    cy.get('#test3').then(([jsxEl]: JQuery<JSXElement3>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.include(
+                            '<div id="1"></div><div id="2"></div><div id="3"></div>'
+                        );
+                    });
+                    cy.get('#test4').then(([jsxEl]: JQuery<JSXElement4>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.include(
+                            '<div id="1"></div><div id="2"></div><div id="3"></div>'
                         );
                     });
                 });

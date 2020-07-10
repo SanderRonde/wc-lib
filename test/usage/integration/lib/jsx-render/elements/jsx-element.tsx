@@ -310,7 +310,7 @@ export class JSXElement extends ConfigurableWebComponent {
 
 @config({
     is: 'jsx-render-2',
-    html: new TemplateFn<JSXElement>(
+    html: new TemplateFn<JSXElement2>(
         function(html) {
             return <div>{false && <div id="not-rendered"></div>}</div>;
         },
@@ -322,3 +322,41 @@ export class JSXElement extends ConfigurableWebComponent {
 export class JSXElement2 extends ConfigurableWebComponent {
     onEvent() {}
 }
+
+@config({
+    is: 'jsx-render-3',
+    html: new TemplateFn<JSXElement3>(
+        function(html) {
+            return (
+                <html.Fragment>
+                    <div id="1"></div>
+                    <div id="2"></div>
+                    <div id="3"></div>
+                </html.Fragment>
+            );
+        },
+        CHANGE_TYPE.PROP,
+        render
+    ),
+    css: null,
+})
+export class JSXElement3 extends ConfigurableWebComponent {}
+
+@config({
+    is: 'jsx-render-4',
+    html: new TemplateFn<JSXElement4>(
+        function(html) {
+            return (
+                <html.F>
+                    <div id="1"></div>
+                    <div id="2"></div>
+                    <div id="3"></div>
+                </html.F>
+            );
+        },
+        CHANGE_TYPE.PROP,
+        render
+    ),
+    css: null,
+})
+export class JSXElement4 extends ConfigurableWebComponent {}

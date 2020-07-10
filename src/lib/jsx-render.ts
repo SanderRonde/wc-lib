@@ -1,6 +1,7 @@
 import { Constructor, JSXIntrinsicProps } from '../classes/types.js';
 import { casingToDashes } from './props.js';
 import { ClassNamesArg } from './shared.js';
+import { Fragment } from './template-fn.js';
 
 type Listeners = {
     [key: string]: (this: any, event: Event) => any;
@@ -114,6 +115,7 @@ export function jsxToLiteral<
     tag:
         | string
         | ((attrs?: A) => JSXElementLiteral)
+        | (() => typeof Fragment)
         | (Constructor<any> & {
               is: string;
           }),
@@ -122,15 +124,35 @@ export function jsxToLiteral<
 ): JSXElementLiteral {
     let tagName: string;
     if (typeof tag === 'string') {
+        // Just a regular string
         tagName = tag;
     } else if (
         (typeof tag === 'object' || typeof tag === 'function') &&
         'is' in tag
     ) {
+        // A webcomponent
         tagName = tag.is;
     } else if (typeof tag === 'function') {
+        // Functional component
+
         /* istanbul ignore next */
-        return (tag as (attrs: A) => JSXElementLiteral)(attrs || ({} as A));
+        const returnValue = (tag as
+            | ((attrs?: A) => JSXElementLiteral)
+            | (() => typeof Fragment))(attrs || ({} as A));
+        if (returnValue !== Fragment) {
+            // Regular functional component return value
+            return returnValue;
+        }
+
+        // Fragment
+        const filteredChildren = children.filter((child) => child !== false);
+        const strings = new Array(filteredChildren.length + 1).fill('');
+        const stringsArr: Partial<TemplateStringsArray> = strings;
+        (stringsArr as any).raw = strings;
+        return {
+            strings: stringsArr as TemplateStringsArray,
+            values: filteredChildren,
+        };
     } else {
         console.warn('Unknown tag value');
         return { strings: [] as any, values: [] };

@@ -647,6 +647,14 @@ export function elementFactory<
                             return {};
                         })}
                     </div>
+                    <div
+                        style="${{
+                            color: 'red',
+                            backgroundColor: 'blue',
+                        }}"
+                    ></div>
+                    <div style="color: red;"></div>
+                    <div style=${1}></div>
                 `;
             },
             CHANGE_TYPE.NEVER,
@@ -1232,6 +1240,73 @@ export function elementFactory<
         }
     }
 
+    @config({
+        is: 'dynamic-css',
+        html: null,
+        css: [
+            new TemplateFn<WithCSS>(
+                (_html, props) => {
+                    return html`
+                        <style>
+                            ${props.selector} {
+                                color: red;
+                            }
+                        </style>
+                    `;
+                },
+                CHANGE_TYPE.PROP,
+                render
+            ),
+        ],
+    })
+    //@ts-ignore
+    class DynamicCSS extends typedBase {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {
+            reflect: {
+                selector: {
+                    type: PROP_TYPE.STRING,
+                    value: '',
+                },
+            },
+        });
+    }
+
+    @config({
+        is: 'promise-element',
+        html: new TemplateFn<SimpleElement>(
+            (_html, props) => {
+                return html`
+                    <div>${props.promise}</div>
+                    <simple-element
+                        attr=${new Promise((resolve) => resolve('attrvalue'))}
+                    ></simple-element>
+                `;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+        dependencies: [SimpleElement],
+    })
+    //@ts-ignore
+    class PromiseElement extends typedBase {
+        constructor() {
+            super();
+        }
+
+        props = Props.define(this as any, {
+            reflect: {
+                promise: {
+                    type: ComplexType<Promise<any>>(),
+                    watch: false,
+                },
+            },
+        });
+    }
+
     return {
         SimpleElement,
         NoIs,
@@ -1272,5 +1347,7 @@ export function elementFactory<
         JSXElementChildren,
         JSXElementComponents,
         NestedSlots,
+        DynamicCSS,
+        PromiseElement,
     };
 }

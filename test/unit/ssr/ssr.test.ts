@@ -129,6 +129,8 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         JSXElementChildren,
         JSXElementComponents,
         NestedSlots,
+        DynamicCSS,
+        PromiseElement,
     } = elementFactory(component, isComplex);
 
     const test = genTestFn(name);
@@ -242,6 +244,67 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 [['span', [[NestedTag.is, [['span', [['div', []]]]]]]]],
             ]);
         });
+        if (isComplex) {
+            test('async values can be not awaited', async (t) => {
+                const root = toTestTags(
+                    t,
+                    await ssr(PromiseElement, {
+                        props: {
+                            promise: new Promise((resolve) => resolve('value')),
+                        },
+                    })
+                );
+
+                root.assertTagName(PromiseElement.is);
+                root.assertChildren(1);
+                root[0].assertTagName('span');
+                root[0].assertChildren(2);
+                root[0][0].assertTagName('div');
+                root[0][0].assertChildren(1);
+                root[0][0][0].assertContent('[object Promise]');
+            });
+            test('async values can be awaited', async (t) => {
+                const root = toTestTags(
+                    t,
+                    await ssr(PromiseElement, {
+                        props: {
+                            promise: new Promise((resolve) => resolve('value')),
+                        },
+                        await: true,
+                    })
+                );
+
+                root.assertTagName(PromiseElement.is);
+                root.assertChildren(1);
+                root[0].assertTagName('span');
+                root[0].assertChildren(2);
+                root[0][0].assertTagName('div');
+                root[0][0].assertChildren(1);
+                root[0][0][0].assertContent('value');
+            });
+            test('async attributes can be awaited', async (t) => {
+                const root = toTestTags(
+                    t,
+                    await ssr(PromiseElement, {
+                        props: {
+                            promise: new Promise((resolve) => resolve('value')),
+                        },
+                        await: true,
+                    })
+                );
+
+                root.assertTagName(PromiseElement.is);
+                root.assertChildren(1);
+                root[0].assertTagName('span');
+                root[0].assertChildren(2);
+                root[0][0].assertTagName('div');
+                root[0][0].assertChildren(1);
+                root[0][0][0].assertContent('value');
+
+                root[0][1].assertHasAttribute('attr');
+                root[0][1].assertAttribute('attr', 'attrvalue');
+            });
+        }
     }
 
     {
@@ -412,7 +475,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 'attribute is now partially dashed'
             );
         });
-        test.only('attributes that are invalid in HTML are ignored', async (t) => {
+        test('attributes that are invalid in HTML are ignored', async (t) => {
             const attributes = {
                 '#invalid': 'abc',
                 valid: 'def',
@@ -852,6 +915,198 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0][1][0].assertText();
             root[0][1][0].assertContent("console.log('some code');");
         });
+
+        test('basic ID selectors are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: '#id',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(root[0][0][0].content.includes('#id'));
+            t.true(root[0][0][0].content.includes('#id.css-dynamic-css-0'));
+        });
+        test('basic class selectors are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: '.class',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(root[0][0][0].content.includes('.class'));
+            t.true(root[0][0][0].content.includes('.class.css-dynamic-css-0'));
+        });
+        test('basic tagname selectors are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: 'tag',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(root[0][0][0].content.includes('tag'));
+            t.true(root[0][0][0].content.includes('tag.css-dynamic-css-0'));
+        });
+        test('star selectors are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: '*',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(root[0][0][0].content.includes('.css-dynamic-css-0'));
+        });
+        test('descendant selectors are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: '#parent #child',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(root[0][0][0].content.includes('#parent.css-dynamic-css-0'));
+            t.true(root[0][0][0].content.includes('#child.css-dynamic-css-0'));
+            t.true(
+                root[0][0][0].content.includes(
+                    '#parent.css-dynamic-css-0 #child.css-dynamic-css-0'
+                )
+            );
+        });
+        test('direct descendant selectors are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: '#parent > #child',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(root[0][0][0].content.includes('#parent.css-dynamic-css-0'));
+            t.true(root[0][0][0].content.includes('#child.css-dynamic-css-0'));
+            t.true(
+                root[0][0][0].content.includes(
+                    '#parent.css-dynamic-css-0 > #child.css-dynamic-css-0'
+                )
+            );
+        });
+        test('pseudo selectors with a single colon are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: '#selector:hover',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(
+                root[0][0][0].content.includes(
+                    '#selector.css-dynamic-css-0:hover'
+                )
+            );
+        });
+        test('pseudo selectors with two colons are converted properly', async (t) => {
+            const root = toTestTags(
+                t,
+                await ssr(DynamicCSS, {
+                    props: {
+                        selector: '#selector::after',
+                    },
+                })
+            );
+
+            root.assertTag();
+            root.assertTagName(DynamicCSS.is);
+            root.assertChildren(2);
+            root[0].assertTagName('span');
+            root[0].assertChildren(1);
+            root[0][0].assertTagName('style');
+            root[0][0].assertChildren(1);
+            root[0][0][0].assertText();
+
+            t.true(
+                root[0][0][0].content.includes(
+                    '#selector.css-dynamic-css-0::after'
+                )
+            );
+        });
     }
 
     {
@@ -907,7 +1162,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertChildren(3);
             root2.assertChildren(3);
         });
-        test('renders can have state if set explicitly - unnamed tag test.skip', async (t) => {
+        test('renders can have state if set explicitly - unnamed tag test', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
@@ -926,7 +1181,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root.assertTagName('wclib-element0');
             root2.assertTagName('wclib-element1');
         });
-        test('renders can have state if set explicitly - tagname map test.skip', async (t) => {
+        test('renders can have state if set explicitly - tagname map test', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
@@ -973,7 +1228,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
                 ],
             ]);
         });
-        test('renders can have state if set explicitly - css test.skip', async (t) => {
+        test('renders can have state if set explicitly - css test', async (t) => {
             const session = createSSRSession();
 
             const root = toTestTags(
@@ -1041,6 +1296,33 @@ baseComponents.forEach(({ component, isComplex, name }) => {
             root[0][0].assertTag();
             root[0][0].assertTagName('div');
             root[0][0].assertHasClasses('a', 'b');
+        });
+        test("the style attribute is applied when it's an object", async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root[0].assertMinChildren(1);
+            root[0][8].assertTag();
+            root[0][8].assertTagName('div');
+            root[0][8].assertHasAttribute('style');
+            root[0][8].assertAttribute(
+                'style',
+                'color: red; background-color: blue;'
+            );
+        });
+        test("the style attribute is applied when it's a primitive", async (t) => {
+            const root = toTestTags(t, await ssr(ComplexTag));
+
+            root.assertTag();
+            root.assertTagName(ComplexTag.is);
+
+            root[0].assertMinChildren(1);
+            root[0][9].assertTag();
+            root[0][9].assertTagName('div');
+            root[0][9].assertHasAttribute('style');
+            root[0][9].assertAttribute('style', 'color: red;');
         });
         test('strings are joined', async (t) => {
             const root = toTestTags(t, await ssr(ComplexTag));

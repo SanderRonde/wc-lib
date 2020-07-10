@@ -590,7 +590,7 @@ export function templateManagerSpec(fixtures: {
                                 .shadowFind('#refTest4')
                                 .then(([el]: JQuery<TestElement>) => {
                                     expect(el.getAttribute('x')).to.be.equal(
-                                        complex.toString(),
+                                        `${~~complex.toString()}`,
                                         'regular attribute is set to stringified value'
                                     );
                                 });

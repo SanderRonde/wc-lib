@@ -234,17 +234,6 @@ export declare function getDefinePropConfig(value: DefinePropTypes | DefinePropT
  */
 export declare function casingToDashes(name: string): string;
 /**
- * Waits for the element to be connected to the DOM
- * (`connectedCallback` was called)
- *
- * @param {HTMLElement} el - The element for which
- * to wait for it to be connected to the DOM.
- *
- * @returns {Promise<void>} - A promise that resolves when
- * 	the element has been connected
- */
-export declare function awaitConnected(el: HTMLElement): Promise<void>;
-/**
  * Hooks into the `connectedCallback` function of the element
  * and runs the passed function in it
  *

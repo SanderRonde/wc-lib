@@ -9,7 +9,7 @@ export { ConfigurableWebComponent, ConfigurableMixin, ExtendableMixin, MixinFn, 
 export { DefineMetadata } from './lib/definer.js';
 export { EventListenerObj } from './lib/listener.js';
 export { Listeners } from './lib/listeners.js';
-export { PROP_TYPE, ComplexType, DefinePropTypeConfig, awaitConnected, hookIntoConnect, Props, } from './lib/props.js';
+export { PROP_TYPE, ComplexType, DefinePropTypeConfig, hookIntoConnect, Props, } from './lib/props.js';
 export * from './lib/shared.js';
 export { LitHTMLConfig, TemplateResultLike } from './lib/template-manager.js';
 export * from './lib/util.js';

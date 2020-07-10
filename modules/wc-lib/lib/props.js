@@ -425,28 +425,6 @@ function getCoerced(initial, mapType) {
 const connectMap = new WeakMap();
 const connectedElements = new WeakSet();
 /**
- * Waits for the element to be connected to the DOM
- * (`connectedCallback` was called)
- *
- * @param {HTMLElement} el - The element for which
- * to wait for it to be connected to the DOM.
- *
- * @returns {Promise<void>} - A promise that resolves when
- * 	the element has been connected
- */
-export function awaitConnected(el) {
-    return __awaiter(this, void 0, void 0, function* () {
-        /* istanbul ignore next */
-        if (connectedElements.has(el))
-            return;
-        yield new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            const arr = connectMap.get(el) || [];
-            arr.push(resolve);
-            connectMap.set(el, arr);
-        }));
-    });
-}
-/**
  * Hooks into the `connectedCallback` function of the element
  * and runs the passed function in it
  *
@@ -766,7 +744,7 @@ var PropsDefiner;
             connectedElements.add(component);
         }
         else {
-            awaitConnected(component).then(() => {
+            hookIntoConnect(component, () => {
                 element.runQueued();
             });
         }

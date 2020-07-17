@@ -122,6 +122,7 @@ export const WebComponentCustomCSSManagerMixin = <
             const originalSetAttr = this.setAttribute;
             this.setAttribute = (key: string, val: string) => {
                 originalSetAttr.bind(this)(key, val);
+                /* istanbul ignore next */
                 if (key === CUSTOM_CSS_PROP_NAME && this.isMounted) {
                     this.renderToDOM(CHANGE_TYPE.ALWAYS);
                 }

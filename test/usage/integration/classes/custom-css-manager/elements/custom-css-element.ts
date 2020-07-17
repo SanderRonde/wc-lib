@@ -7,26 +7,45 @@ import {
 import { render } from '../../../../../../node_modules/lit-html/lit-html.js';
 import { TestElement } from '../../elements/test-element.js';
 
+export interface ExtendedWindow extends Window {
+    redTextTemplate: TemplateFn;
+}
+declare const window: ExtendedWindow;
+
+export const blueTextTemplate = new TemplateFn<CustomCSSElement>(
+    (html) => {
+        return html`
+            <style>
+                * {
+                    color: blue !important;
+                }
+            </style>
+        `;
+    },
+    CHANGE_TYPE.NEVER,
+    render
+);
+
+export const redTextTemplate = new TemplateFn<CustomCSSElement>(
+    (html) => {
+        return html`
+            <style>
+                * {
+                    color: red !important;
+                }
+            </style>
+        `;
+    },
+    CHANGE_TYPE.NEVER,
+    render
+);
+
 @config({
     is: 'custom-css-element',
     html: new TemplateFn<CustomCSSElement>(
         (html) => {
             return html`
-                <test-element
-                    custom-css="${new TemplateFn<CustomCSSElement>(
-                        (html) => {
-                            return html`
-                                <style>
-                                    * {
-                                        color: blue !important;
-                                    }
-                                </style>
-                            `;
-                        },
-                        CHANGE_TYPE.NEVER,
-                        render
-                    )}"
-                ></test-element>
+                <test-element custom-css="${blueTextTemplate}"></test-element>
             `;
         },
         CHANGE_TYPE.NEVER,
@@ -51,3 +70,5 @@ export class CustomCSSElement extends ConfigurableWebComponent {}
     dependencies: [TestElement],
 })
 export class WrongCustomCSSElement extends ConfigurableWebComponent {}
+
+window.redTextTemplate = redTextTemplate;

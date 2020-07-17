@@ -4,6 +4,10 @@ import { expectMethodExists } from '../../../lib/assertions.js';
 import { getClassFixture } from '../../../lib/testing.js';
 import { TestElement } from '../elements/test-element';
 import { SLOW } from '../../../lib/timing.js';
+import {
+    CustomCSSElement,
+    ExtendedWindow,
+} from './elements/custom-css-element.js';
 
 context('Custom CSS Manager', function() {
     this.slow(SLOW);
@@ -59,6 +63,57 @@ context('Custom CSS Manager', function() {
                     cy.wrap(stub).should('be.calledTwice');
                 });
             });
+        });
+        it('re-renders when the property is re-set after mount', () => {
+            cy.get('#custom')
+                .shadowFind('test-element')
+                .shadowFind('div')
+                .then(([div]: JQuery<HTMLDivElement>) => {
+                    cy.window().then((window: ExtendedWindow) => {
+                        expect(window.getComputedStyle(div).color).to.be.equal(
+                            'rgb(0, 0, 255)',
+                            'color is overridden'
+                        );
+
+                        cy.get('#custom').then(
+                            ([customCSSElement]: JQuery<CustomCSSElement>) => {
+                                const ref = customCSSElement.genRef(
+                                    window.redTextTemplate
+                                );
+
+                                cy.get('#custom')
+                                    .shadowFind('test-element')
+                                    .then(
+                                        ([testElement]: JQuery<
+                                            TestElement
+                                        >) => {
+                                            testElement.setAttribute(
+                                                'custom-css',
+                                                ref
+                                            );
+                                            cy.get('#custom')
+                                                .shadowFind('test-element')
+                                                .shadowFind('div')
+                                                .then(
+                                                    ([div]: JQuery<
+                                                        HTMLDivElement
+                                                    >) => {
+                                                        expect(
+                                                            window.getComputedStyle(
+                                                                div
+                                                            ).color
+                                                        ).to.be.equal(
+                                                            'rgb(255, 0, 0)',
+                                                            'color is overridden'
+                                                        );
+                                                    }
+                                                );
+                                        }
+                                    );
+                            }
+                        );
+                    });
+                });
         });
     });
 });

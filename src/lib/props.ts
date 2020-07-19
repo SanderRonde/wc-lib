@@ -1,4 +1,5 @@
 import { CHANGE_TYPE } from './template-fn.js';
+import { Mounting } from './util/index.js';
 
 /**
  * The prefix used for complex references
@@ -1554,7 +1555,7 @@ namespace PropsDefiner {
             element.runQueued();
             connectedElements.add(component);
         } else {
-            hookIntoConnect(component as any, () => {
+            Mounting.hookIntoMount(component as any, () => {
                 element.runQueued();
             });
         }

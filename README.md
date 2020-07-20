@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.29**:
+
+-   Fix issue with `setAttribute`s called before mounting not being ran aftewards
+
 **1.1.28**:
 
 -   Apply attributes set before component connect immediately in its `onConnect` function (before rendering).

@@ -1,5 +1,4 @@
 import { CHANGE_TYPE } from './template-fn.js';
-import { Mounting } from './util/index.js';
 
 /**
  * The prefix used for complex references
@@ -1065,23 +1064,34 @@ namespace PropsDefiner {
             }
         > = new Map();
         public propValues: Partial<SimpleReturnType<R, P>> = {};
-        public preMountedQueue: {
-            set: [string, string][];
-            remove: string[];
-        } = {
-            set: [],
-            remove: [],
-        };
+        public onConnectMap: Map<
+            Extract<keyof R | keyof P, string>,
+            () => void
+        > = new Map();
+        public onDone: Promise<void>;
+        private _onDoneResolve!: () => void;
 
         constructor(public component: PropComponent) {
             this.setAttr = component.setAttribute.bind(component);
             this.removeAttr = component.removeAttribute.bind(component);
+            this.onDone = new Promise((resolve) => {
+                this._onDoneResolve = resolve;
+            });
         }
 
         public overrideAttributeFunctions() {
             this.component.setAttribute = (key: string, val: string) => {
                 if (!this.component.isMounted) {
-                    this.preMountedQueue.set.push([key, val]);
+                    this.onConnect(
+                        dashesToCasing(key) as Extract<
+                            keyof R | keyof P,
+                            string
+                        >,
+                        () => {
+                            onSetAttribute(key, val, this);
+                        },
+                        true
+                    );
                     this.setAttr(key, val);
                     return;
                 }
@@ -1090,7 +1100,16 @@ namespace PropsDefiner {
             };
             this.component.removeAttribute = (key: string) => {
                 if (!this.component.isMounted) {
-                    this.preMountedQueue.remove.push(key);
+                    this.onConnect(
+                        dashesToCasing(key) as Extract<
+                            keyof R | keyof P,
+                            string
+                        >,
+                        () => {
+                            onRemoveAttribute(key, this);
+                        },
+                        true
+                    );
                     this.removeAttr(key);
                     return;
                 }
@@ -1099,13 +1118,25 @@ namespace PropsDefiner {
             };
         }
 
-        public runQueued() {
-            this.preMountedQueue.set.forEach(([key, val]) =>
-                onSetAttribute(key, val, this)
-            );
-            this.preMountedQueue.remove.forEach((key) =>
-                onRemoveAttribute(key, this)
-            );
+        public onConnect(
+            key: Extract<keyof R | keyof P, string>,
+            listener: () => void,
+            force: boolean = false
+        ) {
+            if (connectedElements.has(this.component)) {
+                listener();
+                return;
+            }
+
+            if (this.onConnectMap.has(key) && !force) return;
+            this.onConnectMap.set(key, listener);
+        }
+
+        public connected() {
+            [...this.onConnectMap.values()].forEach((listener) => {
+                listener();
+            });
+            this._onDoneResolve();
             if (!this.component.isSSR) {
                 queueRender(this.component, CHANGE_TYPE.PROP);
             }
@@ -1405,21 +1436,25 @@ namespace PropsDefiner {
                 watch,
                 watchProperties,
             } = this.config;
-            await hookIntoConnect(this._rep.component as any, () => {
-                this._rep.propValues[mapKey] = Watching.watchValue(
-                    createQueueRenderFn(this._rep.component),
-                    this._rep.component.hasAttribute(propName)
-                        ? (getter(
-                              this._rep.component,
-                              propName,
-                              strict,
-                              type
-                          ) as any)
-                        : undefined,
-                    watch,
-                    watchProperties
-                );
-            });
+            this._rep.onConnect(
+                mapKey,
+                () => {
+                    this._rep.propValues[mapKey] = Watching.watchValue(
+                        createQueueRenderFn(this._rep.component),
+                        this._rep.component.hasAttribute(propName)
+                            ? (getter(
+                                  this._rep.component,
+                                  propName,
+                                  strict,
+                                  type
+                              ) as any)
+                            : undefined,
+                        watch,
+                        watchProperties
+                    );
+                },
+                false
+            );
         }
 
         public assignSimpleType() {
@@ -1447,7 +1482,7 @@ namespace PropsDefiner {
             );
         }
 
-        public async doDefaultAssign() {
+        public doDefaultAssign() {
             const {
                 defaultValue,
                 mapKey,
@@ -1458,35 +1493,31 @@ namespace PropsDefiner {
                 reflectToAttr,
             } = this.config;
             if (defaultValue !== undefined) {
-                await hookIntoConnect(this._rep.component as any, () => {
-                    if (this._rep.propValues[mapKey] === undefined) {
-                        this._rep.propValues[mapKey] = Watching.watchValue(
-                            createQueueRenderFn(this._rep.component),
-                            defaultValue as any,
-                            watch,
-                            watchProperties
-                        );
-                    }
-                    if (reflectToAttr) {
-                        setter(
-                            this._rep.setAttr,
-                            this._rep.removeAttr,
-                            propName,
-                            this._rep.propValues[mapKey],
-                            type as any
-                        );
-                    }
-                });
-            } else if (type === complex && reflectToAttr) {
-                await hookIntoConnect(this._rep.component as any, () => {
+                if (this._rep.propValues[mapKey] === undefined) {
+                    this._rep.propValues[mapKey] = Watching.watchValue(
+                        createQueueRenderFn(this._rep.component),
+                        defaultValue as any,
+                        watch,
+                        watchProperties
+                    );
+                }
+                if (reflectToAttr) {
                     setter(
                         this._rep.setAttr,
                         this._rep.removeAttr,
                         propName,
-                        this._rep.propValues[mapKey] as any,
-                        type
+                        this._rep.propValues[mapKey],
+                        type as any
                     );
-                });
+                }
+            } else if (type === complex && reflectToAttr) {
+                setter(
+                    this._rep.setAttr,
+                    this._rep.removeAttr,
+                    propName,
+                    this._rep.propValues[mapKey] as any,
+                    type
+                );
             }
         }
     }
@@ -1524,13 +1555,25 @@ namespace PropsDefiner {
                      */
                     if (property.config.type !== complex) {
                         property.assignSimpleType();
-                        return property.doDefaultAssign();
+                        element.onConnect(
+                            property.config.mapKey,
+                            () => {
+                                property.doDefaultAssign();
+                            },
+                            false
+                        );
+                        return element.onDone;
                     }
 
-                    return Promise.all([
-                        property.assignComplexType(),
-                        property.doDefaultAssign(),
-                    ]);
+                    element.onConnect(
+                        property.config.mapKey,
+                        () => {
+                            property.assignComplexType();
+                            property.doDefaultAssign();
+                        },
+                        false
+                    );
+                    return element.onDone;
                 }
             )
         );
@@ -1552,11 +1595,11 @@ namespace PropsDefiner {
 
         element.overrideAttributeFunctions();
         if (component.isSSR) {
-            element.runQueued();
+            element.connected();
             connectedElements.add(component);
         } else {
-            Mounting.hookIntoMount(component as any, () => {
-                element.runQueued();
+            hookIntoConnect(component as any, () => {
+                element.connected();
             });
         }
 

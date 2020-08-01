@@ -1121,7 +1121,7 @@ namespace PropsDefiner {
         public onConnect(
             key: Extract<keyof R | keyof P, string>,
             listener: () => void,
-            force: boolean = false
+            force: boolean
         ) {
             if (connectedElements.has(this.component)) {
                 listener();

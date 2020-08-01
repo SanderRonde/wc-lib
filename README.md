@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.30**:
+
+-   Run only the latest and most important property setter (manual set > default value)
+
 **1.1.29**:
 
 -   Fix issue with `setAttribute`s called before mounting not being ran aftewards

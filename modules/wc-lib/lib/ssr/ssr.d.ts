@@ -239,7 +239,7 @@ export declare namespace SSR {
                 function replace(tags: ParsedTag[], session: DocumentSession, markers: _ComplexRender._MarkerArr[]): Promise<(Tag | TextTag)[]>;
             }
             namespace _CSS {
-                class CSSTag extends TextToTags.Tag {
+                export class CSSTag extends TextToTags.Tag {
                     _changeOn: CHANGE_TYPE;
                     private _cssChildren;
                     constructor({ tagName, attributes, isSelfClosing, children, }: {
@@ -251,10 +251,6 @@ export declare namespace SSR {
                     get children(): CSSText[];
                     get elementGlobal(): boolean;
                     setChangeOn(changeOn: CHANGE_TYPE): void;
-                }
-                interface ParsedCSS {
-                    elementGlobal: boolean;
-                    css: Stylesheet;
                 }
                 class CSSText extends TextToTags.TextTag {
                     _changeOn: CHANGE_TYPE;
@@ -269,13 +265,14 @@ export declare namespace SSR {
                     addPrefix(prefix: string): void;
                     stringify(): void;
                 }
-                function _parseElementCSS(element: BaseTypes.BaseClass, instance: BaseTypes.BaseClassInstance): Tag[][];
-                function _generateUniqueID(element: BaseTypes.BaseClass, tagName: string, session: DocumentSession): string;
-                function _generateComponentID(tagName: string): string;
-                function _addCSSPrefixes(templates: Tag[][], uniqueID: string, componentID: string): Tag[][];
-                function _addHTMLPrefixes(tags: ParsedTag[], uniqueID: string, componentID: string): (Tag | TextTag)[];
-                function _flatten<V>(values: (V | V[])[]): V[];
-                function getCSSApplied(element: BaseTypes.BaseClass, instance: BaseTypes.BaseClassInstance, tagName: string, children: ParsedTag[], session: DocumentSession): (Tag | TextTag)[];
+                export function _parseElementCSS(element: BaseTypes.BaseClass, instance: BaseTypes.BaseClassInstance): Tag[][];
+                export function _generateUniqueID(element: BaseTypes.BaseClass, tagName: string, session: DocumentSession): string;
+                export function _generateComponentID(tagName: string): string;
+                export function _addCSSPrefixes(templates: Tag[][], uniqueID: string, componentID: string): Tag[][];
+                export function _addHTMLPrefixes(tags: ParsedTag[], uniqueID: string, componentID: string): (Tag | TextTag)[];
+                export function _flatten<V>(values: (V | V[])[]): V[];
+                export function getCSSApplied(element: BaseTypes.BaseClass, instance: BaseTypes.BaseClassInstance, tagName: string, children: ParsedTag[], session: DocumentSession): (Tag | TextTag)[];
+                export {};
             }
             function _tryRender<R>(renderFunction: () => R): R;
             namespace _ComplexRender {

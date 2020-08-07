@@ -477,17 +477,19 @@ var PropsDefiner;
             this.component = component;
             this.keyMap = new Map();
             this.propValues = {};
-            this.preMountedQueue = {
-                set: [],
-                remove: [],
-            };
+            this.onConnectMap = new Map();
             this.setAttr = component.setAttribute.bind(component);
             this.removeAttr = component.removeAttribute.bind(component);
+            this.onDone = new Promise((resolve) => {
+                this._onDoneResolve = resolve;
+            });
         }
         overrideAttributeFunctions() {
             this.component.setAttribute = (key, val) => {
                 if (!this.component.isMounted) {
-                    this.preMountedQueue.set.push([key, val]);
+                    this.onConnect(dashesToCasing(key), () => {
+                        onSetAttribute(key, val, this);
+                    }, true);
                     this.setAttr(key, val);
                     return;
                 }
@@ -495,16 +497,29 @@ var PropsDefiner;
             };
             this.component.removeAttribute = (key) => {
                 if (!this.component.isMounted) {
-                    this.preMountedQueue.remove.push(key);
+                    this.onConnect(dashesToCasing(key), () => {
+                        onRemoveAttribute(key, this);
+                    }, true);
                     this.removeAttr(key);
                     return;
                 }
                 onRemoveAttribute(key, this);
             };
         }
-        runQueued() {
-            this.preMountedQueue.set.forEach(([key, val]) => onSetAttribute(key, val, this));
-            this.preMountedQueue.remove.forEach((key) => onRemoveAttribute(key, this));
+        onConnect(key, listener, force) {
+            if (connectedElements.has(this.component)) {
+                listener();
+                return;
+            }
+            if (this.onConnectMap.has(key) && !force)
+                return;
+            this.onConnectMap.set(key, listener);
+        }
+        connected() {
+            [...this.onConnectMap.values()].forEach((listener) => {
+                listener();
+            });
+            this._onDoneResolve();
             if (!this.component.isSSR) {
                 queueRender(this.component, 1 /* PROP */);
             }
@@ -673,11 +688,11 @@ var PropsDefiner;
         assignComplexType() {
             return __awaiter(this, void 0, void 0, function* () {
                 const { type, mapKey, propName, strict, watch, watchProperties, } = this.config;
-                yield hookIntoConnect(this._rep.component, () => {
+                this._rep.onConnect(mapKey, () => {
                     this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), this._rep.component.hasAttribute(propName)
                         ? getter(this._rep.component, propName, strict, type)
                         : undefined, watch, watchProperties);
-                });
+                }, false);
             });
         }
         assignSimpleType() {
@@ -688,24 +703,18 @@ var PropsDefiner;
                 : undefined, watch, watchProperties);
         }
         doDefaultAssign() {
-            return __awaiter(this, void 0, void 0, function* () {
-                const { defaultValue, mapKey, watch, watchProperties, propName, type, reflectToAttr, } = this.config;
-                if (defaultValue !== undefined) {
-                    yield hookIntoConnect(this._rep.component, () => {
-                        if (this._rep.propValues[mapKey] === undefined) {
-                            this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), defaultValue, watch, watchProperties);
-                        }
-                        if (reflectToAttr) {
-                            setter(this._rep.setAttr, this._rep.removeAttr, propName, this._rep.propValues[mapKey], type);
-                        }
-                    });
+            const { defaultValue, mapKey, watch, watchProperties, propName, type, reflectToAttr, } = this.config;
+            if (defaultValue !== undefined) {
+                if (this._rep.propValues[mapKey] === undefined) {
+                    this._rep.propValues[mapKey] = Watching.watchValue(createQueueRenderFn(this._rep.component), defaultValue, watch, watchProperties);
                 }
-                else if (type === complex && reflectToAttr) {
-                    yield hookIntoConnect(this._rep.component, () => {
-                        setter(this._rep.setAttr, this._rep.removeAttr, propName, this._rep.propValues[mapKey], type);
-                    });
+                if (reflectToAttr) {
+                    setter(this._rep.setAttr, this._rep.removeAttr, propName, this._rep.propValues[mapKey], type);
                 }
-            });
+            }
+            else if (type === complex && reflectToAttr) {
+                setter(this._rep.setAttr, this._rep.removeAttr, propName, this._rep.propValues[mapKey], type);
+            }
         }
     }
     function defineProperties(element, props, config) {
@@ -728,24 +737,28 @@ var PropsDefiner;
              */
             if (property.config.type !== complex) {
                 property.assignSimpleType();
-                return property.doDefaultAssign();
+                element.onConnect(property.config.mapKey, () => {
+                    property.doDefaultAssign();
+                }, false);
+                return element.onDone;
             }
-            return Promise.all([
-                property.assignComplexType(),
-                property.doDefaultAssign(),
-            ]);
+            element.onConnect(property.config.mapKey, () => {
+                property.assignComplexType();
+                property.doDefaultAssign();
+            }, false);
+            return element.onDone;
         }));
     }
     function define(props, component, config) {
         const element = new ElementRepresentation(component);
         element.overrideAttributeFunctions();
         if (component.isSSR) {
-            element.runQueued();
+            element.connected();
             connectedElements.add(component);
         }
         else {
             hookIntoConnect(component, () => {
-                element.runQueued();
+                element.connected();
             });
         }
         elementConfigs.set(props, {

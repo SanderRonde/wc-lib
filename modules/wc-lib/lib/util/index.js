@@ -1,5 +1,5 @@
-export * from './color';
-export * from './mounting';
-export * from './templates';
-export * from './timeout';
+export * from './color.js';
+export * from './mounting.js';
+export * from './templates.js';
+export * from './timeout.js';
 //# sourceMappingURL=index.js.map

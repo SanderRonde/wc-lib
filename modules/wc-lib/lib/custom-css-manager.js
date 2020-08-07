@@ -39,6 +39,7 @@ export const WebComponentCustomCSSManagerMixin = (superFn) => {
             const originalSetAttr = this.setAttribute;
             this.setAttribute = (key, val) => {
                 originalSetAttr.bind(this)(key, val);
+                /* istanbul ignore next */
                 if (key === CUSTOM_CSS_PROP_NAME && this.isMounted) {
                     this.renderToDOM(11 /* ALWAYS */);
                 }

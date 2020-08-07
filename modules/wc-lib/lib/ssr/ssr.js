@@ -779,7 +779,6 @@ export var SSR;
                         this.content = stringifyCSS(this.cssParsed);
                     }
                 }
-                _CSS.CSSText = CSSText;
                 function _parseElementCSS(element, instance) {
                     /* istanbul ignore next */
                     if (!element.css)

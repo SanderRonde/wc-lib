@@ -1055,12 +1055,7 @@ export namespace SSR {
                     }
                 }
 
-                export interface ParsedCSS {
-                    elementGlobal: boolean;
-                    css: Stylesheet;
-                }
-
-                export class CSSText extends TextToTags.TextTag {
+                class CSSText extends TextToTags.TextTag {
                     public _changeOn!: CHANGE_TYPE;
                     private _stylesheet: null | Stylesheet = null;
 

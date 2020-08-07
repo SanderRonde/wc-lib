@@ -742,8 +742,7 @@ export var SSR;
                         /* istanbul ignore next */
                         if (!this.stylesheet)
                             return;
-                        const stylesheet = this.stylesheet;
-                        stylesheet.rules = stylesheet.rules.map((line) => {
+                        this.stylesheet.rules = this.stylesheet.rules.map((line) => {
                             /* istanbul ignore next */
                             if (!('selectors' in line))
                                 return line;
@@ -780,7 +779,6 @@ export var SSR;
                         this.content = stringifyCSS(this.cssParsed);
                     }
                 }
-                _CSS.CSSText = CSSText;
                 function _parseElementCSS(element, instance) {
                     /* istanbul ignore next */
                     if (!element.css)

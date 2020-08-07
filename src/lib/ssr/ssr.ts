@@ -3,6 +3,7 @@ import {
     Stylesheet,
     stringify as stringifyCSS,
     Rule,
+    StyleRules,
 } from 'css';
 import { Parser as HTMLParser, DomHandler } from 'htmlparser2';
 import { DataNode, Element } from 'domhandler';
@@ -1055,7 +1056,7 @@ export namespace SSR {
                     }
                 }
 
-                class CSSText extends TextToTags.TextTag {
+                export class CSSText extends TextToTags.TextTag {
                     public _changeOn!: CHANGE_TYPE;
                     private _stylesheet: null | Stylesheet = null;
 
@@ -1068,7 +1069,7 @@ export namespace SSR {
                         this._changeOn = changeOn;
                     }
 
-                    parse() {
+                    parse(): any {
                         try {
                             return parseCSS(this.content);
                         } catch (e) {
@@ -1076,60 +1077,57 @@ export namespace SSR {
                         }
                     }
 
-                    get cssParsed() {
+                    get cssParsed(): any {
                         if (this._stylesheet) return this._stylesheet;
                         return (this._stylesheet = this.parse());
                     }
 
-                    get stylesheet() {
+                    get stylesheet(): any {
                         return this.cssParsed.stylesheet;
                     }
 
                     addPrefix(prefix: string) {
                         /* istanbul ignore next */
                         if (!this.stylesheet) return;
-                        this.stylesheet.rules = this.stylesheet.rules.map(
-                            (line) => {
-                                /* istanbul ignore next */
-                                if (!('selectors' in line)) return line;
-                                const rule = line as Rule;
-                                /* istanbul ignore next */
-                                if (!rule.selectors) return line;
-                                rule.selectors = rule.selectors.map(
-                                    (selector) => {
-                                        return selector
-                                            .split(' ')
-                                            .map((part) => part.trim())
-                                            .filter((v) => v.length)
-                                            .map((rulePart) => {
-                                                if (rulePart === '*')
-                                                    return `.${prefix}`;
-                                                if (
-                                                    rulePart.length === 1 &&
-                                                    !/[a-z|A-Z]/.test(rulePart)
-                                                )
-                                                    return rulePart;
+                        const stylesheet = this.stylesheet as StyleRules;
+                        stylesheet.rules = stylesheet.rules.map((line) => {
+                            /* istanbul ignore next */
+                            if (!('selectors' in line)) return line;
+                            const rule = line as Rule;
+                            /* istanbul ignore next */
+                            if (!rule.selectors) return line;
+                            rule.selectors = rule.selectors.map((selector) => {
+                                return selector
+                                    .split(' ')
+                                    .map((part) => part.trim())
+                                    .filter((v) => v.length)
+                                    .map((rulePart) => {
+                                        if (rulePart === '*')
+                                            return `.${prefix}`;
+                                        if (
+                                            rulePart.length === 1 &&
+                                            !/[a-z|A-Z]/.test(rulePart)
+                                        )
+                                            return rulePart;
 
-                                                if (rulePart.includes(':')) {
-                                                    const pseudo = rulePart.includes(
-                                                        '::'
-                                                    )
-                                                        ? '::'
-                                                        : ':';
-                                                    const [
-                                                        prePseudo,
-                                                        pseudoSelector,
-                                                    ] = rulePart.split(pseudo);
-                                                    return `${prePseudo}.${prefix}${pseudo}${pseudoSelector}`;
-                                                }
-                                                return `${rulePart}.${prefix}`;
-                                            })
-                                            .join(' ');
-                                    }
-                                );
-                                return rule;
-                            }
-                        );
+                                        if (rulePart.includes(':')) {
+                                            const pseudo = rulePart.includes(
+                                                '::'
+                                            )
+                                                ? '::'
+                                                : ':';
+                                            const [
+                                                prePseudo,
+                                                pseudoSelector,
+                                            ] = rulePart.split(pseudo);
+                                            return `${prePseudo}.${prefix}${pseudo}${pseudoSelector}`;
+                                        }
+                                        return `${rulePart}.${prefix}`;
+                                    })
+                                    .join(' ');
+                            });
+                            return rule;
+                        });
                     }
 
                     stringify() {

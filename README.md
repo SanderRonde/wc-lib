@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.32**:
+
+-   Use `any` instead of removing references
+
 **1.1.31**:
 
 -   Don't export type so that no reference to a non-required library is present in the .d.ts file

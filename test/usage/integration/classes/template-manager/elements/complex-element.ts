@@ -125,6 +125,13 @@ export function complexElementFactory(base: any) {
                         }}"
                     ></test-element>
                     <test-element
+                        id="eventTest2"
+                        on-click="${() => {
+                            // Done so the function can be stubbed
+                            this.clickHandler();
+                        }}"
+                    ></test-element>
+                    <test-element
                         id="eventDirective"
                         @click="${resolveDirectiveWith(() => {
                             // Done so the function can be stubbed
@@ -134,6 +141,13 @@ export function complexElementFactory(base: any) {
                     <event-triggering-element
                         id="customEventTest"
                         @@ev="${(arg1: number, arg2: number) => {
+                            // Done so the function can be stubbed
+                            return this.customClickHandler(arg1, arg2);
+                        }}"
+                    ></event-triggering-element>
+                    <event-triggering-element
+                        id="customEventTest2"
+                        on--ev="${(arg1: number, arg2: number) => {
                             // Done so the function can be stubbed
                             return this.customClickHandler(arg1, arg2);
                         }}"

@@ -79,12 +79,25 @@ export function templateManagerSpec(fixtures: {
                 beforeEach(() => {
                     cy.visit(fixtures.standard);
                 });
-                it('fires the handler when a listened-to event is fired', () => {
+                it('fires the handler when a listened-to event is fired with @{event}', () => {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
                             const clickStub = cy.stub(complex, 'clickHandler');
                             cy.get('#complex')
                                 .shadowFind('#eventTest')
+                                .shadowClick()
+                                .then(() => {
+                                    expect(clickStub).to.be.called;
+                                });
+                        }
+                    );
+                });
+                it('fires the handler when a listened-to event is fired with on-{event}', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            const clickStub = cy.stub(complex, 'clickHandler');
+                            cy.get('#complex')
+                                .shadowFind('#eventTest2')
                                 .shadowClick()
                                 .then(() => {
                                     expect(clickStub).to.be.called;
@@ -110,7 +123,7 @@ export function templateManagerSpec(fixtures: {
                 beforeEach(() => {
                     cy.visit(fixtures.standard);
                 });
-                it('fires the handler when a custom event is fired', () => {
+                it('fires the handler when a custom event is fired with @@{event}', () => {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
                             const arg1 = Math.random();
@@ -122,7 +135,25 @@ export function templateManagerSpec(fixtures: {
                                 .shadowFind('#customEventTest')
                                 .then(
                                     ([el]: JQuery<EventTriggeringElement>) => {
-                                        console.log('here');
+                                        el.fire('ev', arg1, arg2);
+                                        expect(clickStub).to.be.called;
+                                    }
+                                );
+                        }
+                    );
+                });
+                it('fires the handler when a custom event is fired with on--{event}', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            const arg1 = Math.random();
+                            const arg2 = Math.random();
+                            const clickStub = cy
+                                .stub(complex, 'customClickHandler')
+                                .withArgs(arg1, arg2);
+                            cy.get('#complex')
+                                .shadowFind('#customEventTest2')
+                                .then(
+                                    ([el]: JQuery<EventTriggeringElement>) => {
                                         el.fire('ev', arg1, arg2);
                                         expect(clickStub).to.be.called;
                                     }

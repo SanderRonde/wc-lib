@@ -356,8 +356,8 @@ class ComplexTemplateProcessor implements TemplateProcessor {
         strings: string[]
     ): PartLike[] | ReadonlyArray<PartLike> {
         const prefix = name[0];
-        if (prefix === '@') {
-            if (name[1] === '@') {
+        if (prefix === '@' || name.startsWith('on-')) {
+            if (name[1] === '@' || name.startsWith('on--')) {
                 return [
                     new this._componentEventPart(
                         element,

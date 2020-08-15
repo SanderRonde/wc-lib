@@ -361,7 +361,9 @@ class ComplexTemplateProcessor implements TemplateProcessor {
                 return [
                     new this._componentEventPart(
                         element,
-                        name.slice(2),
+                        name[1] === '@'
+                            ? name.slice(2)
+                            : name.slice('on--'.length),
                         this.component
                     ),
                 ];
@@ -370,7 +372,9 @@ class ComplexTemplateProcessor implements TemplateProcessor {
                 return [
                     new this._config.EventPart(
                         element,
-                        name.slice(1),
+                        prefix === '@'
+                            ? name.slice(1)
+                            : name.slice('on-'.length),
                         this.component
                     ),
                 ];

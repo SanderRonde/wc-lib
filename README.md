@@ -237,6 +237,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.33**:
+
+-   Add event listeners for attributes prefixed with `on-`
+
 **1.1.32**:
 
 -   Use `any` instead of removing references

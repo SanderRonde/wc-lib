@@ -738,9 +738,11 @@ export const WebComponentTemplateManagerMixin = <
      *
      * **Examples:**
      *
-     * * `<div @click="${this.someFunc}">` Will call
+     * * `<div @click="${this.someFunc}">` or
+     * * `<div on-click="${this.someFunc}">` Will call
      * 	`this.someFunc` when the `click` event is fired
-     * * `<my-element @@customevent="${this.someFunc}">` will call
+     * * `<my-element @@customevent="${this.someFunc}">` or
+     * * `<my-element on--customevent="${this.someFunc}">` will call
      * 	`this.someFunc` when the `my-element's` component's
      * 	special `customevent` event is fired
      * * `<my-element ?prop="${someValue}">` only sets `prop`

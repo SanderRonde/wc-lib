@@ -259,16 +259,20 @@ class ComplexTemplateProcessor {
     }
     handleAttributeExpressions(element, name, strings) {
         const prefix = name[0];
-        if (prefix === '@') {
-            if (name[1] === '@') {
+        if (prefix === '@' || name.startsWith('on-')) {
+            if (name[1] === '@' || name.startsWith('on--')) {
                 return [
-                    new this._componentEventPart(element, name.slice(2), this.component),
+                    new this._componentEventPart(element, name[1] === '@'
+                        ? name.slice(2)
+                        : name.slice('on--'.length), this.component),
                 ];
             }
             else {
                 //Listeners
                 return [
-                    new this._config.EventPart(element, name.slice(1), this.component),
+                    new this._config.EventPart(element, prefix === '@'
+                        ? name.slice(1)
+                        : name.slice('on-'.length), this.component),
                 ];
             }
         }
@@ -377,9 +381,11 @@ export const WebComponentTemplateManagerMixin = (superFn) => {
      *
      * **Examples:**
      *
-     * * `<div @click="${this.someFunc}">` Will call
+     * * `<div @click="${this.someFunc}">` or
+     * * `<div on-click="${this.someFunc}">` Will call
      * 	`this.someFunc` when the `click` event is fired
-     * * `<my-element @@customevent="${this.someFunc}">` will call
+     * * `<my-element @@customevent="${this.someFunc}">` or
+     * * `<my-element on--customevent="${this.someFunc}">` will call
      * 	`this.someFunc` when the `my-element's` component's
      * 	special `customevent` event is fired
      * * `<my-element ?prop="${someValue}">` only sets `prop`

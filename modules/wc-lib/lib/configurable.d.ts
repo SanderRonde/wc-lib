@@ -135,7 +135,7 @@ export declare class ConfiguredComponent<GA extends {
      *
      * @readonly
      */
-    self: typeof ConfiguredComponent;
+    get self(): typeof ConfiguredComponent;
     /**
      * The template(s) that will render this component's css
      *

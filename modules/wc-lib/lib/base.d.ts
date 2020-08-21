@@ -339,6 +339,7 @@ export declare const WebComponentBaseMixin: <P extends WebComponentBaseMixinSupe
         onpaste: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
+        enterKeyHint: string;
         inputMode: string;
         readonly isContentEditable: boolean;
         onabort: ((this: GlobalEventHandlers, ev: UIEvent) => any) | null;
@@ -612,6 +613,7 @@ export declare const WebComponentBaseMixin: <P extends WebComponentBaseMixinSupe
         onpaste: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
+        enterKeyHint: string;
         inputMode: string;
         readonly isContentEditable: boolean;
         onabort: ((this: GlobalEventHandlers, ev: UIEvent) => any) | null;

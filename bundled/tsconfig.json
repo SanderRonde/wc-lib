@@ -15,6 +15,7 @@
         "target": "es6",
         "jsx": "react",
         "jsxFactory": "html.jsx",
+        "jsxFragmentFactory": "html.Fragment",
         "noUnusedParameters": true,
         "experimentalDecorators": true,
         "strictPropertyInitialization": true,

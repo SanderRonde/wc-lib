@@ -384,6 +384,7 @@ export declare const WebComponentTemplateManagerMixin: <P extends Constructor<HT
         onpaste: ((this: DocumentAndElementEventHandlers, ev: ClipboardEvent) => any) | null;
         readonly style: CSSStyleDeclaration;
         contentEditable: string;
+        enterKeyHint: string;
         inputMode: string;
         readonly isContentEditable: boolean;
         onabort: ((this: GlobalEventHandlers, ev: UIEvent) => any) | null;

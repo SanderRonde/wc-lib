@@ -167,6 +167,7 @@ export var AST;
             experimentalDecorators: true,
             jsxFactory: 'html.jsx',
             jsx: ts.JsxEmit.React,
+            jsxFragmentFactory: 'html.Fragment',
         }, host);
         return program.getSourceFile(fileName);
     }

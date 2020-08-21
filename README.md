@@ -98,7 +98,7 @@ The custom events that can be listened to for a given component can be specified
 
 #### JSX
 
-The library also features support for JSX. Combining JSX with typed properties and events makes sure you even have type safety in your "HTML", ensuring you only pass the correct types of values to properties. **Note:** Put `{"jsx": "react", "jsxFactory": "html.jsx"}` in your tsconfig's compiler options since passing React elements won't work (React is not supported, only JSX is).
+The library also features support for JSX. Combining JSX with typed properties and events makes sure you even have type safety in your "HTML", ensuring you only pass the correct types of values to properties. **Note:** Put `{"jsx": "react", "jsxFactory": "html.jsx", "jsxFragmentFactory": "html.Fragment"}` in your tsconfig's compiler options since passing React elements won't work (React is not supported, only JSX is).
 
 #### HTML and CSS Typings
 

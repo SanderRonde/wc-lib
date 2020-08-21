@@ -1140,6 +1140,8 @@ export function propsSpec(
                                             a: 'b',
                                             c: 'd',
                                         });
+
+                                    // @ts-expect-error
                                     delete el.props.watchedObj.a;
                                     cy.wrap(stub).should('be.calledOnce');
                                 }
@@ -1448,6 +1450,8 @@ export function propsSpec(
                                 cy.get('props-element').then(
                                     ([el]: JQuery<PropsElement>) => {
                                         const stub = cy.stub(el, 'renderToDOM');
+
+                                        // @ts-expect-error
                                         delete el.props.watchAnyObj[
                                             window.accessSymbol
                                         ];
@@ -1942,6 +1946,8 @@ export function propsSpec(
                             cy.get('props-element').then(
                                 ([el]: JQuery<PropsElement>) => {
                                     const stub = cy.stub(el, 'renderToDOM');
+
+                                    // @ts-expect-error
                                     delete el.props.deepWatchObj.a;
                                     cy.wrap(stub).should('be.calledOnce');
                                 }

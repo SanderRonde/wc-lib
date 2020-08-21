@@ -152,7 +152,7 @@ export declare class ConfiguredComponent<
      */
     /* istanbul ignore next */
     //@ts-ignore
-    public self: typeof ConfiguredComponent;
+    public get self(): typeof ConfiguredComponent;
 
     /**
      * The template(s) that will render this component's css

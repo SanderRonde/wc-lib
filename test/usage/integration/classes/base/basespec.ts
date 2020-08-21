@@ -217,6 +217,8 @@ export function baseSpec(fixture: string) {
                     const el = document.createElement(
                         'test-element'
                     ) as TestElement;
+
+                    // @ts-expect-error
                     delete el.getTheme;
                     el.id = 'test2';
                     document.body.appendChild(el);
@@ -240,6 +242,8 @@ export function baseSpec(fixture: string) {
                     const el = document.createElement(
                         'test-element'
                     ) as TestElement;
+
+                    // @ts-expect-error
                     delete el.getTheme;
 
                     Object.defineProperty(el, 'getTheme', {
@@ -265,6 +269,8 @@ export function baseSpec(fixture: string) {
                     const el = document.createElement(
                         'change-never'
                     ) as ChangeNever;
+
+                    // @ts-expect-error
                     delete el.getTheme;
 
                     Object.defineProperty(el, 'getTheme', {

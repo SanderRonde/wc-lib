@@ -89,6 +89,7 @@ export function definerSpec(fixture: string) {
             it('falls back to webkitRequestAnimationFrame if requestAnimationFrame is not available', () => {
                 cy.visit(fixture, {
                     onBeforeLoad(win) {
+                        // @ts-expect-error
                         delete win.requestAnimationFrame;
                     },
                 });
@@ -114,7 +115,9 @@ export function definerSpec(fixture: string) {
             it('falls back to sync implementation if requestAnimationFrame is not available', () => {
                 cy.visit(fixture, {
                     onBeforeLoad(win) {
+                        // @ts-expect-error
                         delete win.requestAnimationFrame;
+                        // @ts-expect-error
                         delete win.webkitRequestAnimationFrame;
                     },
                 });

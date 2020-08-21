@@ -238,6 +238,7 @@ export namespace AST {
                 experimentalDecorators: true,
                 jsxFactory: 'html.jsx',
                 jsx: ts.JsxEmit.React,
+                jsxFragmentFactory: 'html.Fragment',
             },
             host
         );

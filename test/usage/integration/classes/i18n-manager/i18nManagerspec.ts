@@ -56,6 +56,7 @@ export function i18nManagerSpec(
         before(() => {
             cy.visit(fixtures.standard, {
                 onBeforeLoad(win) {
+                    // @ts-expect-error
                     delete win.fetch;
                 },
             });
@@ -116,6 +117,7 @@ export function i18nManagerSpec(
             );
             cy.visit(fixtures.standard, {
                 onBeforeLoad(win) {
+                    // @ts-expect-error
                     delete win.fetch;
                 },
             });
@@ -134,6 +136,7 @@ export function i18nManagerSpec(
                                     : fixtures.standard,
                                 {
                                     onBeforeLoad(win) {
+                                        // @ts-expect-error
                                         delete win.fetch;
                                     },
                                 }
@@ -167,6 +170,7 @@ export function i18nManagerSpec(
                         after(() => {
                             cy.visit(fixtures.standard, {
                                 onBeforeLoad(win) {
+                                    // @ts-expect-error
                                     delete win.fetch;
                                 },
                             });
@@ -275,6 +279,7 @@ export function i18nManagerSpec(
             after(() => {
                 cy.visit(fixtures.standard, {
                     onBeforeLoad(win) {
+                        // @ts-expect-error
                         delete win.fetch;
                     },
                 });
@@ -295,6 +300,7 @@ export function i18nManagerSpec(
                 );
                 cy.visit(fixtures.standard, {
                     onBeforeLoad(win) {
+                        // @ts-expect-error
                         delete win.fetch;
                     },
                 });
@@ -359,6 +365,7 @@ export function i18nManagerSpec(
                                 : fixtures.i18nFiles,
                             {
                                 onBeforeLoad(win) {
+                                    // @ts-expect-error
                                     delete win.fetch;
                                 },
                             }
@@ -516,6 +523,7 @@ export function i18nManagerSpec(
                 after(() => {
                     cy.visit(fixtures.standard, {
                         onBeforeLoad(win) {
+                            // @ts-expect-error
                             delete win.fetch;
                         },
                     });
@@ -531,6 +539,7 @@ export function i18nManagerSpec(
                 );
                 cy.visit(fixtures.defaults, {
                     onBeforeLoad(win) {
+                        // @ts-expect-error
                         delete win.fetch;
                     },
                 });

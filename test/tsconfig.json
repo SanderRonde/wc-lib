@@ -19,6 +19,7 @@
         "strictNullChecks": true,
         "jsx": "react",
         "jsxFactory": "html.jsx",
+        "jsxFragmentFactory": "html.Fragment",
         "strictBindCallApply": true
     },
     "compileOnSave": true,

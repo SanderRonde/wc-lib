@@ -50,7 +50,7 @@ export const ThemedElementFactory = (base: any) => {
             render
         ),
         css: new TemplateFn<_ThemedElement>(
-            (_html, _prop, theme) => {
+            (_html, { theme }) => {
                 return html`
                     <style>
                         .text {

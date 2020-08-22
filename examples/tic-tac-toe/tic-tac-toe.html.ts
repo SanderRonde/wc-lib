@@ -11,7 +11,7 @@ function setLocalStorageItem(name: string, value: string) {
 }
 
 export const TicTacToeHTML = new TemplateFn<TicTacToe>(
-    function(html, props) {
+    function(html, { props }) {
         return html`
             <div id="lang-switcher">
                 ${languages.map((lang) => {

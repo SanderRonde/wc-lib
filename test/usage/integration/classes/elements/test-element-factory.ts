@@ -12,7 +12,7 @@ export const TestElementFactory = (base: {
     new (...args: any[]): {};
 }) => {
     const TestElementHTML = new TemplateFn<TestElement>(
-        (_, props) => {
+        (_, { props }) => {
             return html`
                 <div class="divClass" id="divId">Test</div>
                 <h1 id="headerId" class="headerClass">${props.x}</h1>

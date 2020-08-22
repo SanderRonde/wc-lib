@@ -146,7 +146,7 @@ function FnWithArgs(props: { a: number; b: number }) {
 @config({
     is: 'jsx-render',
     html: new TemplateFn<JSXElement>(
-        function(html, props) {
+        function(html, { props }) {
             return (
                 <div>
                     <div x={props.x} y={props.y} id="simple"></div>

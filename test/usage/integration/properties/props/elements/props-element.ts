@@ -238,7 +238,7 @@ export function PropsElementFixtureFactory(
     @config({
         is: 'props-element',
         html: new TemplateFn<_PropsElement>(
-            function(passedHTML, props) {
+            function(passedHTML, { props }) {
                 const html = supportsTemplates ? passedHTML : litHTML;
                 return html`
                     ${supportsTemplates

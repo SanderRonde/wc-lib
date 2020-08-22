@@ -3,7 +3,7 @@ import { TemplateFn, CHANGE_TYPE, css } from '../../build/es/wc-lib.js';
 import { ThemedComponent } from './themed-component.js';
 
 export const ThemedComponentCSS = new TemplateFn<ThemedComponent>(
-    function(html, _, theme) {
+    function(html, { theme }) {
         return html`
             <style>
                 ${css(this).$['horizontal-centerer']} {

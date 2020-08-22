@@ -66,7 +66,7 @@ export function baseTestElementFactory(base: {
     window.renderCalled = {} as any;
 
     const TestElementHTML = new TemplateFn<TestElement>(
-        (_, props) => {
+        (_, { props }) => {
             return html`
                 <div>Test</div>
                 <h1>${props.x}</h1>
@@ -307,7 +307,7 @@ export function baseTestElementFactory(base: {
         );
     };
     const nestedHTMLTemplate = new TemplateFn<any>(
-        function(html, _props, _theme, change) {
+        function(html, { changeType }) {
             return html`
                 ${new TemplateFn<any>(
                     (html) => {
@@ -317,7 +317,7 @@ export function baseTestElementFactory(base: {
                     },
                     CHANGE_TYPE.ALWAYS,
                     render
-                ).renderSame(change, this, html)}
+                ).renderSame(changeType, this, html)}
                 <div id="outer">testOuter</div>
             `;
         },

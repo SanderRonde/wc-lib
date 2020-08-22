@@ -10,7 +10,7 @@ export const enum CELL_CLASSES {
 }
 
 export const CellBlockHTML = new TemplateFn<CellBlock>(
-    function(html, props) {
+    function(html, { props }) {
         return html`
             <div
                 id="cell"

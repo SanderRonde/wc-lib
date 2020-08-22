@@ -217,7 +217,7 @@ export function elementFactory<
     @config({
         is: 'with-props',
         html: new TemplateFn<WithProps>(
-            (_, props) => {
+            (_, { props }) => {
                 return html`
                     <div>${props.x || '?'}</div>
                     <div>${props.y || '?'}</div>
@@ -256,7 +256,7 @@ export function elementFactory<
     @config({
         is: 'with-priv-props',
         html: new TemplateFn<WithPrivProps>(
-            (_, props) => {
+            (_, { props }) => {
                 return html`
                     <div>${props.a || '?'}</div>
                     <div>${props.b || '?'}</div>
@@ -501,7 +501,7 @@ export function elementFactory<
     @config({
         is: 'nested-tag',
         html: new TemplateFn<NestedTag>(
-            (_, props) => {
+            (_, { props }) => {
                 return html`
                     ${props.child ? `<nested-tag></nested-tag>` : '<div></div>'}
                 `;
@@ -600,7 +600,7 @@ export function elementFactory<
     @config({
         is: 'complex-tag',
         html: new TemplateFn<ComplexTag>(
-            (html, props) => {
+            (html, { props }) => {
                 return html`
                     <div
                         class="${{
@@ -751,7 +751,7 @@ export function elementFactory<
     @config({
         is: 'complex-prop-receiver',
         html: new TemplateFn<ComplexPropReceiver>(
-            (_, props) => {
+            (_, { props }) => {
                 return html`
                     <div>${props.x}</div>
                     <div>${props.y.a}</div>
@@ -1154,7 +1154,7 @@ export function elementFactory<
         ),
         css: [
             new TemplateFn<WithCSS>(
-                (_html, _props, theme) => {
+                (_html, { theme }) => {
                     return html`
                         <style>
                             #a {
@@ -1245,7 +1245,7 @@ export function elementFactory<
         html: null,
         css: [
             new TemplateFn<WithCSS>(
-                (_html, props) => {
+                (_html, { props }) => {
                     return html`
                         <style>
                             ${props.selector} {
@@ -1278,7 +1278,7 @@ export function elementFactory<
     @config({
         is: 'promise-element',
         html: new TemplateFn<SimpleElement>(
-            (_html, props) => {
+            (_html, { props }) => {
                 return html`
                     <div>${props.promise}</div>
                     <simple-element

@@ -29,7 +29,7 @@ declare global {
 			}
 		</style>`;
 	}, CHANGE_TYPE.NEVER, render),
-	html: new TemplateFn<JsxInput>(function (html, props) {
+	html: new TemplateFn<JsxInput>(function (html, { props }) {
 		return (
 			<div id="container">
 				<h2>{props.name}</h2>

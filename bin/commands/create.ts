@@ -65,7 +65,7 @@ export const ${capitalize(
         dashesToUppercase(name)
     )}HTML = new TemplateFn<${capitalize(
         dashesToUppercase(name)
-    )}>(function (html, _props, _theme) {
+    )}>(function (html, {}) {
 	return ${
         jsx
             ? `<div></div>`
@@ -85,7 +85,7 @@ export const ${capitalize(
         dashesToUppercase(name)
     )}CSS = new TemplateFn<${capitalize(
         dashesToUppercase(name)
-    )}>(function (html, _props, _theme) {
+    )}>(function (html, {}) {
 	return html\`<style>
 		
 	</style>\`

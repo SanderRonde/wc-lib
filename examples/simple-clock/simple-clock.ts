@@ -11,7 +11,7 @@ import { render, html } from '../../node_modules/lit-html/lit-html.js';
 @config({
     is: 'simple-clock',
     html: new TemplateFn<SimpleClock>(
-        (_, props) => {
+        (_, { props }) => {
             return html`
                 <div>
                     Right now ${props.seconds} seconds have passed

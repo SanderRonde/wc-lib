@@ -172,17 +172,22 @@ export type TemplateRenderFunction<
      */
     complexHTML: JSXTemplater<TR>,
     /**
-     * The component's properties
+     * Various parameters to this change
      */
-    props: C['props'],
-    /**
-     * The component's current theme
-     */
-    theme: T,
-    /**
-     * The current change
-     */
-    changeType: CHANGE_TYPE
+    params: {
+        /**
+         * The component's properties
+         */
+        props: C['props'];
+        /**
+         * The component's current theme
+         */
+        theme: T;
+        /**
+         * The current change
+         */
+        changeType: CHANGE_TYPE;
+    }
 ) => TR;
 
 /**
@@ -448,13 +453,11 @@ export class TemplateFn<
                           C,
                           InferThemeVal<C>,
                           R | TR
-                      >).call(
-                          component,
-                          jsxAddedTemplate!,
-                          templateComponent.props,
-                          getTheme(templateComponent),
-                          changeType
-                      );
+                      >).call(component, jsxAddedTemplate!, {
+                          props: templateComponent.props,
+                          theme: getTheme(templateComponent),
+                          changeType: changeType,
+                      });
             templateMap.set(this, rendered);
             return {
                 changed: true,
@@ -468,13 +471,11 @@ export class TemplateFn<
                 C,
                 InferThemeVal<C>,
                 R | TR
-            >).call(
-                component,
-                jsxAddedTemplate!,
-                templateComponent.props,
-                getTheme(templateComponent),
-                changeType
-            );
+            >).call(component, jsxAddedTemplate!, {
+                props: templateComponent.props,
+                theme: getTheme(templateComponent),
+                changeType: changeType,
+            });
             templateMap.set(this, rendered);
             return {
                 changed: true,

@@ -150,6 +150,7 @@ A property takes a single type (for example `PROP_TYPE.STRING`) or a config obje
 	watch?: boolean = true;
 	// The type of this property. Can either by a PROP_TYPE:
 	// PROP_TYPE.STRING, PROP_TYPE.NUMBER or PROP_TYPE.BOOL
+	// (or their _OPTIONAL and _REQUIRED variants),
 	// or it can be a complex type passed through ComplexType<TYPE>().
 	// ComplexType should be used for any values that do not fit
 	// the regular prop type

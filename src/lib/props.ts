@@ -13,7 +13,7 @@ function getterWithVal<R>(
     },
     value: string | null,
     strict: boolean,
-    type: 'string' | 'number' | 'bool' | typeof complex
+    type: 'string' | 'number' | 'bool' | ComplexTypeClass<any>
 ): boolean | string | number | undefined | R;
 function getterWithVal(
     component: {
@@ -45,7 +45,7 @@ function getterWithVal<R>(
     },
     value: string | null,
     strict: boolean,
-    type: typeof complex
+    type: ComplexTypeClass<any>
 ): R | undefined;
 function getterWithVal<R>(
     component: {
@@ -53,7 +53,7 @@ function getterWithVal<R>(
     },
     value: string | null,
     strict: boolean,
-    type: 'string' | 'number' | 'bool' | typeof complex
+    type: 'string' | 'number' | 'bool' | ComplexTypeClass<any>
 ): boolean | string | number | undefined | R {
     if (type === 'bool') {
         if (strict) {
@@ -65,7 +65,7 @@ function getterWithVal<R>(
         if (value !== undefined && value !== null && value !== 'false') {
             if (type === 'number') {
                 return ~~value;
-            } else if (type === complex) {
+            } else if (type instanceof ComplexTypeClass) {
                 if (value.startsWith(refPrefix)) {
                     /* istanbul ignore else */
                     if (component.getParentRef) {
@@ -104,7 +104,7 @@ function getterWithVal<R>(
  * @param {boolean} strict - Whether to use strict mode.
  * 	If true, boolean type values are only true
  * 	if the value is 'true', not just any truthy value
- * @param {'string'|'number'|'bool'|typeof complex} type - The
+ * @param {'string'|'number'|'bool'|ComplexTypeClass<any>} type - The
  * 	type of the value
  *
  * @returns {boolean|string|number|undefined|R} The value
@@ -115,7 +115,7 @@ export function getter<R>(
     },
     name: string,
     strict: boolean,
-    type: 'string' | 'number' | 'bool' | typeof complex
+    type: 'string' | 'number' | 'bool' | ComplexTypeClass<any>
 ): boolean | string | number | undefined | R;
 export function getter(
     element: HTMLElementAttributes & {
@@ -147,7 +147,7 @@ export function getter<R>(
     },
     name: string,
     strict: boolean,
-    type: typeof complex
+    type: ComplexTypeClass<any>
 ): R | undefined;
 export function getter<R>(
     element: HTMLElementAttributes & {
@@ -155,7 +155,7 @@ export function getter<R>(
     },
     name: string,
     strict: boolean,
-    type: 'string' | 'number' | 'bool' | typeof complex
+    type: 'string' | 'number' | 'bool' | ComplexTypeClass<any>
 ): boolean | string | number | undefined | R {
     return getterWithVal(element, element.getAttribute(name), strict, type);
 }
@@ -171,7 +171,7 @@ export function getter<R>(
  * @param {string} name - The name of the property
  * @param {string|boolean|number} value - The value to
  * 	set it to
- * @param {'string'|'number'|'bool'|typeof complex} type - The
+ * @param {'string'|'number'|'bool'|ComplexTypeClass<any>} type - The
  * 	type of the value
  */
 export function setter(
@@ -179,14 +179,14 @@ export function setter(
     removeAttrFn: (key: string) => void,
     name: string,
     value: string | boolean | number,
-    type: 'string' | 'number' | 'bool' | typeof complex
+    type: 'string' | 'number' | 'bool' | ComplexTypeClass<any>
 ): void;
 export function setter(
     setAttrFn: (key: string, val: string) => void,
     removeAttrFn: (key: string) => void,
     name: string,
     value: any,
-    type: typeof complex
+    type: ComplexTypeClass<any>
 ): void;
 export function setter(
     setAttrFn: (key: string, val: string) => void,
@@ -214,7 +214,7 @@ export function setter(
     removeAttrFn: (key: string) => void,
     name: string,
     value: string | boolean | number,
-    type: 'string' | 'number' | 'bool' | typeof complex
+    type: 'string' | 'number' | 'bool' | ComplexTypeClass<any>
 ): void {
     if (type === 'bool') {
         const boolVal = value as boolean;
@@ -225,7 +225,7 @@ export function setter(
         }
     } else {
         const strVal = value as string | number;
-        if (type === complex) {
+        if (type instanceof ComplexTypeClass) {
             try {
                 setAttrFn(name, encodeURIComponent(JSON.stringify(strVal)));
             } catch (e) {
@@ -255,86 +255,146 @@ type PreDefined =
       }
     | {
           isDefined: true;
+      }
+    | {
+          required: true;
+      };
+
+type OptionalConfig =
+    | {
+          isDefined: false;
+      }
+    | {
+          required: false;
       };
 
 type IsUnassigned<
-    V extends PROP_TYPE | ComplexType<any> | DefinePropTypeConfig
-> = V extends PROP_TYPE.BOOL
-    ? true
-    : V extends PROP_TYPE.NUMBER
-    ? true
-    : V extends PROP_TYPE.STRING
-    ? true
-    : V extends ComplexType<any>
-    ? true
-    : V extends DefineTypeConfig
-    ? V extends ExactTypeHaver
+    V extends PROP_TYPE | ComplexTypeClass<any> | DefinePropTypeConfig
+> = V extends  // params, unassigned // If type is one of the basic types with no further
+    | PROP_TYPE.BOOL
+    | PROP_TYPE.NUMBER
+    | PROP_TYPE.STRING
+    // Or a complex type with optional or unspecified, unassigned
+    | ComplexTypeClass<any, 'optional'>
+    | ComplexTypeClass<any, 'unspecified'>
+    ? true // If a complex type with required, assigned
+    : V extends ComplexTypeClass<any, 'required'>
+    ? false
+    : V extends  // If a basic type but required, unassigned
+          | PROP_TYPE.STRING_REQUIRED
+          | PROP_TYPE.NUMBER_REQUIRED
+          | PROP_TYPE.BOOL_REQUIRED
+    ? false
+    : V extends  // If a basic type but optional, assigned
+          | PROP_TYPE.STRING_OPTIONAL
+          | PROP_TYPE.NUMBER_OPTIONAL
+          | PROP_TYPE.BOOL_OPTIONAL
+    ? true // If it has a config at all, look further, // otherwise it's unassigned
+    : V extends DefineTypeConfig // Check if it has an exact type
+    ? V extends ExactTypeHaver // If it does, if the exact type is assignable // to void|undefined, it's unassigned, otherwise // not
+        ? V['exactType'] extends undefined | void
+            ? true
+            : false
+        : V extends  // If a basic type but required, assigned
+              | PROP_TYPE.STRING_REQUIRED
+              | PROP_TYPE.NUMBER_REQUIRED
+              | PROP_TYPE.BOOL_REQUIRED
+              // Or a complex type but requied, assigned
+              | ComplexTypeClass<any, 'required'>
         ? false
-        : V['type'] extends PROP_TYPE.BOOL
-        ? V extends Coerced
-            ? false
+        : V extends  // If a basic type but optional, unassigned
+              | PROP_TYPE.STRING_OPTIONAL
+              | PROP_TYPE.NUMBER_OPTIONAL
+              | PROP_TYPE.BOOL_OPTIONAL
+              // Or a complex type but optional, unassigned
+              | ComplexTypeClass<any, 'optional'>
+        ? true // If another type with no requiredness specified
+        : V['type'] extends
+              | PROP_TYPE.BOOL
+              | PROP_TYPE.NUMBER
+              | PROP_TYPE.STRING
+              | ComplexTypeClass<any, 'unspecified'>
+              | ComplexTypeClass<any> // If it has optional in the config, unassigned
+        ? V extends OptionalConfig
+            ? true // If it has defined in the config, assigned
             : V extends PreDefined
-            ? false
-            : true
-        : V['type'] extends PROP_TYPE.NUMBER
-        ? V extends Coerced
-            ? false
-            : V extends PreDefined
-            ? false
-            : true
-        : V['type'] extends PROP_TYPE.STRING
-        ? V extends Coerced
-            ? false
-            : V extends PreDefined
-            ? false
-            : true
-        : V['type'] extends ComplexType<any>
-        ? V extends PreDefined
+            ? false // If coerced, always assigned
+            : V extends Coerced
             ? false
             : true
         : false
-    : false;
+    : true;
 
 /**
  * Gets the type of an individual property based on its config
  */
 export type GetTSType<
-    V extends PROP_TYPE | ComplexType<any> | DefinePropTypeConfig
-> = V extends PROP_TYPE.BOOL
+    V extends PROP_TYPE | ComplexTypeClass<any> | DefinePropTypeConfig
+> = V extends PROP_TYPE.BOOL | PROP_TYPE.BOOL_OPTIONAL | PROP_TYPE.BOOL_REQUIRED
     ? boolean
-    : V extends PROP_TYPE.NUMBER
+    : V extends
+          | PROP_TYPE.NUMBER
+          | PROP_TYPE.NUMBER_OPTIONAL
+          | PROP_TYPE.NUMBER_REQUIRED
     ? number
-    : V extends PROP_TYPE.STRING
+    : V extends
+          | PROP_TYPE.STRING
+          | PROP_TYPE.STRING_OPTIONAL
+          | PROP_TYPE.STRING_REQUIRED
     ? string
-    : V extends ComplexType<infer R>
+    : V extends ComplexTypeClass<infer R>
     ? R
     : V extends DefineTypeConfig
     ? V extends ExactTypeHaver
         ? V['exactType']
-        : V['type'] extends PROP_TYPE.BOOL
+        : V['type'] extends
+              | PROP_TYPE.BOOL
+              | PROP_TYPE.BOOL_OPTIONAL
+              | PROP_TYPE.BOOL_REQUIRED
         ? V extends Coerced
             ? boolean
             : V extends PreDefined
             ? boolean
             : boolean
-        : V['type'] extends PROP_TYPE.NUMBER
+        : V['type'] extends
+              | PROP_TYPE.NUMBER
+              | PROP_TYPE.NUMBER_OPTIONAL
+              | PROP_TYPE.NUMBER_REQUIRED
         ? V extends Coerced
             ? number
             : V extends PreDefined
             ? number
             : number
-        : V['type'] extends PROP_TYPE.STRING
+        : V['type'] extends
+              | PROP_TYPE.STRING
+              | PROP_TYPE.STRING_OPTIONAL
+              | PROP_TYPE.STRING_REQUIRED
         ? V extends Coerced
             ? string
             : V extends PreDefined
             ? string
             : string
-        : V['type'] extends ComplexType<infer R>
+        : V['type'] extends ComplexTypeClass<infer R>
         ? V extends PreDefined
             ? R
             : R
         : void
     : void;
+
+const enum NARROWED_PROP_TYPE {
+    /**
+     * A string
+     */
+    STRING = 'string',
+    /**
+     * A number
+     */
+    NUMBER = 'number',
+    /**
+     * A boolean
+     */
+    BOOL = 'bool',
+}
 
 /**
  * Basic property types for properties
@@ -352,17 +412,52 @@ export const enum PROP_TYPE {
      * A boolean
      */
     BOOL = 'bool',
+    /**
+     * A required string (shortcut for {type: PROP_TYPE.STRING, required: true })
+     */
+    STRING_REQUIRED = 'string',
+    /**
+     * A required number (shortcut for {type: PROP_TYPE.NUMBER, required: true })
+     */
+    NUMBER_REQUIRED = 'number',
+    /**
+     * A required boolean (shortcut for {type: PROP_TYPE.BOOL, required: true })
+     */
+    BOOL_REQUIRED = 'bool',
+    /**
+     * An optional string (shortcut for {type: PROP_TYPE.STRING, required: false })
+     */
+    STRING_OPTIONAL = 'string',
+    /**
+     * An optional number (shortcut for {type: PROP_TYPE.NUMBER, required: false })
+     */
+    NUMBER_OPTIONAL = 'number',
+    /**
+     * An optional boolean (shortcut for {type: PROP_TYPE.BOOL, required: false })
+     */
+    BOOL_OPTIONAL = 'bool',
 }
 
 /**
  * A complex type for a property where the passed
  * template value is the actual type
  */
-export type ComplexType<T> = typeof complex & {
+export type ComplexType<T> = ComplexTypeClass<any> & {
     __data: T;
 };
 
-const complex = Symbol('complex type');
+export class ComplexTypeClass<
+    _T,
+    _R extends 'required' | 'optional' | 'unspecified' = 'unspecified'
+> {
+    required(): ComplexTypeClass<_T, 'required'> {
+        return this as ComplexTypeClass<_T, 'required'>;
+    }
+
+    optional(): ComplexTypeClass<_T, 'optional'> {
+        return this as ComplexTypeClass<_T, 'optional'>;
+    }
+}
 
 /**
  * A complex type value. This will be typed
@@ -374,19 +469,20 @@ const complex = Symbol('complex type');
  * @returns {Symbol} A symbol representing
  * 	complex types
  */
-export function ComplexType<T>(): ComplexType<T> {
-    return complex as ComplexType<T>;
+export function ComplexType<T>(): ComplexTypeClass<T> {
+    return new ComplexTypeClass<T>();
 }
 
 /**
  * A simple prop config that uses a type
  */
-export type DefinePropTypes = PROP_TYPE | ComplexType<any>;
+export type DefinePropTypes = PROP_TYPE | ComplexTypeClass<any>;
 
 interface DefineTypeConfig {
     /**
      * The type of this property. Can either by a PROP_TYPE:
-     * PROP_TYPE.STRING, PROP_TYPE.NUMBER or PROP_TYPE.BOOL
+     * PROP_TYPE.STRING, PROP_TYPE.NUMBER or PROP_TYPE.BOOL (or their
+     * _OPTIONAL and _REQUIRED variants),
      * or it can be a complex type passed through ComplexType<TYPE>().
      * ComplexType should be used for any values that do not fit
      * the regular prop type
@@ -873,13 +969,31 @@ export function casingToDashes(name: string): string {
     return newStr;
 }
 
-function getCoerced(initial: any, mapType: DefinePropTypes) {
-    switch (mapType) {
+function getNarrowedType<O>(propType: PROP_TYPE | O): NARROWED_PROP_TYPE | O {
+    switch (propType) {
         case PROP_TYPE.STRING:
-            return initial || '';
+        case PROP_TYPE.STRING_OPTIONAL:
+        case PROP_TYPE.STRING_REQUIRED:
+            return NARROWED_PROP_TYPE.STRING;
         case PROP_TYPE.BOOL:
-            return initial || false;
+        case PROP_TYPE.BOOL_OPTIONAL:
+        case PROP_TYPE.BOOL_REQUIRED:
+            return NARROWED_PROP_TYPE.BOOL;
         case PROP_TYPE.NUMBER:
+        case PROP_TYPE.NUMBER_OPTIONAL:
+        case PROP_TYPE.NUMBER_REQUIRED:
+            return NARROWED_PROP_TYPE.NUMBER;
+    }
+    return propType;
+}
+
+function getCoerced(initial: any, mapType: DefinePropTypes) {
+    switch (getNarrowedType(mapType)) {
+        case NARROWED_PROP_TYPE.STRING:
+            return initial || '';
+        case NARROWED_PROP_TYPE.BOOL:
+            return initial || false;
+        case NARROWED_PROP_TYPE.NUMBER:
             return initial || 0;
     }
     return initial;
@@ -1214,7 +1328,7 @@ namespace PropsDefiner {
                 if (coerce) {
                     return getCoerced(undefined, mapType);
                 }
-                if (mapType === PROP_TYPE.BOOL) {
+                if (getNarrowedType(mapType) === NARROWED_PROP_TYPE.BOOL) {
                     return false;
                 }
                 return undefined;
@@ -1510,7 +1624,7 @@ namespace PropsDefiner {
                         type as any
                     );
                 }
-            } else if (type === complex && reflectToAttr) {
+            } else if (type instanceof ComplexTypeClass && reflectToAttr) {
                 setter(
                     this._rep.setAttr,
                     this._rep.removeAttr,
@@ -1553,7 +1667,7 @@ namespace PropsDefiner {
                      * 			and otherwise do the default
                      * 		If there is no value, the default should be assigned
                      */
-                    if (property.config.type !== complex) {
+                    if (!(property.config.type instanceof ComplexTypeClass)) {
                         property.assignSimpleType();
                         element.onConnect(
                             property.config.mapKey,

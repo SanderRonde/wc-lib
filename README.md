@@ -238,6 +238,11 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.35**:
+
+-   Make argument to `TemplateFn` an object
+-   Add shortcuts for optional and required prop types. For example `PROP_TYPE.STRING_REQUIRED` translates to `{ type: PROP_TYPE.STRING, required: true }` and `PROP_TYPE.STRING_OPTIONAL` translates to `{ type: PROP_TYPE.STRING, required: false }`
+
 **1.1.34**:
 
 -   Upgrade to TS 4.0

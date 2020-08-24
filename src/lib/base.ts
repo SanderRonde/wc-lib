@@ -403,7 +403,7 @@ export declare class WebComponentBaseTypeInstance {
      * @param {CHANGE_TYPE} [change] The change type. This
      * 	is set to always render if not supplied
      */
-    public renderToDOM(change?: CHANGE_TYPE): void;
+    public renderToDOM(change?: CHANGE_TYPE | number): void;
 
     /**
      * A method called before rendering (changing props won't trigger additional re-render)
@@ -509,7 +509,7 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
         }
 
         @bindToClass
-        public renderToDOM(change: CHANGE_TYPE = CHANGE_TYPE.FORCE) {
+        public renderToDOM(change: CHANGE_TYPE | number = CHANGE_TYPE.FORCE) {
             const priv = baseClass(this);
             if (priv.disableRender) return;
             if (priv.doPreRenderLifecycle() === false) {

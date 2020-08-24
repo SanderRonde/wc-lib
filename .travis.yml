@@ -17,8 +17,6 @@ script:
 - makfy compile --dir examples
 after_script:
 - codecov -f coverage/lcov.info -F $(echo "$TEST" | sed  's/[\._-]//g')
-before_deploy:
-- makfy website
 deploy:
   - provider: npm
     email: awsdfgvhbjn@gmail.com
@@ -33,6 +31,7 @@ deploy:
         secure: nklP+wF12QYCQD9coe1m9ekKzDndTw0EoraYIbQXtERxDzDzTTi227QeUFOqKJswhQOQJVETW03oVa8JVyRh0IRndQgr7gD/0idnTMeHiv+i4nGvK8fNH1NrsVCFDRrmtEyeuMvlbQt58+dZnBIFtZZe1rGlRYqj0+JV65qezpaFwsD0R9CLKX8sWlL47TMdsd01fafkq3tTf0XA9DZiUPD4mZ8HrBgG36Egqa7cQh4IS1G3EZ004hpqWIwqjOyQKkBxJZK9It9bHkunriaHTZ9XYkacxgdhmYX1p3FF9P1Fi/RNdJipQ5dn8s0q7YMeR6/ZT8ygbTKTd323WMFDzIGGjPE9Jf4wUND9BOD08bQRo1BTBYU579svFkbc4dghPny+mlzoSLxNNCkkdmDuVwMV4TsrXKPRNSRInbbIcJkbitlvHuuHx4/SNgfvdwLBhzLms+cKS4KGORJdIfxW8fXFSMdS/mOCGTkzONjMWKB2MZ424D/dXOgZEhME+ksNAWXVrPKVIYUD3ZOTWCEaWUyTLpUngaSpEW36kE/1dPoHSwAlt4LWArXDgJV+g9ff7kKBncY8JE4qNrj+iwz/Q3iUM6QKaC1Xja72DVfQwZ+0vrXlJgIxpiFLXs6ZfIcay/kBdg/YzcoPULz4YHV2fz1gRqqaJjqim0h8JLypNhk=
     keep_history: true
     skip_cleanup: true
+    script: makfy website
     on:
         tags: true
         branch: master

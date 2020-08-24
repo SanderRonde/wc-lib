@@ -451,10 +451,12 @@ export class ComplexTypeClass<
     _R extends 'required' | 'optional' | 'unspecified' = 'unspecified'
 > {
     required(): ComplexTypeClass<_T, 'required'> {
+        // istanbul ignore next
         return this as ComplexTypeClass<_T, 'required'>;
     }
 
     optional(): ComplexTypeClass<_T, 'optional'> {
+        // istanbul ignore next
         return this as ComplexTypeClass<_T, 'optional'>;
     }
 }

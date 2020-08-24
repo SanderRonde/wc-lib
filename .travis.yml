@@ -20,6 +20,14 @@ after_script:
 before_deploy:
 - makfy website
 deploy:
+  - provider: npm
+    email: awsdfgvhbjn@gmail.com
+    skip_cleanup: true
+    api_key:
+      secure: V6DP8fdXmEaS0dCeJun37+hEfedvBPdYIbP2Pkb6G8/77WLHCNkwQTzt/kSnBbHbRJnixzc+cEe6/bK00kXG31hGrfy0ypN7OqXVDQCH5WMXMk15kRdGDijfPpdfjG+o4gx9HrAesVhNZDYVIRNBvN35jqGH+538bvcOYgZne3P9+KQV29MdK06m24XLywdwiuZqt/SXySWjGN0NNrCuVnFXKoHQKLuMLE19SguyrUwRrG92HFwVLc1mbhsuu5xmsV1v88dp5xjb3bf5/7cAca2nBcA+b4XqANa1jyQg5NdcjJNuA4B/gXRPn4y7Yo1QcB6AICmy8tsSJsTb3w2sKAGBqNQs1sY9EWc5Q2iUihGR/txziML38uRe7q7JgFUDvDWZ5vWGLZo1AKHPVBiv/LJVfOOeCWmgDDdhGDPON+f2+CFfZ6j7L+Go66l0NsmlcXF3LNcDxvYyzYQi7dLQafMXwT8lQm1N4wM7zB8yDD/5lbVEZR/X6BRD/S6ZBZH8cLuvwtJDD8wSZLuDtc5Kdss7rcL4sD+UJaUmJ9DOSTwVvP8VgoKHXiltBTGv90+YrDUGtxc05AN1HAzFHLMB0RcIgQpKlIlJFpct1RA5gBK+MqVKDcUNVIIe7UlAEhS5kC3vC9uKRlxvEsA8EQl9Y2Wn3QBnB3F6e3+udA2ln0o=
+    on:
+      tags: true
+      repo: SanderRonde/wc-lib
   - provider: pages
     github_token:
         secure: nklP+wF12QYCQD9coe1m9ekKzDndTw0EoraYIbQXtERxDzDzTTi227QeUFOqKJswhQOQJVETW03oVa8JVyRh0IRndQgr7gD/0idnTMeHiv+i4nGvK8fNH1NrsVCFDRrmtEyeuMvlbQt58+dZnBIFtZZe1rGlRYqj0+JV65qezpaFwsD0R9CLKX8sWlL47TMdsd01fafkq3tTf0XA9DZiUPD4mZ8HrBgG36Egqa7cQh4IS1G3EZ004hpqWIwqjOyQKkBxJZK9It9bHkunriaHTZ9XYkacxgdhmYX1p3FF9P1Fi/RNdJipQ5dn8s0q7YMeR6/ZT8ygbTKTd323WMFDzIGGjPE9Jf4wUND9BOD08bQRo1BTBYU579svFkbc4dghPny+mlzoSLxNNCkkdmDuVwMV4TsrXKPRNSRInbbIcJkbitlvHuuHx4/SNgfvdwLBhzLms+cKS4KGORJdIfxW8fXFSMdS/mOCGTkzONjMWKB2MZ424D/dXOgZEhME+ksNAWXVrPKVIYUD3ZOTWCEaWUyTLpUngaSpEW36kE/1dPoHSwAlt4LWArXDgJV+g9ff7kKBncY8JE4qNrj+iwz/Q3iUM6QKaC1Xja72DVfQwZ+0vrXlJgIxpiFLXs6ZfIcay/kBdg/YzcoPULz4YHV2fz1gRqqaJjqim0h8JLypNhk=

@@ -3,8 +3,8 @@ import {
     config,
     TemplateFn,
     CHANGE_TYPE,
-} from '../modules/wc-lib/wc-lib.js';
-import { render, html } from '../modules/lit-html/lit-html.js';
+} from '../../build/es/wc-lib.js';
+import { render, html } from '../../node_modules/lit-html/lit-html.js';
 
 @config({
     is: 'hello-world',

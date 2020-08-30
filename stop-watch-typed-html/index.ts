@@ -7,9 +7,9 @@ import {
     NodePart,
     isDirective,
     noChange,
-} from '../modules/lit-html/lit-html.js';
+} from '../../node_modules/lit-html/lit-html.js';
 import { StopWatchTypedHTML } from './stop-watch-typed-html.js';
-import { WebComponent } from '../modules/wc-lib/wc-lib.js';
+import { WebComponent } from '../../build/es/wc-lib.js';
 
 WebComponent.initComplexTemplateProvider({
     TemplateResult,

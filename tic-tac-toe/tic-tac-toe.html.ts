@@ -1,6 +1,6 @@
 import { TicTacToe, languages, ACTIVITY_STATE } from './tic-tac-toe.js';
-import { render } from '../modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../modules/wc-lib/wc-lib.js';
+import { render } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 import { theme } from './theme.js';
 
 function setLocalStorageItem(name: string, value: string) {
@@ -11,7 +11,7 @@ function setLocalStorageItem(name: string, value: string) {
 }
 
 export const TicTacToeHTML = new TemplateFn<TicTacToe>(
-    function(html, props) {
+    function(html, { props }) {
         return html`
             <div id="lang-switcher">
                 ${languages.map((lang) => {

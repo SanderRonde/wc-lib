@@ -1,6 +1,6 @@
-import { TemplateFn, css } from '../modules/wc-lib/wc-lib.js';
-import { render } from '../modules/lit-html/lit-html.js';
-export const TicTacToeCSS = new TemplateFn(function (html, _, theme) {
+import { TemplateFn, css } from '../../build/es/wc-lib.js';
+import { render } from '../../node_modules/lit-html/lit-html.js';
+export const TicTacToeCSS = new TemplateFn(function (html, { theme }) {
     return html `
             <style>
                 ${css(this).class['vertical-centerer'].or.class['horizontal-centerer']} {

@@ -1,6 +1,6 @@
-import { render } from '../../../modules/lit-html/lit-html.js';
-import { TemplateFn, css } from '../../../modules/wc-lib/wc-lib.js';
-export const CellBlockCSS = new TemplateFn(function (html, _, theme) {
+import { render } from '../../../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, css } from '../../../../build/es/wc-lib.js';
+export const CellBlockCSS = new TemplateFn(function (html, { theme }) {
     return html `
             <style>
                 ${css(this).$.topLeft.or.$.topRight} {

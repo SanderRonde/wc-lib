@@ -4,8 +4,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { ConfigurableWebComponent, Props, config, TemplateFn } from '../modules/wc-lib/wc-lib.js';
-import { render } from '../modules/lit-html/lit-html.js';
+import { ConfigurableWebComponent, Props, config, TemplateFn } from '../../build/es/wc-lib.js';
+import { render } from '../../node_modules/lit-html/lit-html.js';
 let JsxInput = class JsxInput extends ConfigurableWebComponent {
     constructor() {
         super(...arguments);
@@ -61,7 +61,7 @@ JsxInput = __decorate([
 			}
 		</style>`;
         }, 4 /* NEVER */, render),
-        html: new TemplateFn(function (html, props) {
+        html: new TemplateFn(function (html, { props }) {
             return (html.jsx("div", { id: "container" },
                 html.jsx("h2", null, props.name),
                 html.jsx("input", Object.assign({}, { "@": {

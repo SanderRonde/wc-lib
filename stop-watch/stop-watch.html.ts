@@ -1,9 +1,9 @@
-import { render } from '../modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../modules/wc-lib/wc-lib.js';
+import { render } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 import { StopWatch } from './stop-watch.js';
 
 export const StopWatchHTML = new TemplateFn<StopWatch>(
-    function(html, props) {
+    function(html, {props}) {
         return html`
             <h1>Stopwatch ${props.running ? 'running' : 'not running'}</h1>
             <div id="time">${this.formatTime(props.ms)}</div>

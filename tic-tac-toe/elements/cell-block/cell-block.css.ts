@@ -1,9 +1,9 @@
-import { render } from '../../../modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE, css } from '../../../modules/wc-lib/wc-lib.js';
+import { render } from '../../../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, CHANGE_TYPE, css } from '../../../../build/es/wc-lib.js';
 import { CellBlock } from './cell-block.js';
 
 export const CellBlockCSS = new TemplateFn<CellBlock>(
-    function(html, _, theme) {
+    function(html, { theme }) {
         return html`
             <style>
                 ${css(this).$.topLeft.or.$.topRight} {

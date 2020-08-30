@@ -238,6 +238,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.1.36**:
+
+-   Improve props and JSX type inference
+
 **1.1.35**:
 
 -   Make argument to `TemplateFn` an object

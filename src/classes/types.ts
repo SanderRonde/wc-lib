@@ -4,6 +4,9 @@ import {
     DefinePropTypes,
     DefinePropTypeConfig,
     GetTSType,
+    PROP_TYPE,
+    ComplexTypeClass,
+    GetComplexTypeClassSpec,
 } from '../lib/props.js';
 import { ListenerSet, EventListenerObj } from '../lib/listener.js';
 import { TemplateFnLike } from '../lib/template-fn.js';
@@ -134,8 +137,40 @@ type RemoveType<
 
 type IsPropRequired<
     P extends DefinePropTypes | DefinePropTypeConfig
-> = P extends DefinePropTypes
+> = P extends
+    | PROP_TYPE.STRING_REQUIRED
+    | PROP_TYPE.BOOL_REQUIRED
+    | PROP_TYPE.NUMBER_REQUIRED
+    ? true
+    : P extends
+          | PROP_TYPE.STRING_OPTIONAL
+          | PROP_TYPE.BOOL_OPTIONAL
+          | PROP_TYPE.NUMBER_OPTIONAL
     ? false
+    : P extends ComplexTypeClass<any, any>
+    ? GetComplexTypeClassSpec<P> extends 'required'
+        ? true
+        : false
+    : P extends {
+          type:
+              | PROP_TYPE.STRING_OPTIONAL
+              | PROP_TYPE.BOOL_OPTIONAL
+              | PROP_TYPE.NUMBER_OPTIONAL;
+      }
+    ? false
+    : P extends {
+          type:
+              | PROP_TYPE.STRING_REQUIRED
+              | PROP_TYPE.BOOL_REQUIRED
+              | PROP_TYPE.NUMBER_REQUIRED;
+      }
+    ? true
+    : P extends {
+          type: ComplexTypeClass<any, any>;
+      }
+    ? GetComplexTypeClassSpec<P['type']> extends 'required'
+        ? true
+        : false
     : P extends {
           required: true;
       }

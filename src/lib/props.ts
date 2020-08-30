@@ -268,18 +268,18 @@ type OptionalConfig =
           required: false;
       };
 
+export type GetComplexTypeClassSpec<
+    V extends ComplexTypeClass<any, any>
+> = V extends ComplexTypeClass<any, infer S> ? S : void;
+
 type IsUnassigned<
     V extends PROP_TYPE | ComplexTypeClass<any> | DefinePropTypeConfig
-> = V extends  // params, unassigned // If type is one of the basic types with no further
-    | PROP_TYPE.BOOL
-    | PROP_TYPE.NUMBER
-    | PROP_TYPE.STRING
-    // Or a complex type with optional or unspecified, unassigned
-    | ComplexTypeClass<any, 'optional'>
-    | ComplexTypeClass<any, 'unspecified'>
+> = V extends PROP_TYPE.BOOL | PROP_TYPE.NUMBER | PROP_TYPE.STRING // params, unassigned // If type is one of the basic types with no further // Or a complex type with optional or unspecified, unassigned
     ? true // If a complex type with required, assigned
-    : V extends ComplexTypeClass<any, 'required'>
-    ? false
+    : V extends ComplexTypeClass<any, any>
+    ? GetComplexTypeClassSpec<V> extends 'optional' | 'unspecified'
+        ? true
+        : false
     : V extends  // If a basic type but required, unassigned
           | PROP_TYPE.STRING_REQUIRED
           | PROP_TYPE.NUMBER_REQUIRED
@@ -295,25 +295,73 @@ type IsUnassigned<
         ? V['exactType'] extends undefined | void
             ? true
             : false
-        : V extends  // If a basic type but required, assigned
+        : V['type'] extends  // If a basic type but required, assigned
               | PROP_TYPE.STRING_REQUIRED
               | PROP_TYPE.NUMBER_REQUIRED
               | PROP_TYPE.BOOL_REQUIRED
-              // Or a complex type but requied, assigned
-              | ComplexTypeClass<any, 'required'>
         ? false
-        : V extends  // If a basic type but optional, unassigned
+        : V['type'] extends ComplexTypeClass<any, any> // @ts-ignore
+        ? GetComplexTypeClassSpec<V['type']> extends 'required'
+            ? false
+            : V['type'] extends  // If a basic type but optional, unassigned
+                  | PROP_TYPE.STRING_OPTIONAL
+                  | PROP_TYPE.NUMBER_OPTIONAL
+                  | PROP_TYPE.BOOL_OPTIONAL
+            ? true // If another type with no requiredness specified
+            : V['type'] extends ComplexTypeClass<any, any> // @ts-ignore
+            ? GetComplexTypeClassSpec<V['type']> extends 'optional'
+                ? true
+                : V['type'] extends
+                      | PROP_TYPE.BOOL
+                      | PROP_TYPE.NUMBER
+                      | PROP_TYPE.STRING
+                      | ComplexTypeClass<any> // If it has optional in the config, unassigned
+                ? V extends OptionalConfig
+                    ? true // If it has defined in the config, assigned
+                    : V extends PreDefined
+                    ? false // If coerced, always assigned
+                    : V extends Coerced
+                    ? false
+                    : true
+                : false
+            : V['type'] extends
+                  | PROP_TYPE.BOOL
+                  | PROP_TYPE.NUMBER
+                  | PROP_TYPE.STRING
+                  | ComplexTypeClass<any> // If it has optional in the config, unassigned
+            ? V extends OptionalConfig
+                ? true // If it has defined in the config, assigned
+                : V extends PreDefined
+                ? false // If coerced, always assigned
+                : V extends Coerced
+                ? false
+                : true
+            : false
+        : V['type'] extends  // If a basic type but optional, unassigned
               | PROP_TYPE.STRING_OPTIONAL
               | PROP_TYPE.NUMBER_OPTIONAL
               | PROP_TYPE.BOOL_OPTIONAL
-              // Or a complex type but optional, unassigned
-              | ComplexTypeClass<any, 'optional'>
         ? true // If another type with no requiredness specified
+        : V['type'] extends ComplexTypeClass<any, any> // @ts-ignore
+        ? GetComplexTypeClassSpec<V['type']> extends 'optional'
+            ? true
+            : V['type'] extends
+                  | PROP_TYPE.BOOL
+                  | PROP_TYPE.NUMBER
+                  | PROP_TYPE.STRING
+                  | ComplexTypeClass<any> // If it has optional in the config, unassigned
+            ? V extends OptionalConfig
+                ? true // If it has defined in the config, assigned
+                : V extends PreDefined
+                ? false // If coerced, always assigned
+                : V extends Coerced
+                ? false
+                : true
+            : false
         : V['type'] extends
               | PROP_TYPE.BOOL
               | PROP_TYPE.NUMBER
               | PROP_TYPE.STRING
-              | ComplexTypeClass<any, 'unspecified'>
               | ComplexTypeClass<any> // If it has optional in the config, unassigned
         ? V extends OptionalConfig
             ? true // If it has defined in the config, assigned
@@ -415,27 +463,27 @@ export const enum PROP_TYPE {
     /**
      * A required string (shortcut for {type: PROP_TYPE.STRING, required: true })
      */
-    STRING_REQUIRED = 'string',
+    STRING_REQUIRED = 'string_required',
     /**
      * A required number (shortcut for {type: PROP_TYPE.NUMBER, required: true })
      */
-    NUMBER_REQUIRED = 'number',
+    NUMBER_REQUIRED = 'number_required',
     /**
      * A required boolean (shortcut for {type: PROP_TYPE.BOOL, required: true })
      */
-    BOOL_REQUIRED = 'bool',
+    BOOL_REQUIRED = 'bool_required',
     /**
      * An optional string (shortcut for {type: PROP_TYPE.STRING, required: false })
      */
-    STRING_OPTIONAL = 'string',
+    STRING_OPTIONAL = 'string_optional',
     /**
      * An optional number (shortcut for {type: PROP_TYPE.NUMBER, required: false })
      */
-    NUMBER_OPTIONAL = 'number',
+    NUMBER_OPTIONAL = 'number_optional',
     /**
      * An optional boolean (shortcut for {type: PROP_TYPE.BOOL, required: false })
      */
-    BOOL_OPTIONAL = 'bool',
+    BOOL_OPTIONAL = 'bool_optional',
 }
 
 /**
@@ -1297,7 +1345,12 @@ namespace PropsDefiner {
             const { watch, mapType, strict } = el.keyMap.get(casingKey)!;
 
             const prevVal = el.propValues[casingKey];
-            const newVal = getterWithVal(el.component, val, strict, mapType);
+            const newVal = getterWithVal(
+                el.component,
+                val,
+                strict,
+                getNarrowedType(mapType)
+            );
 
             if (prevVal === newVal) return;
 
@@ -1532,7 +1585,7 @@ namespace PropsDefiner {
                             _this._rep.removeAttr,
                             propName,
                             original,
-                            type
+                            getNarrowedType(type)
                         );
                     }
 
@@ -1562,7 +1615,7 @@ namespace PropsDefiner {
                                   this._rep.component,
                                   propName,
                                   strict,
-                                  type
+                                  getNarrowedType(type)
                               ) as any)
                             : undefined,
                         watch,
@@ -1590,7 +1643,7 @@ namespace PropsDefiner {
                           this._rep.component,
                           propName,
                           strict,
-                          type
+                          getNarrowedType(type)
                       ) as any)
                     : undefined,
                 watch,

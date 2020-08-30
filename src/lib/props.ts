@@ -268,9 +268,12 @@ type OptionalConfig =
           required: false;
       };
 
-export type GetComplexTypeClassSpec<
-    V extends ComplexTypeClass<any, any>
-> = V extends ComplexTypeClass<any, infer S> ? S : void;
+export type GetComplexTypeClassSpec<V> = V extends ComplexTypeClass<
+    any,
+    infer S
+>
+    ? S
+    : void;
 
 type IsUnassigned<
     V extends PROP_TYPE | ComplexTypeClass<any> | DefinePropTypeConfig
@@ -300,7 +303,7 @@ type IsUnassigned<
               | PROP_TYPE.NUMBER_REQUIRED
               | PROP_TYPE.BOOL_REQUIRED
         ? false
-        : V['type'] extends ComplexTypeClass<any, any> // @ts-ignore
+        : V['type'] extends ComplexTypeClass<any, any>
         ? GetComplexTypeClassSpec<V['type']> extends 'required'
             ? false
             : V['type'] extends  // If a basic type but optional, unassigned
@@ -308,7 +311,7 @@ type IsUnassigned<
                   | PROP_TYPE.NUMBER_OPTIONAL
                   | PROP_TYPE.BOOL_OPTIONAL
             ? true // If another type with no requiredness specified
-            : V['type'] extends ComplexTypeClass<any, any> // @ts-ignore
+            : V['type'] extends ComplexTypeClass<any, any>
             ? GetComplexTypeClassSpec<V['type']> extends 'optional'
                 ? true
                 : V['type'] extends
@@ -342,7 +345,7 @@ type IsUnassigned<
               | PROP_TYPE.NUMBER_OPTIONAL
               | PROP_TYPE.BOOL_OPTIONAL
         ? true // If another type with no requiredness specified
-        : V['type'] extends ComplexTypeClass<any, any> // @ts-ignore
+        : V['type'] extends ComplexTypeClass<any, any>
         ? GetComplexTypeClassSpec<V['type']> extends 'optional'
             ? true
             : V['type'] extends

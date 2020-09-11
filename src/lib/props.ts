@@ -501,11 +501,13 @@ export class ComplexTypeClass<
     _T,
     _R extends 'required' | 'optional' | 'unspecified' = 'unspecified'
 > {
+    // istanbul ignore next
     required(): ComplexTypeClass<_T, 'required'> {
         // istanbul ignore next
         return this as ComplexTypeClass<_T, 'required'>;
     }
 
+    // istanbul ignore next
     optional(): ComplexTypeClass<_T, 'optional'> {
         // istanbul ignore next
         return this as ComplexTypeClass<_T, 'optional'>;

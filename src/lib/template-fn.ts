@@ -44,7 +44,7 @@ export const enum CHANGE_TYPE {
     FORCE = 31,
 }
 
-const changeTypes: Set<number> = new Set([1, 2, 4, 8, 16]);
+const changeTypes: Set<number> = new Set([1, 2, 4, 8]);
 let lastChangeType: number = 16;
 export function createUniqueChangeType() {
     const num = lastChangeType * 2;

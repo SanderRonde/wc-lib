@@ -456,7 +456,7 @@ export function baseSpec(fixture: string) {
                     'prop-lang': true,
                     'theme-lang': true,
                     all: true,
-                    custom: false,
+                    custom: true,
                 });
             });
             context('CHANGE_TYPE.FORCE', () => {

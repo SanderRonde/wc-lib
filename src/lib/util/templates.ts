@@ -1,4 +1,4 @@
-import { TemplateFn, CHANGE_TYPE, Renderer } from '../template-fn.js';
+import { TemplateFn, Renderer } from '../template-fn.js';
 
 /**
  * Functions related to templates and manipulation of them
@@ -23,10 +23,9 @@ export namespace Templates {
         renderer: Renderer<T>,
         ...templates: TemplateFn<T, any>[]
     ): TemplateFn<T, any> {
-        const changeType =
-            templates.reduce((prev, template) => {
-                return prev | template.changeOn;
-            }, 0) || CHANGE_TYPE.NEVER;
+        const changeType = templates.reduce((prev, template) => {
+            return prev | template.changeOn;
+        }, 0);
         return new TemplateFn<T, any>(
             function(html) {
                 return html`

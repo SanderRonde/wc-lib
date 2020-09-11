@@ -15,6 +15,12 @@ import { jsxToLiteral } from './jsx-render.js';
  */
 export const enum CHANGE_TYPE {
     /**
+     * Never re-render. This allows
+     * for optimizing out the
+     * rendering of this template
+     */
+    NEVER = 0,
+    /**
      * A property change
      */
     PROP = 1,
@@ -27,25 +33,19 @@ export const enum CHANGE_TYPE {
      */
     LANG = 4,
     /**
-     * Never re-render. This allows
-     * for optimizing out the
-     * rendering of this template
-     */
-    NEVER = 8,
-    /**
      * Any change
      */
-    // 23 = 1 | 2 | 4 | 16
-    ALWAYS = 23,
+    // 15 = 1 | 2 | 4 | 8
+    ALWAYS = 15,
     /**
      * A forced user-engaged change
      */
-    // 55 = 1 | 2 | 4 | 16 | 32
-    FORCE = 55,
+    // 31 = 1 | 2 | 4 | 16
+    FORCE = 31,
 }
 
-const changeTypes: Set<number> = new Set([1, 2, 4, 8, 16, 32]);
-let lastChangeType: number = 32;
+const changeTypes: Set<number> = new Set([1, 2, 4, 8, 16]);
+let lastChangeType: number = 16;
 export function createUniqueChangeType() {
     const num = lastChangeType * 2;
     changeTypes.add(num);
@@ -367,11 +367,9 @@ export class TemplateFn<
     get changeOn() {
         if (this._changeOn === CHANGE_TYPE.ALWAYS) {
             // Generate a new "always"
-            return [...changeTypes.values()]
-                .filter((v) => v !== CHANGE_TYPE.NEVER && v !== 16)
-                .reduce((prev, current) => {
-                    return prev | current;
-                }, 0);
+            return [...changeTypes.values()].reduce((prev, current) => {
+                return prev | current;
+            }, 0);
         }
         return this._changeOn;
     }

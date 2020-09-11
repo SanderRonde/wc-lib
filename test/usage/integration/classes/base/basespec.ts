@@ -334,11 +334,14 @@ export function baseSpec(fixture: string) {
                     document.body.appendChild(
                         document.createElement('render-test-all')
                     );
+                    document.body.appendChild(
+                        document.createElement('render-test-custom')
+                    );
                 });
             });
 
             function genChangeTypeCases(
-                changeType: CHANGE_TYPE,
+                getChangeType: number | ((window: RenderTestWindow) => number),
                 changeTypes: {
                     never: boolean;
                     prop: boolean;
@@ -349,6 +352,7 @@ export function baseSpec(fixture: string) {
                     'prop-lang': boolean;
                     'theme-lang': boolean;
                     all: boolean;
+                    custom: boolean;
                 }
             ) {
                 for (const change in changeTypes) {
@@ -368,7 +372,12 @@ export function baseSpec(fixture: string) {
                                                     change as keyof typeof cyWindow.renderCalled
                                                 ];
 
-                                            element.renderToDOM(changeType);
+                                            element.renderToDOM(
+                                                typeof getChangeType ===
+                                                    'number'
+                                                    ? getChangeType
+                                                    : getChangeType(cyWindow)
+                                            );
 
                                             if (shouldChange) {
                                                 expect(cyWindow.renderCalled)
@@ -405,6 +414,7 @@ export function baseSpec(fixture: string) {
                     'prop-lang': true,
                     'theme-lang': false,
                     all: true,
+                    custom: false,
                 });
             });
             context('CHANGE_TYPE.THEME', () => {
@@ -418,6 +428,7 @@ export function baseSpec(fixture: string) {
                     'prop-lang': false,
                     'theme-lang': true,
                     all: true,
+                    custom: false,
                 });
             });
             context('CHANGE_TYPE.LANG', () => {
@@ -431,6 +442,7 @@ export function baseSpec(fixture: string) {
                     'prop-lang': true,
                     'theme-lang': true,
                     all: true,
+                    custom: false,
                 });
             });
             context('CHANGE_TYPE.ALWAYS', () => {
@@ -444,6 +456,7 @@ export function baseSpec(fixture: string) {
                     'prop-lang': true,
                     'theme-lang': true,
                     all: true,
+                    custom: false,
                 });
             });
             context('CHANGE_TYPE.FORCE', () => {
@@ -457,6 +470,21 @@ export function baseSpec(fixture: string) {
                     'prop-lang': true,
                     'theme-lang': true,
                     all: true,
+                    custom: false,
+                });
+            });
+            context('CHANGE_TYPE.CUSTOM', () => {
+                genChangeTypeCases((win) => win.customChangeTypeNumber, {
+                    never: false,
+                    prop: false,
+                    theme: false,
+                    lang: false,
+                    always: true,
+                    'prop-theme': false,
+                    'prop-lang': false,
+                    'theme-lang': false,
+                    all: false,
+                    custom: true,
                 });
             });
         });

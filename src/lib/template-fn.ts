@@ -23,23 +23,35 @@ export const enum CHANGE_TYPE {
      */
     THEME = 2,
     /**
+     * Language changes
+     */
+    LANG = 4,
+    /**
      * Never re-render. This allows
      * for optimizing out the
      * rendering of this template
      */
-    NEVER = 4,
-    /**
-     * Language changes
-     */
-    LANG = 8,
+    NEVER = 8,
     /**
      * Any change
      */
-    ALWAYS = 11,
+    // 23 = 1 | 2 | 4 | 16
+    ALWAYS = 23,
     /**
      * A forced user-engaged change
      */
-    FORCE = 27,
+    // 55 = 1 | 2 | 4 | 16 | 32
+    FORCE = 55,
+}
+
+const changeTypes: Set<number> = new Set([1, 2, 4, 8, 16, 32]);
+let lastChangeType: number = 32;
+export function createUniqueChangeType() {
+    const num = lastChangeType * 2;
+    changeTypes.add(num);
+    lastChangeType = num;
+
+    return num;
 }
 
 /**
@@ -186,7 +198,7 @@ export type TemplateRenderFunction<
         /**
          * The current change
          */
-        changeType: CHANGE_TYPE;
+        changeType: CHANGE_TYPE | number;
     }
 ) => TR;
 
@@ -218,7 +230,7 @@ export type Renderer<T> = (
 
 /**
  * For some reason src/lib/base.CHANGE_TYPE is not assignable to
- * build/lib/base.CHANGE_TYPe so this is needed.
+ * build/lib/base.CHANGE_TYPE so this is needed.
  *
  * CT is however always equal to CHANGE_TYPE in the real code
  */
@@ -352,6 +364,17 @@ export class TemplateFn<
     R extends TemplateRenderResult = TemplateRenderResult
 > implements TemplateFnLike {
     private _lastRenderChanged: boolean = true;
+    get changeOn() {
+        if (this._changeOn === CHANGE_TYPE.ALWAYS) {
+            // Generate a new "always"
+            return [...changeTypes.values()]
+                .filter((v) => v !== CHANGE_TYPE.NEVER && v !== 16)
+                .reduce((prev, current) => {
+                    return prev | current;
+                }, 0);
+        }
+        return this._changeOn;
+    }
 
     /**
      * Creates a template class that renders given template
@@ -378,7 +401,8 @@ export class TemplateFn<
             | CHANGE_TYPE.ALWAYS
             | CHANGE_TYPE.PROP
             | CHANGE_TYPE.THEME
-            | CHANGE_TYPE.LANG,
+            | CHANGE_TYPE.LANG
+            | number,
         renderer: Renderer<R> | null
     );
     constructor(
@@ -387,12 +411,12 @@ export class TemplateFn<
             InferThemeVal<C>,
             R
         > | null,
-        public changeOn: CHANGE_TYPE,
+        private _changeOn: CHANGE_TYPE | number,
         private _renderer: Renderer<R> | null
     ) {}
 
     private _renderWithTemplater<TR extends TemplateRenderResult>(
-        changeType: CHANGE_TYPE,
+        changeType: CHANGE_TYPE | number,
         component: C,
         templater: Templater<TR> | undefined
     ): {
@@ -537,12 +561,15 @@ export class TemplateFn<
     /**
      * Renders this template to text and returns the text
      *
-     * @param {CHANGE_TYPE} changeType - The type of change that occurred
+     * @param {CHANGE_TYPE|number} changeType - The type of change that occurred
      * @param {C} component - The base component
      *
      * @returns {string} The rendered template as text
      */
-    public renderAsText(changeType: CHANGE_TYPE, component: C): string {
+    public renderAsText(
+        changeType: CHANGE_TYPE | number,
+        component: C
+    ): string {
         const { changed, rendered } = this._renderWithTemplater(
             changeType,
             component,
@@ -561,13 +588,16 @@ export class TemplateFn<
      * Renders this template to an intermediate value that
      * 	can then be passed to the renderer
      *
-     * @param {CHANGE_TYPE} changeType - The type of change that occurred
+     * @param {CHANGE_TYPE|number} changeType - The type of change that occurred
      * @param {C} component - The base component
      *
      * @returns {R|null} The intermediate value that
      * 	can be passed to the renderer
      */
-    public renderTemplate(changeType: CHANGE_TYPE, component: C): R | null {
+    public renderTemplate(
+        changeType: CHANGE_TYPE | number,
+        component: C
+    ): R | null {
         const { changed, rendered } = this._renderWithTemplater(
             changeType,
             component,
@@ -589,7 +619,7 @@ export class TemplateFn<
      *
      * @template TR - The return value. This depends on the
      * 	return value of the passed templater
-     * @param {CHANGE_TYPE} changeType - The type of change that occurred
+     * @param {CHANGE_TYPE|number} changeType - The type of change that occurred
      * @param {C} component - The base component
      * @param {templater<TR>} templater - The templater (
      * 	generally of the parent)
@@ -597,7 +627,7 @@ export class TemplateFn<
      * @returns {TR|null|string} The return value of the templater
      */
     public renderSame<TR extends TemplateRenderResult>(
-        changeType: CHANGE_TYPE,
+        changeType: CHANGE_TYPE | number,
         component: C,
         templater: JSXTemplater<TR | string>
     ): TR | null | string {

@@ -12,6 +12,7 @@ export {
     TemplateRenderFunction,
     TemplateRenderResult,
     Templater,
+    createUniqueChangeType,
 } from './lib/template-fn.js';
 export { SelectorMap, PropChangeEvents } from './lib/component.js';
 export {

@@ -7,6 +7,7 @@ import {
     ConfigurableWebComponent,
     bindToClass,
     Renderer,
+    createUniqueChangeType,
 } from '../../../../../../build/es/wc-lib.js';
 import {
     render,
@@ -41,7 +42,9 @@ export interface RenderTestWindow extends Window {
         'prop-lang': number;
         'theme-lang': number;
         all: number;
+        custom: number;
     };
+    customChangeTypeNumber: number;
     TestElement: typeof TestElement;
     WrongBindTest: () => any;
     templates: {
@@ -251,6 +254,23 @@ export function baseTestElementFactory(base: {
         ),
     })
     class RenderTestElementAll extends TestElementBase {}
+
+    window.renderCalled['custom'] = 0;
+    window.customChangeTypeNumber = createUniqueChangeType();
+    @config({
+        is: 'render-test-custom',
+        html: new TemplateFn<RenderTestElementAll>(
+            () => {
+                window.renderCalled['custom']++;
+                return html`
+                    <div></div>
+                `;
+            },
+            window.customChangeTypeNumber,
+            render
+        ),
+    })
+    class RenderTestElementCustom extends TestElementBase {}
 
     class NoCSS extends base {
         static is = 'no-css';
@@ -490,6 +510,7 @@ export function baseTestElementFactory(base: {
     RenderTestElementPropLang.define(true);
     RenderTestElementThemeLang.define(true);
     RenderTestElementAll.define(true);
+    RenderTestElementCustom.define(true);
     HTMLElementTemplate.define(true);
 
     NoCSS.define(true);

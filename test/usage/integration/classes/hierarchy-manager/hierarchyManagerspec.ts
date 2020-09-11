@@ -4,6 +4,7 @@ import { ParentElement } from '../elements/parent-element';
 import { TestElement } from '../elements/test-element';
 import { RootElement } from './elements/root-element';
 import { SLOW } from '../../../lib/timing.js';
+import { SubtreeElement } from './elements/subtree-element.js';
 function getAllElements() {
     return cy
         .get('root-element')
@@ -79,6 +80,26 @@ export function hierarchyManagerspec(fixture: string) {
                     expectMethodExists(el, 'listenGP');
                 });
             });
+            it('exposes a #registerAsSubTreeRoot method', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'registerAsSubTreeRoot');
+                });
+            });
+            it('exposes a #setSubTreeProps method', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'setSubTreeProps');
+                });
+            });
+            it('exposes a #getSubtreeRoots method', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'getSubtreeRoots');
+                });
+            });
+            it('exposes a #getSubTreeProps method', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'getSubTreeProps');
+                });
+            });
         });
         context('Hierarchy', () => {
             it('determines root-element as the root', () => {
@@ -102,6 +123,197 @@ export function hierarchyManagerspec(fixture: string) {
                         }
                     );
                 });
+            });
+        });
+        context('Subtrees', () => {
+            beforeEach(() => {
+                cy.reload(true);
+            });
+            it('can define a node as a subtree element', () => {
+                cy.get('#subtree-A').then(
+                    ([subTreeRoot]: JQuery<SubtreeElement>) => {
+                        expect(() => {
+                            subTreeRoot.register();
+                        }).to.not.throw;
+                    }
+                );
+            });
+            it('throws an error when updating an unregistered element', () => {
+                cy.get('#subtree-A').then(
+                    ([subTreeRoot]: JQuery<SubtreeElement>) => {
+                        expect(() => {
+                            subTreeRoot.updateSubtree();
+                        }).to.throw();
+                    }
+                );
+            });
+            it('initially returns an "empty" subtree', () => {
+                cy.get('.tests').then((testElements: JQuery<TestElement>) => {
+                    for (const testElement of testElements) {
+                        expect(testElement.getSubTreeProps()).to.be.deep.equal(
+                            {}
+                        );
+                    }
+
+                    cy.get('.subtrees').then(
+                        (subtreeRoots: JQuery<SubtreeElement>) => {
+                            [...subtreeRoots].forEach((root) => {
+                                root.register();
+                            });
+
+                            for (const testElement of testElements) {
+                                expect(
+                                    testElement.getSubTreeProps()
+                                ).to.be.deep.equal({
+                                    x: 0,
+                                    y: 0,
+                                });
+                            }
+                        }
+                    );
+                });
+            });
+            it('returns joined root when registered', () => {
+                cy.get('.tests').then((testElements: JQuery<TestElement>) => {
+                    for (const testElement of testElements) {
+                        expect(testElement.getSubTreeProps()).to.be.deep.equal(
+                            {}
+                        );
+                    }
+
+                    cy.get('.subtrees').then(
+                        (subtreeRoots: JQuery<SubtreeElement>) => {
+                            [...subtreeRoots].forEach((root) => {
+                                root.register();
+                                root.updateSubtree();
+                            });
+
+                            cy.get('#test-AB').then(
+                                ([testElement]: JQuery<TestElement>) => {
+                                    expect(
+                                        testElement.getSubTreeProps()
+                                    ).to.be.deep.equal({
+                                        x: 5,
+                                        y: 6,
+                                    });
+                                }
+                            );
+                        }
+                    );
+                });
+            });
+            it('roots are scoped', () => {
+                cy.get('.tests').then((testElements: JQuery<TestElement>) => {
+                    for (const testElement of testElements) {
+                        expect(testElement.getSubTreeProps()).to.be.deep.equal(
+                            {}
+                        );
+                    }
+
+                    cy.get('.subtrees').then(
+                        (subtreeRoots: JQuery<SubtreeElement>) => {
+                            [...subtreeRoots].forEach((root) => {
+                                root.register();
+                                root.updateSubtree();
+                            });
+
+                            cy.get('#test-AB').then(
+                                ([testElement]: JQuery<TestElement>) => {
+                                    expect(
+                                        testElement.getSubTreeProps()
+                                    ).to.be.deep.equal({
+                                        x: 5,
+                                        y: 6,
+                                    });
+                                }
+                            );
+                            cy.get('#test-A').then(
+                                ([testElement]: JQuery<TestElement>) => {
+                                    expect(
+                                        testElement.getSubTreeProps()
+                                    ).to.be.deep.equal({
+                                        x: 1,
+                                        y: 1,
+                                    });
+                                }
+                            );
+                        }
+                    );
+                });
+            });
+            it('roots can be changed', () => {
+                cy.get('.subtrees').then(
+                    (subtreeRoots: JQuery<SubtreeElement>) => {
+                        [...subtreeRoots].forEach((root) => {
+                            root.register();
+                            root.updateSubtree();
+                        });
+
+                        cy.get('#test-A').then(
+                            ([testElement]: JQuery<TestElement>) => {
+                                expect(
+                                    testElement.getSubTreeProps()
+                                ).to.be.deep.equal({
+                                    x: 1,
+                                    y: 1,
+                                });
+
+                                [...subtreeRoots].forEach((root) => {
+                                    root.props.x = 10;
+                                    root.props.y = 11;
+
+                                    root.register();
+                                    root.updateSubtree();
+                                });
+
+                                expect(
+                                    testElement.getSubTreeProps()
+                                ).to.be.deep.equal({
+                                    x: 10,
+                                    y: 11,
+                                });
+                            }
+                        );
+                    }
+                );
+            });
+            it('all parent roots can be fetched', () => {
+                cy.get('.subtrees').then(
+                    (subtreeRoots: JQuery<SubtreeElement>) => {
+                        [...subtreeRoots].forEach((root) => {
+                            root.register();
+                        });
+
+                        cy.get('#subtree-A').then(
+                            ([rootA]: JQuery<SubtreeElement>) => {
+                                cy.get('#subtree-B').then(
+                                    ([rootB]: JQuery<SubtreeElement>) => {
+                                        cy.get('#test-A').then(
+                                            ([testElement]: JQuery<
+                                                TestElement
+                                            >) => {
+                                                const roots = testElement.getSubtreeRoots();
+                                                expect(roots).to.have.length(1);
+                                                expect(roots).to.include(rootA);
+                                            }
+                                        );
+
+                                        cy.get('#test-AB').then(
+                                            ([testElement]: JQuery<
+                                                TestElement
+                                            >) => {
+                                                const roots = testElement.getSubtreeRoots();
+                                                expect(roots).to.have.length(2);
+                                                expect(roots).to.include(rootA);
+                                                expect(roots).to.include(rootB);
+                                            }
+                                        );
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
             });
         });
         context('Global Properties', () => {

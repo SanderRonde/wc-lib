@@ -16,6 +16,7 @@ export const TestElementFactory = (base: {
             return html`
                 <div class="divClass" id="divId">Test</div>
                 <h1 id="headerId" class="headerClass">${props.x}</h1>
+                <slot></slot>
             `;
         },
         CHANGE_TYPE.PROP,

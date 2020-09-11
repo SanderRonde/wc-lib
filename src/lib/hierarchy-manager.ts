@@ -97,6 +97,8 @@ class HierarchyClass {
     public static hierarchyClasses: WeakSet<
         WebComponentHierarchyManagerMixinInstance
     > = new WeakSet();
+    public isSubTreeRoot: boolean = false;
+    public subtreeProps: any = {};
 
     constructor(
         private _self: WebComponentHierarchyManagerMixinInstance,
@@ -167,7 +169,11 @@ class HierarchyClass {
         return host as WebComponentHierarchyManagerMixinInstance;
     }
 
-    private __findDirectParents(): null | WebComponentHierarchyManagerMixinInstance {
+    public findDirectParents(
+        onNode?: (node: Node) => void
+    ): null | WebComponentHierarchyManagerMixinInstance {
+        onNode?.(this._self);
+
         let element: Node | null = this._self.parentNode;
         while (
             element &&
@@ -176,8 +182,10 @@ class HierarchyClass {
             !(element instanceof DocumentFragment) &&
             !this.__isHierarchyManagerInstance(element)
         ) {
+            onNode?.(element);
             element = element.parentNode as HTMLElement | null;
         }
+        element && onNode?.(element);
 
         /* istanbul ignore if */
         if (!element) {
@@ -207,7 +215,7 @@ class HierarchyClass {
             //Found an actual root, use that
             return localRoot;
         }
-        return this.__findDirectParents();
+        return this.findDirectParents();
     }
 
     @bindToClass
@@ -229,6 +237,29 @@ class HierarchyClass {
                 newProps[key as keyof typeof newProps]
             );
         }
+    }
+
+    public registerAsSubTreeRoot<
+        P extends {
+            [key: string]: any;
+        }
+    >(props: P = {} as any): void {
+        this.isSubTreeRoot = true;
+        this.subtreeProps = props;
+    }
+
+    public setSubTreeProps<
+        P extends {
+            [key: string]: any;
+        }
+    >(props: P): void {
+        if (!this.isSubTreeRoot) {
+            throw new Error(
+                "Can't set subtree props if node has not been registered as a subtree yet. Call this.registerAsSubTreeRoot(props) first"
+            );
+        }
+        this.isSubTreeRoot = true;
+        this.subtreeProps = props;
     }
 
     public clearNonExistentChildren() {
@@ -287,6 +318,46 @@ class HierarchyClass {
         }
     }
 
+    private __getAllInPathToRoot(): WebComponentHierarchyManagerMixinInstance[] {
+        const allNodes: WebComponentHierarchyManagerMixinInstance[] = [];
+        let prevNode: WebComponentHierarchyManagerMixinInstance | null = null;
+        let resultingNode: WebComponentHierarchyManagerMixinInstance | null = this
+            ._self;
+        do {
+            prevNode = resultingNode;
+            resultingNode = this._getGetPrivate()(
+                resultingNode
+            ).findDirectParents((node) => {
+                allNodes.push(
+                    (node as unknown) as WebComponentHierarchyManagerMixinInstance
+                );
+            });
+        } while (
+            resultingNode !== null &&
+            prevNode &&
+            resultingNode !== prevNode
+        );
+
+        return allNodes.filter(
+            (value, index, arr) => arr.indexOf(value) === index
+        );
+    }
+
+    public getSubtreeRoots(): WebComponentHierarchyManagerMixinInstance[] {
+        const nodes = this.__getAllInPathToRoot();
+        return nodes
+            .filter((node) => {
+                return this._getGetPrivate()(node).isSubTreeRoot;
+            })
+            .reverse();
+    }
+
+    public getSubtreeProps(): any {
+        return this.getSubtreeRoots().reduce((prev, current) => {
+            return { ...prev, ...this._getGetPrivate()(current).subtreeProps };
+        }, {});
+    }
+
     public globalPropsFns: GlobalPropsFunctions<any> | null = null;
 }
 
@@ -326,6 +397,9 @@ export declare class WebComponentHierarchyManagerTypeInstance<
         globalProps?: {
             [key: string]: any;
         };
+        subtreeProps?: {
+            [key: string]: any;
+        };
     } = {}
 > {
     /**
@@ -361,6 +435,64 @@ export declare class WebComponentHierarchyManagerTypeInstance<
      * @returns {T} The root
      */
     public getRoot<T extends GA['root'] = {}>(): T;
+
+    /**
+     * Get the roots of all the subtrees this
+     * node is in. Aka all the nodes that called
+     * .registerAsSubTreeRoot() in this node's
+     * parent tree. (ordered from closest to furthest)
+     *
+     * @template T - The type of the subtree roots
+     *
+     * @returns {T[]} The subtree roots
+     */
+    public getSubtreeRoots<T>(): T[];
+
+    /**
+     * Register this node as a subtree root and apply
+     * its props to all child nodes recursively along
+     * with other subtrees' props
+     */
+    public registerAsSubTreeRoot<
+        P extends {
+            [key: string]: any;
+        }
+    >(props: P): void;
+
+    /**
+     * Set this subtree root's props. Can only be
+     * used on nodes that have already marked themselves
+     * as subtree roots
+     */
+    public setSubTreeProps<
+        P extends {
+            [key: string]: any;
+        }
+    >(props: P): void;
+
+    /**
+     * Get the joined subtree props that this node is in.
+     * For example if the node structure is the following:
+     * A > div > div > B > div > this
+     * Then "this" will have both A and B's subtree props
+     * applied to it. The divs in between A and B will only
+     * have A's subtree props applied.
+     * The result of getSubTreeProps then is a joining of
+     * all of the properties a node is in. So if A's
+     * props are { a: true } and B's are { b: true },
+     * the result will be { a: true, b: true }.
+     * However if there is an overlap, the closest (lowest)
+     * node's props will overwrite the furthest (highest up)
+     * one's. So in this case B is applied with higher
+     * priority than A.
+     *
+     * @template P - The props that will be returned
+     *
+     * @returns {P} The joined subtree props
+     */
+    public getSubTreeProps<
+        P extends GA['subtreeProps'] = { [key: string]: any }
+    >(): P;
 
     /**
      * Runs a function for every component in this
@@ -483,6 +615,9 @@ export const WebComponentHierarchyManagerMixin = <
             globalProps?: {
                 [key: string]: any;
             };
+            subtreeProps?: {
+                [key: string]: any;
+            };
         } = {}
     > extends superFn implements WebComponentHierarchyManagerTypeInstance<GA> {
         constructor(...args: any[]) {
@@ -513,6 +648,37 @@ export const WebComponentHierarchyManagerMixin = <
             priv.clearNonExistentChildren();
             priv.children.add(element as any);
             return priv.globalProperties as G;
+        }
+
+        public registerAsSubTreeRoot<
+            T extends {
+                [key: string]: any;
+            }
+        >(props: T = {} as any): void {
+            const priv = hierarchyClass(this);
+            priv.registerAsSubTreeRoot(props);
+        }
+
+        public setSubTreeProps<
+            T extends {
+                [key: string]: any;
+            }
+        >(props: T): void {
+            const priv = hierarchyClass(this);
+            priv.setSubTreeProps(props);
+        }
+
+        public getSubtreeRoots<
+            T = WebComponentHierarchyManagerMixinSuper
+        >(): T[] {
+            const priv = hierarchyClass(this);
+            return (priv.getSubtreeRoots() as unknown) as T[];
+        }
+
+        public getSubTreeProps<
+            P extends GA['subtreeProps'] = { [key: string]: any }
+        >(): P {
+            return hierarchyClass(this).getSubtreeProps();
         }
 
         public globalProps<

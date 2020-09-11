@@ -1,8 +1,35 @@
 <html>
-	<head><title>Complex Template</title></head>
-	<body>
-		<test-element id="test"></test-element>
-		<root-element prop_a="b" prop_c="d" id="test"></root-element>
-		<script src="complex-template.fixture.js" type="module"></script>
-	</body>
+    <head>
+        <title>Complex Template</title>
+    </head>
+    <body>
+        <test-element id="test"></test-element>
+        <root-element prop_a="b" prop_c="d" id="test"></root-element>
+        <div id="subtree-root">
+            <div>
+                <subtree-element class="subtrees" id="subtree-A">
+                    <div>
+                        <test-element class="tests" id="test-A">
+                            <div>
+                                <subtree-element
+                                    class="subtrees"
+                                    id="subtree-B"
+                                    x="5"
+                                    y="6"
+                                >
+                                    <div>
+                                        <test-element
+                                            class="tests"
+                                            id="test-AB"
+                                        ></test-element>
+                                    </div>
+                                </subtree-element>
+                            </div>
+                        </test-element>
+                    </div>
+                </subtree-element>
+            </div>
+        </div>
+        <script src="complex-template.fixture.js" type="module"></script>
+    </body>
 </html>

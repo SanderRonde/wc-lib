@@ -202,7 +202,10 @@ export async function commandCreate() {
         path.join(process.cwd(), name, `${name}.html.${io.jsx ? 'tsx' : 'ts'}`),
         htmlTemplate(name, wclib, litHTML, io.jsx)
     );
-    console.log(green(`\t${name}.html.ts`), green(checkmark()));
+    console.log(
+        green(`\t${name}.html.${io.jsx ? 'tsx' : 'ts'}`),
+        green(checkmark())
+    );
 
     await writeFile(
         path.join(process.cwd(), name, `${name}.css.ts`),

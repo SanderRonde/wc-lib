@@ -364,12 +364,15 @@ export class TemplateFn<
     R extends TemplateRenderResult = TemplateRenderResult
 > implements TemplateFnLike {
     private _lastRenderChanged: boolean = true;
+    private get _changeOnAll() {
+        return [...changeTypes.values()].reduce((prev, current) => {
+            return prev | current;
+        }, 0);
+    }
     get changeOn() {
         if (this._changeOn === CHANGE_TYPE.ALWAYS) {
             // Generate a new "always"
-            return [...changeTypes.values()].reduce((prev, current) => {
-                return prev | current;
-            }, 0);
+            return this._changeOnAll;
         }
         return this._changeOn;
     }
@@ -485,6 +488,9 @@ export class TemplateFn<
                 changed: true,
                 rendered: rendered as TR,
             };
+        }
+        if (changeType === CHANGE_TYPE.ALWAYS) {
+            changeType = this._changeOnAll;
         }
         if (this.changeOn & changeType || !templateMap.has(this)) {
             //Change, re-render

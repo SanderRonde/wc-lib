@@ -1046,7 +1046,7 @@ export namespace SSR {
                     get elementGlobal() {
                         return (
                             this._changeOn === CHANGE_TYPE.THEME ||
-                            !!(this._changeOn & CHANGE_TYPE.NEVER)
+                            !!(this._changeOn === CHANGE_TYPE.NEVER)
                         );
                     }
 

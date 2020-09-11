@@ -132,7 +132,7 @@ class BaseClass {
                 ? this.__cssArr.filter((template) => {
                       return !(
                           template.changeOn === CHANGE_TYPE.THEME ||
-                          template.changeOn & CHANGE_TYPE.NEVER
+                          template.changeOn === CHANGE_TYPE.NEVER
                       );
                   })
                 : this.__cssArr);
@@ -215,7 +215,7 @@ class BaseClass {
                 .filter((template) => {
                     return (
                         template.changeOn === CHANGE_TYPE.THEME ||
-                        template.changeOn & CHANGE_TYPE.NEVER
+                        template.changeOn === CHANGE_TYPE.NEVER
                     );
                 })
                 .map((t) => ({

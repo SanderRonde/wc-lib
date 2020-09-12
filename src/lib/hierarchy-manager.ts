@@ -243,7 +243,7 @@ class HierarchyClass {
         P extends {
             [key: string]: any;
         }
-    >(props: P = {} as any): void {
+    >(props: P): void {
         this.isSubTreeRoot = true;
         this.subtreeProps = props;
     }

@@ -173,6 +173,29 @@ export function hierarchyManagerspec(fixture: string) {
                     );
                 });
             });
+            it('can be registered without any props', () => {
+                cy.get('.tests').then((testElements: JQuery<TestElement>) => {
+                    for (const testElement of testElements) {
+                        expect(testElement.getSubTreeProps()).to.be.deep.equal(
+                            {}
+                        );
+                    }
+
+                    cy.get('.subtrees').then(
+                        (subtreeRoots: JQuery<SubtreeElement>) => {
+                            [...subtreeRoots].forEach((root) => {
+                                root.registerEmpty();
+                            });
+
+                            for (const testElement of testElements) {
+                                expect(
+                                    testElement.getSubTreeProps()
+                                ).to.be.deep.equal({});
+                            }
+                        }
+                    );
+                });
+            });
             it('returns joined root when registered', () => {
                 cy.get('.tests').then((testElements: JQuery<TestElement>) => {
                     for (const testElement of testElements) {

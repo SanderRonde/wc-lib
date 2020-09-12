@@ -17,6 +17,7 @@ export declare class SubtreeElement extends ConfigurableWebComponent<{}> {
     props: { x: number; y: number };
     updateSubtree(): void;
     register(): void;
+    registerEmpty(): void;
 }
 
 export const SubtreeFactory = (superFn: any) => {
@@ -60,6 +61,10 @@ export const SubtreeFactory = (superFn: any) => {
                 x: 0,
                 y: 0,
             });
+        }
+
+        registerEmpty() {
+            this.registerAsSubTreeRoot();
         }
 
         updateSubtree() {

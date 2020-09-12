@@ -4,7 +4,7 @@ import {
     WebComponentTemplateManagerMixinInstance,
 } from '../classes/types.js';
 import { WebComponent } from '../classes/full.js';
-import { jsxToLiteral } from './jsx-render.js';
+import { JSXDelayedExecutionCall, jsxToLiteral } from './jsx-render.js';
 
 /**
  * The type of change that should re-render
@@ -88,7 +88,7 @@ export type JSXTemplateFunction<R> = {
               }),
         attrs: A | null,
         ...children: (R | any)[]
-    ): R;
+    ): R | JSXDelayedExecutionCall;
 };
 
 export const Fragment = Symbol('fragment');
@@ -460,7 +460,9 @@ export class TemplateFn<
             } | null,
             ...children: (TR | any)[]
         ) => {
-            const { strings, values } = jsxToLiteral(tag, attrs, ...children);
+            const jsxResult = jsxToLiteral(tag, attrs, ...children);
+            if (jsxResult instanceof JSXDelayedExecutionCall) return jsxResult;
+            const { strings, values } = jsxResult;
             return templater!(strings, ...values);
         };
         jsxAddedTemplate.Fragment = jsxAddedTemplate.F = () => Fragment;
@@ -479,7 +481,7 @@ export class TemplateFn<
                 };
             }
             const templateComponent = (component as unknown) as TemplateComponent;
-            const rendered =
+            let rendered =
                 this._template === null
                     ? null
                     : (this._template as TemplateRenderFunction<
@@ -491,6 +493,11 @@ export class TemplateFn<
                           theme: getTheme(templateComponent),
                           changeType: changeType,
                       });
+
+            if (rendered instanceof JSXDelayedExecutionCall) {
+                // Collapse
+                rendered = rendered.collapse(templater!);
+            }
             templateMap.set(this, rendered);
             return {
                 changed: true,
@@ -503,7 +510,7 @@ export class TemplateFn<
         if (this.changeOn & changeType || !templateMap.has(this)) {
             //Change, re-render
             const templateComponent = (component as unknown) as TemplateComponent;
-            const rendered = (this._template as TemplateRenderFunction<
+            let rendered = (this._template as TemplateRenderFunction<
                 C,
                 InferThemeVal<C>,
                 R | TR
@@ -512,6 +519,10 @@ export class TemplateFn<
                 theme: getTheme(templateComponent),
                 changeType: changeType,
             });
+            if (rendered instanceof JSXDelayedExecutionCall) {
+                // Collapse
+                rendered = rendered.collapse(templater!);
+            }
             templateMap.set(this, rendered);
             return {
                 changed: true,

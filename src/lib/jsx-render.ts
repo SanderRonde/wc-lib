@@ -1,7 +1,7 @@
 import { Constructor, JSXIntrinsicProps } from '../classes/types.js';
+import { Fragment as _Fragment, Templater } from './template-fn.js';
 import { casingToDashes } from './props.js';
 import { ClassNamesArg } from './shared.js';
-import { Fragment } from './template-fn.js';
 
 type Listeners = {
     [key: string]: (this: any, event: Event) => any;
@@ -87,13 +87,48 @@ export interface JSXElementLiteral {
     readonly values: ReadonlyArray<unknown>;
 }
 
+export class JSXDelayedExecutionCall {
+    constructor(
+        public tag:
+            | string
+            | ((attrs?: any) => JSXElementLiteral | JSXDelayedExecutionCall)
+            | (() => typeof _Fragment)
+            | (Constructor<any> & {
+                  is: string;
+              }),
+        public attrs: any | null,
+        public children: any[]
+    ) {}
+
+    collapse(templater: Templater<any>): any {
+        let collapsed = jsxToLiteral(
+            this.tag,
+            this.attrs,
+            ...this.children.map((child): JSXElementLiteral | any => {
+                if (child instanceof JSXDelayedExecutionCall) {
+                    return child.collapse(templater);
+                }
+                return child;
+            })
+        );
+        if (collapsed instanceof JSXDelayedExecutionCall) {
+            while (collapsed instanceof JSXDelayedExecutionCall) {
+                collapsed = collapsed.collapse(templater);
+            }
+            return collapsed;
+        }
+        const { strings, values } = collapsed;
+        return templater(strings, ...values);
+    }
+}
+
 /**
  * Converts JSX to a template-literal type representation
  *
  * @template TR - The template result
  * @template A - The type of the attributes
  *
- * @param {string|((attrs?: A) => {strings: TemplateStringsArray;values: any[];})|Constructor<any> & { is: string; }} tag - The tag
+ * @param {string|((attrs?: A) => JSXDelayedExecutionCall|{strings: TemplateStringsArray;values: any[];})|Constructor<any> & { is: string; }} tag - The tag
  * 	itself. Can either be a string, a class instance that contains an
  *  `is` property that will be used, or a function that returns
  *  a template result
@@ -103,7 +138,104 @@ export interface JSXElementLiteral {
  * 	a result of this function (so nested JSX templates) or
  * 	something else such as a value.
  *
- * @returns {{ strings: TemplateStringsArray; values: any[]; }} A
+ * @returns {JSXDelayedExecutionCall} A	representation of the JSX element
+ */
+export function jsx<
+    TR,
+    A extends {
+        [key: string]: any;
+    }
+>(
+    tag:
+        | string
+        | ((attrs?: A) => JSXElementLiteral | JSXDelayedExecutionCall)
+        | (() => typeof _Fragment)
+        | (Constructor<any> & {
+              is: string;
+          }),
+    attrs: A | null,
+    ...children: (TR | JSXDelayedExecutionCall | any)[]
+): JSXDelayedExecutionCall {
+    return new JSXDelayedExecutionCall(tag, attrs, children);
+}
+const _jsx = jsx;
+export namespace html {
+    /**
+     * Converts JSX to a template-literal type representation
+     *
+     * @template TR - The template result
+     * @template A - The type of the attributes
+     *
+     * @param {string|((attrs?: A) => JSXDelayedExecutionCall|{strings: TemplateStringsArray;values: any[];})|Constructor<any> & { is: string; }} tag - The tag
+     * 	itself. Can either be a string, a class instance that contains an
+     *  `is` property that will be used, or a function that returns
+     *  a template result
+     * @param {{ [key: string]: any; }|null} attrs - The attributes
+     * 	of this tag
+     * @param {(TR|any[]} children - Child of this template. Either
+     * 	a result of this function (so nested JSX templates) or
+     * 	something else such as a value.
+     *
+     * @returns {JSXDelayedExecutionCall} A	representation of the JSX element
+     */
+    export function jsx<
+        TR,
+        A extends {
+            [key: string]: any;
+        }
+    >(
+        tag:
+            | string
+            | ((attrs?: A) => JSXElementLiteral | JSXDelayedExecutionCall)
+            | (() => typeof _Fragment)
+            | (Constructor<any> & {
+                  is: string;
+              }),
+        attrs: A | null,
+        ...children: (TR | JSXDelayedExecutionCall | any)[]
+    ): JSXDelayedExecutionCall {
+        return _jsx(tag, attrs, ...children);
+    }
+
+    /**
+     * A JSX fragment
+     */
+    export function Fragment() {
+        return _Fragment;
+    }
+
+    /**
+     * A JSX fragment
+     */
+    export function F() {
+        return _Fragment;
+    }
+}
+
+export function collapseJSXDelayedExecution(
+    call: JSXDelayedExecutionCall,
+    templater: Templater<any>
+): JSXElementLiteral {
+    return call.collapse(templater);
+}
+
+/**
+ * Converts JSX to a template-literal type representation
+ *
+ * @template TR - The template result
+ * @template A - The type of the attributes
+ *
+ * @param {string|((attrs?: A) => JSXDelayedExecutionCall|{strings: TemplateStringsArray;values: any[];})|Constructor<any> & { is: string; }} tag - The tag
+ * 	itself. Can either be a string, a class instance that contains an
+ *  `is` property that will be used, or a function that returns
+ *  a template result
+ * @param {{ [key: string]: any; }|null} attrs - The attributes
+ * 	of this tag
+ * @param {(TR|any[]} children - Child of this template. Either
+ * 	a result of this function (so nested JSX templates) or
+ * 	something else such as a value.
+ *
+ * @returns {JSXDelayedExecutionCall|{ strings: TemplateStringsArray; values: any[]; }} A
  * 	representation of the JSX element in template literal form
  */
 export function jsxToLiteral<
@@ -114,14 +246,50 @@ export function jsxToLiteral<
 >(
     tag:
         | string
+        | ((attrs?: A) => JSXElementLiteral | JSXDelayedExecutionCall)
+        | (() => typeof _Fragment)
+        | (Constructor<any> & {
+              is: string;
+          }),
+    attrs: A | null,
+    ...children: (TR | JSXDelayedExecutionCall | any)[]
+): JSXDelayedExecutionCall | JSXElementLiteral;
+export function jsxToLiteral<
+    TR,
+    A extends {
+        [key: string]: any;
+    }
+>(
+    tag:
+        | string
         | ((attrs?: A) => JSXElementLiteral)
-        | (() => typeof Fragment)
+        | (() => typeof _Fragment)
         | (Constructor<any> & {
               is: string;
           }),
     attrs: A | null,
     ...children: (TR | any)[]
-): JSXElementLiteral {
+): JSXElementLiteral;
+export function jsxToLiteral<
+    TR,
+    A extends {
+        [key: string]: any;
+    }
+>(
+    tag:
+        | string
+        | ((attrs?: A) => JSXElementLiteral | JSXDelayedExecutionCall)
+        | (() => typeof _Fragment)
+        | (Constructor<any> & {
+              is: string;
+          }),
+    attrs: A | null,
+    ...children: (TR | JSXDelayedExecutionCall | any)[]
+): JSXElementLiteral | JSXDelayedExecutionCall {
+    if (children.some((c) => c instanceof JSXDelayedExecutionCall)) {
+        return jsx(tag, attrs, ...children);
+    }
+
     let tagName: string;
     if (typeof tag === 'string') {
         // Just a regular string
@@ -137,9 +305,9 @@ export function jsxToLiteral<
 
         /* istanbul ignore next */
         const returnValue = (tag as
-            | ((attrs?: A) => JSXElementLiteral)
-            | (() => typeof Fragment))(attrs || ({} as A));
-        if (returnValue !== Fragment) {
+            | ((attrs?: A) => JSXElementLiteral | JSXDelayedExecutionCall)
+            | (() => typeof _Fragment))(attrs || ({} as A));
+        if (returnValue !== _Fragment) {
             // Regular functional component return value
             return returnValue;
         }

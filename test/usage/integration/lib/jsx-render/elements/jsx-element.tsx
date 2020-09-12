@@ -9,6 +9,7 @@ import {
     ClassNamesArg,
     WebComponent,
     jsxToLiteral,
+    html,
 } from '../../../../../../build/es/wc-lib.js';
 import { JSXTemplater } from '../../../../../../build/es/lib/template-fn';
 import {
@@ -21,7 +22,7 @@ import {
     isDirective,
     noChange,
     render,
-    html,
+    html as litHTMLHTML,
 } from '../../.../../../../../../node_modules/lit-html/lit-html.js';
 import { JSXElementLiteral } from '../../../../../../build/es/lib/jsx-render.js';
 
@@ -127,8 +128,12 @@ const jsxFn: JSXTemplater<JSXElementLiteral>['jsx'] = (
     attrs,
     ...children
 ) => {
-    const { strings, values } = jsxToLiteral(tag, attrs, ...children);
-    return html(strings, ...values);
+    const { strings, values } = jsxToLiteral(
+        tag,
+        attrs,
+        ...children
+    ) as JSXElementLiteral;
+    return litHTMLHTML(strings, ...values);
 };
 
 function FnWithoutArgs() {
@@ -360,3 +365,47 @@ export class JSXElement3 extends ConfigurableWebComponent {}
     css: null,
 })
 export class JSXElement4 extends ConfigurableWebComponent {}
+
+function RendererWithoutTemplater() {
+    return <div id="4"></div>;
+}
+
+@config({
+    is: 'jsx-render-5',
+    html: new TemplateFn<JSXElement5>(
+        function(html) {
+            return (
+                <html.F>
+                    <div id="1"></div>
+                    <div id="2"></div>
+                    <div id="3"></div>
+                    <RendererWithoutTemplater />
+                </html.F>
+            );
+        },
+        CHANGE_TYPE.PROP,
+        render
+    ),
+    css: null,
+})
+export class JSXElement5 extends ConfigurableWebComponent {}
+
+@config({
+    is: 'jsx-render-6',
+    html: new TemplateFn<JSXElement6>(
+        function() {
+            return (
+                <html.F>
+                    <div id="1"></div>
+                    <div id="2"></div>
+                    <div id="3"></div>
+                    <RendererWithoutTemplater />
+                </html.F>
+            );
+        },
+        CHANGE_TYPE.PROP,
+        render
+    ),
+    css: null,
+})
+export class JSXElement6 extends ConfigurableWebComponent {}

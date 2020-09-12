@@ -4,6 +4,8 @@ import {
     SpecialPropClass,
     JSXElement3,
     JSXElement4,
+    JSXElement5,
+    JSXElement6,
 } from './elements/jsx-element.js';
 import { CHANGE_TYPE } from '../../../../../build/es/wc-lib.js';
 import { getLibFixture } from '../../../lib/testing.js';
@@ -178,6 +180,28 @@ function jsxRenderSpec(fixture: string) {
                         );
                         expect(textRender).to.not.include('not-rendered');
                         expect(textRender).to.not.include('false');
+                    });
+                });
+                it('can use delayed execution JSX in regular JSX parents', () => {
+                    cy.get('#test5').then(([jsxEl]: JQuery<JSXElement5>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.include(
+                            '<div id="1"></div><div id="2"></div><div id="3"></div><div id="4"></div>'
+                        );
+                    });
+                });
+                it('can use delayed execution JSX in delayed parents', () => {
+                    cy.get('#test6').then(([jsxEl]: JQuery<JSXElement6>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.include(
+                            '<div id="1"></div><div id="2"></div><div id="3"></div><div id="4"></div>'
+                        );
                     });
                 });
             });

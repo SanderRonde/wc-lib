@@ -409,3 +409,23 @@ export class JSXElement5 extends ConfigurableWebComponent {}
     css: null,
 })
 export class JSXElement6 extends ConfigurableWebComponent {}
+
+@config({
+    is: 'jsx-render-7',
+    html: new TemplateFn<JSXElement6>(
+        function() {
+            return (
+                <html.Fragment>
+                    <div id="1"></div>
+                    <div id="2"></div>
+                    <div id="3"></div>
+                    <RendererWithoutTemplater />
+                </html.Fragment>
+            );
+        },
+        CHANGE_TYPE.NEVER,
+        render
+    ),
+    css: null,
+})
+export class JSXElement7 extends ConfigurableWebComponent {}

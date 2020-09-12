@@ -212,13 +212,6 @@ export namespace html {
     }
 }
 
-export function collapseJSXDelayedExecution(
-    call: JSXDelayedExecutionCall,
-    templater: Templater<any>
-): JSXElementLiteral {
-    return call.collapse(templater);
-}
-
 /**
  * Converts JSX to a template-literal type representation
  *

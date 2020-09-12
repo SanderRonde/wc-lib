@@ -33,19 +33,27 @@ export const enum CHANGE_TYPE {
      */
     LANG = 4,
     /**
+     * Subtree property changes
+     */
+    SUBTREE_PROPS = 8,
+    /**
+     * Global property changes
+     */
+    GLOBAL_PROPS = 16,
+    /**
      * Any change
      */
-    // 15 = 1 | 2 | 4 | 8
-    ALWAYS = 15,
+    // 31 = 1 | 2 | 4 | 8 | 16 | 32
+    ALWAYS = 63,
     /**
      * A forced user-engaged change
      */
-    // 31 = 1 | 2 | 4 | 16
-    FORCE = 31,
+    // 127 = 1 | 2 | 4 | 8 | 16 | 32 | 64
+    FORCE = 127,
 }
 
-const changeTypes: Set<number> = new Set([1, 2, 4, 8]);
-let lastChangeType: number = 16;
+const changeTypes: Set<number> = new Set([1, 2, 4, 8, 16, 32]);
+let lastChangeType: number = 64;
 export function createUniqueChangeType() {
     const num = lastChangeType * 2;
     changeTypes.add(num);

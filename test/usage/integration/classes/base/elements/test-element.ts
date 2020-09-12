@@ -41,6 +41,8 @@ export interface RenderTestWindow extends Window {
         'prop-theme': number;
         'prop-lang': number;
         'theme-lang': number;
+        'subtree-props': number;
+        'global-props': number;
         all: number;
         custom: number;
     };
@@ -271,6 +273,38 @@ export function baseTestElementFactory(base: {
         ),
     })
     class RenderTestElementCustom extends TestElementBase {}
+
+    window.renderCalled['subtree-props'] = 0;
+    @config({
+        is: 'render-test-subtree-props',
+        html: new TemplateFn<RenderTestElementAll>(
+            () => {
+                window.renderCalled['subtree-props']++;
+                return html`
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.SUBTREE_PROPS,
+            render
+        ),
+    })
+    class RenderTestElementSubtreeProps extends TestElementBase {}
+
+    window.renderCalled['global-props'] = 0;
+    @config({
+        is: 'render-test-global-props',
+        html: new TemplateFn<RenderTestElementAll>(
+            () => {
+                window.renderCalled['global-props']++;
+                return html`
+                    <div></div>
+                `;
+            },
+            CHANGE_TYPE.GLOBAL_PROPS,
+            render
+        ),
+    })
+    class RenderTestElementGlobalProps extends TestElementBase {}
 
     class NoCSS extends base {
         static is = 'no-css';
@@ -511,6 +545,8 @@ export function baseTestElementFactory(base: {
     RenderTestElementThemeLang.define(true);
     RenderTestElementAll.define(true);
     RenderTestElementCustom.define(true);
+    RenderTestElementSubtreeProps.define(true);
+    RenderTestElementGlobalProps.define(true);
     HTMLElementTemplate.define(true);
 
     NoCSS.define(true);

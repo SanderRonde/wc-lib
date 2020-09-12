@@ -338,6 +338,21 @@ export function hierarchyManagerspec(fixture: string) {
                     }
                 );
             });
+            it('calls subtree props changed when props are changed', () => {
+                cy.get('#subtree-A').then(
+                    ([subtreeRoot]: JQuery<SubtreeElement>) => {
+                        expect(subtreeRoot.renders).to.be.equal(1);
+
+                        subtreeRoot.register();
+
+                        expect(subtreeRoot.renders).to.be.equal(2);
+
+                        subtreeRoot.updateSubtree();
+
+                        expect(subtreeRoot.renders).to.be.equal(3);
+                    }
+                );
+            });
         });
         context('Global Properties', () => {
             afterEach(() => {
@@ -412,6 +427,22 @@ export function hierarchyManagerspec(fixture: string) {
                                     element.globalProps().get('a')
                                 ).to.be.equal('b', 'prop was changed back');
                             }
+                        }
+                    );
+                });
+            });
+            context('Rendering', () => {
+                beforeEach(() => {
+                    cy.reload(true);
+                });
+                it('calls render with CHANGE_TYPE.GLOBAL_PROPS when global props change', () => {
+                    cy.get('root-element').then(
+                        ([root]: JQuery<RootElement>) => {
+                            expect(root.renders).to.be.equal(1);
+
+                            root.globalProps().set('a', '10');
+
+                            expect(root.renders).to.be.equal(2);
                         }
                     );
                 });

@@ -27,6 +27,7 @@ export declare class RootElement extends ConfigurableWebComponent<{
     root: RootElement;
     globalProps: TestGlobalProperties;
 }> {
+    renders: number;
     props: { x: number };
 }
 
@@ -45,7 +46,8 @@ export const RootElementFactory = (superFn: any) => {
     );
 
     const RootElementCSS = new TemplateFn<RootElement>(
-        () => {
+        function() {
+            this.renders++;
             return html`
                 <style>
                     * {
@@ -54,7 +56,7 @@ export const RootElementFactory = (superFn: any) => {
                 </style>
             `;
         },
-        CHANGE_TYPE.NEVER,
+        CHANGE_TYPE.GLOBAL_PROPS,
         render
     );
 
@@ -80,6 +82,8 @@ export const RootElementFactory = (superFn: any) => {
         root: RootElement;
         globalProps: TestGlobalProperties;
     }> {
+        public renders: number = 0;
+
         props = Props.define(this as any, {
             reflect: {
                 x: {

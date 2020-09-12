@@ -15,6 +15,7 @@ import { TestElementFactory } from '../../elements/test-element-factory.js';
 
 export declare class SubtreeElement extends ConfigurableWebComponent<{}> {
     props: { x: number; y: number };
+    renders: number;
     updateSubtree(): void;
     register(): void;
     registerEmpty(): void;
@@ -31,10 +32,21 @@ export const SubtreeFactory = (superFn: any) => {
         render
     );
 
+    const SubtreeElementCSS = new TemplateFn<SubtreeElement>(
+        function() {
+            this.renders++;
+            return html`
+                <style></style>
+            `;
+        },
+        CHANGE_TYPE.SUBTREE_PROPS,
+        render
+    );
+
     @config({
         is: 'subtree-element',
         html: SubtreeElementHTML,
-        css: null,
+        css: SubtreeElementCSS,
         dependencies: [
             ParentElementFactory(superFn),
             TestElementFactory(superFn),
@@ -55,6 +67,8 @@ export const SubtreeFactory = (superFn: any) => {
                 },
             },
         });
+
+        public renders: number = 0;
 
         register() {
             this.registerAsSubTreeRoot({

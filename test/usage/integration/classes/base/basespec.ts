@@ -337,6 +337,12 @@ export function baseSpec(fixture: string) {
                     document.body.appendChild(
                         document.createElement('render-test-custom')
                     );
+                    document.body.appendChild(
+                        document.createElement('render-test-subtree-props')
+                    );
+                    document.body.appendChild(
+                        document.createElement('render-test-global-props')
+                    );
                 });
             });
 
@@ -351,6 +357,8 @@ export function baseSpec(fixture: string) {
                     'prop-theme': boolean;
                     'prop-lang': boolean;
                     'theme-lang': boolean;
+                    'subtree-props': boolean;
+                    'global-props': boolean;
                     all: boolean;
                     custom: boolean;
                 }
@@ -413,6 +421,8 @@ export function baseSpec(fixture: string) {
                     'prop-theme': true,
                     'prop-lang': true,
                     'theme-lang': false,
+                    'global-props': false,
+                    'subtree-props': false,
                     all: true,
                     custom: false,
                 });
@@ -427,6 +437,8 @@ export function baseSpec(fixture: string) {
                     'prop-theme': true,
                     'prop-lang': false,
                     'theme-lang': true,
+                    'global-props': false,
+                    'subtree-props': false,
                     all: true,
                     custom: false,
                 });
@@ -441,6 +453,8 @@ export function baseSpec(fixture: string) {
                     'prop-theme': false,
                     'prop-lang': true,
                     'theme-lang': true,
+                    'global-props': false,
+                    'subtree-props': false,
                     all: true,
                     custom: false,
                 });
@@ -455,6 +469,8 @@ export function baseSpec(fixture: string) {
                     'prop-theme': true,
                     'prop-lang': true,
                     'theme-lang': true,
+                    'global-props': true,
+                    'subtree-props': true,
                     all: true,
                     custom: true,
                 });
@@ -469,7 +485,41 @@ export function baseSpec(fixture: string) {
                     'prop-theme': true,
                     'prop-lang': true,
                     'theme-lang': true,
+                    'global-props': true,
+                    'subtree-props': true,
                     all: true,
+                    custom: false,
+                });
+            });
+            context('CHANGE_TYPE.SUBTREE_PROPS', () => {
+                genChangeTypeCases(CHANGE_TYPE.SUBTREE_PROPS, {
+                    never: false,
+                    prop: false,
+                    theme: false,
+                    lang: false,
+                    always: true,
+                    'prop-theme': false,
+                    'prop-lang': false,
+                    'theme-lang': false,
+                    'global-props': false,
+                    'subtree-props': true,
+                    all: false,
+                    custom: false,
+                });
+            });
+            context('CHANGE_TYPE.GLOBAL_PROPS', () => {
+                genChangeTypeCases(CHANGE_TYPE.GLOBAL_PROPS, {
+                    never: false,
+                    prop: false,
+                    theme: false,
+                    lang: false,
+                    always: true,
+                    'prop-theme': false,
+                    'prop-lang': false,
+                    'theme-lang': false,
+                    'global-props': true,
+                    'subtree-props': false,
+                    all: false,
                     custom: false,
                 });
             });
@@ -483,6 +533,8 @@ export function baseSpec(fixture: string) {
                     'prop-theme': false,
                     'prop-lang': false,
                     'theme-lang': false,
+                    'global-props': false,
+                    'subtree-props': false,
                     all: false,
                     custom: true,
                 });

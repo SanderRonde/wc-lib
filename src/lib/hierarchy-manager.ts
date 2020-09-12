@@ -4,9 +4,10 @@ import {
     InferInstance,
     DefaultVal,
 } from '../classes/types.js';
+import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentListenableMixinInstance } from './listener.js';
+import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
-import { bindToClass } from './base.js';
 
 /**
  * The type of the `component.listenGP` function
@@ -239,6 +240,12 @@ class HierarchyClass {
         }
     }
 
+    private __subtreeChangeNotifyChildren() {
+        this.__propagateDown((element) => {
+            element.renderToDOM(CHANGE_TYPE.SUBTREE_PROPS);
+        }, []);
+    }
+
     public registerAsSubTreeRoot<
         P extends {
             [key: string]: any;
@@ -246,6 +253,7 @@ class HierarchyClass {
     >(props: P): void {
         this.isSubTreeRoot = true;
         this.subtreeProps = props;
+        this.__subtreeChangeNotifyChildren();
     }
 
     public setSubTreeProps<
@@ -260,6 +268,7 @@ class HierarchyClass {
         }
         this.isSubTreeRoot = true;
         this.subtreeProps = props;
+        this.__subtreeChangeNotifyChildren();
     }
 
     public clearNonExistentChildren() {
@@ -288,7 +297,9 @@ class HierarchyClass {
         if (this.globalProperties[key] !== value) {
             const oldVal = this.globalProperties[key];
             this.globalProperties[key] = value;
+
             this._self.fire('globalPropChange', key, value, oldVal);
+            this._self.renderToDOM(CHANGE_TYPE.GLOBAL_PROPS);
         }
     }
 
@@ -382,6 +393,7 @@ export type WebComponentHierarchyManagerMixinClass = InferReturn<
  */
 export type WebComponentHierarchyManagerMixinSuper = Constructor<
     Pick<WebComponentListenableMixinInstance, 'listen' | 'fire'> &
+        Pick<WebComponentBaseMixinInstance, 'renderToDOM'> &
         HTMLElement & {
             connectedCallback(): void;
         }

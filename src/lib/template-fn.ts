@@ -1,10 +1,9 @@
 import {
     Constructor,
-    WebComponentThemeManagerMixinInstance,
     WebComponentTemplateManagerMixinInstance,
 } from '../classes/types.js';
-import { WebComponent } from '../classes/full.js';
 import { JSXDelayedExecutionCall, jsxToLiteral } from './jsx-render.js';
+import { WebComponent } from '../classes/full.js';
 
 /**
  * The type of change that should re-render
@@ -136,7 +135,6 @@ export type TemplateRenderResult =
  * specified change
  *
  * @template C - The base component
- * @template T - The theme object
  * @template TR - The value that is returned
  * 	by this render function that, when passed
  * 	to the renderer, renders the template to
@@ -144,9 +142,8 @@ export type TemplateRenderResult =
  */
 export type TemplateRenderFunction<
     C extends {
-        props?: any;
+        getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
     },
-    T,
     TR extends TemplateRenderResult
 > = (
     /**
@@ -194,20 +191,7 @@ export type TemplateRenderFunction<
     /**
      * Various parameters to this change
      */
-    params: {
-        /**
-         * The component's properties
-         */
-        props: C['props'];
-        /**
-         * The component's current theme
-         */
-        theme: T;
-        /**
-         * The current change
-         */
-        changeType: CHANGE_TYPE | number;
-    }
+    params: ReturnType<C['getRenderArgs']>
 ) => TR;
 
 /**
@@ -217,7 +201,7 @@ const templaterMap: WeakMap<
     Templater<any>,
     WeakMap<
         {
-            props?: any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
         },
         WeakMap<
             TemplateFn<any, any>,
@@ -257,15 +241,15 @@ export interface TemplateFnLike<CT extends number = number> {
      *
      * @param {CHANGE_TYPE} changeType - The type of the change
      * 	that occurred that caused this render to happen
-     * @param {{props?: any}} component - The component to which
-     * 	this text is rendered
+     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): any;}} component -
+     *  The component to which this text is rendered
      *
      * @returns {string} The rendered string
      */
     renderAsText(
         changeType: CT,
         component: {
-            props?: any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
         }
     ): string;
 
@@ -276,8 +260,8 @@ export interface TemplateFnLike<CT extends number = number> {
      *
      * @param {CHANGE_TYPE} changeType - The type of the change
      * 	that occurred that caused this render to happen
-     * @param {{props?: any}} component - The component to which
-     * 	this text is rendered
+     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): any;}} component -
+     *  The component to which this text is rendered
      *
      * @returns {any|null} The template representation or null
      * 	if nothing needs to be rendered (for example the
@@ -286,7 +270,7 @@ export interface TemplateFnLike<CT extends number = number> {
     renderTemplate(
         changeType: CT,
         component: {
-            props?: any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
         }
     ): any | null;
 
@@ -297,8 +281,8 @@ export interface TemplateFnLike<CT extends number = number> {
      *
      * @param {CHANGE_TYPE} changeType - The type of the change
      * 	that occurred that caused this render to happen
-     * @param {{props?: any}} component - The component to which
-     * 	this text is rendered
+     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): any;}} component -
+     *  The component to which this text is rendered
      * @param {any} templater - The templater that will be used
      *  to rendeer this template.
      *
@@ -308,7 +292,7 @@ export interface TemplateFnLike<CT extends number = number> {
     renderSame(
         changeType: CT,
         component: {
-            props?: any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
         },
         templater: any
     ): any | string | null;
@@ -340,25 +324,6 @@ export interface TemplateFnLike<CT extends number = number> {
     renderIfNew(template: any | null, target: HTMLElement): void;
 }
 
-type TemplateComponent = Partial<
-    Pick<WebComponentThemeManagerMixinInstance, 'getTheme'>
-> & {
-    props: any;
-};
-
-type InferThemeVal<C> = C extends {
-    getTheme(): infer T;
-}
-    ? T
-    : void;
-
-function getTheme(component: TemplateComponent) {
-    if ('getTheme' in component && component.getTheme) {
-        return component.getTheme();
-    }
-    return null;
-}
-
 /**
  * A template class that renders given template
  * when given change occurs using given renderer
@@ -368,7 +333,9 @@ function getTheme(component: TemplateComponent) {
  * @template R - The return value of the template function
  */
 export class TemplateFn<
-    C extends {} = WebComponent<any, any>,
+    C extends {
+        getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+    } = WebComponent<any, any>,
     R extends TemplateRenderResult = TemplateRenderResult
 > implements TemplateFnLike {
     private _lastRenderChanged: boolean = true;
@@ -400,12 +367,12 @@ export class TemplateFn<
      * 	tasked with rendering it to the DOM
      */
     constructor(
-        _template: TemplateRenderFunction<C, InferThemeVal<C>, R> | null,
+        _template: TemplateRenderFunction<C, R> | null,
         changeOn: CHANGE_TYPE.NEVER,
         renderer: Renderer<R> | null
     );
     constructor(
-        _template: TemplateRenderFunction<C, InferThemeVal<C>, R>,
+        _template: TemplateRenderFunction<C, R>,
         changeOn:
             | CHANGE_TYPE.ALWAYS
             | CHANGE_TYPE.PROP
@@ -415,11 +382,7 @@ export class TemplateFn<
         renderer: Renderer<R> | null
     );
     constructor(
-        private _template: TemplateRenderFunction<
-            C,
-            InferThemeVal<C>,
-            R
-        > | null,
+        private _template: TemplateRenderFunction<C, R> | null,
         private _changeOn: CHANGE_TYPE | number,
         private _renderer: Renderer<R> | null
     ) {}
@@ -480,19 +443,17 @@ export class TemplateFn<
                     rendered: cached,
                 };
             }
-            const templateComponent = (component as unknown) as TemplateComponent;
             let rendered =
                 this._template === null
                     ? null
                     : (this._template as TemplateRenderFunction<
                           C,
-                          InferThemeVal<C>,
                           R | TR
-                      >).call(component, jsxAddedTemplate!, {
-                          props: templateComponent.props,
-                          theme: getTheme(templateComponent),
-                          changeType: changeType,
-                      });
+                      >).call(
+                          component,
+                          jsxAddedTemplate!,
+                          component.getRenderArgs(changeType)
+                      );
 
             if (rendered instanceof JSXDelayedExecutionCall) {
                 // Collapse
@@ -509,16 +470,14 @@ export class TemplateFn<
         }
         if (this.changeOn & changeType || !templateMap.has(this)) {
             //Change, re-render
-            const templateComponent = (component as unknown) as TemplateComponent;
             let rendered = (this._template as TemplateRenderFunction<
                 C,
-                InferThemeVal<C>,
                 R | TR
-            >).call(component, jsxAddedTemplate!, {
-                props: templateComponent.props,
-                theme: getTheme(templateComponent),
-                changeType: changeType,
-            });
+            >).call(
+                component,
+                jsxAddedTemplate!,
+                component.getRenderArgs(changeType)
+            );
             if (rendered instanceof JSXDelayedExecutionCall) {
                 // Collapse
                 rendered = rendered.collapse(templater!);

@@ -100,6 +100,28 @@ export function hierarchyManagerspec(fixture: string) {
                     expectMethodExists(el, 'getSubTreeProps');
                 });
             });
+            it('exposes a #getRenderArgs method', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'getRenderArgs');
+                });
+            });
+            it('returns the current subtree and global props from #getRenderArgs', () => {
+                cy.get('root-element, subtree-element').then(
+                    (elements: JQuery<RootElement | SubtreeElement>) => {
+                        for (const element of elements) {
+                            const renderArgs = element.getRenderArgs(0);
+                            expect(renderArgs).to.have.property(
+                                'subtreeProps',
+                                element.getSubTreeProps()
+                            );
+                            expect(renderArgs).to.have.property(
+                                'globalProps',
+                                (element.globalProps as any)().all
+                            );
+                        }
+                    }
+                );
+            });
         });
         context('Hierarchy', () => {
             it('determines root-element as the root', () => {
@@ -338,20 +360,33 @@ export function hierarchyManagerspec(fixture: string) {
                     }
                 );
             });
-            it('calls subtree props changed when props are changed', () => {
-                cy.get('#subtree-A').then(
-                    ([subtreeRoot]: JQuery<SubtreeElement>) => {
-                        expect(subtreeRoot.renders).to.be.equal(1);
+            context('rendering', () => {
+                it('passes global props to renders', () => {
+                    cy.get('root-element').then(
+                        ([root]: JQuery<SubtreeElement>) => {
+                            expect(root.lastRenderSubtreeProps)
+                                .to.be.equal(root.getSubTreeProps())
+                                .to.be.equal(
+                                    root.getRenderArgs(0).subtreeProps
+                                );
+                        }
+                    );
+                });
+                it('calls subtree props changed when props are changed', () => {
+                    cy.get('#subtree-A').then(
+                        ([subtreeRoot]: JQuery<SubtreeElement>) => {
+                            expect(subtreeRoot.renders).to.be.equal(1);
 
-                        subtreeRoot.register();
+                            subtreeRoot.register();
 
-                        expect(subtreeRoot.renders).to.be.equal(2);
+                            expect(subtreeRoot.renders).to.be.equal(2);
 
-                        subtreeRoot.updateSubtree();
+                            subtreeRoot.updateSubtree();
 
-                        expect(subtreeRoot.renders).to.be.equal(3);
-                    }
-                );
+                            expect(subtreeRoot.renders).to.be.equal(3);
+                        }
+                    );
+                });
             });
         });
         context('Global Properties', () => {
@@ -434,6 +469,15 @@ export function hierarchyManagerspec(fixture: string) {
             context('Rendering', () => {
                 beforeEach(() => {
                     cy.reload(true);
+                });
+                it('passes global props to renders', () => {
+                    cy.get('root-element').then(
+                        ([root]: JQuery<RootElement>) => {
+                            expect(root.lastRenderGP)
+                                .to.be.equal(root.globalProps().all)
+                                .to.be.equal(root.getRenderArgs(0).globalProps);
+                        }
+                    );
                 });
                 it('calls render with CHANGE_TYPE.GLOBAL_PROPS when global props change', () => {
                     cy.get('root-element').then(

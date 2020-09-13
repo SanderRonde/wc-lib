@@ -10,5 +10,5 @@ export function i18nManagerDefaultsFixtureFactory(
     });
 
     (window as any).WebComponent = base;
-    LangElementFactory(base).define(true);
+    LangElementFactory(base as any).define(true);
 }

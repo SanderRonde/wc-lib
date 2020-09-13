@@ -1,4 +1,4 @@
-import { TemplateFn, Renderer } from '../template-fn.js';
+import { TemplateFn, Renderer, CHANGE_TYPE } from '../template-fn.js';
 
 /**
  * Functions related to templates and manipulation of them
@@ -19,7 +19,11 @@ export namespace Templates {
      *
      * @returns {TemplateFn<T, any, any>} The merged template
      */
-    export function joinTemplates<T extends { props: any }>(
+    export function joinTemplates<
+        T extends {
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+        }
+    >(
         renderer: Renderer<T>,
         ...templates: TemplateFn<T, any>[]
     ): TemplateFn<T, any> {

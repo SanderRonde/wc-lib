@@ -3,4 +3,4 @@ import { ThemingWebComponent } from '../../../../../../../build/es/classes/parti
 import { DefineMetadata } from '../../../../../../../build/es/wc-lib.js';
 
 (window as any).DefineMetadata = DefineMetadata;
-ParentElementFactory(ThemingWebComponent);
+ParentElementFactory(ThemingWebComponent as any);

@@ -13,6 +13,7 @@ import {
     directive,
     Part,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
+import { RenderableComponent } from '../../../../../types/test-types.js';
 import { TestElement } from '../../elements/test-element.js';
 
 export declare class EventTriggeringElement extends ConfigurableWebComponent<{
@@ -40,7 +41,7 @@ export declare class ComplexElement extends ConfigurableWebComponent {
 
 export declare class WrongElementListen extends ConfigurableWebComponent {}
 
-export function complexElementFactory(base: any) {
+export function complexElementFactory(base: typeof RenderableComponent) {
     @config({
         is: 'event-triggering-element',
         html: new TemplateFn<EventTriggeringElement>(

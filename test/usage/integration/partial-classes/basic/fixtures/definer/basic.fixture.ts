@@ -3,4 +3,4 @@ import { BasicWebComponent } from '../../../../../../../build/es/classes/partial
 import { DefineMetadata } from '../../../../../../../build/es/wc-lib.js';
 
 (window as any).DefineMetadata = DefineMetadata;
-ParentElementFactory(BasicWebComponent);
+ParentElementFactory(BasicWebComponent as any);

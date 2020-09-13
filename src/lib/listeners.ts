@@ -75,6 +75,9 @@ export namespace Listeners {
             globalProps?: {
                 [key: string]: any;
             };
+            subtreeProps?: {
+                [key: string]: any;
+            };
         },
         E extends EventListenerObj,
         ELS extends SelectorMap,

@@ -29,14 +29,17 @@ import {
 import {
     WebComponentBaseTypeInstance,
     WebComponentBaseTypeStatic,
+    GetRenderArgsBaseMixin,
 } from '../lib/base.js';
 import {
     WebComponentHierarchyManagerTypeInstance,
     WebComponentHierarchyManagerTypeStatic,
+    GetRenderArgsHierarchyManagerMixin,
 } from '../lib/hierarchy-manager.js';
 import {
     WebComponentThemeManagerTypeStatic,
     WebComponentThemeManagerTypeInstance,
+    GetRenderArgsThemeManagerMixin,
 } from '../lib/theme-manager.js';
 import {
     WebComponentI18NManagerTypeStatic,
@@ -50,6 +53,7 @@ import {
     WebComponentCustomCSSManagerTypeStatic,
     WebComponentCustomCSSManagerTypeInstance,
 } from '../lib/custom-css-manager.js';
+import { CHANGE_TYPE } from '../lib/template-fn.js';
 
 /**
  * A full webcomponent that uses every layer and provides
@@ -89,6 +93,9 @@ export const FullWebComponent = (WebComponentMixin(
             i18n?: any;
             langs?: string;
             selectors?: SelectorMap;
+            subtreeProps?: {
+                [key: string]: any;
+            };
         } = {},
         E extends EventListenerObj = GetEvents<GA>,
         ELS extends SelectorMap = GetEls<GA>
@@ -144,7 +151,18 @@ export class WebComponent<
         globalProps?: {
             [key: string]: any;
         };
+        subtreeProps?: {
+            [key: string]: any;
+        };
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends FullWebComponent<GA, E, ELS> {}
+> extends FullWebComponent<GA, E, ELS> {
+    getRenderArgs<CT extends CHANGE_TYPE | number>(
+        changeType: CT
+    ): GetRenderArgsBaseMixin<this> &
+        GetRenderArgsThemeManagerMixin<this> &
+        GetRenderArgsHierarchyManagerMixin<this> {
+        return super.getRenderArgs(changeType);
+    }
+}

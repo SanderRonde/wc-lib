@@ -106,6 +106,11 @@ export function baseSpec(fixture: string) {
                     expectMethodExists(el, 'renderToDOM');
                 });
             });
+            it('exposes a #getRenderArgs method', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'getRenderArgs');
+                });
+            });
             it('exposes render hooks', () => {
                 cy.get('#test').then(([el]: JQuery<TestElement>) => {
                     expectMethodExists(el, 'preRender');
@@ -150,6 +155,18 @@ export function baseSpec(fixture: string) {
                 cy.visit(fixture);
             });
 
+            it('returns the current props and change type from #getRenderArgs', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'getRenderArgs');
+
+                    const num = Math.floor(Math.random() * 10000);
+                    const args = el.getRenderArgs(num);
+                    expect(args).to.be.deep.equal({
+                        changeType: num,
+                        props: el.props,
+                    });
+                });
+            });
             it('re-renders the element when a property is changed', () => {
                 cy.get('#test').then(([el]: JQuery<TestElement>) => {
                     expectMethodExists(el, 'renderToDOM');

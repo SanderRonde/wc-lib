@@ -6,11 +6,9 @@ import {
     PROP_TYPE,
 } from '../../../../../build/es/wc-lib.js';
 import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
+import { RenderableComponent } from '../../../../types/test-types.js';
 
-export const TestElementFactory = (base: {
-    define(isRoot?: boolean): void;
-    new (...args: any[]): {};
-}) => {
+export const TestElementFactory = (base: typeof RenderableComponent) => {
     const TestElementHTML = new TemplateFn<TestElement>(
         (_, { props }) => {
             return html`

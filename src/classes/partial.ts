@@ -28,9 +28,14 @@ import {
     GetEvents,
 } from '../lib/listener.js';
 import { WebComponentMixin, SelectorMap, GetEls } from '../lib/component.js';
-import { WebComponentThemeManagerMixin } from '../lib/theme-manager.js';
+import {
+    GetRenderArgsThemeManagerMixin,
+    WebComponentThemeManagerMixin,
+} from '../lib/theme-manager.js';
 import { WebComponentDefinerMixin } from '../lib/definer.js';
-import { WebComponentBaseMixin } from '../lib/base.js';
+import { GetRenderArgsBaseMixin, WebComponentBaseMixin } from '../lib/base.js';
+import { CHANGE_TYPE } from '../lib/template-fn';
+import { GetRenderArgsHierarchyManagerMixin } from '../lib/hierarchy-manager';
 
 const basicWebComponent = (WebComponentMixin(
     WebComponentListenableMixin(
@@ -51,6 +56,9 @@ const basicWebComponent = (WebComponentMixin(
             i18n?: any;
             langs?: string;
             selectors?: SelectorMap;
+            subtreeProps?: {
+                [key: string]: any;
+            };
         } = {},
         E extends EventListenerObj = GetEvents<GA>,
         ELS extends SelectorMap = GetEls<GA>
@@ -83,7 +91,13 @@ export class BasicWebComponent<
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends basicWebComponent<GA, E, ELS> {}
+> extends basicWebComponent<GA, E, ELS> {
+    getRenderArgs<CT extends CHANGE_TYPE | number>(
+        changeType: CT
+    ): GetRenderArgsBaseMixin<this> {
+        return super.getRenderArgs(changeType);
+    }
+}
 
 const themingWebComponent = (WebComponentMixin(
     WebComponentThemeManagerMixin(
@@ -106,6 +120,9 @@ const themingWebComponent = (WebComponentMixin(
             i18n?: any;
             langs?: string;
             selectors?: SelectorMap;
+            subtreeProps?: {
+                [key: string]: any;
+            };
         } = {},
         E extends EventListenerObj = GetEvents<GA>,
         ELS extends SelectorMap = GetEls<GA>
@@ -146,7 +163,13 @@ export class ThemingWebComponent<
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends themingWebComponent<GA, E, ELS> {}
+> extends themingWebComponent<GA, E, ELS> {
+    getRenderArgs<CT extends CHANGE_TYPE | number>(
+        changeType: CT
+    ): GetRenderArgsBaseMixin<this> & GetRenderArgsThemeManagerMixin<this> {
+        return super.getRenderArgs(changeType);
+    }
+}
 
 const i18NWebComponent = (WebComponentMixin(
     WebComponentI18NManagerMixin(
@@ -169,6 +192,9 @@ const i18NWebComponent = (WebComponentMixin(
             i18n?: any;
             langs?: string;
             selectors?: SelectorMap;
+            subtreeProps?: {
+                [key: string]: any;
+            };
         } = {},
         E extends EventListenerObj = GetEvents<GA>,
         ELS extends SelectorMap = GetEls<GA>
@@ -209,7 +235,13 @@ export class I18NWebComponent<
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends i18NWebComponent<GA, E, ELS> {}
+> extends i18NWebComponent<GA, E, ELS> {
+    getRenderArgs<CT extends CHANGE_TYPE | number>(
+        changeType: CT
+    ): GetRenderArgsBaseMixin<this> {
+        return super.getRenderArgs(changeType);
+    }
+}
 
 const complexTemplatingWebComponent = (WebComponentMixin(
     WebComponentTemplateManagerMixin(
@@ -234,6 +266,9 @@ const complexTemplatingWebComponent = (WebComponentMixin(
             i18n?: any;
             langs?: string;
             selectors?: SelectorMap;
+            subtreeProps?: {
+                [key: string]: any;
+            };
         } = {},
         E extends EventListenerObj = GetEvents<GA>,
         ELS extends SelectorMap = GetEls<GA>
@@ -276,7 +311,16 @@ export class ComplexTemplatingWebComponent<
         globalProps?: {
             [key: string]: any;
         };
+        subtreeProps?: {
+            [key: string]: any;
+        };
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
-> extends complexTemplatingWebComponent<GA, E, ELS> {}
+> extends complexTemplatingWebComponent<GA, E, ELS> {
+    getRenderArgs<CT extends CHANGE_TYPE | number>(
+        changeType: CT
+    ): GetRenderArgsBaseMixin<this> & GetRenderArgsHierarchyManagerMixin<this> {
+        return super.getRenderArgs(changeType);
+    }
+}

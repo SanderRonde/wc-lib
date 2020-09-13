@@ -22,6 +22,7 @@ import {
     // @ts-ignore
 } from '../../../modules/lit-html.js';
 import { html as htmlType, render as renderType } from 'lit-html';
+import { RenderableComponent } from '../../../types/test-types';
 
 declare global {
     namespace JSX {
@@ -34,10 +35,7 @@ const html = _html as typeof htmlType;
 const render = _render as typeof renderType;
 
 export function elementFactory<
-    C extends {
-        define(isRoot?: boolean): void;
-        new (...args: any[]): {};
-    }
+    C extends typeof RenderableComponent
 >(base: C, isComplex: boolean = false) {
     type CStatic = C & {
         __prom(key: string, ...values: any[]): Promise<string>;

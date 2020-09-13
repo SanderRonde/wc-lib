@@ -8,6 +8,7 @@ import {
     render,
     html,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
+import { RenderableComponent } from '../../../../../types/test-types.js';
 import { TestTheme, ThemeGlobalProps } from '../themeManagerspec';
 
 export const usedThemes: {
@@ -36,7 +37,8 @@ export declare class ThemedElementParent extends ConfigurableWebComponent<{
     globalProps: ThemeGlobalProps;
 }> {}
 
-export const ThemedElementFactory = (base: any) => {
+
+export const ThemedElementFactory = (base: typeof RenderableComponent) => {
     @config({
         is: 'themed-element',
         html: new TemplateFn<_ThemedElement>(
@@ -94,7 +96,7 @@ export const ThemedElementFactory = (base: any) => {
     }> {}
 
     return {
-        ThemedElement: _ThemedElement as typeof ThemedElement,
-        ThemedElementParent: _ThemedElementParent as typeof ThemedElementParent,
+        ThemedElement: _ThemedElement as unknown as typeof ThemedElement,
+        ThemedElementParent: (_ThemedElementParent as unknown) as typeof ThemedElementParent,
     };
 };

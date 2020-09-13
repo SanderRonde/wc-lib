@@ -28,6 +28,9 @@ export class ConfigurableWebComponent<
         globalProps?: {
             [key: string]: any;
         };
+        subtreeProps?: {
+            [key: string]: any;
+        };
     } = {},
     E extends EventListenerObj = GetEvents<GA>,
     ELS extends SelectorMap = GetEls<GA>
@@ -131,6 +134,9 @@ export declare class ConfiguredComponent<
         root?: any;
         parent?: any;
         globalProps?: {
+            [key: string]: any;
+        };
+        subtreeProps?: {
             [key: string]: any;
         };
     } = {},

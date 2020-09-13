@@ -27,13 +27,15 @@ export declare class RootElement extends ConfigurableWebComponent<{
     root: RootElement;
     globalProps: TestGlobalProperties;
 }> {
+    lastRenderGP: any;
     renders: number;
     props: { x: number };
 }
 
 export const RootElementFactory = (superFn: any) => {
     const RootElementHTML = new TemplateFn<RootElement>(
-        () => {
+        function (_, { globalProps })  {
+            this.lastRenderGP = globalProps;
             return html`
                 <test-element></test-element>
                 <parent-element></parent-element>
@@ -83,6 +85,7 @@ export const RootElementFactory = (superFn: any) => {
         globalProps: TestGlobalProperties;
     }> {
         public renders: number = 0;
+        public lastRenderGP: any;
 
         props = Props.define(this as any, {
             reflect: {

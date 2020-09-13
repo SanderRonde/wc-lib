@@ -8,6 +8,7 @@ import {
     render,
     html,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
+import { RenderableComponent } from '../../../../../types/test-types.js';
 
 export declare class LifecycleElement extends ConfigurableWebComponent {
     lifeCycleCalls: {
@@ -19,7 +20,7 @@ export declare class LifecycleElement extends ConfigurableWebComponent {
     };
 }
 
-export const LifecycleElementFactory = (base: any) => {
+export const LifecycleElementFactory = (base: typeof RenderableComponent) => {
     @config({
         is: 'lifecycle-element',
         html: new TemplateFn<_LifecycleElement>(
@@ -69,5 +70,5 @@ export const LifecycleElementFactory = (base: any) => {
             this.lifeCycleCalls.unmounted++;
         }
     }
-    return _LifecycleElement as typeof LifecycleElement;
+    return _LifecycleElement as unknown as typeof LifecycleElement;
 };

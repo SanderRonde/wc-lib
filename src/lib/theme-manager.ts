@@ -33,6 +33,7 @@ export type WebComponentThemeManagerMixinClass = InferReturn<
  */
 export type WebComponentThemeManagerMixinSuper = Constructor<
     Pick<WebComponentBaseMixinInstance, 'renderToDOM'> &
+        Partial<Pick<WebComponentBaseMixinInstance, 'getRenderArgs'>> &
         Partial<
             Pick<
                 WebComponentHierarchyManagerMixinInstance,
@@ -80,6 +81,20 @@ export declare class WebComponentThemeManagerTypeInstance<
     public setTheme<N extends GA['themes'] = { [key: string]: any }>(
         themeName: Extract<keyof N, string>
     ): void;
+
+    /**
+     * Returns what should be the second argument to the
+     * template fn's function
+     *
+     * @template CT - The type of change that triggered
+     *  this render
+     *
+     * @param {CT} changeType - The type of change that triggered
+     *  this render
+     *
+     * @returns {any} To-be-defined return type
+     */
+    public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
 
     /**
      * Initializes the theme manager by passing
@@ -145,6 +160,17 @@ export declare class WebComponentThemeManagerTypeInstance<
 export type WebComponentThemeManagerTypeStatic = ClassToObj<
     typeof WebComponentThemeManagerTypeInstance
 >;
+
+/**
+ * Mixin for the getRenderArgs function for this mixin
+ */
+export type GetRenderArgsThemeManagerMixin<C> = C extends {
+    getTheme(): any;
+}
+    ? {
+          theme: ReturnType<C['getTheme']>;
+      }
+    : {};
 
 /**
  * A mixin that, when applied, takes care of
@@ -271,6 +297,19 @@ export const WebComponentThemeManagerMixin = <
                 changeTheme(themeName);
             }
         }
+
+        public getRenderArgs = <CT extends CHANGE_TYPE | number>(
+            changeType: CT
+        ): any => {
+            const _this = this;
+            return {
+                // istanbul ignore next
+                ...(super.getRenderArgs ? super.getRenderArgs(changeType) : {}),
+                get theme() {
+                    return _this.getTheme();
+                },
+            };
+        };
 
         static initTheme<
             T extends {

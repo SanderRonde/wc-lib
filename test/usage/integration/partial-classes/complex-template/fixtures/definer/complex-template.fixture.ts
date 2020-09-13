@@ -3,4 +3,4 @@ import { ParentElementFactory } from '../../../../classes/elements/parent-elemen
 import { DefineMetadata } from '../../../../../../../build/es/wc-lib.js';
 
 (window as any).DefineMetadata = DefineMetadata;
-ParentElementFactory(ComplexTemplatingWebComponent);
+ParentElementFactory(ComplexTemplatingWebComponent as any);

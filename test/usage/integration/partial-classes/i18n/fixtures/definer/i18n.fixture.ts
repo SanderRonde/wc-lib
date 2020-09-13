@@ -3,4 +3,4 @@ import { I18NWebComponent } from '../../../../../../../build/es/classes/partial.
 import { DefineMetadata } from '../../../../../../../build/es/wc-lib.js';
 
 (window as any).DefineMetadata = DefineMetadata;
-ParentElementFactory(I18NWebComponent);
+ParentElementFactory(I18NWebComponent as any);

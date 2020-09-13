@@ -1,3 +1,15 @@
+import { DefaultVal } from '../../build/es/classes/types';
+import { GetRenderArgsBaseMixin } from '../../build/es/lib/base';
+import {
+    GetRenderArgsHierarchyManagerMixin,
+    GlobalPropsFunctions,
+} from '../../build/es/lib/hierarchy-manager';
+import { GetRenderArgsThemeManagerMixin } from '../../build/es/lib/theme-manager';
+import {
+    CHANGE_TYPE,
+    EventListenerObj,
+    SelectorMap,
+} from '../../build/es/wc-lib';
 import {
     ConfigurableWebComponent,
     Props,
@@ -903,4 +915,43 @@ namespace Test {
 
         Test.useValues(test1, test2, test3);
     }
+}
+
+export declare class RenderableComponent<
+    GA extends {
+        i18n?: any;
+        langs?: string;
+        events?: EventListenerObj;
+        themes?: {
+            [key: string]: any;
+        };
+        selectors?: SelectorMap;
+        root?: any;
+        parent?: any;
+        globalProps?: {
+            [key: string]: any;
+        };
+        subtreeProps?: {
+            [key: string]: any;
+        };
+    } = {}
+> {
+    getRenderArgs(
+        changeType: CHANGE_TYPE | number
+    ): GetRenderArgsBaseMixin<this> &
+        GetRenderArgsThemeManagerMixin<this> &
+        GetRenderArgsHierarchyManagerMixin<this>;
+
+    getTheme(): GA['themes'][keyof GA['themes']];
+
+    getSubTreeProps(): GA['subtreeProps'];
+
+    globalProps: GlobalPropsFunctions<
+        DefaultVal<GA['globalProps'], { [key: string]: any }>
+    >;
+
+    connectedCallback(): void;
+    disconnectedCallback(): void;
+
+    static define(isDev?: boolean): void;
 }

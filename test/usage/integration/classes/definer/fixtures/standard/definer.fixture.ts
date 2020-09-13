@@ -5,4 +5,4 @@ import {
 import { ParentElementFactory } from '../../../elements/parent-element-factory.js';
 
 (window as any).DefineMetadata = DefineMetadata;
-ParentElementFactory(ConfigurableWebComponent);
+ParentElementFactory(ConfigurableWebComponent as any);

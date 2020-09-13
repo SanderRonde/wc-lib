@@ -394,6 +394,7 @@ export type WebComponentHierarchyManagerMixinClass = InferReturn<
 export type WebComponentHierarchyManagerMixinSuper = Constructor<
     Pick<WebComponentListenableMixinInstance, 'listen' | 'fire'> &
         Pick<WebComponentBaseMixinInstance, 'renderToDOM'> &
+        Partial<Pick<WebComponentBaseMixinInstance, 'getRenderArgs'>> &
         HTMLElement & {
             connectedCallback(): void;
         }
@@ -569,7 +570,36 @@ export declare class WebComponentHierarchyManagerTypeInstance<
         // istanbul ignore next
         once?: boolean
     ): void;
+
+    /**
+     * Returns what should be the second argument to the
+     * template fn's function
+     *
+     * @template CT - The type of change that triggered
+     *  this render
+     *
+     * @param {CT} changeType - The type of change that triggered
+     *  this render
+     *
+     * @returns {any} To-be-defined return type
+     */
+    public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
 }
+
+/**
+ * Mixin for the getRenderArgs function for this mixin
+ */
+export type GetRenderArgsHierarchyManagerMixin<C> = C extends {
+    getSubTreeProps(): any;
+    globalProps: any;
+}
+    ? {
+          subtreeProps: ReturnType<C['getSubTreeProps']>;
+          globalProps: C['globalProps'] extends GlobalPropsFunctions<infer G>
+              ? G
+              : void;
+      }
+    : {};
 
 /**
  * The static values of the hierarchy manager class
@@ -748,6 +778,22 @@ export const WebComponentHierarchyManagerMixin = <
             }
             return priv.parent!.getRoot();
         }
+
+        public getRenderArgs = <CT extends CHANGE_TYPE | number>(
+            changeType: CT
+        ): any => {
+            const _this = this;
+            return {
+                // istanbul ignore next
+                ...(super.getRenderArgs ? super.getRenderArgs(changeType) : {}),
+                get subtreeProps() {
+                    return _this.getSubTreeProps();
+                },
+                get globalProps() {
+                    return _this.globalProps<GA['globalProps']>().all;
+                },
+            };
+        };
 
         public runGlobalFunction<E extends {}, R = any>(
             fn: (element: E) => R

@@ -58,6 +58,6 @@ export function i18nManagerStandardFixtureFactory(
 
     (window as any).WebComponent = base;
     TestElementFactory(base as any).define(true);
-    LangElementFactory(base).define(true);
+    LangElementFactory(base as any).define(true);
     RootElementFactory(base).define(true);
 }

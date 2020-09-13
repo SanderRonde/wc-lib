@@ -9,6 +9,7 @@ import {
 import { TestGlobalProperties } from '../hierarchy-manager/fixtures/standard/hierarchy-manager.fixture.js';
 import { render, html } from '../../../../../node_modules/lit-html/lit-html.js';
 import { TestElementFactory } from './test-element-factory.js';
+import { RenderableComponent } from '../../../../types/test-types.js';
 
 declare class ParentElement extends ConfigurableWebComponent<{
     events: {
@@ -31,7 +32,7 @@ export interface TestParentWindow extends Window {
 
 declare const window: TestParentWindow;
 
-export const ParentElementFactory = (base: any) => {
+export const ParentElementFactory = (base: typeof RenderableComponent) => {
     const ParentElementHTML = new TemplateFn<ParentElement>(
         () => {
             return html`

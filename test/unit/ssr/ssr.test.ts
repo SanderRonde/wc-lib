@@ -131,7 +131,7 @@ baseComponents.forEach(({ component, isComplex, name }) => {
         NestedSlots,
         DynamicCSS,
         PromiseElement,
-    } = elementFactory(component, isComplex);
+    } = elementFactory(component as any, isComplex);
 
     const test = genTestFn(name);
 

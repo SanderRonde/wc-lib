@@ -314,6 +314,15 @@ export type WebComponentBaseMixinSuper = Constructor<
 > &
     Pick<InferReturn<typeof WebComponentDefinerMixin>, 'define' | 'is'>;
 
+export type PropsReturnType<
+    C extends {
+        props: any;
+    },
+    A
+> = {
+    props: C['props'];
+} & A;
+
 /**
  * A standalone instance of the webcomponent base class
  */
@@ -406,6 +415,20 @@ export declare class WebComponentBaseTypeInstance {
     public renderToDOM(change?: CHANGE_TYPE | number): void;
 
     /**
+     * Returns what should be the second argument to the
+     * template fn's function
+     *
+     * @template CT - The type of change that triggered
+     *  this render
+     *
+     * @param {CT} changeType - The type of change that triggered
+     *  this render
+     *
+     * @returns {any} To-be-defined return type
+     */
+    public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+
+    /**
      * A method called before rendering (changing props won't trigger additional re-render)
      * If false is returned, cancels the render
      *
@@ -438,6 +461,17 @@ export declare class WebComponentBaseTypeInstance {
 export type WebComponentBaseTypeStatic = ClassToObj<
     typeof WebComponentBaseTypeInstance
 >;
+
+/**
+ * Mixin for the getRenderArgs function for this mixin
+ */
+export type GetRenderArgsBaseMixin<C> = C extends {
+    props: any;
+}
+    ? {
+          props: C['props'];
+      }
+    : {};
 
 /**
  * A mixin that will add the ability to do
@@ -542,6 +576,16 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
                 );
             }
             priv.doPostRenderLifecycle();
+        }
+
+        public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any {
+            const _this = this;
+            return {
+                get props() {
+                    return _this.props;
+                },
+                changeType: changeType,
+            };
         }
 
         public preRender(): false | any {}

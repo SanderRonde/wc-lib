@@ -13,6 +13,7 @@ import {
     render,
     html,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
+import { RenderableComponent } from '../../../../../types/test-types.js';
 
 export declare class BindTest extends ConfigurableWebComponent {
     fn(): this;
@@ -64,10 +65,7 @@ export interface RenderTestWindow extends Window {
 }
 declare const window: RenderTestWindow;
 
-export function baseTestElementFactory(base: {
-    define(isRoot?: boolean): void;
-    new (...args: any[]): {};
-}) {
+export function baseTestElementFactory(base: typeof RenderableComponent) {
     window.renderCalled = {} as any;
 
     const TestElementHTML = new TemplateFn<TestElement>(

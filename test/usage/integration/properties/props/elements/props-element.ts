@@ -13,6 +13,7 @@ import {
     render,
     html as litHTML,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
+import { RenderableComponent } from '../../../../../types/test-types.js';
 
 export interface PropsElementWindow extends Window {
     accessSymbol: typeof accessSymbol;
@@ -174,7 +175,7 @@ interface SymbolKeys {
 }
 
 export function PropsElementFixtureFactory(
-    base: any,
+    base: typeof RenderableComponent,
     supportsTemplates: boolean
 ) {
     @config({

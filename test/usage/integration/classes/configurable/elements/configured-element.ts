@@ -205,7 +205,7 @@ class TemplateLike implements TemplateFnLike {
     renderAsText(
         _changeType: CHANGE_TYPE,
         _component: {
-            props: any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
         }
     ): string {
         return '';
@@ -213,7 +213,7 @@ class TemplateLike implements TemplateFnLike {
     renderTemplate(
         _changeType: CHANGE_TYPE,
         _component: {
-            props: any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
         }
     ): any | null {
         return '';
@@ -221,7 +221,7 @@ class TemplateLike implements TemplateFnLike {
     renderSame(
         _changeType: CHANGE_TYPE,
         _component: {
-            props: any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
         },
         _templater: any
     ): any | string | null {

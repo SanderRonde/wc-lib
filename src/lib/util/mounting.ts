@@ -40,7 +40,7 @@ export namespace Mounting {
      * @returns {Promise<void>} A promise that resolves when
      * the component has been mounted
      */
-    export async function awaitMounted(el: WebComponent): Promise<void> {
+    export async function awaitMounted(el: any): Promise<void> {
         const realEl = el as WebComponent;
         if (realEl.isMounted) {
             return;
@@ -70,7 +70,7 @@ export namespace Mounting {
      * 	was ran
      */
     export async function hookIntoMount(
-        el: WebComponent,
+        el: any,
         fn: () => void
     ): Promise<void> {
         const realEl = el as WebComponent;

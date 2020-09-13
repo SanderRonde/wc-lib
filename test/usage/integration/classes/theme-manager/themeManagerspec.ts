@@ -82,6 +82,11 @@ export function themeManagerSpec(
                     expectMethodExists(el, 'setTheme');
                 });
             });
+            it('exposes a #getRenderArgs method', () => {
+                cy.get('#test').then(([el]: JQuery<TestElement>) => {
+                    expectMethodExists(el, 'getRenderArgs');
+                });
+            });
             it('exposes a static #initTheme method', () => {
                 cy.window().then((window: TestWindow) => {
                     expectMethodExists(window.TestElement, 'initTheme');
@@ -90,6 +95,16 @@ export function themeManagerSpec(
             it('exposes a static #setDefaultTheme method', () => {
                 cy.window().then((window: TestWindow) => {
                     expectMethodExists(window.TestElement, 'setDefaultTheme');
+                });
+            });
+            it('returns the current theme from #getRenderArgs', () => {
+                getDefaultThemedElements().then((elements) => {
+                    for (const element of elements) {
+                        expect(element.getRenderArgs(0)).to.have.property(
+                            'theme',
+                            (element as any).getTheme()
+                        );
+                    }
                 });
             });
         });

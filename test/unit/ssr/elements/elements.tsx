@@ -22,7 +22,7 @@ import {
     // @ts-ignore
 } from '../../../modules/lit-html.js';
 import { html as htmlType, render as renderType } from 'lit-html';
-import { RenderableComponent } from '../../../types/test-types';
+import type { RenderableComponent } from '../../../types/test-types';
 
 declare global {
     namespace JSX {
@@ -34,9 +34,10 @@ declare global {
 const html = _html as typeof htmlType;
 const render = _render as typeof renderType;
 
-export function elementFactory<
-    C extends typeof RenderableComponent
->(base: C, isComplex: boolean = false) {
+export function elementFactory<C extends typeof RenderableComponent>(
+    base: C,
+    isComplex: boolean = false
+) {
     type CStatic = C & {
         __prom(key: string, ...values: any[]): Promise<string>;
         __(key: string, ...values: any[]): string;
@@ -54,9 +55,7 @@ export function elementFactory<
         is: 'simple-element',
         html: new TemplateFn<SimpleElement>(
             () => {
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -73,9 +72,7 @@ export function elementFactory<
         is: 'simple-element-empty-props',
         html: new TemplateFn<SimpleElementEmptyProps>(
             () => {
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -94,9 +91,7 @@ export function elementFactory<
         is: 'simple-element-x',
         html: new TemplateFn<SimpleElementX>(
             () => {
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -113,9 +108,7 @@ export function elementFactory<
         is: (null as unknown) as string,
         html: new TemplateFn<SimpleElement>(
             () => {
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -174,9 +167,7 @@ export function elementFactory<
         is: 'with-attributes',
         html: new TemplateFn<WithAttributes>(
             () => {
-                return html`
-                    <div a="b" c="d" e='"f'></div>
-                `;
+                return html` <div a="b" c="d" e='"f'></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -386,9 +377,7 @@ export function elementFactory<
         is: 'single-child',
         html: new TemplateFn<SingleChild>(
             () => {
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -547,9 +536,7 @@ export function elementFactory<
         is: 'css-error',
         html: new TemplateFn<CSSError>(
             () => {
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -616,9 +603,7 @@ export function elementFactory<
                     </div>
                     <div>
                         ${[1, 2].map((number) => {
-                            return html`
-                                <div>${number}</div>
-                            `;
+                            return html` <div>${number}</div> `;
                         })}
                     </div>
                     <!-- prettier-ignore -->
@@ -926,9 +911,7 @@ export function elementFactory<
         is: 'default-slot-user-empty',
         html: new TemplateFn<DefaultSlotUserEmpty>(
             () => {
-                return html`
-                    <default-slot></default-slot>
-                `;
+                return html` <default-slot></default-slot> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -1109,7 +1092,7 @@ export function elementFactory<
     @config({
         is: 'i18n-user',
         html: new TemplateFn<I18nComponent>(
-            function() {
+            function () {
                 return html`
                     <div>${this.__('known_key')}</div>
                     <div>${this.isPromise(this.__prom('known_key'))}</div>
@@ -1142,10 +1125,8 @@ export function elementFactory<
     @config({
         is: 'theme-user',
         html: new TemplateFn<ThemeUser>(
-            function() {
-                return html`
-                    <div>${(this as any).getThemeName()}</div>
-                `;
+            function () {
+                return html` <div>${(this as any).getThemeName()}</div> `;
             },
             CHANGE_TYPE.NEVER,
             render

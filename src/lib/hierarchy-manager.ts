@@ -4,7 +4,11 @@ import {
     InferInstance,
     DefaultVal,
 } from '../classes/types.js';
-import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
+import {
+    assignAsGetter,
+    bindToClass,
+    WebComponentBaseMixinInstance,
+} from './base.js';
 import { WebComponentListenableMixinInstance } from './listener.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
@@ -595,7 +599,9 @@ export type GetRenderArgsHierarchyManagerMixin<C> = C extends {
 }
     ? {
           subtreeProps: ReturnType<C['getSubTreeProps']>;
-          globalProps: C['globalProps'] extends GlobalPropsFunctions<infer G>
+          globalProps: ReturnType<
+              C['globalProps']
+          > extends GlobalPropsFunctions<infer G>
               ? G
               : void;
       }
@@ -651,17 +657,19 @@ export const WebComponentHierarchyManagerMixin = <
      */
     //@ts-ignore
     class WebComponentHierarchyManager<
-        GA extends {
-            root?: any;
-            parent?: any;
-            globalProps?: {
-                [key: string]: any;
-            };
-            subtreeProps?: {
-                [key: string]: any;
-            };
-        } = {}
-    > extends superFn implements WebComponentHierarchyManagerTypeInstance<GA> {
+            GA extends {
+                root?: any;
+                parent?: any;
+                globalProps?: {
+                    [key: string]: any;
+                };
+                subtreeProps?: {
+                    [key: string]: any;
+                };
+            } = {}
+        >
+        extends superFn
+        implements WebComponentHierarchyManagerTypeInstance<GA> {
         constructor(...args: any[]) {
             super(...args);
             HierarchyClass.hierarchyClasses.add(this as any);
@@ -779,21 +787,24 @@ export const WebComponentHierarchyManagerMixin = <
             return priv.parent!.getRoot();
         }
 
-        public getRenderArgs = <CT extends CHANGE_TYPE | number>(
+        // @ts-ignore
+        public getRenderArgs<CT extends CHANGE_TYPE | number>(
             changeType: CT
-        ): {} => {
+        ): {} {
             const _this = this;
-            return {
+            return assignAsGetter(
                 // istanbul ignore next
-                ...(super.getRenderArgs ? super.getRenderArgs(changeType) : {}),
-                get subtreeProps() {
-                    return _this.getSubTreeProps();
-                },
-                get globalProps() {
-                    return _this.globalProps<GA['globalProps']>().all;
-                },
-            };
-        };
+                super.getRenderArgs ? super.getRenderArgs(changeType) : {},
+                {
+                    get subtreeProps() {
+                        return _this.getSubTreeProps();
+                    },
+                    get globalProps() {
+                        return _this.globalProps<GA['globalProps']>().all;
+                    },
+                }
+            );
+        }
 
         public runGlobalFunction<E extends {}, R = any>(
             fn: (element: E) => R

@@ -1,4 +1,7 @@
-import { ConfigurableWebComponent } from '../../../../../build/es/wc-lib.js';
+import {
+    CHANGE_TYPE,
+    ConfigurableWebComponent,
+} from '../../../../../build/es/wc-lib.js';
 import { expectMethodExists } from '../../../lib/assertions';
 import { ParentElement } from '../elements/parent-element';
 import { TestElement } from '../elements/test-element';
@@ -49,7 +52,7 @@ function assertDefaultProps(
     expect(props.get('c')).to.be.equal('d', 'prop is set');
 }
 export function hierarchyManagerspec(fixture: string) {
-    context('Hierarchy-Manager', function() {
+    context('Hierarchy-Manager', function () {
         this.slow(SLOW);
         before(() => {
             cy.visit(fixture);
@@ -112,12 +115,13 @@ export function hierarchyManagerspec(fixture: string) {
                             const renderArgs = (element as RootElement).getRenderArgs(
                                 0
                             );
-                            expect(renderArgs).to.have.property(
-                                'subtreeProps',
+
+                            expect(renderArgs).to.have.property('subtreeProps');
+                            expect(renderArgs.subtreeProps).to.be.deep.equal(
                                 element.getSubTreeProps()
                             );
-                            expect(renderArgs).to.have.property(
-                                'globalProps',
+                            expect(renderArgs).to.have.property('globalProps');
+                            expect(renderArgs.globalProps).to.be.deep.equal(
                                 (element.globalProps as any)().all
                             );
                         }
@@ -363,12 +367,13 @@ export function hierarchyManagerspec(fixture: string) {
                 );
             });
             context('rendering', () => {
-                it('passes global props to renders', () => {
-                    cy.get('root-element').then(
+                it('passes subtree props to renders', () => {
+                    cy.get('#subtree-A').then(
                         ([root]: JQuery<SubtreeElement>) => {
+                            root.renderToDOM(CHANGE_TYPE.FORCE);
                             expect(root.lastRenderSubtreeProps)
-                                .to.be.equal(root.getSubTreeProps())
-                                .to.be.equal(
+                                .to.be.deep.equal(root.getSubTreeProps())
+                                .to.be.deep.equal(
                                     root.getRenderArgs(0).subtreeProps
                                 );
                         }

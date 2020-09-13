@@ -12,7 +12,7 @@ import {
     render,
     html,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { RenderableComponent } from '../../../../../types/test-types.js';
+import type { RenderableComponent } from '../../../../../types/test-types.js';
 import { ParentElementFactory } from '../../elements/parent-element-factory.js';
 import { TestElementFactory } from '../../elements/test-element-factory.js';
 
@@ -50,22 +50,18 @@ declare class SubtreeSuperComponent<
 
 export const SubtreeFactory = (superFn: typeof SubtreeSuperComponent) => {
     const SubtreeElementHTML = new TemplateFn<_SubtreeElement>(
-        function(_, { subtreeProps }) {
+        function (_, { subtreeProps }) {
             this.lastRenderSubtreeProps = subtreeProps;
-            return html`
-                <slot></slot>
-            `;
+            return html` <slot></slot> `;
         },
         CHANGE_TYPE.NEVER,
         render
     );
 
     const SubtreeElementCSS = new TemplateFn<SubtreeElement>(
-        function() {
+        function () {
             this.renders++;
-            return html`
-                <style></style>
-            `;
+            return html` <style></style> `;
         },
         CHANGE_TYPE.SUBTREE_PROPS,
         render

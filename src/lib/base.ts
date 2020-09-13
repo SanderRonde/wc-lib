@@ -85,6 +85,53 @@ export function bindToClass<T extends Function>(
     };
 }
 
+/**
+ * Join two objects without accessing their properties,
+ * only accessing them when they are accessed in the
+ * result object. Basically the same as Object.assign
+ * but it preserves getters.
+ *
+ * @template O1 - The first object
+ * @template O2 - The second object
+ *
+ * @param {O1} objectA - The first object
+ * @param {O2} objectB - The second object. Overwrites
+ *  the first object's keys when they conflict
+ *
+ * @returns {O1 & O2} The return object, a joining of
+ *  the two
+ */
+export function assignAsGetter<
+    O1 extends {
+        [key: string]: any;
+    },
+    O2 extends {
+        [key: string]: any;
+    }
+>(objectA: O1, objectB: O2): O1 & O2 {
+    const returnObj: Partial<O1 & O2> = {};
+    const bKeys = Object.keys(objectB);
+    const aKeys = Object.keys(objectA).filter((k) => !bKeys.includes(k));
+
+    for (const aKey of aKeys) {
+        Object.defineProperty(returnObj, aKey, {
+            get() {
+                return objectA[aKey];
+            },
+            enumerable: true,
+        });
+    }
+    for (const bKey of bKeys) {
+        Object.defineProperty(returnObj, bKey, {
+            get() {
+                return objectB[bKey];
+            },
+            enumerable: true,
+        });
+    }
+    return returnObj as O1 & O2;
+}
+
 class BaseClassElementInstance {
     public ___cssArr: TemplateFnLike<CHANGE_TYPE>[] | null = null;
     public ___privateCSS: TemplateFnLike<CHANGE_TYPE>[] | null = null;
@@ -493,7 +540,8 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
     /**
      * The class that handles basic rendering of a component
      */
-    class WebComponentBase extends superFn
+    class WebComponentBase
+        extends superFn
         implements WebComponentBaseTypeInstance {
         public static html: TemplateFnLike<CHANGE_TYPE | number> | null;
 

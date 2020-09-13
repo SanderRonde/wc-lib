@@ -2,7 +2,9 @@ import {
     TemplateFn,
     CHANGE_TYPE,
     config,
-    ConfigurableWebComponent, SelectorMap, EventListenerObj
+    ConfigurableWebComponent,
+    SelectorMap,
+    EventListenerObj,
 } from '../../../../../../build/es/wc-lib.js';
 import {
     render,
@@ -10,7 +12,7 @@ import {
     directive,
     Part,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { RenderableComponent } from '../../../../../types/test-types.js';
+import type { RenderableComponent } from '../../../../../types/test-types.js';
 
 const awaitPromise = directive(
     (key: string, value: Promise<any> | string) => (part: Part) => {
@@ -53,33 +55,33 @@ export declare class LangElement extends ConfigurableWebComponent<{
 }> {}
 
 declare class RenderableLangComponent<
-GA extends {
-    i18n?: any;
-    langs?: string;
-    events?: EventListenerObj;
-    themes?: {
-        [key: string]: any;
-    };
-    selectors?: SelectorMap;
-    root?: any;
-    parent?: any;
-    globalProps?: {
-        [key: string]: any;
-    };
-    subtreeProps?: {
-        [key: string]: any;
-    };
-} = {}
+    GA extends {
+        i18n?: any;
+        langs?: string;
+        events?: EventListenerObj;
+        themes?: {
+            [key: string]: any;
+        };
+        selectors?: SelectorMap;
+        root?: any;
+        parent?: any;
+        globalProps?: {
+            [key: string]: any;
+        };
+        subtreeProps?: {
+            [key: string]: any;
+        };
+    } = {}
 > extends RenderableComponent<GA> {
     __prom(...strings: any[]): any;
     __(...strings: any[]): any;
 }
 
-export const LangElementFactory = (superFn: typeof RenderableLangComponent ) => {
+export const LangElementFactory = (superFn: typeof RenderableLangComponent) => {
     @config({
         is: 'lang-element',
         html: new TemplateFn<_LangElement>(
-            function() {
+            function () {
                 return html`
                     <div id="placeholdertest">
                         ${placeholder('test', this.__prom('test'))}
@@ -128,5 +130,5 @@ export const LangElementFactory = (superFn: typeof RenderableLangComponent ) => 
             values: string;
         };
     }> {}
-    return _LangElement as unknown as typeof LangElement;
+    return (_LangElement as unknown) as typeof LangElement;
 };

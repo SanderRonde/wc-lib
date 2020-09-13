@@ -14,8 +14,8 @@ import {
     html,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
 import { ParentElementFactory } from '../../elements/parent-element-factory.js';
+import type { RenderableComponent } from '../../../../../types/test-types.js';
 import { TestElementFactory } from '../../elements/test-element-factory.js';
-import { RenderableComponent } from '../../../../../types/test-types.js';
 
 export declare class RootElement extends ConfigurableWebComponent<{
     events: {
@@ -57,7 +57,7 @@ declare class RootSuperComponent<
 
 export const RootElementFactory = (superFn: typeof RootSuperComponent) => {
     const RootElementHTML = new TemplateFn<_RootElement>(
-        function(_, { globalProps }) {
+        function (_, { globalProps }) {
             this.lastRenderGP = globalProps;
             return html`
                 <test-element></test-element>
@@ -71,7 +71,7 @@ export const RootElementFactory = (superFn: typeof RootSuperComponent) => {
     );
 
     const RootElementCSS = new TemplateFn<RootElement>(
-        function() {
+        function () {
             this.renders++;
             return html`
                 <style>

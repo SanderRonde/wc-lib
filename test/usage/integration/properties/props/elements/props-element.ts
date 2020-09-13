@@ -13,7 +13,7 @@ import {
     render,
     html as litHTML,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { RenderableComponent } from '../../../../../types/test-types.js';
+import type { RenderableComponent } from '../../../../../types/test-types.js';
 
 export interface PropsElementWindow extends Window {
     accessSymbol: typeof accessSymbol;
@@ -200,7 +200,7 @@ export function PropsElementFixtureFactory(
     @config({
         is: 'child-el',
         html: new TemplateFn<ChildEl>(
-            function(passedHTML) {
+            function (passedHTML) {
                 const html = supportsTemplates ? passedHTML : litHTML;
                 ChildEl.onRender(this.props);
                 return html``;
@@ -239,7 +239,7 @@ export function PropsElementFixtureFactory(
     @config({
         is: 'props-element',
         html: new TemplateFn<_PropsElement>(
-            function(passedHTML, { props }) {
+            function (passedHTML, { props }) {
                 const html = supportsTemplates ? passedHTML : litHTML;
                 return html`
                     ${supportsTemplates
@@ -252,9 +252,7 @@ export function PropsElementFixtureFactory(
                                   }}"
                               ></obj-el>
                           `
-                        : html`
-                              <obj-el id="ref"></obj-el>
-                          `}
+                        : html` <obj-el id="ref"></obj-el> `}
                     <obj-el
                         id="json"
                         complex="${JSON.stringify({
@@ -272,9 +270,7 @@ export function PropsElementFixtureFactory(
                     ${(() => {
                         switch (props.childElIndex) {
                             case 0:
-                                return html`
-                                    <child-el></child-el>
-                                `;
+                                return html` <child-el></child-el> `;
                             case 1:
                                 return html`
                                     <child-el #ref="${{ e: 'f' }}"></child-el>

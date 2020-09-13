@@ -28,7 +28,7 @@ function assertTemplate(template: TemplateFnLike) {
 }
 
 export function baseSpec(fixture: string) {
-    context('Base', function() {
+    context('Base', function () {
         this.slow(SLOW);
         before(() => {
             cy.visit(fixture);
@@ -36,9 +36,7 @@ export function baseSpec(fixture: string) {
 
         context('Mounting', () => {
             it('renders the element with its content', () => {
-                cy.get('#test')
-                    .shadowFind('div')
-                    .shadowContains('Test');
+                cy.get('#test').shadowFind('div').shadowContains('Test');
             });
         });
         context('Properties/Methods', () => {
@@ -161,10 +159,9 @@ export function baseSpec(fixture: string) {
 
                     const num = Math.floor(Math.random() * 10000);
                     const args = el.getRenderArgs(num);
-                    expect(args).to.be.deep.equal({
-                        changeType: num,
-                        props: el.props,
-                    });
+                    expect(args).to.have.property('changeType', num);
+                    expect(args).have.property('props');
+                    expect(args.props).to.be.deep.equal(el.props);
                 });
             });
             it('re-renders the element when a property is changed', () => {
@@ -494,7 +491,7 @@ export function baseSpec(fixture: string) {
             });
             context('CHANGE_TYPE.FORCE', () => {
                 genChangeTypeCases(CHANGE_TYPE.FORCE, {
-                    never: false,
+                    never: true,
                     prop: true,
                     theme: true,
                     lang: true,
@@ -576,9 +573,7 @@ export function baseSpec(fixture: string) {
                             container
                         );
 
-                        cy.get(`#${container.id}`)
-                            .find('div')
-                            .contains(val);
+                        cy.get(`#${container.id}`).find('div').contains(val);
                     });
                 });
             });
@@ -814,9 +809,7 @@ export function baseSpec(fixture: string) {
                             'bind-test'
                         ) as BindTest;
 
-                        expect(el)
-                            .to.have.property('fn')
-                            .to.be.a('function');
+                        expect(el).to.have.property('fn').to.be.a('function');
                         expect(el.fn()).to.be.equal(el);
                     });
                 });
@@ -826,9 +819,7 @@ export function baseSpec(fixture: string) {
                             'bind-test'
                         ) as BindTest;
 
-                        expect(el)
-                            .to.have.property('fn')
-                            .to.be.a('function');
+                        expect(el).to.have.property('fn').to.be.a('function');
                         expect(el.fn.apply({})).to.be.equal(el);
                     });
                 });
@@ -838,9 +829,7 @@ export function baseSpec(fixture: string) {
                             'bind-test'
                         ) as BindTest;
 
-                        expect(el)
-                            .to.have.property('fn')
-                            .to.be.a('function');
+                        expect(el).to.have.property('fn').to.be.a('function');
                         expect(el.fn.call({})).to.be.equal(el);
                     });
                 });
@@ -850,9 +839,7 @@ export function baseSpec(fixture: string) {
                             'bind-test'
                         ) as BindTest;
 
-                        expect(el)
-                            .to.have.property('fn')
-                            .to.be.a('function');
+                        expect(el).to.have.property('fn').to.be.a('function');
                         expect(el.fn.bind({})()).to.be.equal(el);
                     });
                 });

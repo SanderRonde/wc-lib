@@ -13,7 +13,7 @@ import {
     render,
     html,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { RenderableComponent } from '../../../../../types/test-types.js';
+import type { RenderableComponent } from '../../../../../types/test-types.js';
 
 export declare class BindTest extends ConfigurableWebComponent {
     fn(): this;
@@ -117,9 +117,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementNever>(
             () => {
                 window.renderCalled['never']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.NEVER,
             render
@@ -133,9 +131,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementProp>(
             () => {
                 window.renderCalled['prop']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.PROP,
             render
@@ -149,9 +145,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementTheme>(
             () => {
                 window.renderCalled['theme']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.THEME,
             render
@@ -165,9 +159,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementLang>(
             () => {
                 window.renderCalled['lang']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.LANG,
             render
@@ -181,9 +173,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementAlways>(
             () => {
                 window.renderCalled['always']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.ALWAYS,
             render
@@ -197,9 +187,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementPropTheme>(
             () => {
                 window.renderCalled['prop-theme']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.PROP | CHANGE_TYPE.THEME,
             render
@@ -213,9 +201,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementPropLang>(
             () => {
                 window.renderCalled['prop-lang']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.PROP | CHANGE_TYPE.LANG,
             render
@@ -229,9 +215,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementThemeLang>(
             () => {
                 window.renderCalled['theme-lang']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.THEME | CHANGE_TYPE.LANG,
             render
@@ -245,9 +229,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementAll>(
             () => {
                 window.renderCalled['all']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.PROP | CHANGE_TYPE.THEME | CHANGE_TYPE.LANG,
             render
@@ -262,9 +244,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementAll>(
             () => {
                 window.renderCalled['custom']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             window.customChangeTypeNumber,
             render
@@ -278,9 +258,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementAll>(
             () => {
                 window.renderCalled['subtree-props']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.SUBTREE_PROPS,
             render
@@ -294,9 +272,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         html: new TemplateFn<RenderTestElementAll>(
             () => {
                 window.renderCalled['global-props']++;
-                return html`
-                    <div></div>
-                `;
+                return html` <div></div> `;
             },
             CHANGE_TYPE.GLOBAL_PROPS,
             render
@@ -308,9 +284,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         static is = 'no-css';
         static html = new TemplateFn<NoCSS>(
             () => {
-                return html`
-                    <div id="content">test</div>
-                `;
+                return html` <div id="content">test</div> `;
             },
             CHANGE_TYPE.PROP,
             render
@@ -350,22 +324,18 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
     const renderRegularTemplate = (valGetter: () => string) => {
         return new TemplateFn<any>(
             () => {
-                return html`
-                    <div>${valGetter()}</div>
-                `;
+                return html` <div>${valGetter()}</div> `;
             },
             CHANGE_TYPE.ALWAYS,
             render
         );
     };
     const nestedHTMLTemplate = new TemplateFn<any>(
-        function(html, { changeType }) {
+        function (html, { changeType }) {
             return html`
                 ${new TemplateFn<any>(
                     (html) => {
-                        return html`
-                            <div id="inner">testInner</div>
-                        `;
+                        return html` <div id="inner">testInner</div> `;
                     },
                     CHANGE_TYPE.ALWAYS,
                     render
@@ -502,9 +472,7 @@ export function baseTestElementFactory(base: typeof RenderableComponent) {
         is: 'change-never',
         html: new TemplateFn<any>(
             () => {
-                return html`
-                    <h1>${'test'}</h1>
-                `;
+                return html` <h1>${'test'}</h1> `;
             },
             CHANGE_TYPE.NEVER,
             render

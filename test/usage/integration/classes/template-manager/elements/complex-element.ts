@@ -13,7 +13,7 @@ import {
     directive,
     Part,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
-import { RenderableComponent } from '../../../../../types/test-types.js';
+import type { RenderableComponent } from '../../../../../types/test-types.js';
 import { TestElement } from '../../elements/test-element.js';
 
 export declare class EventTriggeringElement extends ConfigurableWebComponent<{
@@ -116,7 +116,7 @@ export function complexElementFactory(base: typeof RenderableComponent) {
     @config({
         is: 'complex-element',
         html: new TemplateFn<_ComplexElement>(
-            function(html) {
+            function (html) {
                 return html`
                     <test-element
                         id="eventTest"

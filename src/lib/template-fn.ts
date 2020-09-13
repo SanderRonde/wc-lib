@@ -437,7 +437,7 @@ export class TemplateFn<
         if (this.changeOn === CHANGE_TYPE.NEVER) {
             //Never change, return the only render
             const cached = templateMap.get(this);
-            if (cached) {
+            if (cached && changeType !== CHANGE_TYPE.FORCE) {
                 return {
                     changed: false,
                     rendered: cached,
@@ -452,7 +452,10 @@ export class TemplateFn<
                       >).call(
                           component,
                           jsxAddedTemplate!,
-                          component.getRenderArgs(changeType) as any
+                          ('getRenderArgs' in component &&
+                          component.getRenderArgs
+                              ? component.getRenderArgs(changeType)
+                              : {}) as any
                       );
 
             if (rendered instanceof JSXDelayedExecutionCall) {
@@ -476,7 +479,9 @@ export class TemplateFn<
             >).call(
                 component,
                 jsxAddedTemplate!,
-                component.getRenderArgs(changeType) as any
+                ('getRenderArgs' in component && component.getRenderArgs
+                    ? component.getRenderArgs(changeType)
+                    : {}) as any
             );
             if (rendered instanceof JSXDelayedExecutionCall) {
                 // Collapse

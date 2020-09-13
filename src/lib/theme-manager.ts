@@ -1,6 +1,6 @@
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
-import { WebComponentBaseMixinInstance } from './base.js';
+import { assignAsGetter, WebComponentBaseMixinInstance } from './base.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
 
@@ -235,12 +235,14 @@ export const WebComponentThemeManagerMixin = <
      */
     //@ts-ignore
     class WebComponentThemeManager<
-        GA extends {
-            themes?: {
-                [key: string]: any;
-            };
-        } = {}
-    > extends superFn implements WebComponentThemeManagerTypeInstance<GA> {
+            GA extends {
+                themes?: {
+                    [key: string]: any;
+                };
+            } = {}
+        >
+        extends superFn
+        implements WebComponentThemeManagerTypeInstance<GA> {
         constructor(...args: any[]) {
             super(...args);
 
@@ -298,18 +300,24 @@ export const WebComponentThemeManagerMixin = <
             }
         }
 
-        public getRenderArgs = <CT extends CHANGE_TYPE | number>(
+        // @ts-ignore
+        public getRenderArgs<CT extends CHANGE_TYPE | number>(
             changeType: CT
-        ): {} => {
+        ): {} {
             const _this = this;
-            return {
+            return assignAsGetter(
                 // istanbul ignore next
-                ...(super.getRenderArgs ? super.getRenderArgs(changeType) : {}),
-                get theme() {
-                    return _this.getTheme();
-                },
-            };
-        };
+                super.getRenderArgs ? super.getRenderArgs(changeType) : {},
+                {
+                    get theme() {
+                        if (_this.getTheme) {
+                            return _this.getTheme();
+                        }
+                        return undefined;
+                    },
+                }
+            );
+        }
 
         static initTheme<
             T extends {

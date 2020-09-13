@@ -43,15 +43,28 @@ namespace Test {
     }
 
     // @ts-expect-error
-    export function type<T>(): T {}
+    export function type<T>(_v?: T): T {}
 
     // @ts-expect-error
     export function useValues(...values: any[]): void {}
 }
 
 {
+    interface ObjectTestType {
+        a: string;
+        b: number;
+        c: boolean;
+    }
+
     // JSX props test
-    class JSXProptest extends ConfigurableWebComponent<{}> {
+    class JSXProptest extends ConfigurableWebComponent<{
+        themes: {
+            light: ObjectTestType;
+            dark: ObjectTestType;
+        };
+        globalProps: ObjectTestType;
+        subtreeProps: ObjectTestType;
+    }> {
         props = Props.define(this, {
             reflect: {
                 prop1: {
@@ -154,6 +167,7 @@ namespace Test {
         });
 
         fn() {
+            // Prop types tests
             {
                 // string|void
                 type TestType = this['props']['prop1'];
@@ -499,6 +513,557 @@ namespace Test {
                 type TestType = this['props']['prop30'];
 
                 let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+        }
+
+        fn2() {
+            // Render arg props tests
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop1'];
+
+                this.props.prop1;
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // number|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop2'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.Number<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.Number<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // bool|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop3'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.Bool<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.Bool<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // JSXProptest|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop4'];
+                this.props.prop4;
+
+                // @ts-expect-error
+                let test1: JSXProptest = Test.type<TestType>();
+                // @ts-expect-error
+                let test2: void = Test.type<TestType>();
+                let test3: JSXProptest | void = Test.type<TestType>();
+                let test4: TestType = Test.type<JSXProptest>();
+                let test5: TestType = Test.type<undefined>();
+
+                Test.useValues(test1, test2, test3, test4, test5);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop5'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop6'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop7'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop8'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop9'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop10'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop11'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop12'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop13'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // 'x'|'y'|'z'|undefined
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop14'];
+
+                // @ts-expect-error
+                type ExactType<V extends 'x' | 'y' | 'z' | undefined> = void;
+
+                let test1: ExactType<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // 'x'|'y'|'z'
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop15'];
+
+                // @ts-expect-error
+                type ExactType<V extends 'x' | 'y' | 'z'> = void;
+
+                let test1: ExactType<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop16'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop17'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop18'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop19'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop20'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop21'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop22'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop23'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop24'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop25'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop26'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop27'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop28'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string|void
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop29'];
+
+                // @ts-expect-error
+                let test1: Test.AssignableTo.String<TestType>;
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+                let test3: Test.AssignableTo.Optional.String<TestType>;
+
+                Test.useValues(test1, test2, test3);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['props']['prop30'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+        }
+
+        fn3() {
+            // Render args theme tests
+            {
+                // ThemeType
+                type TestType = ReturnType<this['getRenderArgs']>['theme'];
+
+                let test1: TestType = Test.type<ObjectTestType>();
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+
+                Test.useValues(test1, test2);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<this['getRenderArgs']>['theme']['a'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // number
+                type TestType = ReturnType<this['getRenderArgs']>['theme']['b'];
+
+                let test1: Test.AssignableTo.Number<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // boolean
+                type TestType = ReturnType<this['getRenderArgs']>['theme']['c'];
+
+                let test1: Test.AssignableTo.Bool<TestType>;
+
+                Test.useValues(test1);
+            }
+        }
+
+        fn4() {
+            // Render args global props tests
+            {
+                // ThemeType
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['globalProps'];
+
+                let test1: TestType = Test.type<ObjectTestType>();
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+
+                Test.useValues(test1, test2);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['globalProps']['a'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // number
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['globalProps']['b'];
+
+                let test1: Test.AssignableTo.Number<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // boolean
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['globalProps']['c'];
+
+                let test1: Test.AssignableTo.Bool<TestType>;
+
+                Test.useValues(test1);
+            }
+        }
+
+        fn5() {
+            // Render args subtree props tests
+            {
+                // ThemeType
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['subtreeProps'];
+
+                let test1: TestType = Test.type<ObjectTestType>();
+                // @ts-expect-error
+                let test2: Test.AssignableTo.Void<TestType>;
+
+                Test.useValues(test1, test2);
+            }
+
+            {
+                // string
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['subtreeProps']['a'];
+
+                let test1: Test.AssignableTo.String<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // number
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['subtreeProps']['b'];
+
+                let test1: Test.AssignableTo.Number<TestType>;
+
+                Test.useValues(test1);
+            }
+
+            {
+                // boolean
+                type TestType = ReturnType<
+                    this['getRenderArgs']
+                >['subtreeProps']['c'];
+
+                let test1: Test.AssignableTo.Bool<TestType>;
 
                 Test.useValues(test1);
             }

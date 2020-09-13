@@ -11,6 +11,9 @@ import {
 import { ListenerSet, EventListenerObj } from '../lib/listener.js';
 import { TemplateFnLike } from '../lib/template-fn.js';
 import { ClassNamesArg } from '../lib/shared.js';
+import { GetRenderArgsBaseMixin } from '../lib/base.js';
+import { GetRenderArgsThemeManagerMixin } from '../lib/theme-manager.js';
+import { GetRenderArgsHierarchyManagerMixin } from '../lib/hierarchy-manager.js';
 
 /**
  * A constructable function that returns the passed type
@@ -277,6 +280,14 @@ export interface JSXIntrinsicProps {
     __listeners?: Partial<EventsToAttr<HTMLElementEventMap>>;
     '@'?: Partial<EventsToAttr<HTMLElementEventMap>>;
 }
+
+/**
+ * Combines GetRenderArgsBaseMixin, GetRenderArgsThemeManagerMixin
+ * and GetRenderArgsHierarchyManagerMixin into a single type
+ */
+export type GetRenderArgsMixin<T> = GetRenderArgsBaseMixin<T> &
+    GetRenderArgsThemeManagerMixin<T> &
+    GetRenderArgsHierarchyManagerMixin<T>;
 
 export {
     WebComponentBaseMixinInstance,

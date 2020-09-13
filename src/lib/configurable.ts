@@ -2,7 +2,8 @@ import { FullWebComponent, WebComponent } from '../classes/full.js';
 import { WebComponentDefinerMixinClass } from './definer.js';
 import { EventListenerObj, GetEvents } from './listener.js';
 import { SelectorMap, GetEls } from './component.js';
-import { TemplateFnLike } from './template-fn.js';
+import { CHANGE_TYPE, TemplateFnLike } from './template-fn.js';
+import { GetRenderArgsMixin } from '../classes/types.js';
 
 /**
  * A configurable web component. This is the basic
@@ -62,6 +63,25 @@ export class ConfigurableWebComponent<
      * @readonly
      */
     public static mixins?: MixinFn<any, any, any>[];
+
+    /**
+     * Returns what should be the second argument to the
+     * template fn's function
+     *
+     * @template CT - The type of change that triggered
+     *  this render
+     *
+     * @param {CT} changeType - The type of change that triggered
+     *  this render
+     *
+     * @returns {GetRenderArgsMixin<this>} An object containing
+     *  various properties that could be used in rendering
+     */
+    getRenderArgs<CT extends CHANGE_TYPE | number>(
+        changeType: CT
+    ): GetRenderArgsMixin<this> {
+        return super.getRenderArgs(changeType) as GetRenderArgsMixin<this>;
+    }
 }
 
 /**
@@ -189,6 +209,23 @@ export declare class ConfiguredComponent<
      * @readonly
      */
     static mixins?: MixinFn<any, any, any>[];
+
+    /**
+     * Returns what should be the second argument to the
+     * template fn's function
+     *
+     * @template CT - The type of change that triggered
+     *  this render
+     *
+     * @param {CT} changeType - The type of change that triggered
+     *  this render
+     *
+     * @returns {GetRenderArgsMixin<this>} An object containing
+     *  various properties that could be used in rendering
+     */
+    getRenderArgs<CT extends CHANGE_TYPE | number>(
+        changeType: CT
+    ): GetRenderArgsMixin<this>;
 }
 
 /**

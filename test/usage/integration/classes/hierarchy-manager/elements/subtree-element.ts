@@ -5,11 +5,14 @@ import {
     Props,
     PROP_TYPE,
     ConfigurableWebComponent,
+    EventListenerObj,
+    SelectorMap,
 } from '../../../../../../build/es/wc-lib.js';
 import {
     render,
     html,
 } from '../../../../../../node_modules/lit-html/lit-html.js';
+import { RenderableComponent } from '../../../../../types/test-types.js';
 import { ParentElementFactory } from '../../elements/parent-element-factory.js';
 import { TestElementFactory } from '../../elements/test-element-factory.js';
 
@@ -22,8 +25,31 @@ export declare class SubtreeElement extends ConfigurableWebComponent<{}> {
     registerEmpty(): void;
 }
 
-export const SubtreeFactory = (superFn: any) => {
-    const SubtreeElementHTML = new TemplateFn<SubtreeElement>(
+declare class SubtreeSuperComponent<
+    GA extends {
+        i18n?: any;
+        langs?: string;
+        events?: EventListenerObj;
+        themes?: {
+            [key: string]: any;
+        };
+        selectors?: SelectorMap;
+        root?: any;
+        parent?: any;
+        globalProps?: {
+            [key: string]: any;
+        };
+        subtreeProps?: {
+            [key: string]: any;
+        };
+    } = {}
+> extends RenderableComponent<GA> {
+    registerAsSubTreeRoot(props?: any): void;
+    setSubTreeProps(props: any): void;
+}
+
+export const SubtreeFactory = (superFn: typeof SubtreeSuperComponent) => {
+    const SubtreeElementHTML = new TemplateFn<_SubtreeElement>(
         function(_, { subtreeProps }) {
             this.lastRenderSubtreeProps = subtreeProps;
             return html`
@@ -54,7 +80,7 @@ export const SubtreeFactory = (superFn: any) => {
             TestElementFactory(superFn),
         ] as any,
     })
-    class _SubtreeElement extends superFn<{}> {
+    class _SubtreeElement extends superFn {
         props = Props.define(this as any, {
             reflect: {
                 x: {

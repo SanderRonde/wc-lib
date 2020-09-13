@@ -142,7 +142,7 @@ export type TemplateRenderResult =
  */
 export type TemplateRenderFunction<
     C extends {
-        getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+        getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): {};
     },
     TR extends TemplateRenderResult
 > = (
@@ -241,7 +241,7 @@ export interface TemplateFnLike<CT extends number = number> {
      *
      * @param {CHANGE_TYPE} changeType - The type of the change
      * 	that occurred that caused this render to happen
-     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): any;}} component -
+     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): {};}} component -
      *  The component to which this text is rendered
      *
      * @returns {string} The rendered string
@@ -249,7 +249,7 @@ export interface TemplateFnLike<CT extends number = number> {
     renderAsText(
         changeType: CT,
         component: {
-            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): {};
         }
     ): string;
 
@@ -260,7 +260,7 @@ export interface TemplateFnLike<CT extends number = number> {
      *
      * @param {CHANGE_TYPE} changeType - The type of the change
      * 	that occurred that caused this render to happen
-     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): any;}} component -
+     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): {};}} component -
      *  The component to which this text is rendered
      *
      * @returns {any|null} The template representation or null
@@ -270,7 +270,7 @@ export interface TemplateFnLike<CT extends number = number> {
     renderTemplate(
         changeType: CT,
         component: {
-            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): {};
         }
     ): any | null;
 
@@ -281,7 +281,7 @@ export interface TemplateFnLike<CT extends number = number> {
      *
      * @param {CHANGE_TYPE} changeType - The type of the change
      * 	that occurred that caused this render to happen
-     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): any;}} component -
+     * @param {{getRenderArgs<CT extends CHANGE_TYPE|number>(changeType: CT): {};}} component -
      *  The component to which this text is rendered
      * @param {any} templater - The templater that will be used
      *  to rendeer this template.
@@ -292,7 +292,7 @@ export interface TemplateFnLike<CT extends number = number> {
     renderSame(
         changeType: CT,
         component: {
-            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+            getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): {};
         },
         templater: any
     ): any | string | null;
@@ -334,7 +334,7 @@ export interface TemplateFnLike<CT extends number = number> {
  */
 export class TemplateFn<
     C extends {
-        getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+        getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): {};
     } = WebComponent<any, any>,
     R extends TemplateRenderResult = TemplateRenderResult
 > implements TemplateFnLike {
@@ -452,7 +452,7 @@ export class TemplateFn<
                       >).call(
                           component,
                           jsxAddedTemplate!,
-                          component.getRenderArgs(changeType)
+                          component.getRenderArgs(changeType) as any
                       );
 
             if (rendered instanceof JSXDelayedExecutionCall) {
@@ -476,7 +476,7 @@ export class TemplateFn<
             >).call(
                 component,
                 jsxAddedTemplate!,
-                component.getRenderArgs(changeType)
+                component.getRenderArgs(changeType) as any
             );
             if (rendered instanceof JSXDelayedExecutionCall) {
                 // Collapse

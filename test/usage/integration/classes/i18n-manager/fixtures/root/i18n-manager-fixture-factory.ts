@@ -55,5 +55,5 @@ export function i18nManagerRootFixtureFactory(
     });
 
     (window as any).WebComponent = base;
-    RootElementFactory(base).define(true);
+    RootElementFactory(base as any).define(true);
 }

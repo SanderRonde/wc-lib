@@ -2,8 +2,8 @@ import { ConfigurableWebComponent } from '../../../../../../../build/es/wc-lib.j
 import { RootElementFactory } from '../../elements/root-element.js';
 import { SubtreeFactory } from '../../elements/subtree-element.js';
 
-RootElementFactory(ConfigurableWebComponent).define(true);
-SubtreeFactory(ConfigurableWebComponent).define(true);
+RootElementFactory(ConfigurableWebComponent as any).define(true);
+SubtreeFactory(ConfigurableWebComponent as any).define(true);
 
 export interface TestGlobalProperties {
     a: string;

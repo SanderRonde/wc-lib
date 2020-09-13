@@ -29,17 +29,14 @@ import {
 import {
     WebComponentBaseTypeInstance,
     WebComponentBaseTypeStatic,
-    GetRenderArgsBaseMixin,
 } from '../lib/base.js';
 import {
     WebComponentHierarchyManagerTypeInstance,
     WebComponentHierarchyManagerTypeStatic,
-    GetRenderArgsHierarchyManagerMixin,
 } from '../lib/hierarchy-manager.js';
 import {
     WebComponentThemeManagerTypeStatic,
     WebComponentThemeManagerTypeInstance,
-    GetRenderArgsThemeManagerMixin,
 } from '../lib/theme-manager.js';
 import {
     WebComponentI18NManagerTypeStatic,
@@ -54,6 +51,7 @@ import {
     WebComponentCustomCSSManagerTypeInstance,
 } from '../lib/custom-css-manager.js';
 import { CHANGE_TYPE } from '../lib/template-fn.js';
+import { GetRenderArgsMixin } from './types.js';
 
 /**
  * A full webcomponent that uses every layer and provides
@@ -160,9 +158,7 @@ export class WebComponent<
 > extends FullWebComponent<GA, E, ELS> {
     getRenderArgs<CT extends CHANGE_TYPE | number>(
         changeType: CT
-    ): GetRenderArgsBaseMixin<this> &
-        GetRenderArgsThemeManagerMixin<this> &
-        GetRenderArgsHierarchyManagerMixin<this> {
-        return super.getRenderArgs(changeType);
+    ): GetRenderArgsMixin<this> {
+        return super.getRenderArgs(changeType) as GetRenderArgsMixin<this>;
     }
 }

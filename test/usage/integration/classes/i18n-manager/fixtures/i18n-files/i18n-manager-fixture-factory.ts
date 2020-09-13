@@ -64,5 +64,5 @@ export function i18nManagerI18nFilesFixtureFactory(
     (window as any).WebComponent = base;
     TestElementFactory(base as any).define(true);
     LangElementFactory(base as any).define(true);
-    RootElementFactory(base).define(true);
+    RootElementFactory(base as any).define(true);
 }

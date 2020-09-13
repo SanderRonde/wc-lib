@@ -15,11 +15,11 @@ import {
     WebComponentHierarchyManagerTypeStatic,
     WebComponentTemplateManagerTypeInstance,
     WebComponentTemplateManagerTypeStatic,
+    GetRenderArgsMixin,
 } from './types';
 import {
     elementBase,
     WebComponentTemplateManagerMixin,
-    WebComponentHierarchyManagerMixin,
     WebComponentI18NManagerMixin,
 } from './parts.js';
 import {
@@ -28,14 +28,11 @@ import {
     GetEvents,
 } from '../lib/listener.js';
 import { WebComponentMixin, SelectorMap, GetEls } from '../lib/component.js';
-import {
-    GetRenderArgsThemeManagerMixin,
-    WebComponentThemeManagerMixin,
-} from '../lib/theme-manager.js';
+import { WebComponentThemeManagerMixin } from '../lib/theme-manager.js';
 import { WebComponentDefinerMixin } from '../lib/definer.js';
-import { GetRenderArgsBaseMixin, WebComponentBaseMixin } from '../lib/base.js';
+import { WebComponentBaseMixin } from '../lib/base.js';
 import { CHANGE_TYPE } from '../lib/template-fn';
-import { GetRenderArgsHierarchyManagerMixin } from '../lib/hierarchy-manager';
+import { WebComponentHierarchyManagerMixin } from '../lib/hierarchy-manager';
 
 const basicWebComponent = (WebComponentMixin(
     WebComponentListenableMixin(
@@ -64,11 +61,16 @@ const basicWebComponent = (WebComponentMixin(
         ELS extends SelectorMap = GetEls<GA>
     >(
         ...args: any[]
-    ): HTMLElement &
-        WebComponentDefinerTypeInstance &
-        WebComponentBaseTypeInstance &
-        WebComponentListenableTypeInstance<GA, E> &
-        WebComponentTypeInstance<GA, void, ELS>;
+    ): Omit<
+        HTMLElement &
+            WebComponentDefinerTypeInstance &
+            WebComponentBaseTypeInstance &
+            WebComponentListenableTypeInstance<GA, E> &
+            WebComponentTypeInstance<GA, void, ELS>,
+        'getRenderArgs' | 'self'
+    > & {
+        getRenderArgs(changeType: CHANGE_TYPE | number): {};
+    };
     self(): WebComponentDefinerTypeStatic &
         WebComponentBaseTypeStatic &
         WebComponentListenableTypeStatic &
@@ -94,8 +96,8 @@ export class BasicWebComponent<
 > extends basicWebComponent<GA, E, ELS> {
     getRenderArgs<CT extends CHANGE_TYPE | number>(
         changeType: CT
-    ): GetRenderArgsBaseMixin<this> {
-        return super.getRenderArgs(changeType);
+    ): GetRenderArgsMixin<this> {
+        return super.getRenderArgs(changeType) as GetRenderArgsMixin<this>;
     }
 }
 
@@ -128,12 +130,17 @@ const themingWebComponent = (WebComponentMixin(
         ELS extends SelectorMap = GetEls<GA>
     >(
         ...args: any[]
-    ): HTMLElement &
-        WebComponentDefinerTypeInstance &
-        WebComponentBaseTypeInstance &
-        WebComponentListenableTypeInstance<GA, E> &
-        WebComponentThemeManagerTypeInstance<GA> &
-        WebComponentTypeInstance<GA, void, ELS>;
+    ): Omit<
+        HTMLElement &
+            WebComponentDefinerTypeInstance &
+            WebComponentBaseTypeInstance &
+            WebComponentListenableTypeInstance<GA, E> &
+            WebComponentThemeManagerTypeInstance<GA> &
+            WebComponentTypeInstance<GA, void, ELS>,
+        'getRenderArgs' | 'self'
+    > & {
+        getRenderArgs(changeType: CHANGE_TYPE | number): {};
+    };
     self(): WebComponentDefinerTypeStatic &
         WebComponentBaseTypeStatic &
         WebComponentListenableTypeStatic &
@@ -166,8 +173,8 @@ export class ThemingWebComponent<
 > extends themingWebComponent<GA, E, ELS> {
     getRenderArgs<CT extends CHANGE_TYPE | number>(
         changeType: CT
-    ): GetRenderArgsBaseMixin<this> & GetRenderArgsThemeManagerMixin<this> {
-        return super.getRenderArgs(changeType);
+    ): GetRenderArgsMixin<this> {
+        return super.getRenderArgs(changeType) as GetRenderArgsMixin<this>;
     }
 }
 
@@ -200,12 +207,17 @@ const i18NWebComponent = (WebComponentMixin(
         ELS extends SelectorMap = GetEls<GA>
     >(
         ...args: any[]
-    ): HTMLElement &
-        WebComponentDefinerTypeInstance &
-        WebComponentBaseTypeInstance &
-        WebComponentListenableTypeInstance<GA, E> &
-        WebComponentI18NManagerTypeInstance<GA> &
-        WebComponentTypeInstance<GA, void, ELS>;
+    ): Omit<
+        HTMLElement &
+            WebComponentDefinerTypeInstance &
+            WebComponentBaseTypeInstance &
+            WebComponentListenableTypeInstance<GA, E> &
+            WebComponentI18NManagerTypeInstance<GA> &
+            WebComponentTypeInstance<GA, void, ELS>,
+        'getRenderArgs' | 'self'
+    > & {
+        getRenderArgs(changeType: CHANGE_TYPE | number): {};
+    };
     self(): WebComponentDefinerTypeStatic &
         WebComponentBaseTypeStatic &
         WebComponentListenableTypeStatic &
@@ -238,8 +250,8 @@ export class I18NWebComponent<
 > extends i18NWebComponent<GA, E, ELS> {
     getRenderArgs<CT extends CHANGE_TYPE | number>(
         changeType: CT
-    ): GetRenderArgsBaseMixin<this> {
-        return super.getRenderArgs(changeType);
+    ): GetRenderArgsMixin<this> {
+        return super.getRenderArgs(changeType) as GetRenderArgsMixin<this>;
     }
 }
 
@@ -274,13 +286,18 @@ const complexTemplatingWebComponent = (WebComponentMixin(
         ELS extends SelectorMap = GetEls<GA>
     >(
         ...args: any[]
-    ): HTMLElement &
-        WebComponentDefinerTypeInstance &
-        WebComponentBaseTypeInstance &
-        WebComponentListenableTypeInstance<GA, E> &
-        WebComponentHierarchyManagerTypeInstance<GA> &
-        WebComponentTemplateManagerTypeInstance &
-        WebComponentTypeInstance<GA, void, ELS>;
+    ): Omit<
+        HTMLElement &
+            WebComponentDefinerTypeInstance &
+            WebComponentBaseTypeInstance &
+            WebComponentListenableTypeInstance<GA, E> &
+            WebComponentHierarchyManagerTypeInstance<GA> &
+            WebComponentTemplateManagerTypeInstance &
+            WebComponentTypeInstance<GA, void, ELS>,
+        'getRenderArgs' | 'self'
+    > & {
+        getRenderArgs(changeType: CHANGE_TYPE | number): {};
+    };
     self(): WebComponentDefinerTypeStatic &
         WebComponentBaseTypeStatic &
         WebComponentListenableTypeStatic &
@@ -320,7 +337,7 @@ export class ComplexTemplatingWebComponent<
 > extends complexTemplatingWebComponent<GA, E, ELS> {
     getRenderArgs<CT extends CHANGE_TYPE | number>(
         changeType: CT
-    ): GetRenderArgsBaseMixin<this> & GetRenderArgsHierarchyManagerMixin<this> {
-        return super.getRenderArgs(changeType);
+    ): GetRenderArgsMixin<this> {
+        return super.getRenderArgs(changeType) as GetRenderArgsMixin<this>;
     }
 }

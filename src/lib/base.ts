@@ -424,9 +424,9 @@ export declare class WebComponentBaseTypeInstance {
      * @param {CT} changeType - The type of change that triggered
      *  this render
      *
-     * @returns {any} To-be-defined return type
+     * @returns {{}} To-be-defined return type
      */
-    public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+    public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): {};
 
     /**
      * A method called before rendering (changing props won't trigger additional re-render)
@@ -578,7 +578,9 @@ export const WebComponentBaseMixin = <P extends WebComponentBaseMixinSuper>(
             priv.doPostRenderLifecycle();
         }
 
-        public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any {
+        public getRenderArgs<CT extends CHANGE_TYPE | number>(
+            changeType: CT
+        ): {} {
             const _this = this;
             return {
                 get props() {

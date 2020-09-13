@@ -109,7 +109,9 @@ export function hierarchyManagerspec(fixture: string) {
                 cy.get('root-element, subtree-element').then(
                     (elements: JQuery<RootElement | SubtreeElement>) => {
                         for (const element of elements) {
-                            const renderArgs = element.getRenderArgs(0);
+                            const renderArgs = (element as RootElement).getRenderArgs(
+                                0
+                            );
                             expect(renderArgs).to.have.property(
                                 'subtreeProps',
                                 element.getSubTreeProps()

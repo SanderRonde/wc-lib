@@ -5,6 +5,8 @@ import {
     Props,
     PROP_TYPE,
     ConfigurableWebComponent,
+    EventListenerObj,
+    SelectorMap,
 } from '../../../../../../build/es/wc-lib.js';
 import { TestGlobalProperties } from '../fixtures/standard/hierarchy-manager.fixture.js';
 import {
@@ -13,6 +15,7 @@ import {
 } from '../../../../../../node_modules/lit-html/lit-html.js';
 import { ParentElementFactory } from '../../elements/parent-element-factory.js';
 import { TestElementFactory } from '../../elements/test-element-factory.js';
+import { RenderableComponent } from '../../../../../types/test-types.js';
 
 export declare class RootElement extends ConfigurableWebComponent<{
     events: {
@@ -32,9 +35,29 @@ export declare class RootElement extends ConfigurableWebComponent<{
     props: { x: number };
 }
 
-export const RootElementFactory = (superFn: any) => {
-    const RootElementHTML = new TemplateFn<RootElement>(
-        function (_, { globalProps })  {
+declare class RootSuperComponent<
+    GA extends {
+        i18n?: any;
+        langs?: string;
+        events?: EventListenerObj;
+        themes?: {
+            [key: string]: any;
+        };
+        selectors?: SelectorMap;
+        root?: any;
+        parent?: any;
+        globalProps?: {
+            [key: string]: any;
+        };
+        subtreeProps?: {
+            [key: string]: any;
+        };
+    } = {}
+> extends RenderableComponent<GA> {}
+
+export const RootElementFactory = (superFn: typeof RootSuperComponent) => {
+    const RootElementHTML = new TemplateFn<_RootElement>(
+        function(_, { globalProps }) {
             this.lastRenderGP = globalProps;
             return html`
                 <test-element></test-element>

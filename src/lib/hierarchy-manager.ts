@@ -581,9 +581,9 @@ export declare class WebComponentHierarchyManagerTypeInstance<
      * @param {CT} changeType - The type of change that triggered
      *  this render
      *
-     * @returns {any} To-be-defined return type
+     * @returns {{}} To-be-defined return type
      */
-    public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): any;
+    public getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT): {};
 }
 
 /**
@@ -781,7 +781,7 @@ export const WebComponentHierarchyManagerMixin = <
 
         public getRenderArgs = <CT extends CHANGE_TYPE | number>(
             changeType: CT
-        ): any => {
+        ): {} => {
             const _this = this;
             return {
                 // istanbul ignore next

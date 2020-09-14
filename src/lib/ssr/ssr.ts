@@ -415,6 +415,13 @@ export namespace SSR {
                 getThemeName() {
                     return session._themeName;
                 }
+                getRenderArgs<CT extends CHANGE_TYPE | number>(changeType: CT) {
+                    return {
+                        props: (this as any).props,
+                        theme: this.getTheme(),
+                        changeType: changeType,
+                    };
+                }
                 getLang() {
                     return session._lang;
                 }

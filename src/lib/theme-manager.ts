@@ -310,9 +310,11 @@ export const WebComponentThemeManagerMixin = <
                 super.getRenderArgs ? super.getRenderArgs(changeType) : {},
                 {
                     get theme() {
+                        // istanbul ignore next
                         if (_this.getTheme) {
                             return _this.getTheme();
                         }
+                        // istanbul ignore next
                         return undefined;
                     },
                 }

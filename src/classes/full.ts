@@ -159,6 +159,7 @@ export class WebComponent<
     getRenderArgs<CT extends CHANGE_TYPE | number>(
         changeType: CT
     ): GetRenderArgsMixin<this> {
+        // istanbul ignore next
         return super.getRenderArgs(changeType) as GetRenderArgsMixin<this>;
     }
 }

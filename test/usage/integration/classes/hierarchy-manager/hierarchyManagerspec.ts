@@ -52,7 +52,7 @@ function assertDefaultProps(
     expect(props.get('c')).to.be.equal('d', 'prop is set');
 }
 
-function assertWatchedEqual(value: any, expected: any) {
+export function assertWatchedEqual(value: any, expected: any) {
     for (const key in expected) {
         if (key === '__watch') continue;
         expect(value).to.have.property(key, expected[key]);

@@ -6,6 +6,7 @@ import { ThemeManagerWindow } from './fixtures/invalid/theme-manager.fixture.js'
 import { TestElement, TestWindow } from '../elements/test-element';
 import { expectMethodExists } from '../../../lib/assertions.js';
 import { SLOW } from '../../../lib/timing.js';
+import { assertWatchedEqual } from '../hierarchy-manager/hierarchyManagerspec.js';
 export interface TestTheme {
     color1: string;
     color2: string;
@@ -61,7 +62,7 @@ export function themeManagerSpec(
     },
     globalProps: boolean = true
 ) {
-    context('Theme Manager', function() {
+    context('Theme Manager', function () {
         this.slow(SLOW);
         before(() => {
             cy.visit(standardFixture);
@@ -102,8 +103,9 @@ export function themeManagerSpec(
                     for (const element of elements) {
                         expect(
                             (element as ThemedElement).getRenderArgs(0)
-                        ).to.have.property(
-                            'theme',
+                        ).to.have.property('theme');
+                        assertWatchedEqual(
+                            (element.getRenderArgs as any)(0).theme,
                             (element as any).getTheme()
                         );
                     }

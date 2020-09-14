@@ -1590,7 +1590,6 @@ namespace PropsDefiner {
                         value,
                         prevVal
                     );
-                    console.log('writing to propvalues', mapKey, value);
                     _this._rep.propValues[mapKey] = value;
                     _this._rep.component.fire(
                         'propChange',
@@ -2027,7 +2026,6 @@ export class Props<
             }
 
             const { addListener } = PropsDefiner.joinProps(parentProps, config);
-            console.log(parentProps);
             return createWatchable(
                 parentProps,
                 (onChange) => {
@@ -2045,13 +2043,10 @@ export class Props<
             element,
             config
         );
-        console.log(props);
         return createWatchable(
             props,
             (onChange) => {
-                console.log('listening');
                 addListener((changedKey) => {
-                    // console.log('actual change', props, changedKey);
                     onChange(props, changedKey);
                 });
             },

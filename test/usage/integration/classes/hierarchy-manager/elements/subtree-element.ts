@@ -60,6 +60,7 @@ export const SubtreeFactory = (superFn: typeof SubtreeSuperComponent) => {
 
     const SubtreeElementCSS = new TemplateFn<SubtreeElement>(
         function () {
+            // console.log('rendering subtree');
             this.renders++;
             return html` <style></style> `;
         },

@@ -51,6 +51,14 @@ function assertDefaultProps(
     expect(props.get('a')).to.be.equal('b', 'prop is set');
     expect(props.get('c')).to.be.equal('d', 'prop is set');
 }
+
+function assertWatchedEqual(value: any, expected: any) {
+    for (const key in expected) {
+        if (key === '__watch') continue;
+        expect(value).to.have.property(key, expected[key]);
+    }
+}
+
 export function hierarchyManagerspec(fixture: string) {
     context('Hierarchy-Manager', function () {
         this.slow(SLOW);
@@ -117,11 +125,13 @@ export function hierarchyManagerspec(fixture: string) {
                             );
 
                             expect(renderArgs).to.have.property('subtreeProps');
-                            expect(renderArgs.subtreeProps).to.be.deep.equal(
+                            assertWatchedEqual(
+                                renderArgs.subtreeProps,
                                 element.getSubTreeProps()
                             );
                             expect(renderArgs).to.have.property('globalProps');
-                            expect(renderArgs.globalProps).to.be.deep.equal(
+                            assertWatchedEqual(
+                                renderArgs.globalProps,
                                 (element.globalProps as any)().all
                             );
                         }
@@ -371,26 +381,36 @@ export function hierarchyManagerspec(fixture: string) {
                     cy.get('#subtree-A').then(
                         ([root]: JQuery<SubtreeElement>) => {
                             root.renderToDOM(CHANGE_TYPE.FORCE);
-                            expect(root.lastRenderSubtreeProps)
-                                .to.be.deep.equal(root.getSubTreeProps())
-                                .to.be.deep.equal(
-                                    root.getRenderArgs(0).subtreeProps
-                                );
+                            assertWatchedEqual(
+                                root.lastRenderSubtreeProps,
+                                root.getSubTreeProps()
+                            );
+                            assertWatchedEqual(
+                                root.lastRenderSubtreeProps,
+                                root.getRenderArgs(0).subtreeProps
+                            );
                         }
                     );
                 });
                 it('calls subtree props changed when props are changed', () => {
                     cy.get('#subtree-A').then(
                         ([subtreeRoot]: JQuery<SubtreeElement>) => {
-                            expect(subtreeRoot.renders).to.be.equal(1);
+                            console.log('renders=', subtreeRoot.renders);
+                            const initial = subtreeRoot.renders;
 
                             subtreeRoot.register();
 
-                            expect(subtreeRoot.renders).to.be.equal(2);
+                            expect(subtreeRoot.renders).to.be.equal(
+                                initial + 1,
+                                'increased by one'
+                            );
 
                             subtreeRoot.updateSubtree();
 
-                            expect(subtreeRoot.renders).to.be.equal(3);
+                            expect(subtreeRoot.renders).to.be.equal(
+                                initial + 2,
+                                'increased by two'
+                            );
                         }
                     );
                 });
@@ -480,20 +500,25 @@ export function hierarchyManagerspec(fixture: string) {
                 it('passes global props to renders', () => {
                     cy.get('root-element').then(
                         ([root]: JQuery<RootElement>) => {
-                            expect(root.lastRenderGP)
-                                .to.be.equal(root.globalProps().all)
-                                .to.be.equal(root.getRenderArgs(0).globalProps);
+                            assertWatchedEqual(
+                                root.lastRenderGP,
+                                root.globalProps().all
+                            );
+                            assertWatchedEqual(
+                                root.lastRenderGP,
+                                root.getRenderArgs(0).globalProps
+                            );
                         }
                     );
                 });
                 it('calls render with CHANGE_TYPE.GLOBAL_PROPS when global props change', () => {
                     cy.get('root-element').then(
                         ([root]: JQuery<RootElement>) => {
-                            expect(root.renders).to.be.equal(1);
+                            const initial = root.renders;
 
                             root.globalProps().set('a', '10');
 
-                            expect(root.renders).to.be.equal(2);
+                            expect(root.renders).to.be.equal(initial + 1);
                         }
                     );
                 });

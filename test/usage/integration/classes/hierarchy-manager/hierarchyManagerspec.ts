@@ -54,7 +54,7 @@ function assertDefaultProps(
 
 export function assertWatchedEqual(value: any, expected: any) {
     for (const key in expected) {
-        if (key === '__watch') continue;
+        if (key === '__watch' || key === '__original') continue;
         expect(value).to.have.property(key, expected[key]);
     }
 }

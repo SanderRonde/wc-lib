@@ -39,6 +39,7 @@ export function createWatchable<V extends object>(
                     onChange(value[key]);
                 });
             },
+            __original: value,
         },
         writable
     );

@@ -2019,6 +2019,12 @@ export class Props<
             )
         ) {
             if (
+                typeof parentProps === 'object' &&
+                '__original' in parentProps
+            ) {
+                parentProps = parentProps.__original;
+            }
+            if (
                 typeof parentProps !== 'object' ||
                 !(parentProps instanceof Props)
             ) {

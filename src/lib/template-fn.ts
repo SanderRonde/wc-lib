@@ -20,6 +20,11 @@ export const enum CHANGE_TYPE {
      */
     NEVER = 0,
     /**
+     * Manually re-render. Functionally
+     * equivalent to NEVER rerender
+     */
+    MANUAL = 0,
+    /**
      * A property change
      */
     PROP = 1,

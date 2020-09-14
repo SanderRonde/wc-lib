@@ -365,6 +365,10 @@ export namespace SSR {
                     return true;
                 }
 
+                get props() {
+                    return props;
+                }
+
                 get tagName() {
                     return tagName;
                 }

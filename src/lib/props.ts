@@ -1,4 +1,5 @@
 import { CHANGE_TYPE } from './template-fn.js';
+import { createWatchable, Watchable } from './util/manual.js';
 
 /**
  * The prefix used for complex references
@@ -1199,20 +1200,28 @@ namespace PropsDefiner {
 
     const renderMap: WeakMap<PropComponent, CHANGE_TYPE> = new WeakMap();
 
-    function queueRender(element: PropComponent, changeType: CHANGE_TYPE) {
-        if (!renderMap.has(element)) {
-            renderMap.set(element, changeType);
+    function queueRender(
+        element: ElementRepresentation<any, any>,
+        changeType: CHANGE_TYPE,
+        changeKey?: string
+    ) {
+        if (!renderMap.has(element.component)) {
+            renderMap.set(element.component, changeType);
         }
 
-        setTimeout(() => {
-            element.renderToDOM(renderMap.get(element)!);
-            renderMap.delete(element);
-        }, 0);
+        // setTimeout(() => {
+        element.component.renderToDOM(renderMap.get(element.component)!);
+        element.changeListeners.forEach((l) => l(changeKey));
+        renderMap.delete(element.component);
+        // }, 0);
     }
 
-    function createQueueRenderFn(element: PropComponent) {
+    function createQueueRenderFn(
+        element: ElementRepresentation<any, any>,
+        changeKey?: string
+    ) {
         return (changeType: CHANGE_TYPE) => {
-            queueRender(element, changeType);
+            queueRender(element, changeType, changeKey);
         };
     }
 
@@ -1239,6 +1248,7 @@ namespace PropsDefiner {
         > = new Map();
         public onDone: Promise<void>;
         private _onDoneResolve!: () => void;
+        public changeListeners: ((changedKey?: string) => void)[] = [];
 
         constructor(public component: PropComponent) {
             this.setAttr = component.setAttribute.bind(component);
@@ -1307,7 +1317,7 @@ namespace PropsDefiner {
             });
             this._onDoneResolve();
             if (!this.component.isSSR) {
-                queueRender(this.component, CHANGE_TYPE.PROP);
+                queueRender(this, CHANGE_TYPE.PROP);
             }
         }
     }
@@ -1364,7 +1374,7 @@ namespace PropsDefiner {
             el.component.fire('propChange', casingKey, newVal, prevVal);
 
             if (watch) {
-                queueRender(el.component, CHANGE_TYPE.PROP);
+                queueRender(el, CHANGE_TYPE.PROP, casingKey);
             }
         } else {
             el.propValues[casingKey] = val as any;
@@ -1403,9 +1413,10 @@ namespace PropsDefiner {
                 );
                 el.propValues[casingKey] = newVal;
                 el.component.fire('propChange', casingKey, newVal, prevVal);
+                el.changeListeners.forEach((l) => l(casingKey));
 
                 if (watch) {
-                    queueRender(el.component, CHANGE_TYPE.PROP);
+                    queueRender(el, CHANGE_TYPE.PROP, casingKey);
                 }
             }
         }
@@ -1523,6 +1534,7 @@ namespace PropsDefiner {
                 get() {
                     return _this._rep.propValues[mapKey];
                 },
+                enumerable: true,
                 set(value) {
                     const props = _this._props as SimpleReturnType<R, P>;
                     if (props[mapKey] === value) return;
@@ -1557,10 +1569,11 @@ namespace PropsDefiner {
                     }
                     return value;
                 },
+                enumerable: true,
                 set(value) {
                     const original = value;
                     value = Watching.watchValue(
-                        createQueueRenderFn(_this._rep.component),
+                        createQueueRenderFn(_this._rep, mapKey),
                         value,
                         watch,
                         watchProperties
@@ -1577,6 +1590,7 @@ namespace PropsDefiner {
                         value,
                         prevVal
                     );
+                    console.log('writing to propvalues', mapKey, value);
                     _this._rep.propValues[mapKey] = value;
                     _this._rep.component.fire(
                         'propChange',
@@ -1584,6 +1598,7 @@ namespace PropsDefiner {
                         value,
                         prevVal
                     );
+                    _this._rep.changeListeners.forEach((l) => l(key));
                     if (_this._propertyConfig.reflectToAttr) {
                         setter(
                             _this._rep.setAttr,
@@ -1595,7 +1610,7 @@ namespace PropsDefiner {
                     }
 
                     if (watch) {
-                        queueRender(_this._rep.component, CHANGE_TYPE.PROP);
+                        queueRender(_this._rep, CHANGE_TYPE.PROP, mapKey);
                     }
                 },
             });
@@ -1614,7 +1629,7 @@ namespace PropsDefiner {
                 mapKey,
                 () => {
                     this._rep.propValues[mapKey] = Watching.watchValue(
-                        createQueueRenderFn(this._rep.component),
+                        createQueueRenderFn(this._rep, mapKey),
                         this._rep.component.hasAttribute(propName)
                             ? (getter(
                                   this._rep.component,
@@ -1641,7 +1656,7 @@ namespace PropsDefiner {
                 watchProperties,
             } = this.config;
             this._rep.propValues[mapKey] = Watching.watchValue(
-                createQueueRenderFn(this._rep.component),
+                createQueueRenderFn(this._rep, mapKey),
                 this._rep.component.hasAttribute(propName) ||
                     (strict && type === 'bool')
                     ? (getter(
@@ -1669,7 +1684,7 @@ namespace PropsDefiner {
             if (defaultValue !== undefined) {
                 if (this._rep.propValues[mapKey] === undefined) {
                     this._rep.propValues[mapKey] = Watching.watchValue(
-                        createQueueRenderFn(this._rep.component),
+                        createQueueRenderFn(this._rep, mapKey),
                         defaultValue as any,
                         watch,
                         watchProperties
@@ -1782,10 +1797,15 @@ namespace PropsDefiner {
             element,
         });
 
-        return defineProperties(element, props, config);
+        return {
+            awaitable: defineProperties(element, props, config),
+            addListener(changeListener: (changedKey?: string) => void) {
+                element.changeListeners.push(changeListener);
+            },
+        };
     }
 
-    export async function joinProps<
+    export function joinProps<
         R extends PropTypeConfig,
         P extends PropTypeConfig,
         PP extends PropReturn<any, any>
@@ -1807,7 +1827,14 @@ namespace PropsDefiner {
             element,
         });
 
-        await defineProperties(element, previousProps, config);
+        return {
+            awaitable: defineProperties(element, previousProps, config),
+            addListener(
+                changeListener: (value: any, changedKey?: string) => void
+            ) {
+                element.changeListeners.push(changeListener);
+            },
+        };
     }
 }
 
@@ -1876,7 +1903,7 @@ export class Props<
      * 	properties of the parent that should be merged
      * 	with the properties of this element
      *
-     * @returns {Props & R} The properties for
+     * @returns {Watchable<Props & R>} The properties for
      * 	this component
      */
     static define<
@@ -1889,7 +1916,7 @@ export class Props<
             reflect: PUB;
             priv: PRIV;
         }
-    ): Props<typeof config> & ReturnType<PUB, PRIV>;
+    ): Watchable<Props<typeof config> & ReturnType<PUB, PRIV>>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
@@ -1899,7 +1926,7 @@ export class Props<
         config?: {
             priv: PRIV;
         }
-    ): Props<typeof config> & ReturnType<{}, PRIV>;
+    ): Watchable<Props<typeof config> & ReturnType<{}, PRIV>>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
@@ -1909,12 +1936,12 @@ export class Props<
         config?: {
             reflect: PUB;
         }
-    ): Props<typeof config> & ReturnType<PUB, {}>;
+    ): Watchable<Props<typeof config> & ReturnType<PUB, {}>>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
         R extends PropReturn<PUB, PRIV>
-    >(element: PropComponent, config?: {}): Props<typeof config>;
+    >(element: PropComponent, config?: {}): Watchable<Props<typeof config>>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
@@ -1927,7 +1954,7 @@ export class Props<
             priv: PRIV;
         },
         parentProps: PP
-    ): Props<typeof config> & ReturnType<PUB, PRIV> & PP;
+    ): Watchable<Props<typeof config> & ReturnType<PUB, PRIV> & PP>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
@@ -1939,7 +1966,7 @@ export class Props<
             priv: PRIV;
         },
         parentProps: PP
-    ): Props<typeof config> & ReturnType<{}, PRIV> & PP;
+    ): Watchable<Props<typeof config> & ReturnType<{}, PRIV> & PP>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
@@ -1951,7 +1978,7 @@ export class Props<
             reflect: PUB;
         },
         parentProps: PP
-    ): Props<typeof config> & ReturnType<PUB, {}> & PP;
+    ): Watchable<Props<typeof config> & ReturnType<PUB, {}> & PP>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
@@ -1961,7 +1988,7 @@ export class Props<
         element: PropComponent,
         config: {},
         parentProps: PP
-    ): Props<typeof config> & PP;
+    ): Watchable<Props<typeof config> & PP>;
     static define<
         PUB extends PropConfigObject,
         PRIV extends PropConfigObject,
@@ -1974,7 +2001,7 @@ export class Props<
             priv?: PRIV;
         } = {},
         parentProps: PP = (element as any).props
-    ): Props<typeof config> & R & PP {
+    ): Watchable<Props<typeof config> & R & PP> {
         const tag = element.tagName.toLowerCase();
         if (propConfigs.has(tag)) {
             propConfigs.set(tag, { ...propConfigs.get(tag)!, ...config });
@@ -1999,17 +2026,37 @@ export class Props<
                 throw new Error('Parent props should be a Props object');
             }
 
-            PropsDefiner.joinProps(parentProps, config);
-            return parentProps as Props<typeof config> & R & PP;
+            const { addListener } = PropsDefiner.joinProps(parentProps, config);
+            console.log(parentProps);
+            return createWatchable(
+                parentProps,
+                (onChange) => {
+                    addListener((changedKey) => {
+                        onChange(parentProps, changedKey);
+                    });
+                },
+                true
+            ) as Watchable<Props<typeof config> & R & PP>;
         }
 
         const props = new Props(config);
-        PropsDefiner.define(
+        const { addListener } = PropsDefiner.define(
             props as Props<typeof config> & Partial<R>,
             element,
             config
         );
-        return props as Props<typeof config> & R & PP;
+        console.log(props);
+        return createWatchable(
+            props,
+            (onChange) => {
+                console.log('listening');
+                addListener((changedKey) => {
+                    // console.log('actual change', props, changedKey);
+                    onChange(props, changedKey);
+                });
+            },
+            true
+        ) as Watchable<Props<typeof config> & R & PP>;
     }
 
     /**

@@ -6,6 +6,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 } from '../../node_modules/lit-html/lit-html.js';
 import { WebComponent } from '../../build/es/wc-lib.js';
@@ -19,6 +20,7 @@ WebComponent.initComplexTemplateProvider({
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 });
 JsxForm.define();

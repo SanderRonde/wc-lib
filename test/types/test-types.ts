@@ -15,6 +15,7 @@ import {
     Props,
     PROP_TYPE,
     ComplexType,
+    Watchable,
 } from '../../src/wc-lib';
 
 namespace Test {
@@ -936,7 +937,7 @@ namespace Test {
                 // ThemeType
                 type TestType = ReturnType<this['getRenderArgs']>['theme'];
 
-                let test1: TestType = Test.type<ObjectTestType>();
+                let test1: TestType = Test.type<Watchable<ObjectTestType>>();
                 // @ts-expect-error
                 let test2: Test.AssignableTo.Void<TestType>;
 
@@ -979,7 +980,7 @@ namespace Test {
                     this['getRenderArgs']
                 >['globalProps'];
 
-                let test1: TestType = Test.type<ObjectTestType>();
+                let test1: TestType = Test.type<Watchable<ObjectTestType>>();
                 // @ts-expect-error
                 let test2: Test.AssignableTo.Void<TestType>;
 
@@ -1028,7 +1029,7 @@ namespace Test {
                     this['getRenderArgs']
                 >['subtreeProps'];
 
-                let test1: TestType = Test.type<ObjectTestType>();
+                let test1: TestType = Test.type<Watchable<ObjectTestType>>();
                 // @ts-expect-error
                 let test2: Test.AssignableTo.Void<TestType>;
 

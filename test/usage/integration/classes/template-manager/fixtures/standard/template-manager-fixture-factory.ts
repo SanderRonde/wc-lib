@@ -6,6 +6,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 } from '../../../../../../../node_modules/lit-html/lit-html.js';
 import { complexElementFactory } from '../../elements/complex-element.js';
@@ -21,6 +22,7 @@ export function templateManagerDefaultFixtureFactory(base: any) {
         AttributeCommitter,
         NodePart,
         isDirective,
+        directive,
         noChange,
     });
     const { ComplexElement, WrongElementListen } = complexElementFactory(base);

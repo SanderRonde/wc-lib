@@ -6,6 +6,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 } from '../../../../../../../node_modules/lit-html/lit-html.js';
 import { PropsElementFixtureFactory } from '../../elements/props-element.js';
@@ -23,6 +24,7 @@ export function propsNoProxyFixtureFactory(
             AttributeCommitter,
             NodePart,
             isDirective,
+            directive,
             noChange,
         });
     }

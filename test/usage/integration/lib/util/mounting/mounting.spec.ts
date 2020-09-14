@@ -3,10 +3,10 @@ import { Mounting } from '../../../../../../build/es/wc-lib.js';
 import { getFixture } from '../../../../lib/testing';
 import { SLOW } from '../../../../lib/timing';
 
-context('Timeout', function() {
+context('Timeout', function () {
     this.slow(SLOW);
     before(() => {
-        cy.visit(getFixture('lib/util', 'templates', 'standard'));
+        cy.visit(getFixture('lib/util', 'mounting', 'standard'));
     });
 
     context('#awaitMounted', () => {

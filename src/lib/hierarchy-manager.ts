@@ -12,6 +12,7 @@ import {
 import { WebComponentListenableMixinInstance } from './listener.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
+import { createWatchable, Watchable } from './util/manual.js';
 
 /**
  * The type of the `component.listenGP` function
@@ -244,9 +245,18 @@ class HierarchyClass {
         }
     }
 
+    public subtreeChangeListeners: ((subtreeProps: any) => void)[] = [];
+
     private __subtreeChangeNotifyChildren() {
         this.__propagateDown((element) => {
             element.renderToDOM(CHANGE_TYPE.SUBTREE_PROPS);
+
+            const priv = this._getGetPrivate()(element);
+            const listeners = priv.subtreeChangeListeners;
+            if (listeners.length) {
+                const subtreeValue = priv.getSubtreeProps();
+                listeners.forEach((l) => l(subtreeValue));
+            }
         }, []);
     }
 
@@ -291,6 +301,10 @@ class HierarchyClass {
         }
     }
 
+    public globalPropertyChangeListeners: ((
+        value: any,
+        key: string
+    ) => void)[] = [];
     public setGlobalProperty<
         G extends {
             [key: string]: any;
@@ -303,6 +317,9 @@ class HierarchyClass {
             this.globalProperties[key] = value;
 
             this._self.fire('globalPropChange', key, value, oldVal);
+            this.globalPropertyChangeListeners.forEach((l) =>
+                l(this.globalProperties, key)
+            );
             this._self.renderToDOM(CHANGE_TYPE.GLOBAL_PROPS);
         }
     }
@@ -474,7 +491,7 @@ export declare class WebComponentHierarchyManagerTypeInstance<
         P extends {
             [key: string]: any;
         }
-    >(props: P): void;
+    >(props?: P): void;
 
     /**
      * Set this subtree root's props. Can only be
@@ -598,11 +615,11 @@ export type GetRenderArgsHierarchyManagerMixin<C> = C extends {
     globalProps: any;
 }
     ? {
-          subtreeProps: ReturnType<C['getSubTreeProps']>;
+          subtreeProps: Watchable<ReturnType<C['getSubTreeProps']>>;
           globalProps: ReturnType<
               C['globalProps']
           > extends GlobalPropsFunctions<infer G>
-              ? G
+              ? Watchable<G>
               : void;
       }
     : {};
@@ -792,15 +809,37 @@ export const WebComponentHierarchyManagerMixin = <
             changeType: CT
         ): {} {
             const _this = this;
+            let subtreePropsCache: any | null = null;
+            let globalPropsCache: any | null = null;
             return assignAsGetter(
                 // istanbul ignore next
                 super.getRenderArgs ? super.getRenderArgs(changeType) : {},
                 {
                     get subtreeProps() {
-                        return _this.getSubTreeProps();
+                        if (subtreePropsCache) {
+                            return subtreePropsCache;
+                        }
+                        return (subtreePropsCache = createWatchable(
+                            _this.getSubTreeProps(),
+                            (listener) => {
+                                hierarchyClass(
+                                    _this
+                                ).subtreeChangeListeners.push(listener);
+                            }
+                        ));
                     },
                     get globalProps() {
-                        return _this.globalProps<GA['globalProps']>().all;
+                        if (globalPropsCache) {
+                            return globalPropsCache;
+                        }
+                        return (globalPropsCache = createWatchable(
+                            _this.globalProps<GA['globalProps']>().all,
+                            (listener) => {
+                                hierarchyClass(
+                                    _this
+                                ).globalPropertyChangeListeners.push(listener);
+                            }
+                        ));
                     },
                 }
             );

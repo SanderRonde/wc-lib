@@ -18,6 +18,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
     // @ts-ignore
 } from '../../../modules/lit-html.js';
@@ -837,6 +838,7 @@ export function elementFactory<C extends typeof RenderableComponent>(
                 AttributeCommitter,
                 NodePart,
                 isDirective,
+                directive,
                 noChange,
             }
         );

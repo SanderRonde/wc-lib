@@ -6,6 +6,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 } from '../../../../../../../../node_modules/lit-html/lit-html.js';
 import { TestElement } from '../../../../../classes/elements/test-element.js';
@@ -18,6 +19,7 @@ WebComponent.initComplexTemplateProvider({
     BooleanAttributePart,
     AttributeCommitter,
     NodePart,
+    directive,
     isDirective,
     noChange,
 });

@@ -512,7 +512,6 @@ export interface LitHTMLConfig {
 	 ```
 	 */
     NodePart: typeof PartLike;
-
     /**
 	 * can be imported by calling
 	 ```js
@@ -520,6 +519,13 @@ export interface LitHTMLConfig {
 	 ```
 	 */
     isDirective: (value: any) => boolean;
+    /**
+	 * can be imported by calling
+	 ```js
+	 import { isDirective } from 'lit-html'
+	 ```
+	 */
+    directive: <F extends (...args: any[]) => object>(f: F) => F;
     /**
 	 * can be imported by calling
 	 ```js
@@ -531,7 +537,7 @@ export interface LitHTMLConfig {
 
 type RetVal<F> = F extends (...args: any[]) => infer R ? R : void;
 
-class TemplateClass {
+export class TemplateClass {
     public reffed: ComplexValue[] = [];
     private _templateProcessor: ComplexTemplateProcessor | null = null;
     public get templateProcessor(): ComplexTemplateProcessor {
@@ -561,6 +567,7 @@ class TemplateClass {
                     '	NodePart: {{lit-html.TemplateResult}}' +
                     '	isDirective: {{lit-html.isDirective}}' +
                     '	noChange: {{lit-html.noChange}}' +
+                    '	directive: {{lit-html.directive}}' +
                     '})'
             );
             return class X {} as any;
@@ -763,7 +770,8 @@ export const WebComponentTemplateManagerMixin = <
      * 	change the CSS of individual instances of an element,
      * 	while still using the element itself's shared CSS
      */
-    class WebComponentTemplateManager extends superFn
+    class WebComponentTemplateManager
+        extends superFn
         implements WebComponentTemplateManagerTypeInstance {
         @bindToClass
         public generateHTMLTemplate(

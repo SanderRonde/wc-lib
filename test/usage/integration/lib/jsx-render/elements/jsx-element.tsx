@@ -20,6 +20,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
     render,
     html as litHTMLHTML,
@@ -33,6 +34,7 @@ WebComponent.initComplexTemplateProvider({
     BooleanAttributePart,
     AttributeCommitter,
     NodePart,
+    directive,
     isDirective,
     noChange,
 });
@@ -151,7 +153,7 @@ function FnWithArgs(props: { a: number; b: number }) {
 @config({
     is: 'jsx-render',
     html: new TemplateFn<JSXElement>(
-        function(html, { props }) {
+        function (html, { props }) {
             return (
                 <div>
                     <div x={props.x} y={props.y} id="simple"></div>
@@ -316,7 +318,7 @@ export class JSXElement extends ConfigurableWebComponent {
 @config({
     is: 'jsx-render-2',
     html: new TemplateFn<JSXElement2>(
-        function(html) {
+        function (html) {
             return <div>{false && <div id="not-rendered"></div>}</div>;
         },
         CHANGE_TYPE.PROP,
@@ -331,7 +333,7 @@ export class JSXElement2 extends ConfigurableWebComponent {
 @config({
     is: 'jsx-render-3',
     html: new TemplateFn<JSXElement3>(
-        function(html) {
+        function (html) {
             return (
                 <html.Fragment>
                     <div id="1"></div>
@@ -350,7 +352,7 @@ export class JSXElement3 extends ConfigurableWebComponent {}
 @config({
     is: 'jsx-render-4',
     html: new TemplateFn<JSXElement4>(
-        function(html) {
+        function (html) {
             return (
                 <html.F>
                     <div id="1"></div>
@@ -373,7 +375,7 @@ function RendererWithoutTemplater() {
 @config({
     is: 'jsx-render-5',
     html: new TemplateFn<JSXElement5>(
-        function(html) {
+        function (html) {
             return (
                 <html.F>
                     <div id="1"></div>
@@ -393,7 +395,7 @@ export class JSXElement5 extends ConfigurableWebComponent {}
 @config({
     is: 'jsx-render-6',
     html: new TemplateFn<JSXElement6>(
-        function() {
+        function () {
             return (
                 <html.F>
                     <div id="1"></div>
@@ -413,7 +415,7 @@ export class JSXElement6 extends ConfigurableWebComponent {}
 @config({
     is: 'jsx-render-7',
     html: new TemplateFn<JSXElement6>(
-        function() {
+        function () {
             return (
                 <html.Fragment>
                     <div id="1"></div>

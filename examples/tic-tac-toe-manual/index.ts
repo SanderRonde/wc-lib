@@ -7,8 +7,8 @@ import {
     NodePart,
     isDirective,
     noChange,
-    directive,
     Part,
+    directive,
 } from '../../node_modules/lit-html/lit-html.js';
 import { WebComponent } from '../../build/es/wc-lib.js';
 import { TicTacToe } from './tic-tac-toe.js';
@@ -52,11 +52,24 @@ WebComponent.initI18N({
     // sets the value to a placeholder while the
     // language file is loading
     returner: directive(
-        (promise: Promise<any>, placeholder: string) => (part: Part) => {
+        (
+            promise: Promise<any>,
+            placeholder: string,
+            onChange: (
+                listener: (promise: Promise<string>, content: string) => void
+            ) => void
+        ) => (part: Part) => {
             part.setValue(placeholder);
             promise.then((str) => {
                 part.setValue(str);
                 part.commit();
+
+                onChange((newPromise) => {
+                    newPromise.then((newValue) => {
+                        part.setValue(newValue);
+                        part.commit();
+                    });
+                });
             });
         }
     ),

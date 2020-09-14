@@ -6,6 +6,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 } from '../../../../../../../node_modules/lit-html/lit-html.js';
 import { PropsElementFixtureFactory } from '../../elements/props-element.js';
@@ -20,6 +21,7 @@ export function propsFixtureFactory(base: any, supportsTemplates: boolean) {
             AttributeCommitter,
             NodePart,
             isDirective,
+            directive,
             noChange,
         });
     }

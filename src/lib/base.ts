@@ -10,6 +10,7 @@ import {
 } from '../classes/types.js';
 import { TemplateFnLike, CHANGE_TYPE } from '../wc-lib.js';
 import { ClassToObj } from './configurable.js';
+import { Watchable } from './util/manual.js';
 
 /**
  * The property name for custom-css
@@ -108,25 +109,43 @@ export function assignAsGetter<
     O2 extends {
         [key: string]: any;
     }
->(objectA: O1, objectB: O2): O1 & O2 {
+>(objectA: O1, objectB: O2, writable: boolean = false): O1 & O2 {
     const returnObj: Partial<O1 & O2> = {};
     const bKeys = Object.keys(objectB);
     const aKeys = Object.keys(objectA).filter((k) => !bKeys.includes(k));
 
     for (const aKey of aKeys) {
         Object.defineProperty(returnObj, aKey, {
-            get() {
-                return objectA[aKey];
+            ...{
+                get() {
+                    return objectA[aKey];
+                },
+                enumerable: true,
             },
-            enumerable: true,
+            ...(writable
+                ? {
+                      set(value) {
+                          objectA[aKey as keyof typeof objectA] = value;
+                      },
+                  }
+                : {}),
         });
     }
     for (const bKey of bKeys) {
         Object.defineProperty(returnObj, bKey, {
-            get() {
-                return objectB[bKey];
+            ...{
+                get() {
+                    return objectB[bKey];
+                },
+                enumerable: true,
             },
-            enumerable: true,
+            ...(writable
+                ? {
+                      set(value) {
+                          objectB[bKey as keyof typeof objectB] = value;
+                      },
+                  }
+                : {}),
         });
     }
     return returnObj as O1 & O2;
@@ -516,7 +535,7 @@ export type GetRenderArgsBaseMixin<C> = C extends {
     props: any;
 }
     ? {
-          props: C['props'];
+          props: Watchable<C['props']>;
       }
     : {};
 

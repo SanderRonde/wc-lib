@@ -3,6 +3,7 @@ import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { assignAsGetter, WebComponentBaseMixinInstance } from './base.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
+import { createWatchable, Watchable } from './util/manual.js';
 
 /**
  * A value that represents the lack of a theme,
@@ -168,7 +169,7 @@ export type GetRenderArgsThemeManagerMixin<C> = C extends {
     getTheme(): any;
 }
     ? {
-          theme: ReturnType<C['getTheme']>;
+          theme: Watchable<ReturnType<C['getTheme']>>;
       }
     : {};
 
@@ -186,12 +187,26 @@ export const WebComponentThemeManagerMixin = <
 >(
     superFn: P
 ) => {
-    let currentTheme: any | null = null;
+    let currentThemeName: any | null = null;
+    let fallbackThemeListeners: ((theme: any) => any)[] = [];
     let themeListeners: ((theme: any) => any)[] = [];
 
-    function changeTheme(theme: any) {
-        currentTheme = theme;
-        themeListeners.forEach((l) => l(theme));
+    function changeTheme(themeName: any) {
+        currentThemeName = themeName;
+        fallbackThemeListeners.forEach((l) => l(themeName));
+        notifyChangedTheme(themeName);
+    }
+
+    function notifyChangedTheme(themeName: any) {
+        const currentTheme = (() => {
+            if (PrivateData.__theme) {
+                if (themeName && themeName in PrivateData.__theme) {
+                    return PrivateData.__theme[themeName];
+                }
+            }
+            return noTheme;
+        })();
+        themeListeners.forEach((l) => l(currentTheme));
     }
 
     class PrivateData {
@@ -258,7 +273,7 @@ export const WebComponentThemeManagerMixin = <
                     }
                 });
             } else {
-                themeListeners.push(() => {
+                fallbackThemeListeners.push(() => {
                     getPrivate(this).__setTheme();
                 });
             }
@@ -270,7 +285,7 @@ export const WebComponentThemeManagerMixin = <
             return (
                 (this.globalProps &&
                     this.globalProps<{ theme: string }>().get('theme')) ||
-                currentTheme ||
+                currentThemeName ||
                 PrivateData.__defaultTheme
             );
         }
@@ -295,6 +310,7 @@ export const WebComponentThemeManagerMixin = <
                     'theme',
                     themeName
                 );
+                notifyChangedTheme(themeName);
             } else {
                 changeTheme(themeName);
             }
@@ -305,14 +321,21 @@ export const WebComponentThemeManagerMixin = <
             changeType: CT
         ): {} {
             const _this = this;
+            let themeCache: any | null = null;
             return assignAsGetter(
                 // istanbul ignore next
                 super.getRenderArgs ? super.getRenderArgs(changeType) : {},
                 {
                     get theme() {
+                        if (themeCache) return themeCache;
                         // istanbul ignore next
                         if (_this.getTheme) {
-                            return _this.getTheme();
+                            return (themeCache = createWatchable(
+                                _this.getTheme(),
+                                (listener) => {
+                                    themeListeners.push(listener);
+                                }
+                            ));
                         }
                         // istanbul ignore next
                         return undefined;

@@ -45,7 +45,10 @@ class I18NClass<
     public static defaultLang: string | null = null;
     public static returner: (
         promise: Promise<string>,
-        content: string
+        content: string,
+        onChange?: (
+            listener: (newPromise: Promise<string>, content: string) => void
+        ) => void
     ) => any = (_, c) => c;
     private _elementLang: DefaultVal<GA['langs'], string> | null = null;
     private static _listeners: ((newLang: string) => void)[] = [];
@@ -83,12 +86,20 @@ class I18NClass<
             if (delayRender) {
                 setTimeout(() => {
                     this._self.renderToDOM(CHANGE_TYPE.LANG);
+                    I18NClass.langChangeCompleteListeners.forEach((l) =>
+                        l(I18NClass.langFiles[I18NClass.lang])
+                    );
                 }, 0);
             } else {
                 this._self.renderToDOM(CHANGE_TYPE.LANG);
+                I18NClass.langChangeCompleteListeners.forEach((l) =>
+                    l(I18NClass.langFiles[I18NClass.lang])
+                );
             }
         }
     }
+
+    public static langChangeCompleteListeners: ((lang: any) => void)[] = [];
 
     public static notifyOnLangChange(listener: (newLang: string) => void) {
         this._listeners.push(listener);
@@ -304,7 +315,13 @@ export declare class WebComponentI18NManagerTypeInstance<
              */
             returner?: (
                 messagePromise: Promise<string>,
-                placeHolder: string
+                placeHolder: string,
+                onChange?: (
+                    listener: (
+                        newPromise: Promise<string>,
+                        content: string
+                    ) => void
+                ) => void
             ) => any;
         }
     ): void;
@@ -430,11 +447,12 @@ export const WebComponentI18NManagerMixin = <
      */
     //@ts-ignore
     class WebComponentI18NManagerClass<
-        GA extends {
-            i18n?: any;
-            langs?: string;
-        } = {}
-    > extends superFn
+            GA extends {
+                i18n?: any;
+                langs?: string;
+            } = {}
+        >
+        extends superFn
         implements
             WebComponentI18NManagerMixinLike,
             WebComponentI18NManagerTypeInstance<GA> {
@@ -508,7 +526,13 @@ export const WebComponentI18NManagerMixin = <
                 ) => string | Promise<string>;
                 returner?: (
                     messagePromise: Promise<string>,
-                    placeHolder: string
+                    placeHolder: string,
+                    onChange?: (
+                        listener: (
+                            newPromise: Promise<string>,
+                            content: string
+                        ) => void
+                    ) => void
                 ) => any;
             }
         ) {
@@ -559,7 +583,11 @@ export const WebComponentI18NManagerMixin = <
         public static __<R>(key: string, ...values: any[]): string | R {
             const value = this.__prom(key, ...values);
 
-            return I18NClass.returner(value, `{{${key}}}`);
+            return I18NClass.returner(value, `{{${key}}}`, (listener) => {
+                I18NClass.langChangeCompleteListeners.push(() => {
+                    listener(this.__prom(key, ...values), `{{${key}}}`);
+                });
+            });
         }
 
         public static get langReady() {

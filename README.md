@@ -31,17 +31,13 @@ The templating system consists of two parts. The part that renders them and the 
 The templates themselves allow you to pass custom values through attributes by using special names. In the following examples the templating library that is used under the hood is [lit-html](https://github.com/Polymer/lit-html). However, any templating engine, even your own or none at all (returning plain text) can be used. For example using
 
 ```js
-html`
-    <div @click="${this.someListener}"></div>
-`;
+html` <div @click="${this.someListener}"></div> `;
 ```
 
 allows you to run a handler when the 'click' event is fired. Using
 
 ```js
-html`
-    <div #some-value="${this}"></div>
-`;
+html` <div #some-value="${this}"></div> `;
 ```
 
 allows you to pass a reference to any value that is returned when `div['some-value']` is accessed. This allows you to easily refer to a parent component or another object. The library features a lot more of these special attributes prefixes. This can be combined with you having the ability to create pre-defined properties that should be watched on a component. When one of them changes, the corresponding templates are re-rendered.
@@ -51,9 +47,7 @@ allows you to pass a reference to any value that is returned when `div['some-val
 The i18n support only requires you to pass the path to your i18n files and a default language. Handling language changes, switching all elements on the page to that language, re-rendering them and handling any conflicts that might occur is all done by the library. Using the templating system, using i18n is as simple as the following line.
 
 ```js
-html`
-    <div>${this.__('my-key')}</div>
-`;
+html` <div>${this.__('my-key')}</div> `;
 ```
 
 If you provide the library with typescript definitions for your i18n files, these keys will be typed as well, making sure you never end up with placeholders on the page.
@@ -237,6 +231,11 @@ These each return another class which we'll call a `CSSSelector` with different 
 **Note**: If at any time you see a question mark as a suggestion instead of something else you expected, you've probably done something wrong.
 
 ## Changelog
+
+**1.2.0**:
+
+-   Implement subtree prop providers (similar to react context)
+-   Implement manual rendering and watching of props, themes, languages, and global/subtree props (see manual tic-tac-toe example)
 
 **1.1.36**:
 

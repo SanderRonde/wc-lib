@@ -395,7 +395,6 @@ export function hierarchyManagerspec(fixture: string) {
                 it('calls subtree props changed when props are changed', () => {
                     cy.get('#subtree-A').then(
                         ([subtreeRoot]: JQuery<SubtreeElement>) => {
-                            console.log('renders=', subtreeRoot.renders);
                             const initial = subtreeRoot.renders;
 
                             subtreeRoot.register();

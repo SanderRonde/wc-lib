@@ -32,7 +32,6 @@ const globalPropChangeDirective = directive(
 
 export const TicTacToeHTML = new TemplateFn<TicTacToe>(
     function (html, { props }) {
-        console.log('render', props);
         return html`
             <div id="lang-switcher">
                 ${globalPropChangeDirective(this, 'lang', () => {
@@ -88,7 +87,6 @@ export const TicTacToeHTML = new TemplateFn<TicTacToe>(
                 <div class="vertical-centerer">
                     <table id="container">
                         ${watchFn(props).board((board) => {
-                            console.log('rendering', board);
                             return board.map((row, y) => {
                                 return html`
                                     <tr class="row">

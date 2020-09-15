@@ -496,6 +496,124 @@ context('Manual rendering', function () {
                 });
             });
         });
+        it('prioritizes new values over old promises', () => {
+            TemplateClass._templateSettings = {
+                directive: ((fn: any) => (...args: any[]) =>
+                    new DirectiveCapturer(fn, ...args)) as any,
+            } as any;
+
+            const obj = {
+                key1: 0,
+                key2: 0,
+            };
+
+            let _onChanges: ((
+                value: {
+                    [x: string]: number;
+                },
+                changedKey?: string | undefined
+            ) => void)[] = [];
+            const listener = cy.spy((onChange) => {
+                _onChanges.push(onChange);
+            });
+            const returnValue = watchFn(createWatchable(obj, listener));
+
+            // Initial adding of listeners
+            expect(listener).to.not.be.called;
+            const key1Directive = (returnValue.key1((value) => {
+                return value + 10;
+            }) as unknown) as DirectiveCapturer;
+            expect(listener).to.be.calledOnce;
+            const placeholder = Math.random() + '';
+            let _resolve: (value: number) => void;
+            let getKey2Value: () => any = () => {
+                return new Promise((resolve) => {
+                    _resolve = (v) => {
+                        resolve(v);
+                    };
+                });
+            };
+            const key2Directive = (returnValue.key2(() => {
+                return getKey2Value();
+            }, placeholder) as unknown) as DirectiveCapturer;
+            expect(listener).to.be.calledTwice;
+
+            // Check values
+            expect(key1Directive.currentValue).to.be.equal(
+                obj.key1 + 10,
+                'initial values are set'
+            );
+            expect(key2Directive.tempValue).to.be.equal(
+                placeholder,
+                'placeholder is set'
+            );
+
+            // Update values with key
+            obj.key1 = 1;
+            obj.key2 = 1;
+            getKey2Value = () => 100;
+            _onChanges.forEach((f) => f(obj));
+
+            _resolve!(123);
+
+            // Both updated
+            expect(key1Directive.currentValue).to.be.equal(
+                obj.key1 + 10,
+                'key1 changed'
+            );
+            expect(key2Directive.currentValue).to.be.equal(100, 'key2 changed');
+        });
+        it('placeholder need not be supplied', () => {
+            TemplateClass._templateSettings = {
+                directive: ((fn: any) => (...args: any[]) =>
+                    new DirectiveCapturer(fn, ...args)) as any,
+            } as any;
+
+            const obj = {
+                key1: 0,
+                key2: 0,
+            };
+
+            let _onChanges: ((
+                value: {
+                    [x: string]: number;
+                },
+                changedKey?: string | undefined
+            ) => void)[] = [];
+            const listener = cy.spy((onChange) => {
+                _onChanges.push(onChange);
+            });
+            const returnValue = watchFn(createWatchable(obj, listener));
+
+            // Initial adding of listeners
+            expect(listener).to.not.be.called;
+            const key1Directive = (returnValue.key1((value) => {
+                return value + 10;
+            }) as unknown) as DirectiveCapturer;
+            expect(listener).to.be.calledOnce;
+            let _resolve: (value: number) => void;
+            let getKey2Value: () => any = () => {
+                return new Promise((resolve) => {
+                    _resolve = (v) => {
+                        resolve(v);
+                    };
+                });
+            };
+            const key2Directive = (returnValue.key2(() => {
+                return getKey2Value();
+            }) as unknown) as DirectiveCapturer;
+            expect(listener).to.be.calledTwice;
+
+            // Check values
+            expect(key1Directive.currentValue).to.be.equal(
+                obj.key1 + 10,
+                'initial values are set'
+            );
+            expect(key2Directive.tempValue).to.be.equal(
+                undefined,
+                'no placeholder is set'
+            );
+        });
         context('No Proxy', () => {
             beforeEach(() => {
                 cy.visit(getFixture('lib/util', 'manual', 'standard'), {

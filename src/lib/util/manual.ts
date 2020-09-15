@@ -84,6 +84,7 @@ const watchableDirectiveFactory = (directive: typeof litHTMLDirective) =>
             }
 
             onChange((newValue) => {
+                changedValueSet = true;
                 if (newValue instanceof Promise) {
                     newValue.then((resolved) => {
                         part.setValue(resolved);

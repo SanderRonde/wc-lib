@@ -680,11 +680,14 @@ namespace Watching {
                 currentLevel.set(path[0], {
                     name: path[0],
                     relevantPaths: [],
-                    watchCurrent: path.length === 1,
+                    watchCurrent: false,
                     map: new Map(),
                 });
             }
-            currentLevel.get(path[0])!.relevantPaths.push(...pathParts);
+            const currentLevelPath = currentLevel.get(path[0])!;
+            currentLevelPath.watchCurrent =
+                currentLevelPath.watchCurrent || path.length === 1;
+            currentLevelPath.relevantPaths.push(path);
         }
 
         /**
@@ -753,7 +756,8 @@ namespace Watching {
             }
         }
 
-        return genProxyStructureLevel(pathParts);
+        const structure = genProxyStructureLevel(pathParts);
+        return structure;
     }
 
     function canWatchValue(value: any) {
@@ -785,12 +789,13 @@ namespace Watching {
                 })();
 
                 if (isPropChange) {
+                    const originalValue = value;
                     if (canWatchValue(value) && value !== null) {
                         value = createDeepProxy(value, onAccessed);
                     }
                     const oldValue = obj[prop];
                     obj[prop] = value;
-                    if (oldValue !== value) {
+                    if (oldValue !== originalValue) {
                         onAccessed();
                     }
                 } else {
@@ -893,8 +898,10 @@ namespace Watching {
                     // istanbul ignore next
                     if (
                         deleted &&
-                        ((typeof prop !== 'symbol' && level.has(prop + '')) ||
-                            level.has('*'))
+                        ((typeof prop !== 'symbol' &&
+                            level.get(prop + '') &&
+                            level.get(prop + '')!.watchCurrent) ||
+                            (level.get('*') && level.get('*')!.watchCurrent))
                     ) {
                         onAccessed();
                     }
@@ -1209,11 +1216,11 @@ namespace PropsDefiner {
             renderMap.set(element.component, changeType);
         }
 
-        // setTimeout(() => {
-        element.component.renderToDOM(renderMap.get(element.component)!);
-        element.changeListeners.forEach((l) => l(changeKey));
-        renderMap.delete(element.component);
-        // }, 0);
+        setTimeout(() => {
+            element.component.renderToDOM(renderMap.get(element.component)!);
+            element.changeListeners.forEach((l) => l(changeKey));
+            renderMap.delete(element.component);
+        }, 0);
     }
 
     function createQueueRenderFn(

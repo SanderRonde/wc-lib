@@ -119,7 +119,7 @@ export function watch<V extends object>(watchable: Watchable<V>): Watched<V> {
     if (typeof Proxy === 'undefined') {
         return arrToObj(
             Object.keys(watchable)
-                .filter((k) => k !== '__watch')
+                .filter((k) => k !== '__watch' && k !== '__original')
                 .map((key: Extract<keyof V, string>) => {
                     return [
                         key,
@@ -142,7 +142,7 @@ export function watch<V extends object>(watchable: Watchable<V>): Watched<V> {
     } else {
         return (new Proxy(watchable, {
             get(_target, prop: Extract<keyof V, string>) {
-                if (prop === '__watch') return void 0;
+                if (prop === '__watch' || prop === '__original') return void 0;
                 if (!watchable.hasOwnProperty(prop)) return void 0;
 
                 return watchableDirective(
@@ -191,7 +191,7 @@ export function watchFn<V extends object>(
     if (typeof Proxy === 'undefined') {
         return (arrToObj(
             Object.keys(watchable)
-                .filter((k) => k !== '__watch')
+                .filter((k) => k !== '__watch' && k !== '__original')
                 .map((key: Extract<keyof V, string>) => {
                     return [
                         key,
@@ -218,7 +218,7 @@ export function watchFn<V extends object>(
     } else {
         return (new Proxy(watchable, {
             get(_target, prop: Extract<keyof V, string>) {
-                if (prop === '__watch') return void 0;
+                if (prop === '__watch' || prop === '__original') return void 0;
                 if (!watchable.hasOwnProperty(prop)) return void 0;
 
                 return (

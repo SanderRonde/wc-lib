@@ -139,6 +139,55 @@ context('Manual rendering', function () {
                 watch(createWatchable({}, () => {}));
             }).to.throw();
         });
+        it('returns undefined if ibuiltin methods are accessed', () => {
+            TemplateClass._templateSettings = {
+                directive: ((fn: any) => (...args: any[]) =>
+                    new DirectiveCapturer(fn, ...args)) as any,
+            } as any;
+
+            const obj = {
+                key1: 0,
+                key2: 0,
+            };
+
+            let _onChanges: ((
+                value: {
+                    [x: string]: number;
+                },
+                changedKey?: string | undefined
+            ) => void)[] = [];
+            const listener = cy.spy((onChange) => {
+                _onChanges.push(onChange);
+            });
+            const returnValue = watch(createWatchable(obj, listener));
+
+            expect(returnValue.__watch).to.be.undefined;
+            expect(returnValue.__original).to.be.undefined;
+        });
+        it('returns undefined if a nonexistent property is accessed', () => {
+            TemplateClass._templateSettings = {
+                directive: ((fn: any) => (...args: any[]) =>
+                    new DirectiveCapturer(fn, ...args)) as any,
+            } as any;
+
+            const obj = {
+                key1: 0,
+                key2: 0,
+            };
+
+            let _onChanges: ((
+                value: {
+                    [x: string]: number;
+                },
+                changedKey?: string | undefined
+            ) => void)[] = [];
+            const listener = cy.spy((onChange) => {
+                _onChanges.push(onChange);
+            });
+            const returnValue = watch(createWatchable(obj, listener));
+
+            expect(returnValue.__nonexistent).to.be.undefined;
+        });
         it('can watch any property (with proxy)', () => {
             TemplateClass._templateSettings = {
                 directive: ((fn: any) => (...args: any[]) =>
@@ -207,14 +256,6 @@ context('Manual rendering', function () {
             );
         });
         context('No Proxy', () => {
-            beforeEach(() => {
-                cy.visit(getFixture('lib/util', 'manual', 'standard'), {
-                    onBeforeLoad(win) {
-                        delete (win as any).Proxy;
-                    },
-                });
-                cy.wait(250);
-            });
             it('can watch any property', () => {
                 TemplateClass._templateSettings = {
                     directive: ((fn: any) => (...args: any[]) =>
@@ -235,12 +276,14 @@ context('Manual rendering', function () {
                 const listener = cy.spy((onChange) => {
                     _onChanges.push(onChange);
                 });
+                const _Proxy = window.Proxy;
+                window.Proxy = undefined as any;
                 const returnValue = watch(createWatchable(obj, listener));
+                window.Proxy = _Proxy;
 
                 // Initial adding of listeners
-                expect(listener).to.not.be.called;
+                expect(listener).to.be.calledTwice;
                 const key1Directive = (returnValue.key1 as unknown) as DirectiveCapturer;
-                expect(listener).to.be.calledOnce;
                 const key2Directive = (returnValue.key2 as unknown) as DirectiveCapturer;
                 expect(listener).to.be.calledTwice;
 
@@ -297,6 +340,55 @@ context('Manual rendering', function () {
                 TemplateClass._templateSettings = undefined as any;
                 watchFn(createWatchable({}, () => {}));
             }).to.throw();
+        });
+        it('returns undefined if builtin methods are accessed', () => {
+            TemplateClass._templateSettings = {
+                directive: ((fn: any) => (...args: any[]) =>
+                    new DirectiveCapturer(fn, ...args)) as any,
+            } as any;
+
+            const obj = {
+                key1: 0,
+                key2: 0,
+            };
+
+            let _onChanges: ((
+                value: {
+                    [x: string]: number;
+                },
+                changedKey?: string | undefined
+            ) => void)[] = [];
+            const listener = cy.spy((onChange) => {
+                _onChanges.push(onChange);
+            });
+            const returnValue = watchFn(createWatchable(obj, listener));
+
+            expect(returnValue.__watch).to.be.undefined;
+            expect(returnValue.__original).to.be.undefined;
+        });
+        it('returns undefined if a nonexistent property is accessed', () => {
+            TemplateClass._templateSettings = {
+                directive: ((fn: any) => (...args: any[]) =>
+                    new DirectiveCapturer(fn, ...args)) as any,
+            } as any;
+
+            const obj = {
+                key1: 0,
+                key2: 0,
+            };
+
+            let _onChanges: ((
+                value: {
+                    [x: string]: number;
+                },
+                changedKey?: string | undefined
+            ) => void)[] = [];
+            const listener = cy.spy((onChange) => {
+                _onChanges.push(onChange);
+            });
+            const returnValue = watchFn(createWatchable(obj, listener));
+
+            expect(returnValue.__nonexistent).to.be.undefined;
         });
         it('can watch any property (with proxy)', () => {
             TemplateClass._templateSettings = {
@@ -426,7 +518,11 @@ context('Manual rendering', function () {
                 const listener = cy.spy((onChange) => {
                     _onChanges.push(onChange);
                 });
+
+                const _Proxy = window.Proxy;
+                window.Proxy = undefined as any;
                 const returnValue = watchFn(createWatchable(obj, listener));
+                window.Proxy = _Proxy;
 
                 // Initial adding of listeners
                 expect(listener).to.not.be.called;

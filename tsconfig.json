@@ -21,16 +21,14 @@
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
         "strictBindCallApply": true
-	},
+    },
     "compileOnSave": true,
     "allowJs": true,
-    "include": [
-        "./"
-    ],
-    "exclude": [
-        "modules/",
-        "gulpfile.ts",
-        "ssr",
-        "bundled"
-    ]
+    "include": ["./"],
+    "exclude": ["modules/", "gulpfile.ts", "ssr", "bundled"],
+    "ts-node": {
+        "compilerOptions": {
+            "allowSyntheticDefaultImports": true
+        }
+    }
 }

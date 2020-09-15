@@ -162,7 +162,9 @@ context('Manual rendering', function () {
             });
             const returnValue = watch(createWatchable(obj, listener));
 
+            // @ts-expect-error
             expect(returnValue.__watch).to.be.undefined;
+            // @ts-expect-error
             expect(returnValue.__original).to.be.undefined;
         });
         it('returns undefined if a nonexistent property is accessed', () => {
@@ -187,6 +189,7 @@ context('Manual rendering', function () {
             });
             const returnValue = watch(createWatchable(obj, listener));
 
+            // @ts-expect-error
             expect(returnValue.__nonexistent).to.be.undefined;
         });
         it('can watch any property (with proxy)', () => {
@@ -364,7 +367,9 @@ context('Manual rendering', function () {
             });
             const returnValue = watchFn(createWatchable(obj, listener));
 
+            // @ts-expect-error
             expect(returnValue.__watch).to.be.undefined;
+            // @ts-expect-error
             expect(returnValue.__original).to.be.undefined;
         });
         it('returns undefined if a nonexistent property is accessed', () => {
@@ -389,6 +394,7 @@ context('Manual rendering', function () {
             });
             const returnValue = watchFn(createWatchable(obj, listener));
 
+            // @ts-expect-error
             expect(returnValue.__nonexistent).to.be.undefined;
         });
         it('can watch any property (with proxy)', () => {

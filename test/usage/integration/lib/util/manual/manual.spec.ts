@@ -591,12 +591,9 @@ context('Manual rendering', function () {
                 return value + 10;
             }) as unknown) as DirectiveCapturer;
             expect(listener).to.be.calledOnce;
-            let _resolve: (value: number) => void;
             let getKey2Value: () => any = () => {
-                return new Promise((resolve) => {
-                    _resolve = (v) => {
-                        resolve(v);
-                    };
+                return new Promise((_resolve) => {
+                    // Never resolves
                 });
             };
             const key2Directive = (returnValue.key2(() => {

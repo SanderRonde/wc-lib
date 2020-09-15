@@ -13,6 +13,7 @@
     "main": "build/cjs/wc-lib.js",
     "browser": "build/es/wc-lib.js",
     "module": "build/es/wc-lib.js",
+    "sideEffects": false,
     "author": "Sander Ronde <awsdfgvhbjn@gmail.com>",
     "license": "MIT",
     "files": [

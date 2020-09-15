@@ -79,4 +79,4 @@ export const TicTacToeHTML = new TemplateFn(function (html, { props }) {
                 </div>
             </div>
         `;
-}, 1 /* PROP */ | 8 /* LANG */ | 2 /* THEME */, render);
+}, 1 /* PROP */ | 4 /* LANG */ | 2 /* THEME */, render);

@@ -6,6 +6,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 } from '../../node_modules/lit-html/lit-html.js';
 import { StopWatchTypedHTML } from './stop-watch-typed-html.js';
@@ -19,6 +20,7 @@ WebComponent.initComplexTemplateProvider({
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 });
 StopWatchTypedHTML.define();

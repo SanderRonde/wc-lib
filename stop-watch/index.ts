@@ -11,6 +11,7 @@ import {
     NodePart,
     isDirective,
     noChange,
+    directive,
 } from '../../node_modules/lit-html/lit-html.js';
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
@@ -20,6 +21,7 @@ WebComponent.initComplexTemplateProvider({
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 });
 

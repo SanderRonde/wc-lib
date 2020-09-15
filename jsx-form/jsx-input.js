@@ -60,7 +60,7 @@ JsxInput = __decorate([
 				color: grey;
 			}
 		</style>`;
-        }, 4 /* NEVER */, render),
+        }, 0 /* NEVER */, render),
         html: new TemplateFn(function (html, { props }) {
             return (html.jsx("div", { id: "container" },
                 html.jsx("h2", null, props.name),

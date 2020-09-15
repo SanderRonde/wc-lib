@@ -15,7 +15,7 @@ HelloWorld = __decorate([
             return html `
                 <div>Hello world</div>
             `;
-        }, 4 /* NEVER */, render),
+        }, 0 /* NEVER */, render),
         css: null,
     })
 ], HelloWorld);

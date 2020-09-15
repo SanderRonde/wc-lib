@@ -13,4 +13,4 @@ export const StopWatchTypedHTMLHTML = new TemplateFn(function (html, { props }) 
                 <button id="reset" class="inline">Reset</button>
             </div>
         `;
-}, 4 /* NEVER */, render);
+}, 0 /* NEVER */, render);

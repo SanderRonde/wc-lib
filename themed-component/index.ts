@@ -6,6 +6,7 @@ import {
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 } from '../../node_modules/lit-html/lit-html.js';
 import { ThemedComponent } from './themed-component.js';
@@ -35,6 +36,7 @@ WebComponent.initComplexTemplateProvider({
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 });
 WebComponent.initTheme({

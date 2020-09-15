@@ -8,4 +8,4 @@ export const StopWatchCSS = new TemplateFn(function (html) {
                 }
             </style>
         `;
-}, 4 /* NEVER */, render);
+}, 0 /* NEVER */, render);

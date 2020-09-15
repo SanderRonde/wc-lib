@@ -21,7 +21,7 @@ I18nComponent = __decorate([
                     }
                 </style>
             `;
-        }, 4 /* NEVER */, render),
+        }, 0 /* NEVER */, render),
         html: I18nComponentHTML,
     })
 ], I18nComponent);

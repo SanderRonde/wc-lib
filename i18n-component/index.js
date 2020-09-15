@@ -59,6 +59,7 @@ WebComponent.initComplexTemplateProvider({
     AttributeCommitter,
     NodePart,
     isDirective,
+    directive,
     noChange,
 });
 I18nComponent.define();

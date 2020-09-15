@@ -32,11 +32,17 @@ WebComponent.initI18N({
     // Optional. Combined with lit-html this
     // sets the value to a placeholder while the
     // language file is loading
-    returner: directive((promise, placeholder) => (part) => {
+    returner: directive((promise, placeholder, onChange) => (part) => {
         part.setValue(placeholder);
         promise.then((str) => {
             part.setValue(str);
             part.commit();
+            onChange((newPromise) => {
+                newPromise.then((newValue) => {
+                    part.setValue(newValue);
+                    part.commit();
+                });
+            });
         });
     }),
     getMessage(langFile, key, values) {

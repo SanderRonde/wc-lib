@@ -275,6 +275,7 @@ gulp.task(
                 AttributeCommitter,
                 NodePart,
                 isDirective,
+                directive,
                 noChange,
                 //@ts-ignore
             } = await import('./modules/lit-html/lit-html.js');
@@ -301,6 +302,7 @@ gulp.task(
                             AttributeCommitter,
                             NodePart,
                             isDirective,
+                            directive,
                             noChange,
                         });
                     }

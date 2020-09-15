@@ -18,4 +18,4 @@ export const I18nComponentHTML = new TemplateFn(function () {
         this.setLang('es');
     }}>${this.__('set_lang_to', this.__prom('spanish'))}</button>
 	`;
-}, 8 /* LANG */, render);
+}, 4 /* LANG */, render);

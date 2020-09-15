@@ -1,0 +1,1 @@
+{"version":3,"file":"wc-lib.lite.d.ts","sourceRoot":"","sources":["../../src/wc-lib.lite.ts"],"names":[],"mappings":"AAAA;;;;IAII;AAEJ,OAAO,EAAE,MAAM,EAAE,wBAAwB,EAAE,MAAM,uBAAuB,CAAC;AACzE,OAAO,EAAE,wBAAwB,EAAE,MAAM,uBAAuB,CAAC;AACjE,OAAO,EAAE,KAAK,EAAE,SAAS,EAAE,WAAW,EAAE,MAAM,gBAAgB,CAAC;AAC/D,OAAO,EAAE,WAAW,EAAE,UAAU,EAAE,MAAM,sBAAsB,CAAC;AAE/D,eAAe,wBAAwB,CAAC"}

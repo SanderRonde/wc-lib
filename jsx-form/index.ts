@@ -8,8 +8,8 @@ import {
     isDirective,
     directive,
     noChange,
-} from '../../node_modules/lit-html/lit-html.js';
-import { WebComponent } from '../../build/es/wc-lib.js';
+} from '../modules/lit-html-bundled/lit-html.js';
+import { WebComponent } from '../modules/wc-lib/wc-lib.js';
 import { JsxForm } from './jsx-form.js';
 
 WebComponent.initComplexTemplateProvider({

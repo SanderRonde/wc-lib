@@ -9,9 +9,9 @@ import {
     noChange,
     Part,
     directive,
-} from '../../node_modules/lit-html/lit-html.js';
-import { WebComponent } from '../../build/es/wc-lib.js';
-import { TicTacToe } from './tic-tac-toe.js';
+} from '../modules/lit-html-bundled/lit-html.js';
+import { WebComponent } from '../modules/wc-lib/wc-lib.js';
+import { TicTacToe } from './tic-tac-toe-manual.js';
 import { theme } from './theme.js';
 
 export interface LangFile {

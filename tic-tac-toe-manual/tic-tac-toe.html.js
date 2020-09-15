@@ -1,6 +1,6 @@
-import { TemplateFn, watchFn } from '../../build/es/wc-lib.js';
-import { languages } from './tic-tac-toe.js';
-import { render, directive, } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, watchFn } from '../modules/wc-lib/wc-lib.js';
+import { languages } from './tic-tac-toe-manual.js';
+import { render, directive, } from '../modules/lit-html-bundled/lit-html.js';
 import { theme } from './theme.js';
 function setLocalStorageItem(name, value) {
     if (typeof localStorage !== 'undefined') {

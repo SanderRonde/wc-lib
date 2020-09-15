@@ -5,8 +5,8 @@ import {
     CHANGE_TYPE,
     Props,
     PROP_TYPE,
-} from '../../build/es/wc-lib.js';
-import { render, html } from '../../node_modules/lit-html/lit-html.js';
+} from '../modules/wc-lib/wc-lib.js';
+import { render, html } from '../modules/lit-html-bundled/lit-html.js';
 
 @config({
     is: 'simple-clock',

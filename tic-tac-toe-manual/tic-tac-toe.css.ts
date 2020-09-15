@@ -1,6 +1,6 @@
-import { TemplateFn, CHANGE_TYPE, css } from '../../build/es/wc-lib.js';
-import { render } from '../../node_modules/lit-html/lit-html.js';
-import { TicTacToe } from './tic-tac-toe.js';
+import { TemplateFn, CHANGE_TYPE, css } from '../modules/wc-lib/wc-lib.js';
+import { render } from '../modules/lit-html-bundled/lit-html.js';
+import { TicTacToe } from './tic-tac-toe-manual.js';
 
 export const TicTacToeCSS = new TemplateFn<TicTacToe>(
     function (html, { theme }) {

@@ -1,5 +1,5 @@
 import { ConfigurableWebComponent, Props, config, PROP_TYPE, CHANGE_TYPE, TemplateFn } from '../../build/es/wc-lib.js';
-import { render } from '../../node_modules/lit-html/lit-html.js';
+import { render } from '../modules/lit-html-bundled/lit-html.js';
 import { JSXIntrinsicProps } from '../../build/es/classes/types';
 
 declare global {

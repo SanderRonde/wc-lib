@@ -232,6 +232,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.2.1**:
+
+-   Mark module as side effects free
+
 **1.2.0**:
 
 -   Implement subtree prop providers (similar to react context)

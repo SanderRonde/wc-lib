@@ -11,6 +11,7 @@ import { Part } from 'lit-html';
 import { DeepWatchable } from './elements/deep-watchable.js';
 import { ThemedElement } from '../../../classes/theme-manager/elements/themed-element.js';
 import { LangElement } from '../../../classes/i18n-manager/elements/test-lang-element.js';
+import { JoinedPropsElement } from './elements/joined-props-element.js';
 
 context('Manual rendering', function () {
     this.slow(SLOW);
@@ -650,6 +651,68 @@ context('Manual rendering', function () {
                     );
                 });
             });
+        });
+    });
+    context('Joined props', () => {
+        before(() => {
+            TemplateClass._templateSettings = {
+                directive: directiveFn,
+            } as any;
+        });
+        it('can watch props', () => {
+            cy.get('#joined').then(
+                ([testElement]: JQuery<JoinedPropsElement>) => {
+                    expect(() => {
+                        {
+                            const prop = (watch(
+                                testElement.getRenderArgs(0).props
+                            ).x as unknown) as DirectiveCapturer;
+                            expect(prop.currentValue).to.be.equal(
+                                testElement.props.x
+                            );
+                        }
+                        {
+                            const prop = (watch(
+                                testElement.getRenderArgs(0).props
+                            ).y as unknown) as DirectiveCapturer;
+                            expect(prop.currentValue).to.be.equal(
+                                testElement.props.y
+                            );
+                        }
+                    }).to.not.throw;
+                }
+            );
+        });
+        it('updates when a property is updated', () => {
+            cy.get('#joined').then(
+                ([testElement]: JQuery<JoinedPropsElement>) => {
+                    {
+                        const prop = (watch(testElement.getRenderArgs(0).props)
+                            .x as unknown) as DirectiveCapturer;
+                        expect(prop.currentValue).to.be.equal(
+                            testElement.props.x
+                        );
+
+                        testElement.props.x = 10;
+                        expect(prop.currentValue).to.be.equal(
+                            testElement.props.x
+                        );
+                    }
+
+                    {
+                        const prop = (watch(testElement.getRenderArgs(0).props)
+                            .y as unknown) as DirectiveCapturer;
+                        expect(prop.currentValue).to.be.equal(
+                            testElement.props.y
+                        );
+
+                        testElement.props.y = 10;
+                        expect(prop.currentValue).to.be.equal(
+                            testElement.props.y
+                        );
+                    }
+                }
+            );
         });
     });
     context('Theme', () => {

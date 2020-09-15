@@ -4,9 +4,11 @@ import { TestElement } from '../../../../../classes/elements/test-element.js';
 import { LangElementFactory } from '../../../../../classes/i18n-manager/elements/test-lang-element.js';
 import { ThemedElementFactory } from '../../../../../classes/theme-manager/elements/themed-element.js';
 import { DeepWatchable } from '../../elements/deep-watchable.js';
+import { JoinedPropsElement } from '../../elements/joined-props-element.js';
 
 DeepWatchable.define(true);
 TestElement.define(true);
+JoinedPropsElement.define(true);
 ThemedElementFactory(WebComponent as any).ThemedElement.define(true);
 LangElementFactory(WebComponent as any).define(true);
 

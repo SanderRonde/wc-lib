@@ -142,6 +142,7 @@ export function assignAsGetter<
             ...(writable
                 ? {
                       set(value) {
+                          // istanbul ignore next
                           objectB[bKey as keyof typeof objectB] = value;
                       },
                   }

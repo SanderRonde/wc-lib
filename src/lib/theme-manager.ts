@@ -199,11 +199,15 @@ export const WebComponentThemeManagerMixin = <
 
     function notifyChangedTheme(themeName: any) {
         const currentTheme = (() => {
-            if (PrivateData.__theme) {
-                if (themeName && themeName in PrivateData.__theme) {
-                    return PrivateData.__theme[themeName];
-                }
+            // istanbul ignore next
+            if (
+                PrivateData.__theme &&
+                themeName &&
+                themeName in PrivateData.__theme
+            ) {
+                return PrivateData.__theme[themeName];
             }
+            // istanbul ignore next
             return noTheme;
         })();
         themeListeners.forEach((l) => l(currentTheme));

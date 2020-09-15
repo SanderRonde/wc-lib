@@ -86,9 +86,10 @@ class I18NClass<
             if (delayRender) {
                 setTimeout(() => {
                     this._self.renderToDOM(CHANGE_TYPE.LANG);
-                    I18NClass.langChangeCompleteListeners.forEach((l) =>
-                        l(I18NClass.langFiles[I18NClass.lang])
-                    );
+                    I18NClass.langChangeCompleteListeners.forEach((l) => {
+                        // istanbul ignore next
+                        l(I18NClass.langFiles[I18NClass.lang]);
+                    });
                 }, 0);
             } else {
                 this._self.renderToDOM(CHANGE_TYPE.LANG);

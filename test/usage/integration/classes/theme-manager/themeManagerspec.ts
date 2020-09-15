@@ -111,6 +111,16 @@ export function themeManagerSpec(
                     }
                 });
             });
+            it('caches #getRenderArgs theme result', () => {
+                getDefaultThemedElements().then((elements) => {
+                    for (const element of elements) {
+                        const renderArgs = (element as ThemedElement).getRenderArgs(
+                            0
+                        );
+                        expect(renderArgs.theme).to.be.equal(renderArgs.theme);
+                    }
+                });
+            });
         });
         context('Theming', () => {
             context('Default', () => {

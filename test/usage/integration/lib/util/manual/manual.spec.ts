@@ -548,9 +548,11 @@ context('Manual rendering', function () {
                 );
 
                 deepWatchable.props.y.property = 20;
-                expect(prop.currentValue).to.be.equal(
-                    deepWatchable.props.y.property
-                );
+                cy.wait(10).then(() => {
+                    expect(prop.currentValue).to.be.equal(
+                        deepWatchable.props.y.property
+                    );
+                });
             });
         });
     });

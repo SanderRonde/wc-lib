@@ -11,7 +11,7 @@ import {
     directive,
 } from '../../node_modules/lit-html/lit-html.js';
 import { WebComponent } from '../../build/es/wc-lib.js';
-import { TicTacToe } from './tic-tac-toe.js';
+import { TicTacToe } from './tic-tac-toe-manual.js';
 import { theme } from './theme.js';
 
 export interface LangFile {

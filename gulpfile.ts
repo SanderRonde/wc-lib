@@ -1,6 +1,8 @@
 const header = require('gulp-header') as typeof import('gulp-header');
 import * as replace from 'gulp-replace';
+import * as rollup from 'rollup';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import * as glob from 'glob';
 import * as gulp from 'gulp';
 
@@ -268,6 +270,41 @@ gulp.task(
                 )
                 .pipe(gulp.dest('examples/modules/lit-html/'));
         },
+        async function moveBundledLitHTML() {
+            const bundle = await rollup.rollup({
+                input: path.join(
+                    __dirname,
+                    'node_modules/lit-html/lit-html.js'
+                ),
+            });
+
+            const outPath = path.join(
+                __dirname,
+                'examples/modules/lit-html-bundled/',
+                'lit-html.js'
+            );
+            const { output } = await bundle.generate({
+                file: outPath,
+                name: 'lithtml',
+                format: 'esm',
+            });
+
+            await fs.mkdirp(path.dirname(outPath));
+            await fs.writeFile(
+                outPath,
+                'var window = typeof window !== "undefined" ? window : {};' +
+                    output[0].code,
+                {
+                    encoding: 'utf8',
+                }
+            );
+            return gulp
+                .src(['**/*.d.ts'], {
+                    cwd: 'node_modules/lit-html/',
+                    base: 'node_modules/lit-html/',
+                })
+                .pipe(gulp.dest('examples/modules/lit-html-bundled/'));
+        },
         function movewclib() {
             return gulp
                 .src(['**/*.*'], {
@@ -285,7 +322,7 @@ gulp.task(
                 .pipe(
                     replace(
                         /\.\.\/\.\.\/node\_modules\/lit\-html/g,
-                        '../modules/lit-html'
+                        '../modules/lit-html-bundled'
                     )
                 )
                 .pipe(replace(/\.\.\/\.\.\/build\/es/g, '../modules/wc-lib'))

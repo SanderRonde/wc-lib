@@ -1,11 +1,23 @@
+import {
+    TemplateResult,
+    PropertyCommitter,
+    EventPart,
+    BooleanAttributePart,
+    AttributeCommitter,
+    NodePart,
+    isDirective,
+    directive,
+    noChange,
+    //@ts-ignore
+} from './modules/lit-html-bundled/lit-html.js';
 import { inlineTypedCSSPipe } from '../build/cjs/tasks';
 import { ssr } from '../build/cjs/lib/ssr/ssr';
 import { theme } from './tic-tac-toe/theme';
 const gulpClean = require('gulp-clean');
 import * as replace from 'gulp-replace';
-import * as webpack from 'webpack';
 import * as rimraf from 'rimraf';
 import * as fs from 'fs-extra';
+import * as webpack from 'webpack';
 import * as gulp from 'gulp';
 import * as path from 'path';
 
@@ -266,19 +278,6 @@ gulp.task(
                 .filter(([_, stat]) => (stat as fs.Stats).isDirectory())
                 .map(([name, _]) => name as string)
                 .filter((name) => EXCLUDED_DIRS.indexOf(name) === -1);
-
-            const {
-                TemplateResult,
-                PropertyCommitter,
-                EventPart,
-                BooleanAttributePart,
-                AttributeCommitter,
-                NodePart,
-                isDirective,
-                directive,
-                noChange,
-                //@ts-ignore
-            } = await import('./modules/lit-html/lit-html.js');
 
             return Promise.all(
                 dirs.map(async (dir) => {

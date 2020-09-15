@@ -81,3 +81,8 @@ TODO.*
 TODO
 test/types/*.js
 test/types/*.d.ts
+
+gulpfile.js
+gulpfile.d.ts
+makfyfile.js
+makfyfile.d.ts

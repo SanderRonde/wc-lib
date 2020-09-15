@@ -103,9 +103,7 @@ cmd('watch')
         }
     });
 
-cmd('cypress')
-    .desc('Run cypress tests')
-    .run('node test/usage/test.js');
+cmd('cypress').desc('Run cypress tests').run('node test/usage/test.js');
 
 cmd('_set-cypress')
     .desc('Set the cypress config to only run given files')
@@ -257,10 +255,14 @@ cmd('website')
         'Compile and prepare website for serving, including bundled and SSRed examples'
     )
     .run(async (exec) => {
-        await exec('? compiling TS');
-        await exec('@compile --dir all');
+        await exec('? cleaning');
+        await exec('@clean');
+        await exec('? compiling build TS');
+        await exec('@compile --dir src');
         await exec('? preparing website');
         await exec('gulp prepareWebsite');
+        await exec('? compiling TS');
+        await exec('@compile --dir all');
         await exec('? generating bundles');
         await exec(
             'node -r @std/esm ./node_modules/gulp/bin/gulp.js --cwd examples bundle',

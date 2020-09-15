@@ -24,5 +24,10 @@
     },
     "compileOnSave": true,
     "allowJs": true,
-    "include": ["gulpfile.ts", "makfyfile.ts"]
+    "include": ["gulpfile.ts", "makfyfile.ts"],
+    "ts-node": {
+        "compilerOptions": {
+            "allowSyntheticDefaultImports": true
+        }
+    }
 }

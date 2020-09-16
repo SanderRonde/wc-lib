@@ -4,7 +4,7 @@ import {
     CHANGE_TYPE,
     watchFn,
 } from '../../../../build/es/wc-lib.js';
-import { PLAYER } from '../../tic-tac-toe.js';
+import { PLAYER } from '../../tic-tac-toe-manual.js';
 import { CellBlock } from './cell-block.js';
 
 export const enum CELL_CLASSES {

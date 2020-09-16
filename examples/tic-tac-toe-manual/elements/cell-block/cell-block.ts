@@ -6,7 +6,7 @@ import {
 } from '../../../../build/es/wc-lib.js';
 import { CellBlockHTML, CELL_CLASSES } from './cell-block.html.js';
 import { CellBlockCSS } from './cell-block.css.js';
-import { PLAYER } from '../../tic-tac-toe.js';
+import { PLAYER } from '../../tic-tac-toe-manual.js';
 import { theme } from '../../theme.js';
 
 @config({

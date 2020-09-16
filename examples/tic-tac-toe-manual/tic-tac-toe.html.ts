@@ -1,5 +1,5 @@
 import { TemplateFn, CHANGE_TYPE, watchFn } from '../../build/es/wc-lib.js';
-import { TicTacToe, languages, ACTIVITY_STATE } from './tic-tac-toe.js';
+import { TicTacToe, languages, ACTIVITY_STATE } from './tic-tac-toe-manual.js';
 import {
     render,
     directive,

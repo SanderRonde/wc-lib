@@ -200,10 +200,19 @@ class ComplexValuePart implements Part {
         }
 
         // Try and JSON parse it
-        try {
-            JSON.parse(this._pendingValue);
-            this.element.setAttribute(this.name, this._pendingValue);
-        } catch (e) {
+        let err: boolean = false;
+        /* istanbul ignore next */
+        if (typeof this._pendingValue !== 'string') {
+            err = true;
+        } else {
+            try {
+                JSON.parse(this._pendingValue);
+                this.element.setAttribute(this.name, this._pendingValue);
+            } catch (e) {
+                err = true;
+            }
+        }
+        if (err) {
             this.element.setAttribute(
                 this.name,
                 this.genRef(this._pendingValue)

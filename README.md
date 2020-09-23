@@ -232,6 +232,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.2.2**:
+
+-   Define JSX components on-demand
+
 **1.2.1**:
 
 -   Mark module as side effects free

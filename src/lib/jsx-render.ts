@@ -213,6 +213,19 @@ export namespace html {
 }
 
 /**
+ * Checks whether a component with given name is defined in the
+ * custom elements registry
+ */
+function isDefined(name: string) {
+    /* istanbul ignore next */
+    if (typeof window === 'undefined') return true;
+    if (window.customElements.get(name)) {
+        return true;
+    }
+    return false;
+}
+
+/**
  * Converts JSX to a template-literal type representation
  *
  * @template TR - The template result
@@ -275,6 +288,7 @@ export function jsxToLiteral<
         | (() => typeof _Fragment)
         | (Constructor<any> & {
               is: string;
+              define?(isDevelopment?: boolean, isRoot?: boolean): void;
           }),
     attrs: A | null,
     ...children: (TR | JSXDelayedExecutionCall | any)[]
@@ -293,6 +307,11 @@ export function jsxToLiteral<
     ) {
         // A webcomponent
         tagName = tag.is;
+
+        if (!isDefined(tag.is)) {
+            /* istanbul ignore next */
+            tag.define?.();
+        }
     } else if (typeof tag === 'function') {
         // Functional component
 

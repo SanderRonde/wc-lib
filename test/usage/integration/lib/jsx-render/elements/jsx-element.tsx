@@ -414,7 +414,7 @@ export class JSXElement6 extends ConfigurableWebComponent {}
 
 @config({
     is: 'jsx-render-7',
-    html: new TemplateFn<JSXElement6>(
+    html: new TemplateFn<JSXElement7>(
         function () {
             return (
                 <html.Fragment>
@@ -431,3 +431,42 @@ export class JSXElement6 extends ConfigurableWebComponent {}
     css: null,
 })
 export class JSXElement7 extends ConfigurableWebComponent {}
+
+@config({
+    is: 'jsx-undefined-element',
+    html: new TemplateFn<JSXElement6>(
+        function () {
+            return (
+                <html.Fragment>
+                    <div id="1"></div>
+                    <div id="2"></div>
+                    <div id="3"></div>
+                    <RendererWithoutTemplater />
+                </html.Fragment>
+            );
+        },
+        CHANGE_TYPE.NEVER,
+        render
+    ),
+    css: null,
+})
+export class JSXUndefinedElement extends ConfigurableWebComponent {}
+
+@config({
+    is: 'jsx-render-8',
+    html: new TemplateFn<JSXElement8>(
+        function () {
+            return (
+                <html.Fragment>
+                    <JSXUndefinedElement />
+                </html.Fragment>
+            );
+        },
+        CHANGE_TYPE.NEVER,
+        render
+    ),
+    css: null,
+})
+export class JSXElement8 extends ConfigurableWebComponent {}
+
+(window as any).JSXUndefinedElement = JSXUndefinedElement;

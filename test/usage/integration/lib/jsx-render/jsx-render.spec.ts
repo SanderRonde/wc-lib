@@ -12,7 +12,7 @@ import { getLibFixture } from '../../../lib/testing.js';
 import { SLOW } from '../../../lib/timing.js';
 
 function jsxRenderSpec(fixture: string) {
-    context('JSX-Render', function() {
+    context('JSX-Render', function () {
         this.slow(SLOW);
         before(() => {
             cy.visit(fixture);
@@ -50,6 +50,22 @@ function jsxRenderSpec(fixture: string) {
                                 expect(el).to.have.attr('y', y + '');
                                 expect(el).to.have.attr('id', 'simple');
                             });
+                    });
+                });
+                it('defines elements that are not already defined', () => {
+                    cy.window().then((window) => {
+                        const undefinedElement = (window as any)
+                            .JSXUndefinedElement;
+                        const spy = cy.spy(undefinedElement, 'define');
+
+                        cy.document().then((document) => {
+                            const element = document.createElement(
+                                'jsx-render-8'
+                            );
+                            document.body.appendChild(element);
+
+                            expect(spy).to.be.called;
+                        });
                     });
                 });
             });

@@ -82,7 +82,7 @@ export class DefinerClass {
     public static async listenForFinished(
         component: WebComponentMixinInstance,
         isConstructed: Promise<void>
-    ) {
+    ): Promise<void> {
         if (this.finished) {
             await isConstructed;
             component.isMounted = true;
@@ -383,7 +383,8 @@ export const WebComponentDefinerMixin = <
      * The class that manages defining of this component
      * and its dependencies
      */
-    class WebComponentDefiner extends superFn
+    class WebComponentDefiner
+        extends superFn
         implements WebComponentDefinerTypeInstance {
         public ___definerClass: DefinerClass = new DefinerClass();
 

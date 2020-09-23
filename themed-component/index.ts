@@ -8,9 +8,9 @@ import {
     isDirective,
     directive,
     noChange,
-} from '../modules/lit-html-bundled/lit-html.js';
+} from '../../node_modules/lit-html/lit-html.js';
 import { ThemedComponent } from './themed-component.js';
-import { WebComponent } from '../modules/wc-lib/wc-lib.js';
+import { WebComponent } from '../../build/es/wc-lib.js';
 
 export const theme = {
     // Theme can contain any values that are valid in CSS

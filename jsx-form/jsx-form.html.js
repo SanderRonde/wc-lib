@@ -1,4 +1,4 @@
-import { render } from '../modules/lit-html-bundled/lit-html.js';
+import { render } from '../../node_modules/lit-html/lit-html.js';
 import { TemplateFn } from '../../build/es/wc-lib.js';
 import { JsxInput } from './jsx-input.js';
 export const JsxFormHTML = new TemplateFn(function (html) {

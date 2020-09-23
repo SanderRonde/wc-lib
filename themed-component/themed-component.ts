@@ -1,4 +1,4 @@
-import { ConfigurableWebComponent, config } from '../modules/wc-lib/wc-lib.js';
+import { ConfigurableWebComponent, config } from '../../build/es/wc-lib.js';
 import { ThemedComponentHTML } from './themed-component.html.js';
 import { ThemedComponentCSS } from './themed-component.css.js';
 import { theme } from './index.js';

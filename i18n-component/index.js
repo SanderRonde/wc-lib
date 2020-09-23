@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { I18nComponent } from './i18n-component.js';
-import { WebComponent } from '../modules/wc-lib/wc-lib.js';
-import { directive, TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange, } from '../modules/lit-html-bundled/lit-html.js';
+import { WebComponent } from '../../build/es/wc-lib.js';
+import { directive, TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange, } from '../../node_modules/lit-html/lit-html.js';
 WebComponent.initI18N({
     urlFormat: './json-files/$LANG$.json',
     defaultLang: 'en',

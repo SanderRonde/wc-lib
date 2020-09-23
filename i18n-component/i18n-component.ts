@@ -3,8 +3,8 @@ import {
     config,
     TemplateFn,
     CHANGE_TYPE,
-} from '../modules/wc-lib/wc-lib.js';
-import { render } from '../modules/lit-html-bundled/lit-html.js';
+} from '../../build/es/wc-lib.js';
+import { render } from '../../node_modules/lit-html/lit-html.js';
 import { I18nComponentHTML } from './i18n-component.html.js';
 import { LangFile } from './index.js';
 

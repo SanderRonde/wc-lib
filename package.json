@@ -75,6 +75,7 @@
         "makfy": "^2.0.2",
         "nyc": "^14.1.1",
         "prettier": "^2.1.1",
+        "prettier-plugin-sort-imports": "^1.0.0",
         "pretty-quick": "^3.0.2",
         "remap-istanbul": "^0.13.0",
         "rimraf": "^3.0.0",

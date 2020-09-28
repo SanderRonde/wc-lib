@@ -10,9 +10,9 @@ import {
     WebComponentBaseMixinInstance,
 } from './base.js';
 import { WebComponentListenableMixinInstance } from './listener.js';
+import { createWatchable, Watchable } from './util/manual.js';
 import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
-import { createWatchable, Watchable } from './util/manual.js';
 
 /**
  * The type of the `component.listenGP` function
@@ -240,7 +240,8 @@ class HierarchyClass {
         for (const key in newProps) {
             this.setGlobalProperty(
                 key as Extract<keyof typeof newProps, string>,
-                newProps[key as keyof typeof newProps]
+                newProps[key as keyof typeof newProps],
+                false
             );
         }
     }
@@ -311,7 +312,7 @@ class HierarchyClass {
         },
         P extends keyof G = keyof G,
         V extends G[P] = G[P]
-    >(key: Extract<P, string>, value: V) {
+    >(key: Extract<P, string>, value: V, doRender: boolean = true) {
         if (this.globalProperties[key] !== value) {
             const oldVal = this.globalProperties[key];
             this.globalProperties[key] = value;
@@ -320,7 +321,9 @@ class HierarchyClass {
             this.globalPropertyChangeListeners.forEach((l) =>
                 l(this.globalProperties, key)
             );
-            this._self.renderToDOM(CHANGE_TYPE.GLOBAL_PROPS);
+            if (doRender) {
+                this._self.renderToDOM(CHANGE_TYPE.GLOBAL_PROPS);
+            }
         }
     }
 

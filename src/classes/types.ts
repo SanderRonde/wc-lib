@@ -8,12 +8,12 @@ import {
     ComplexTypeClass,
     GetComplexTypeClassSpec,
 } from '../lib/props.js';
+import { GetRenderArgsHierarchyManagerMixin } from '../lib/hierarchy-manager.js';
+import { GetRenderArgsThemeManagerMixin } from '../lib/theme-manager.js';
 import { ListenerSet, EventListenerObj } from '../lib/listener.js';
+import { GetRenderArgsBaseMixin } from '../lib/base.js';
 import { TemplateFnLike } from '../lib/template-fn.js';
 import { ClassNamesArg } from '../lib/shared.js';
-import { GetRenderArgsBaseMixin } from '../lib/base.js';
-import { GetRenderArgsThemeManagerMixin } from '../lib/theme-manager.js';
-import { GetRenderArgsHierarchyManagerMixin } from '../lib/hierarchy-manager.js';
 
 /**
  * A constructable function that returns the passed type

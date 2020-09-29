@@ -234,13 +234,17 @@ function isDefined(name: string) {
  * @returns {boolean} Whether it contains any delayed execution
  *  calls
  */
-function containsDelayedExecutions(items: any[]): boolean {
+function containsDelayedExecutions<I>(
+    items: I[],
+    checked: Set<I> = new Set()
+): boolean {
     return items.some((item) => {
+        checked.add(item);
         if (item instanceof JSXDelayedExecutionCall) {
             return true;
         }
-        if (Array.isArray(item)) {
-            return containsDelayedExecutions(item);
+        if (Array.isArray(item) && !checked.has(item)) {
+            return containsDelayedExecutions(item, checked);
         }
         return false;
     });

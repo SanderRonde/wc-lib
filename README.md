@@ -232,6 +232,11 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.2.3**:
+
+-   Fix bug that caused rendering before props were set through global property updating
+-   Fix bug that caused JSX to render as `[object Object]`
+
 **1.2.2**:
 
 -   Define JSX components on-demand

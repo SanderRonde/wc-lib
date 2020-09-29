@@ -238,7 +238,9 @@ function containsDelayedExecutions<I>(
         if (item instanceof JSXDelayedExecutionCall) {
             return true;
         }
+        /* istanbul ignore next */
         if (Array.isArray(item) && !checked.has(item)) {
+            /* istanbul ignore next */
             return containsDelayedExecutions(item, checked);
         }
         return false;

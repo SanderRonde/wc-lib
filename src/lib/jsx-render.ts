@@ -104,12 +104,7 @@ export class JSXDelayedExecutionCall {
         let collapsed = jsxToLiteral(
             this.tag,
             this.attrs,
-            ...this.children.map((child): JSXElementLiteral | any => {
-                if (child instanceof JSXDelayedExecutionCall) {
-                    return child.collapse(templater);
-                }
-                return child;
-            })
+            ...collapseDeeply(this.children, templater)
         );
         if (collapsed instanceof JSXDelayedExecutionCall) {
             while (collapsed instanceof JSXDelayedExecutionCall) {
@@ -247,6 +242,22 @@ function containsDelayedExecutions<I>(
             return containsDelayedExecutions(item, checked);
         }
         return false;
+    });
+}
+
+function collapseDeeply(
+    items: any[],
+    templater: Templater<any>,
+    checked: Set<any> = new Set()
+): any[] {
+    return items.map((item) => {
+        if (item instanceof JSXDelayedExecutionCall) {
+            return item.collapse(templater);
+        }
+        if (Array.isArray(item) && !checked.has(item)) {
+            return collapseDeeply(item, templater, checked);
+        }
+        return item;
     });
 }
 

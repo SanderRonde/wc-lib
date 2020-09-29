@@ -6,6 +6,7 @@ import {
     JSXElement4,
     JSXElement5,
     JSXElement6,
+    JSXElement9,
 } from './elements/jsx-element.js';
 import { CHANGE_TYPE } from '../../../../../build/es/wc-lib.js';
 import { getLibFixture } from '../../../lib/testing.js';
@@ -217,6 +218,17 @@ function jsxRenderSpec(fixture: string) {
                         );
                         expect(textRender).to.include(
                             '<div id="1"></div><div id="2"></div><div id="3"></div><div id="4"></div>'
+                        );
+                    });
+                });
+                it('can use delayed execution JSX in arrays (deeply)', () => {
+                    cy.get('#test9').then(([jsxEl]: JQuery<JSXElement9>) => {
+                        const textRender = jsxEl.self.html.renderAsText(
+                            CHANGE_TYPE.FORCE,
+                            jsxEl
+                        );
+                        expect(textRender).to.include(
+                            '<div id="1"></div><div id="2"></div><div id="3"></div><div id="4"></div><div id="5"></div>'
                         );
                     });
                 });

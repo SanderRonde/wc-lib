@@ -226,6 +226,27 @@ function isDefined(name: string) {
 }
 
 /**
+ * Check whether given array contains delayed execution calls
+ * deeply
+ *
+ * @param {any[]} items - The items to check
+ *
+ * @returns {boolean} Whether it contains any delayed execution
+ *  calls
+ */
+function containsDelayedExecutions(items: any[]): boolean {
+    return items.some((item) => {
+        if (item instanceof JSXDelayedExecutionCall) {
+            return true;
+        }
+        if (Array.isArray(item)) {
+            return containsDelayedExecutions(item);
+        }
+        return false;
+    });
+}
+
+/**
  * Converts JSX to a template-literal type representation
  *
  * @template TR - The template result
@@ -293,7 +314,7 @@ export function jsxToLiteral<
     attrs: A | null,
     ...children: (TR | JSXDelayedExecutionCall | any)[]
 ): JSXElementLiteral | JSXDelayedExecutionCall {
-    if (children.some((c) => c instanceof JSXDelayedExecutionCall)) {
+    if (containsDelayedExecutions(children)) {
         return jsx(tag, attrs, ...children);
     }
 

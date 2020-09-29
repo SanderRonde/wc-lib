@@ -1,18 +1,4 @@
 import {
-    ConfigurableWebComponent,
-    config,
-    TemplateFn,
-    CHANGE_TYPE,
-    Props,
-    PROP_TYPE,
-    ComplexType,
-    ClassNamesArg,
-    WebComponent,
-    jsxToLiteral,
-    html,
-} from '../../../../../../build/es/wc-lib.js';
-import { JSXTemplater } from '../../../../../../build/es/lib/template-fn';
-import {
     TemplateResult,
     PropertyCommitter,
     EventPart,
@@ -25,7 +11,21 @@ import {
     render,
     html as litHTMLHTML,
 } from '../../.../../../../../../node_modules/lit-html/lit-html.js';
+import {
+    ConfigurableWebComponent,
+    config,
+    TemplateFn,
+    CHANGE_TYPE,
+    Props,
+    PROP_TYPE,
+    ComplexType,
+    ClassNamesArg,
+    WebComponent,
+    jsxToLiteral,
+    html,
+} from '../../../../../../build/es/wc-lib.js';
 import { JSXElementLiteral } from '../../../../../../build/es/lib/jsx-render.js';
+import { JSXTemplater } from '../../../../../../build/es/lib/template-fn';
 
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
@@ -468,5 +468,25 @@ export class JSXUndefinedElement extends ConfigurableWebComponent {}
     css: null,
 })
 export class JSXElement8 extends ConfigurableWebComponent {}
+
+@config({
+    is: 'jsx-render-9',
+    html: new TemplateFn<JSXElement9>(
+        function () {
+            return (
+                <html.Fragment>
+                    <div id="1"></div>
+                    <div id="2"></div>
+                    <div id="3"></div>
+                    {[[[[<RendererWithoutTemplater />]]], <div id="5"></div>]}
+                </html.Fragment>
+            );
+        },
+        CHANGE_TYPE.NEVER,
+        render
+    ),
+    css: null,
+})
+export class JSXElement9 extends ConfigurableWebComponent {}
 
 (window as any).JSXUndefinedElement = JSXUndefinedElement;

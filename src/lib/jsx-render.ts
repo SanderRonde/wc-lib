@@ -234,12 +234,13 @@ function containsDelayedExecutions<I>(
     checked: Set<I> = new Set()
 ): boolean {
     return items.some((item) => {
-        checked.add(item);
         if (item instanceof JSXDelayedExecutionCall) {
             return true;
         }
+        const found = checked.has(item);
+        checked.add(item);
         /* istanbul ignore next */
-        if (Array.isArray(item) && !checked.has(item)) {
+        if (Array.isArray(item) && !found) {
             /* istanbul ignore next */
             return containsDelayedExecutions(item, checked);
         }
@@ -256,7 +257,9 @@ function collapseDeeply(
         if (item instanceof JSXDelayedExecutionCall) {
             return item.collapse(templater);
         }
-        if (Array.isArray(item) && !checked.has(item)) {
+        const found = checked.has(item);
+        checked.add(item);
+        if (Array.isArray(item) && !found) {
             return collapseDeeply(item, templater, checked);
         }
         return item;

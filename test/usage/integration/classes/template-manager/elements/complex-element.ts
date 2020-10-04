@@ -288,11 +288,11 @@ export function complexElementFactory(base: typeof RenderableComponent) {
                         id="refTest3"
                         parent="${this}"
                     ></complex-receiver-element>
+                    <test-element id="refTest4" x="${this}"></test-element>
                     <complex-receiver-dashed
-                        id="refTest4"
+                        id="refTest5"
                         parent-component="${this}"
                     ></complex-receiver-dashed>
-                    <test-element id="refTest4" x="${this}"></test-element>
                     <test-element id="regular" :key="${'value'}"></test-element>
                 `;
             },

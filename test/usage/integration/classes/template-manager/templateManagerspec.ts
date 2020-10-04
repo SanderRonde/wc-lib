@@ -619,7 +619,7 @@ export function templateManagerSpec(fixtures: {
                     cy.get('#complex').then(
                         ([complex]: JQuery<ComplexElement>) => {
                             cy.get('#complex')
-                                .shadowFind('#refTest4')
+                                .shadowFind('#refTest5')
                                 .then(([el]: JQuery<ComplexReceiverDashed>) => {
                                     expect(
                                         el.props.parentComponent

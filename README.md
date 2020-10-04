@@ -232,6 +232,11 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.2.4**:
+
+-   Fix bug with parent props' types not being detected
+-   Fix bug in JSX rendering
+
 **1.2.3**:
 
 -   Fix bug that caused rendering before props were set through global property updating

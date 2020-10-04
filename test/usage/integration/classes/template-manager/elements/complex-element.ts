@@ -29,6 +29,10 @@ export declare class ComplexReceiverElement extends ConfigurableWebComponent {
     props: { parent: ComplexElement };
 }
 
+export declare class ComplexReceiverDashed extends ConfigurableWebComponent {
+    props: { parentComponent: ComplexElement };
+}
+
 export declare class BooleanElement extends ConfigurableWebComponent {
     props: { bool: boolean };
 }
@@ -74,6 +78,24 @@ export function complexElementFactory(base: typeof RenderableComponent) {
         props = Props.define(this, {
             reflect: {
                 parent: ComplexType<_ComplexElement>(),
+            },
+        });
+    }
+
+    @config({
+        is: 'complex-receiver-dashed',
+        html: new TemplateFn<ComplexReceiverDashed>(
+            () => {
+                return html``;
+            },
+            CHANGE_TYPE.NEVER,
+            render
+        ),
+    })
+    class ComplexReceiverDashed extends ConfigurableWebComponent {
+        props = Props.define(this, {
+            reflect: {
+                parentComponent: ComplexType<_ComplexElement>(),
             },
         });
     }
@@ -266,6 +288,10 @@ export function complexElementFactory(base: typeof RenderableComponent) {
                         id="refTest3"
                         parent="${this}"
                     ></complex-receiver-element>
+                    <complex-receiver-dashed
+                        id="refTest4"
+                        parent-component="${this}"
+                    ></complex-receiver-dashed>
                     <test-element id="refTest4" x="${this}"></test-element>
                     <test-element id="regular" :key="${'value'}"></test-element>
                 `;
@@ -278,6 +304,7 @@ export function complexElementFactory(base: typeof RenderableComponent) {
             EventTriggeringElement,
             ComplexReceiverElement,
             BooleanElement,
+            ComplexReceiverDashed,
         ] as any,
     })
     class _ComplexElement extends ConfigurableWebComponent {

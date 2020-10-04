@@ -986,7 +986,7 @@ namespace Watching {
 }
 
 const cachedCasing = new Map<string, string>();
-function dashesToCasing(name: string) {
+export function dashesToCasing(name: string) {
     const cached = cachedCasing.get(name);
     if (cached) {
         return cached;

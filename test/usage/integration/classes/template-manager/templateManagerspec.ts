@@ -3,6 +3,7 @@ import {
     EventTriggeringElement,
     BooleanElement,
     ComplexReceiverElement,
+    ComplexReceiverDashed,
 } from './elements/complex-element';
 import { TestElement, TestWindow } from '../elements/test-element';
 import { expectMethodExists } from '../../../lib/assertions.js';
@@ -12,7 +13,7 @@ export function templateManagerSpec(fixtures: {
     standard: string;
     wrong: string;
 }) {
-    context('Template Manager', function() {
+    context('Template Manager', function () {
         this.slow(SLOW);
         before(() => {
             cy.visit(fixtures.standard);
@@ -611,6 +612,22 @@ export function templateManagerSpec(fixtures: {
                                         );
                                     }
                                 );
+                        }
+                    );
+                });
+                it('automatically applies complex if type is complex (when the name contains dashes as well)', () => {
+                    cy.get('#complex').then(
+                        ([complex]: JQuery<ComplexElement>) => {
+                            cy.get('#complex')
+                                .shadowFind('#refTest4')
+                                .then(([el]: JQuery<ComplexReceiverDashed>) => {
+                                    expect(
+                                        el.props.parentComponent
+                                    ).to.be.equal(
+                                        complex,
+                                        'complex attribute is set'
+                                    );
+                                });
                         }
                     );
                 });

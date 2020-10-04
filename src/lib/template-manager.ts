@@ -4,6 +4,7 @@ import {
     PropConfigObject,
     getDefinePropConfig,
     ComplexTypeClass,
+    dashesToCasing,
 } from './props.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
@@ -352,9 +353,17 @@ class ComplexTemplateProcessor implements TemplateProcessor {
             ...propsConfig.reflect,
             ...propsConfig.priv,
         };
-        if (!(name in joined)) return false;
-
-        const propConfig = getDefinePropConfig(joined[name]);
+        const propConfig = (() => {
+            if (name in joined) {
+                return getDefinePropConfig(joined[name]);
+            }
+            const casingName = dashesToCasing(name);
+            if (casingName in joined) {
+                return getDefinePropConfig(joined[casingName]);
+            }
+            return null;
+        })();
+        if (propConfig === null) return false;
 
         return propConfig.type instanceof ComplexTypeClass;
     }

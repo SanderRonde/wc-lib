@@ -1,5 +1,5 @@
-import { CHANGE_TYPE } from './template-fn.js';
 import { createWatchable, Watchable } from './util/manual.js';
+import { CHANGE_TYPE } from './template-fn.js';
 
 /**
  * The prefix used for complex references
@@ -1832,6 +1832,8 @@ namespace PropsDefiner {
             composite: true,
             element,
         });
+
+        previousProps.__config = { ...previousProps.__config, ...config };
 
         return {
             awaitable: defineProperties(element, previousProps, config),

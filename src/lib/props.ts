@@ -1833,7 +1833,23 @@ namespace PropsDefiner {
             element,
         });
 
-        previousProps.__config = { ...previousProps.__config, ...config };
+        const joinedConfig: {
+            reflect?: PropTypeConfig;
+            priv?: PropTypeConfig;
+        } = {};
+        if (previousProps.__config?.reflect || config.reflect) {
+            joinedConfig.reflect = {
+                ...previousProps.__config?.reflect,
+                ...config.reflect,
+            };
+        }
+        if (previousProps.__config?.priv || config.priv) {
+            joinedConfig.priv = {
+                ...previousProps.__config?.priv,
+                ...config.priv,
+            };
+        }
+        previousProps.__config = joinedConfig;
 
         return {
             awaitable: defineProperties(element, previousProps, config),

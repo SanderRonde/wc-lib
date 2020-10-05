@@ -1844,6 +1844,7 @@ namespace PropsDefiner {
             };
         }
         if (previousProps.__config?.priv || config.priv) {
+            /* istanbul ignore next */
             joinedConfig.priv = {
                 ...previousProps.__config?.priv,
                 ...config.priv,

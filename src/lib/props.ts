@@ -1837,18 +1837,15 @@ namespace PropsDefiner {
             reflect?: PropTypeConfig;
             priv?: PropTypeConfig;
         } = {};
-        if (previousProps.__config?.reflect || config.reflect) {
-            joinedConfig.reflect = {
-                ...previousProps.__config?.reflect,
-                ...config.reflect,
-            };
-        }
-        if (previousProps.__config?.priv || config.priv) {
+        for (const key of ['reflect', 'priv'] as const) {
             /* istanbul ignore next */
-            joinedConfig.priv = {
-                ...previousProps.__config?.priv,
-                ...config.priv,
-            };
+            if (previousProps.__config?.[key] || config[key]) {
+                joinedConfig[key] = {
+                    /* istanbul ignore next */
+                    ...previousProps.__config?.[key],
+                    ...config[key],
+                };
+            }
         }
         previousProps.__config = joinedConfig;
 

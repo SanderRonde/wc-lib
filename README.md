@@ -10,7 +10,44 @@ See below for more detailed explanations of these features, [check out the demo]
 
 ## Getting started
 
-The easiest way to get started is to use the command-line tool to generate a component for you. First make sure to install the library through npm or yarn as well as installing [lit-html](https://github.com/Polymer/lit-html). Then use the `wc-lib create --name "my-element"` command to generate a component in `./my-element`. At this point it's as simple as modifying the template files (`./my-element/my-element.html.ts` and `./my-element/my-element.css.ts`) to change what is rendered, and you can edit the class definition itself (`./my-element/my-element.ts`) to change any properties and methods it has. Then make sure to call `MyElement.define()` somewhere in your code to make sure it's defined and at that point any `<my-element>` tags will render your element instead.
+### Hello world
+
+Running the following code will define the `hello-world` component for you, making sure any future uses of `<hello-world></hello-world>` contain the text "Hello World!":
+
+```tsx
+@config({
+    is: 'visitor-count', // Define the tag name
+    html: new TemplateFn<VisitorCount>( // Define an HTML template
+        (html, props) => {
+            return html` <div>Visitors: ${props.count}</div> `;
+            // OR if you want to use JSX
+            return <div>{`Visitors: ${props.count}`}</div>;
+        },
+        CHANGE_TYPE.PROP, // Re-render this if any props change
+        render
+    ),
+    css: null, // (optional) We don't use a CSS template yet so this is null
+    dependencies: [], // (optional) We have no dependencies so this is empty
+})
+export class VisitorCount extends ConfigurableWebComponent {
+    props = Props.define(this, {
+        reflect: {
+            // Reflect any properties back to the component's attributes
+            count: {
+                // Define the "count" property
+                type: PROP_TYPE.NUMBER, // It's a number
+                value: 0, // (optional) That defaults to 0 if not provided
+            },
+        },
+    });
+}
+```
+
+From here the way forward is to modify the contents of your HTML template, possibly add a CSS template, add some other properties or to run some code on-mount.
+
+### Creating a component
+
+The easiest way to get started is to use the command-line tool to generate a component for you. First make sure to install the library through npm or yarn (`npm install --global wc-lib` or `yarn global add wc-lib`) as well as installing [lit-html](https://github.com/Polymer/lit-html) to your project. Then use the `wc-lib create --name "my-element"` command to generate a component in `./my-element` (you can use the `-j` flag to use TSX instead of `template strings`). At this point it's as simple as modifying the template files (`./my-element/my-element.html.ts` and `./my-element/my-element.css.ts`) to change what is rendered, and you can edit the class definition itself (`./my-element/my-element.ts`) to change any properties and methods it has. Then make sure to call `MyElement.define()` somewhere in your code or add it as a dependency of another one to make sure it's defined and at that point any `<my-element>` tags will render your element instead.
 
 ## Examples
 

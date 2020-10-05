@@ -232,6 +232,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.2.5**:
+
+-   Automatically infer complex components regardless of casing
+
 **1.2.4**:
 
 -   Fix bug with parent props' types not being detected

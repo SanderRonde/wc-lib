@@ -77,7 +77,7 @@ examples/modules/
 examples/bundled
 examples/ssr
 
-TODO.*
+TODO
 TODO
 test/types/*.js
 test/types/*.d.ts

@@ -52,3 +52,20 @@ class Root {
 }
 
 ```
+
+### Steps:
+
+[ ] Create basic render function
+[ ] Make basic VDOM renderer work
+[ ] Make the renderer modular/hookable
+[ ] Make VDOM renderer do diffing
+[ ] Transform old mixins to modules
+[ ] modules.Hierarchy manager
+[ ] modules.Template manager
+[ ] modules.Event listeners
+[ ] modules.I18n
+[ ] modules.Props
+[ ] modules.Theme
+[ ] Typed CSS
+[ ] Make modules render differently based on what is accessed (auto mode)
+[ ] Static analysis

@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "preserveConstEnums": false,
+        "listFiles": false,
+        "pretty": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "target": "es6",
+        "noUnusedParameters": true,
+        "experimentalDecorators": true,
+        "strictPropertyInitialization": true,
+        "strictNullChecks": true,
+        "strictBindCallApply": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "outDir": "../build/es/"
+    },
+    "compileOnSave": true,
+    "allowJs": true,
+    "include": ["./"]
+}

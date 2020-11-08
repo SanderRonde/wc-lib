@@ -59,6 +59,8 @@ jspm_packages/
 
 src/**/*.js
 src/**/*.d.ts
+src-old/**/*.js
+src-old/**/*.d.ts
 **/*.map
 build/
 temp/

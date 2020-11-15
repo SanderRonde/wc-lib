@@ -56,6 +56,7 @@ class Root {
 ### Steps:
 
 [ ] Create basic render function
+[ ] Something similar to useEffect
 [ ] Make basic VDOM renderer work
 [ ] Make the renderer modular/hookable
 [ ] Make VDOM renderer do diffing

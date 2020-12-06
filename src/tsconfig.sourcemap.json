@@ -21,6 +21,7 @@
         "declaration": true,
         "declarationMap": true,
         "isolatedModules": true,
+        "skipLibCheck": true,
         "sourceMap": true
     },
     "compileOnSave": true,

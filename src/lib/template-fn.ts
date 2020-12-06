@@ -12,7 +12,7 @@ import { WebComponent } from '../classes/full.js';
  * `CHANGE_TYPE.PROP | CHANGE_TYPE.THEME`
  * will re-render on both changes
  */
-export const enum CHANGE_TYPE {
+export enum CHANGE_TYPE {
     /**
      * Never re-render. This allows
      * for optimizing out the

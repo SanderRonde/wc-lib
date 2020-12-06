@@ -451,7 +451,7 @@ const enum NARROWED_PROP_TYPE {
 /**
  * Basic property types for properties
  */
-export const enum PROP_TYPE {
+export enum PROP_TYPE {
     /**
      * A string
      */

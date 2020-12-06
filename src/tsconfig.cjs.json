@@ -21,11 +21,11 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
+        "skipLibCheck": true,
+        "isolatedModules": true,
         "outDir": "../build/cjs/"
-	},
+    },
     "compileOnSave": true,
     "allowJs": true,
-    "include": [
-        "./"
-    ]
+    "include": ["./"]
 }

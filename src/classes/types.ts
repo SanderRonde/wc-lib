@@ -289,63 +289,63 @@ export type GetRenderArgsMixin<T> = GetRenderArgsBaseMixin<T> &
     GetRenderArgsThemeManagerMixin<T> &
     GetRenderArgsHierarchyManagerMixin<T>;
 
-export {
+export type {
     WebComponentBaseMixinInstance,
     WebComponentBaseTypeInstance,
     WebComponentBaseTypeStatic,
     WebComponentBaseMixinClass,
     WebComponentBaseMixinSuper,
 } from '../lib/base.js';
-export {
+export type {
     WebComponentMixinInstance,
     WebComponentTypeInstance,
     WebComponentTypeStatic,
     WebComponentMixinClass,
     WebComponentSuper,
 } from '../lib/component.js';
-export {
+export type {
     WebComponentCustomCSSManagerMixinInstance,
     WebComponentCustomCSSManagerTypeInstance,
     WebComponentCustomCSSManagerTypeStatic,
     WebComponentCustomCSSManagerMixinClass,
     WebComponentCustomCSSManagerMixinSuper,
 } from '../lib/custom-css-manager.js';
-export {
+export type {
     WebComponentDefinerMixinInstance,
     WebComponentDefinerTypeInstance,
     WebComponentDefinerTypeStatic,
     WebComponentDefinerMixinClass,
     WebComponentDefinerMixinSuper,
 } from '../lib/definer.js';
-export {
+export type {
     WebComponentHierarchyManagerMixinInstance,
     WebComponentHierarchyManagerTypeInstance,
     WebComponentHierarchyManagerTypeStatic,
     WebComponentHierarchyManagerMixinClass,
     WebComponentHierarchyManagerMixinSuper,
 } from '../lib/hierarchy-manager.js';
-export {
+export type {
     WebComponentI18NManagerMixinInstance,
     WebComponentI18NManagerTypeInstance,
     WebComponentI18NManagerTypeStatic,
     WebComponentI18NManagerMixinClass,
     WebComponentI18NManagerMixinSuper,
 } from '../lib/i18n-manager.js';
-export {
+export type {
     WebComponentListenableMixinInstance,
     WebComponentListenableTypeInstance,
     WebComponentListenableTypeStatic,
     WebComponentListenableMixinClass,
     WebComponentListenableMixinSuper,
 } from '../lib/listener.js';
-export {
+export type {
     WebComponentTemplateManagerMixinInstance,
     WebComponentTemplateManagerTypeInstance,
     WebComponentTemplateManagerTypeStatic,
     WebComponentTemplateManagerMixinClass,
     WebComponentTemplateManagerMixinSuper,
 } from '../lib/template-manager.js';
-export {
+export type {
     WebComponentThemeManagerMixinInstance,
     WebComponentThemeManagerTypeInstance,
     WebComponentThemeManagerTypeStatic,

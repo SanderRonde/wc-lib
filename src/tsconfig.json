@@ -21,11 +21,11 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-		"outDir": "../build/es/"
-	},
+        "skipLibCheck": true,
+        "isolatedModules": true,
+        "outDir": "../build/es/"
+    },
     "compileOnSave": true,
     "allowJs": true,
-    "include": [
-        "./"
-    ]
+    "include": ["./"]
 }

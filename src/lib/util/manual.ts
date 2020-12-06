@@ -2,13 +2,9 @@ import { DirectiveFn, Part, directive as litHTMLDirective } from 'lit-html';
 import { TemplateClass } from '../template-manager.js';
 import { assignAsGetter } from '../base.js';
 
-export type Watchable<T extends Object> = T &
-    Object & {
-        __watch<K extends keyof T>(
-            key: K,
-            onChange: (value: T[K]) => void
-        ): void;
-    };
+export type Watchable<T extends Object> = T & {
+    __watch<K extends keyof T>(key: K, onChange: (value: T[K]) => void): void;
+};
 
 export type Watched<V> = {
     [K in keyof V]: DirectiveFn;

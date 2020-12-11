@@ -11,8 +11,8 @@ import {
 } from './base.js';
 import { WebComponentListenableMixinInstance } from './listener.js';
 import { createWatchable, Watchable } from './util/manual.js';
-import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
+import { CHANGE_TYPE } from './enums.js';
 
 /**
  * The type of the `component.listenGP` function

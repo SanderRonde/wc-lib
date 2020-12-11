@@ -1,5 +1,5 @@
 import { createWatchable, Watchable } from './util/manual.js';
-import { CHANGE_TYPE } from './template-fn.js';
+import { CHANGE_TYPE, PROP_TYPE } from './enums.js';
 
 /**
  * The prefix used for complex references
@@ -446,48 +446,6 @@ const enum NARROWED_PROP_TYPE {
      * A boolean
      */
     BOOL = 'bool',
-}
-
-/**
- * Basic property types for properties
- */
-export enum PROP_TYPE {
-    /**
-     * A string
-     */
-    STRING = 'string',
-    /**
-     * A number
-     */
-    NUMBER = 'number',
-    /**
-     * A boolean
-     */
-    BOOL = 'bool',
-    /**
-     * A required string (shortcut for {type: PROP_TYPE.STRING, required: true })
-     */
-    STRING_REQUIRED = 'string_required',
-    /**
-     * A required number (shortcut for {type: PROP_TYPE.NUMBER, required: true })
-     */
-    NUMBER_REQUIRED = 'number_required',
-    /**
-     * A required boolean (shortcut for {type: PROP_TYPE.BOOL, required: true })
-     */
-    BOOL_REQUIRED = 'bool_required',
-    /**
-     * An optional string (shortcut for {type: PROP_TYPE.STRING, required: false })
-     */
-    STRING_OPTIONAL = 'string_optional',
-    /**
-     * An optional number (shortcut for {type: PROP_TYPE.NUMBER, required: false })
-     */
-    NUMBER_OPTIONAL = 'number_optional',
-    /**
-     * An optional boolean (shortcut for {type: PROP_TYPE.BOOL, required: false })
-     */
-    BOOL_OPTIONAL = 'bool_optional',
 }
 
 /**

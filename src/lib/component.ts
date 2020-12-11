@@ -8,8 +8,8 @@ import { bindToClass, WebComponentBaseMixinInstance } from './base.js';
 import { WebComponentListenableMixinInstance } from './listener.js';
 import { WebComponentDefinerMixinInstance } from './definer.js';
 import { ClassToObj } from './configurable.js';
-import { CHANGE_TYPE } from './template-fn.js';
 import { Listeners } from './listeners.js';
+import { CHANGE_TYPE } from './enums.js';
 import { WCLibError } from './shared.js';
 import { Props } from './props.js';
 
@@ -343,12 +343,14 @@ export const WebComponentMixin = <P extends WebComponentSuper>(superFn: P) => {
     // #26154 #24122 (among others)
     //@ts-ignore
     class WebComponent<
-        GA extends {
-            selectors?: SelectorMap;
-        } = {},
-        _E extends void = void,
-        ELS extends SelectorMap = GetEls<GA>
-    > extends superFn implements WebComponentTypeInstance {
+            GA extends {
+                selectors?: SelectorMap;
+            } = {},
+            _E extends void = void,
+            ELS extends SelectorMap = GetEls<GA>
+        >
+        extends superFn
+        implements WebComponentTypeInstance {
         public disposables: (() => void)[] = [];
 
         public isMounted: boolean = false;

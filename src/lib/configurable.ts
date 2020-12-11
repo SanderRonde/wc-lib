@@ -1,9 +1,10 @@
 import { FullWebComponent, WebComponent } from '../classes/full.js';
 import { WebComponentDefinerMixinClass } from './definer.js';
 import { EventListenerObj, GetEvents } from './listener.js';
-import { SelectorMap, GetEls } from './component.js';
-import { CHANGE_TYPE, TemplateFnLike } from './template-fn.js';
 import { GetRenderArgsMixin } from '../classes/types.js';
+import { SelectorMap, GetEls } from './component.js';
+import { TemplateFnLike } from './template-fn.js';
+import { CHANGE_TYPE } from './enums.js';
 
 /**
  * A configurable web component. This is the basic

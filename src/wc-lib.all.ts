@@ -25,6 +25,7 @@ export * from './lib/template-manager.js';
 export * from './lib/theme-manager.js';
 export * from './lib/util.js';
 export * from './lib/ssr/ssr.js';
+export * from './lib/enums.js';
 
 export * from './tasks/inline-typed-css.js';
 export * from './tasks/inline-i18n.js';

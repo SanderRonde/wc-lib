@@ -1,8 +1,9 @@
-import { WebComponentBaseMixinInstance, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { WebComponentTemplateManagerMixinInstance } from './template-manager.js';
+import { WebComponentBaseMixinInstance, CUSTOM_CSS_PROP_NAME } from './base.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
-import { CHANGE_TYPE, TemplateFn, TemplateFnLike } from './template-fn.js';
+import { TemplateFn, TemplateFnLike } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
+import { CHANGE_TYPE } from './enums.js';
 
 class CustomCSSClass {
     public hasCustomCSS: boolean | null = null;
@@ -112,7 +113,8 @@ export const WebComponentCustomCSSManagerMixin = <
     /**
      * The class that manages custom CSS
      */
-    class WebComponentCustomCSSManager extends superFn
+    class WebComponentCustomCSSManager
+        extends superFn
         implements WebComponentCustomCSSManagerTypeInstance {
         public isMounted: boolean = false;
 

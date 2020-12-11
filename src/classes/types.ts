@@ -4,7 +4,6 @@ import {
     DefinePropTypes,
     DefinePropTypeConfig,
     GetTSType,
-    PROP_TYPE,
     ComplexTypeClass,
     GetComplexTypeClassSpec,
 } from '../lib/props.js';
@@ -14,6 +13,7 @@ import { ListenerSet, EventListenerObj } from '../lib/listener.js';
 import { GetRenderArgsBaseMixin } from '../lib/base.js';
 import { TemplateFnLike } from '../lib/template-fn.js';
 import { ClassNamesArg } from '../lib/shared.js';
+import { PROP_TYPE } from '../lib/enums.js';
 
 /**
  * A constructable function that returns the passed type

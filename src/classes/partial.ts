@@ -32,7 +32,7 @@ import { WebComponentMixin, SelectorMap, GetEls } from '../lib/component.js';
 import { WebComponentThemeManagerMixin } from '../lib/theme-manager.js';
 import { WebComponentDefinerMixin } from '../lib/definer.js';
 import { WebComponentBaseMixin } from '../lib/base.js';
-import { CHANGE_TYPE } from '../lib/template-fn';
+import { CHANGE_TYPE } from '../lib/enums.js';
 
 const basicWebComponent = (WebComponentMixin(
     WebComponentListenableMixin(

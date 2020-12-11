@@ -8,8 +8,8 @@ import {
 } from '../classes/types.js';
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { WebComponentBaseMixinInstance } from './base.js';
-import { CHANGE_TYPE } from './template-fn.js';
 import { ClassToObj } from './configurable.js';
+import { CHANGE_TYPE } from './enums.js';
 
 class I18NClass<
     GA extends {

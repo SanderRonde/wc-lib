@@ -1,9 +1,9 @@
 import { WebComponentHierarchyManagerMixinInstance } from './hierarchy-manager.js';
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { assignAsGetter, WebComponentBaseMixinInstance } from './base.js';
-import { CHANGE_TYPE } from './template-fn.js';
-import { ClassToObj } from './configurable.js';
 import { createWatchable, Watchable } from './util/manual.js';
+import { ClassToObj } from './configurable.js';
+import { CHANGE_TYPE } from './enums.js';
 
 /**
  * A value that represents the lack of a theme,

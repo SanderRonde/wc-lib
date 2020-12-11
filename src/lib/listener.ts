@@ -286,11 +286,13 @@ export const WebComponentListenableMixin = <
      */
     //@ts-ignore
     class WebComponentListenable<
-        GA extends {
-            events?: EventListenerObj;
-        } = {},
-        E extends EventListenerObj = GetEvents<GA>
-    > extends superFn implements WebComponentListenableTypeInstance {
+            GA extends {
+                events?: EventListenerObj;
+            } = {},
+            E extends EventListenerObj = GetEvents<GA>
+        >
+        extends superFn
+        implements WebComponentListenableTypeInstance {
         constructor(...args: any[]) {
             super(...args);
         }

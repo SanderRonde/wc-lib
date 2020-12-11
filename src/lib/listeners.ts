@@ -16,7 +16,7 @@ function supportsPassive(): boolean {
     _supportsPassive = false;
     try {
         var opts = Object.defineProperty({}, 'passive', {
-            get: function() {
+            get: function () {
                 _supportsPassive = true;
             },
         });

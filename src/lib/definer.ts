@@ -1,8 +1,9 @@
 import { Constructor, InferInstance, InferReturn } from '../classes/types.js';
 import { WebComponentMixinInstance } from './component.js';
-import { TemplateFn, CHANGE_TYPE } from './template-fn.js';
 import { WebComponentBaseMixinClass } from './base.js';
 import { ClassToObj } from './configurable.js';
+import { TemplateFn } from './template-fn.js';
+import { CHANGE_TYPE } from './enums.js';
 import { WCLibError } from './shared.js';
 
 function define(name: string, component: any) {

@@ -17,23 +17,23 @@ import {
     WebComponentListenableTypeStatic,
 } from '../lib/listener.js';
 import {
+    WebComponentCustomCSSManagerTypeStatic,
+    WebComponentCustomCSSManagerTypeInstance,
+} from '../lib/custom-css-manager.js';
+import {
+    WebComponentHierarchyManagerTypeInstance,
+    WebComponentHierarchyManagerTypeStatic,
+} from '../lib/hierarchy-manager.js';
+import {
+    WebComponentTemplateManagerTypeStatic,
+    WebComponentTemplateManagerTypeInstance,
+} from '../lib/template-manager.js';
+import {
     SelectorMap,
     GetEls,
     WebComponentTypeStatic,
     WebComponentTypeInstance,
 } from '../lib/component.js';
-import {
-    WebComponentDefinerTypeInstance,
-    WebComponentDefinerTypeStatic,
-} from '../lib/definer.js';
-import {
-    WebComponentBaseTypeInstance,
-    WebComponentBaseTypeStatic,
-} from '../lib/base.js';
-import {
-    WebComponentHierarchyManagerTypeInstance,
-    WebComponentHierarchyManagerTypeStatic,
-} from '../lib/hierarchy-manager.js';
 import {
     WebComponentThemeManagerTypeStatic,
     WebComponentThemeManagerTypeInstance,
@@ -43,15 +43,15 @@ import {
     WebComponentI18NManagerTypeInstance,
 } from '../lib/i18n-manager.js';
 import {
-    WebComponentTemplateManagerTypeStatic,
-    WebComponentTemplateManagerTypeInstance,
-} from '../lib/template-manager.js';
+    WebComponentDefinerTypeInstance,
+    WebComponentDefinerTypeStatic,
+} from '../lib/definer.js';
 import {
-    WebComponentCustomCSSManagerTypeStatic,
-    WebComponentCustomCSSManagerTypeInstance,
-} from '../lib/custom-css-manager.js';
-import { CHANGE_TYPE } from '../lib/template-fn.js';
+    WebComponentBaseTypeInstance,
+    WebComponentBaseTypeStatic,
+} from '../lib/base.js';
 import { GetRenderArgsMixin } from './types.js';
+import { CHANGE_TYPE } from '../lib/enums.js';
 
 /**
  * A full webcomponent that uses every layer and provides

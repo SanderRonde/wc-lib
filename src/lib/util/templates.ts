@@ -1,4 +1,5 @@
-import { TemplateFn, Renderer, CHANGE_TYPE } from '../template-fn.js';
+import { TemplateFn, Renderer } from '../template-fn.js';
+import { CHANGE_TYPE } from '../enums.js';
 
 /**
  * Functions related to templates and manipulation of them
@@ -31,7 +32,7 @@ export namespace Templates {
             return prev | template.changeOn;
         }, 0);
         return new TemplateFn<T, any>(
-            function(html) {
+            function (html) {
                 return html`
                     ${templates.map((template) => {
                         return template.renderSame(changeType, this, html);

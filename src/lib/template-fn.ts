@@ -2,59 +2,13 @@ import {
     Constructor,
     WebComponentTemplateManagerMixinInstance,
 } from '../classes/types.js';
-import { JSXDelayedExecutionCall, jsxToLiteral } from './jsx-render.js';
+import {
+    Fragment,
+    JSXDelayedExecutionCall,
+    jsxToLiteral,
+} from './jsx-render.js';
 import { WebComponent } from '../classes/full.js';
-
-/**
- * The type of change that should re-render
- * a template. Can be combined to cover
- * multiple change types. For example
- * `CHANGE_TYPE.PROP | CHANGE_TYPE.THEME`
- * will re-render on both changes
- */
-export enum CHANGE_TYPE {
-    /**
-     * Never re-render. This allows
-     * for optimizing out the
-     * rendering of this template
-     */
-    NEVER = 0,
-    /**
-     * Manually re-render. Functionally
-     * equivalent to NEVER rerender
-     */
-    MANUAL = 0,
-    /**
-     * A property change
-     */
-    PROP = 1,
-    /**
-     * A theme change
-     */
-    THEME = 2,
-    /**
-     * Language changes
-     */
-    LANG = 4,
-    /**
-     * Subtree property changes
-     */
-    SUBTREE_PROPS = 8,
-    /**
-     * Global property changes
-     */
-    GLOBAL_PROPS = 16,
-    /**
-     * Any change
-     */
-    // 31 = 1 | 2 | 4 | 8 | 16 | 32
-    ALWAYS = 63,
-    /**
-     * A forced user-engaged change
-     */
-    // 127 = 1 | 2 | 4 | 8 | 16 | 32 | 64
-    FORCE = 127,
-}
+import { CHANGE_TYPE } from './enums.js';
 
 const changeTypes: Set<number> = new Set([1, 2, 4, 8, 16, 32]);
 let lastChangeType: number = 64;
@@ -94,8 +48,6 @@ export type JSXTemplateFunction<R> = {
         ...children: (R | any)[]
     ): R | JSXDelayedExecutionCall;
 };
-
-export const Fragment = Symbol('fragment');
 
 /**
  * The type of a templater that handles both

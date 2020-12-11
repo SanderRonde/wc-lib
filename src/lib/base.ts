@@ -1,16 +1,17 @@
 import {
-    WebComponentDefinerMixin,
-    WebComponentDefinerMixinInstance,
-} from './definer.js';
-import {
     Constructor,
     InferInstance,
     InferReturn,
     JSXDefinition,
 } from '../classes/types.js';
-import { TemplateFnLike, CHANGE_TYPE } from '../wc-lib.js';
+import {
+    WebComponentDefinerMixin,
+    WebComponentDefinerMixinInstance,
+} from './definer.js';
+import { TemplateFnLike } from '../lib/template-fn.js';
 import { ClassToObj } from './configurable.js';
 import { Watchable } from './util/manual.js';
+import { CHANGE_TYPE } from './enums.js';
 
 /**
  * The property name for custom-css

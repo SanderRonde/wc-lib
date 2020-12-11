@@ -1,5 +1,5 @@
 import { Constructor, JSXIntrinsicProps } from '../classes/types.js';
-import { Fragment as _Fragment, Templater } from './template-fn.js';
+import { Templater } from './template-fn.js';
 import { casingToDashes } from './props.js';
 import { ClassNamesArg } from './shared.js';
 
@@ -81,6 +81,9 @@ function convertSpecialAttrs(
     }
     return attrs;
 }
+
+export const Fragment = Symbol('fragment');
+const _Fragment = Fragment;
 
 export interface JSXElementLiteral {
     readonly strings: TemplateStringsArray;
@@ -362,7 +365,7 @@ export function jsxToLiteral<
             | (() => typeof _Fragment))(attrs || ({} as A));
         if (returnValue !== _Fragment) {
             // Regular functional component return value
-            return returnValue;
+            return returnValue as JSXElementLiteral | JSXDelayedExecutionCall;
         }
 
         // Fragment

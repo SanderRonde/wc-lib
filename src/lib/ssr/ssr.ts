@@ -15,8 +15,9 @@ import {
     WebComponentBaseTypeStatic,
     WebComponentTypeStatic,
 } from '../../classes/types';
-import { CHANGE_TYPE, TemplateFnLike } from '../template-fn';
 import { ComplexValue, StyleAttributePart } from '../template-manager';
+import { TemplateFnLike } from '../template-fn';
+import { CHANGE_TYPE } from '../enums';
 import { classNames } from '../shared';
 import { Props } from '../props';
 

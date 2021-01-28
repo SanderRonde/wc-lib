@@ -269,6 +269,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.2.6**:
+
+-   Make sure `package.json` fields point to correct files
+
 **1.2.5**:
 
 -   Automatically infer complex components regardless of casing

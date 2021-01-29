@@ -1,5 +1,5 @@
 import { render } from '../../../../node_modules/lit-html/lit-html.js';
-import { TemplateFn, css } from '../../../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE, css } from '../../../../build/es/wc-lib.js';
 export const CellBlockCSS = new TemplateFn(function (html, { theme }) {
     return html `
             <style>
@@ -53,4 +53,4 @@ export const CellBlockCSS = new TemplateFn(function (html, { theme }) {
                 }
             </style>
         `;
-}, 2 /* THEME */, render);
+}, CHANGE_TYPE.THEME, render);

@@ -1,5 +1,5 @@
 import { render, html } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn } from '../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 export const ThemedComponentHTML = new TemplateFn(function () {
     return html `
             <div id="horizontal-centerer">
@@ -30,4 +30,4 @@ export const ThemedComponentHTML = new TemplateFn(function () {
                 </div>
             </div>
         `;
-}, 1 /* PROP */, render);
+}, CHANGE_TYPE.PROP, render);

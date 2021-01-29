@@ -1,4 +1,4 @@
-import { TemplateFn, watchFn } from '../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE, watchFn } from '../../build/es/wc-lib.js';
 import { languages } from './tic-tac-toe-manual.js';
 import { render, directive, } from '../../node_modules/lit-html/lit-html.js';
 import { theme } from './theme.js';
@@ -96,4 +96,4 @@ export const TicTacToeHTML = new TemplateFn(function (html, { props }) {
                 </div>
             </div>
         `;
-}, 1 /* PROP */, render);
+}, CHANGE_TYPE.PROP, render);

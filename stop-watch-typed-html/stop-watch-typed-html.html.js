@@ -1,5 +1,5 @@
 import { render } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn } from '../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 export const StopWatchTypedHTMLHTML = new TemplateFn(function (html, { props }) {
     return html `
             <h1 id="header">
@@ -13,4 +13,4 @@ export const StopWatchTypedHTMLHTML = new TemplateFn(function (html, { props }) 
                 <button id="reset" class="inline">Reset</button>
             </div>
         `;
-}, 0 /* NEVER */, render);
+}, CHANGE_TYPE.NEVER, render);

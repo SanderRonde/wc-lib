@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { ConfigurableWebComponent, config, TemplateFn, Props, } from '../../build/es/wc-lib.js';
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, Props, PROP_TYPE, } from '../../build/es/wc-lib.js';
 import { render, html } from '../../node_modules/lit-html/lit-html.js';
 let SimpleClock = class SimpleClock extends ConfigurableWebComponent {
     constructor() {
@@ -12,7 +12,7 @@ let SimpleClock = class SimpleClock extends ConfigurableWebComponent {
         this.props = Props.define(this, {
             reflect: {
                 seconds: {
-                    type: "number" /* NUMBER */,
+                    type: PROP_TYPE.NUMBER,
                     value: 0,
                 },
             },
@@ -36,7 +36,7 @@ SimpleClock = __decorate([
                     Right now ${props.seconds} seconds have passed
                 </div>
             `;
-        }, 1 /* PROP */, render),
+        }, CHANGE_TYPE.PROP, render),
         css: null,
     })
 ], SimpleClock);

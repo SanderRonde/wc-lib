@@ -1,5 +1,5 @@
 import { render, html } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn } from '../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 export const I18nComponentHTML = new TemplateFn(function () {
     return html `
 		<div>${this.__('what_is_your_name')}</div>
@@ -18,4 +18,4 @@ export const I18nComponentHTML = new TemplateFn(function () {
         this.setLang('es');
     }}>${this.__('set_lang_to', this.__prom('spanish'))}</button>
 	`;
-}, 4 /* LANG */, render);
+}, CHANGE_TYPE.LANG, render);

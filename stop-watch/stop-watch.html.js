@@ -1,5 +1,5 @@
 import { render } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn } from '../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
 export const StopWatchHTML = new TemplateFn(function (html, { props }) {
     return html `
             <h1>Stopwatch ${props.running ? 'running' : 'not running'}</h1>
@@ -11,4 +11,4 @@ export const StopWatchHTML = new TemplateFn(function (html, { props }) {
                 <button @click="${this.onReset}" class="inline">Reset</button>
             </div>
         `;
-}, 1 /* PROP */, render);
+}, CHANGE_TYPE.PROP, render);

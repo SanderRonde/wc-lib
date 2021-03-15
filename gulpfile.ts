@@ -1,6 +1,7 @@
 import {
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -296,6 +297,7 @@ gulp.task(
                         mainExport.initComplexTemplateProvider({
                             TemplateResult,
                             PropertyCommitter,
+                            PropertyPart,
                             EventPart,
                             BooleanAttributePart,
                             AttributeCommitter,

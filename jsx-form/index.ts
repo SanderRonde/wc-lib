@@ -1,6 +1,7 @@
 import {
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -15,6 +16,7 @@ import { JsxForm } from './jsx-form.js';
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

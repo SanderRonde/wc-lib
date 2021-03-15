@@ -5,6 +5,7 @@ import { StopWatch } from './stop-watch.js';
 import {
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -16,6 +17,7 @@ import {
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

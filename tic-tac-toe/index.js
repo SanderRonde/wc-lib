@@ -1,4 +1,4 @@
-import { TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange, directive, } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateResult, PropertyCommitter, PropertyPart, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange, directive, } from '../../node_modules/lit-html/lit-html.js';
 import { WebComponent } from '../../build/es/wc-lib.js';
 import { TicTacToe } from './tic-tac-toe.js';
 import { theme } from './theme.js';
@@ -10,6 +10,7 @@ function getLocalStorage(name) {
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

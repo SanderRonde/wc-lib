@@ -269,6 +269,10 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+**1.2.7**:
+
+-   Support `lit-html` `PropertyPart`
+
 **1.2.6**:
 
 -   Make sure `package.json` fields point to correct files

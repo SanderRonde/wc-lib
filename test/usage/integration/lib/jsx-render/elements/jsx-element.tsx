@@ -1,6 +1,7 @@
 import {
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -30,6 +31,7 @@ import { JSXTemplater } from '../../../../../../build/es/lib/template-fn';
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

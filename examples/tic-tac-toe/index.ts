@@ -1,6 +1,7 @@
 import {
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -28,6 +29,7 @@ function getLocalStorage(name: string) {
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

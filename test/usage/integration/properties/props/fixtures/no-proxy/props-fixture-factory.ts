@@ -1,6 +1,7 @@
 import {
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -19,6 +20,7 @@ export function propsNoProxyFixtureFactory(
         base.initComplexTemplateProvider({
             TemplateResult,
             PropertyCommitter,
+            PropertyPart,
             EventPart,
             BooleanAttributePart,
             AttributeCommitter,

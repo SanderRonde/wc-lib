@@ -1,6 +1,7 @@
 import {
     TemplateResult,
     PropertyCommitter,
+    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -17,6 +18,7 @@ export function templateManagerDefaultFixtureFactory(base: any) {
     base.initComplexTemplateProvider({
         TemplateResult,
         PropertyCommitter,
+        PropertyPart,
         EventPart,
         BooleanAttributePart,
         AttributeCommitter,

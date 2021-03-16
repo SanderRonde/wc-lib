@@ -366,6 +366,22 @@ function jsxRenderSpec(fixture: string) {
                             });
                     });
                 });
+                it('sets properties for attributes starting with .', () => {
+                    cy.get('#test').then(([el]: JQuery<JSXElement>) => {
+                        el.props.someComplex = {};
+                        const complex = el.props.someComplex;
+
+                        cy.get('#test')
+                            .shadowFind('#refs-prop')
+                            .then(([el]: JQuery<SpecialPropClass>) => {
+                                expect(el).to.have.attr('complex');
+
+                                expect(
+                                    el.getParentRef(el.getAttribute('complex')!)
+                                ).to.be.equal(complex);
+                            });
+                    });
+                });
                 it('autodetects complex refs for complex attributes', () => {
                     cy.get('#test').then(([el]: JQuery<JSXElement>) => {
                         el.props.someComplex = {};

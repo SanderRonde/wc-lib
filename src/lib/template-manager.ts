@@ -398,17 +398,6 @@ class ComplexTemplateProcessor implements TemplateProcessor {
                     ),
                 ];
             }
-        } else if (prefix === '.') {
-            //Properties
-            return [
-                new this._config.PropertyPart(
-                    new this._config.AttributeCommitter(
-                        element,
-                        name.slice(1),
-                        strings
-                    )
-                ),
-            ];
         } else if (prefix === '?') {
             //Booleans
             return [
@@ -493,7 +482,7 @@ export interface TemplateResultLike {
  * All values can be imported by calling
  * ```js
  import { 
-	    TemplateResult, PropertyCommitter, PropertyPart, EventPart, 
+	    TemplateResult, PropertyCommitter, EventPart, 
 	    BooleanAttributePart, AttributeCommitter, NodePart, 
 	    isDirective, noChange 
 }
@@ -514,13 +503,6 @@ export interface LitHTMLConfig {
 	 ```
 	 */
     PropertyCommitter: typeof CommitterLike;
-    /**
-	 * can be imported by calling
-	 ```js
-	 import { PropertyPart } from 'lit-html'
-	 ```
-	 */
-    PropertyPart: typeof PartLike;
     /**
 	 * can be imported by calling
 	 ```js
@@ -598,7 +580,6 @@ export class TemplateClass {
                     'WebComponentTemplateManager.initComplexTemplateProvider({' +
                     '	TemplateResult: {{lit-html.TemplateResult}}' +
                     '	PropertyCommitter: {{lit-html.PropertyCommitter}}' +
-                    '   PropertyPart: {{lit-html.PropertyPart}}' +
                     '	EventPart: {{lit-html.EventPart}}' +
                     '	BooleanAttributePart: {{lit-html.BooleanAttributePart}}' +
                     '	AttributeCommitter: {{lit-html.AttributeCommitter}}' +
@@ -674,7 +655,7 @@ export declare class WebComponentTemplateManagerTypeInstance {
 		 * Can be called with 
 	```js
 	WebComponentTemplateManager.initComplexTemplateProvider({
-	TemplateResult, PropertyCommitter, PropertyPart, EventPart,BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange
+	TemplateResult, PropertyCommitter, EventPart,BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange
 	});
 	```
 		* 

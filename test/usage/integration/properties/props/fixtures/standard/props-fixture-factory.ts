@@ -1,7 +1,6 @@
 import {
     TemplateResult,
     PropertyCommitter,
-    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -17,7 +16,6 @@ export function propsFixtureFactory(base: any, supportsTemplates: boolean) {
         base.initComplexTemplateProvider({
             TemplateResult,
             PropertyCommitter,
-            PropertyPart,
             EventPart,
             BooleanAttributePart,
             AttributeCommitter,

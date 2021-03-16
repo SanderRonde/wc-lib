@@ -13,7 +13,6 @@ import {
     html as _html,
     TemplateResult,
     PropertyCommitter,
-    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -833,7 +832,6 @@ export function elementFactory<C extends typeof RenderableComponent>(
         ((typedBase as unknown) as typeof WebComponent).initComplexTemplateProvider(
             {
                 TemplateResult,
-                PropertyPart,
                 PropertyCommitter,
                 EventPart,
                 BooleanAttributePart,

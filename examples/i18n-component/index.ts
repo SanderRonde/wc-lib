@@ -5,7 +5,6 @@ import {
     Part,
     TemplateResult,
     PropertyCommitter,
-    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -83,7 +82,6 @@ WebComponent.initI18N({
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
-    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

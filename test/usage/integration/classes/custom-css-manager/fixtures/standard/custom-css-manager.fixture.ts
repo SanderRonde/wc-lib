@@ -1,7 +1,6 @@
 import {
     TemplateResult,
     PropertyCommitter,
-    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,
@@ -20,7 +19,6 @@ import { TestElement } from '../../../elements/test-element.js';
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
-    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

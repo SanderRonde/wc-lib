@@ -402,9 +402,11 @@ class ComplexTemplateProcessor implements TemplateProcessor {
             //Properties
             return [
                 new this._config.PropertyPart(
-                    element,
-                    name.slice(1),
-                    strings
+                    new this._config.AttributeCommitter(
+                        element,
+                        name.slice(1),
+                        strings
+                    )
                 ),
             ];
         } else if (prefix === '?') {

@@ -398,6 +398,13 @@ class ComplexTemplateProcessor implements TemplateProcessor {
                     ),
                 ];
             }
+        } else if (prefix === '.') {
+            //Properties
+            return new this._config.PropertyCommitter(
+                element,
+                name.slice(1),
+                strings
+            ).parts;
         } else if (prefix === '?') {
             //Booleans
             return [

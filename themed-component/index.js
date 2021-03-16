@@ -1,4 +1,4 @@
-import { TemplateResult, PropertyCommitter, PropertyPart, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, directive, noChange, } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, directive, noChange, } from '../../node_modules/lit-html/lit-html.js';
 import { ThemedComponent } from './themed-component.js';
 import { WebComponent } from '../../build/es/wc-lib.js';
 export const theme = {
@@ -19,7 +19,6 @@ export const theme = {
 WebComponent.initComplexTemplateProvider({
     TemplateResult,
     PropertyCommitter,
-    PropertyPart,
     EventPart,
     BooleanAttributePart,
     AttributeCommitter,

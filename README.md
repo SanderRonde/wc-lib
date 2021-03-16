@@ -269,6 +269,11 @@ These each return another class which we'll call a `CSSSelector` with different 
 
 ## Changelog
 
+
+**1.2.8**:
+
+-   Fix property part
+
 **1.2.7**:
 
 -   Support `lit-html` `PropertyPart`

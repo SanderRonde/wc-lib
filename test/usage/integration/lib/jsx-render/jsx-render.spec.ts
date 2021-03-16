@@ -374,11 +374,7 @@ function jsxRenderSpec(fixture: string) {
                         cy.get('#test')
                             .shadowFind('#refs-prop')
                             .then(([el]: JQuery<SpecialPropClass>) => {
-                                expect(el).to.have.attr('complex');
-
-                                expect(
-                                    el.getParentRef(el.getAttribute('complex')!)
-                                ).to.be.equal(complex);
+                                expect(el.complex).to.be.equal(complex);
                             });
                     });
                 });

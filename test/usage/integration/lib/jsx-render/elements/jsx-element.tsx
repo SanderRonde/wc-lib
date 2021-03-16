@@ -100,6 +100,8 @@ export class SpecialPropClass extends ConfigurableWebComponent<
         };
     }
 > {
+    public complex: any = void 0;
+
     props = Props.define(this, {
         reflect: {
             regular: PROP_TYPE.STRING,

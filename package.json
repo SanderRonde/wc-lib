@@ -61,6 +61,8 @@
         "chai-jquery": "^2.1.0",
         "concurrently": "^5.1.0",
         "cypress": "^4.0.1",
+        "esbuild": "^0.11.20",
+        "esm": "^3.2.25",
         "fs-extra": "^8.0.1",
         "gulp": "^4.0.2",
         "gulp-clean": "^0.4.0",

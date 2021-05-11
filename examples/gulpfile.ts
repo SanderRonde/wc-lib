@@ -15,9 +15,10 @@ import { ssr } from '../build/cjs/lib/ssr/ssr';
 import { theme } from './tic-tac-toe/theme';
 const gulpClean = require('gulp-clean');
 import * as replace from 'gulp-replace';
-import * as rimraf from 'rimraf';
-import * as fs from 'fs-extra';
 import * as webpack from 'webpack';
+import * as rimraf from 'rimraf';
+import { build } from 'esbuild';
+import * as fs from 'fs-extra';
 import * as gulp from 'gulp';
 import * as path from 'path';
 
@@ -281,8 +282,20 @@ gulp.task(
 
             return Promise.all(
                 dirs.map(async (dir) => {
+                    const fileName = `${dir}.js`;
+                    const entrypoint = path.join(__dirname, dir, fileName);
+                    const bundledDir = path.join(__dirname, dir, 'bundled');
+                    await build({
+                        entryPoints: [entrypoint],
+                        bundle: true,
+                        format: 'esm',
+                        outdir: bundledDir,
+                        banner: {
+                            js: 'var window = typeof window === "undefined" ? {} : window;',
+                        },
+                    });
                     const imports = await import(
-                        path.join(__dirname, dir, `${dir}.js`)
+                        path.join(bundledDir, fileName)
                     );
                     const keys = Object.keys(imports).filter(
                         (k) => k[0] === k[0].toUpperCase()

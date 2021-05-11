@@ -265,8 +265,8 @@ cmd('website')
         await exec('@compile --dir all');
         await exec('? generating bundles');
         await exec(
-            'node --experimental-modules ./node_modules/gulp/bin/gulp.js --cwd examples bundle',
-            'node --experimental-modules ./node_modules/gulp/bin/gulp.js --cwd examples ssr',
+            'node -r esm ./node_modules/gulp/bin/gulp.js --cwd examples bundle',
+            'node -r esm ./node_modules/gulp/bin/gulp.js --cwd examples ssr',
         );
     });
 

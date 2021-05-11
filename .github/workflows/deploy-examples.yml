@@ -19,9 +19,12 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install and Build
+      - name: Install
         run: |
           yarn --ignore-engines
+
+      - name: Build
+        run: |
           yarn makfy compile --dir examples
           yarn makfy website
 

@@ -18,8 +18,7 @@ jobs:
                   node-version: 16
 
             - name: Install
-              run: |
-                  yarn --ignore-engines
+              run: yarn --ignore-engines
 
             - name: Build
               run: |

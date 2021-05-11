@@ -1,37 +1,37 @@
-name: "Deploy examples website"
+name: 'Deploy examples website'
 
 on:
-  push:
-    branches:
-      - master
-    tags:
-      - "*.*.*"
+    push:
+        branches:
+            - master
+        tags:
+            - '*.*.*'
 
 jobs:
-  deploy-website:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 
-        uses: actions/checkout@v2.3.1
+    deploy-website:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2.3.1
 
-      - name: Node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
+            - name: Node
+              uses: actions/setup-node@v2
+              with:
+                  node-version: 16
 
-      - name: Install
-        run: |
-          yarn --ignore-engines
+            - name: Install
+              run: |
+                  yarn --ignore-engines
 
-      - name: Build
-        run: |
-          yarn makfy prepack
-          yarn makfy compile --dir examples
-          yarn makfy website
+            - name: Build
+              run: |
+                  yarn makfy prepack
+                  yarn makfy compile --dir examples
+                  yarn makfy website
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.2
-        with:
-          branch: gh-pages
-          folder: examples
-          dry-run: true
+            - name: Deploy
+              uses: JamesIves/github-pages-deploy-action@4.1.2
+              with:
+                  branch: gh-pages
+                  folder: examples
+                  dry-run: true

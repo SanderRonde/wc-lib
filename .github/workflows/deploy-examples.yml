@@ -1,11 +1,9 @@
 name: 'Deploy examples website'
 
 on:
-    push:
-        branches:
-            - master
-
-
+    create:
+        tags:
+            - '*'
 
 jobs:
     deploy-website:

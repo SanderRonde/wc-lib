@@ -1,0 +1,55 @@
+name: 'Test and collect coverage'
+
+on: [push]
+
+jobs:
+  test-and-coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test:
+          [
+            classes,
+            lib,
+            properties,
+            partial-classes-basic,
+            partial-classes-complex-template,
+            partial-classes-i18n,
+            partial-classes-theming,
+            tasks,
+            unit,
+          ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.1
+
+      - name: Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Install
+        run: |
+          yarn --ignore-engines
+          npm install --global codecov
+
+      - name: Test
+        run: |
+          yarn makfy coverage --subset ${{ matrix.test }}
+          yarn makfy compile --dir examples
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.2
+        with:
+          branch: gh-pages
+          folder: examples
+          dry-run: true
+
+      - name: Coverage
+        uses: codecov/codecov-action@v1
+        with:
+          files: coverage/lcov.info
+          flags: ${{ matrix.test }}
+          fail_ci_if_error: true
+          verbose: true
+

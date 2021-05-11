@@ -38,21 +38,21 @@ cmd('compile')
         switch (dir) {
             case 'src':
                 await exec([
-                    `tsc -p src/tsconfig.cjs.json ${watchArg}`,
-                    `tsc -p src/tsconfig.json ${watchArg}`,
+                    `yarn tsc -p src/tsconfig.cjs.json ${watchArg}`,
+                    `yarn tsc -p src/tsconfig.json ${watchArg}`,
                 ]);
                 break;
             case 'test':
                 await exec([
-                    `tsc -p test/tsconfig.cjs.json ${watchArg}`,
-                    `tsc -p test/tsconfig.json ${watchArg}`,
+                    `yarn tsc -p test/tsconfig.cjs.json ${watchArg}`,
+                    `yarn tsc -p test/tsconfig.json ${watchArg}`,
                 ]);
                 break;
             case 'bin':
-                await exec(`tsc -p ./tsconfig.bin.json ${watchArg}`);
+                await exec(`yarn tsc -p ./tsconfig.bin.json ${watchArg}`);
                 break;
             case 'examples':
-                await exec(`tsc -p examples/tsconfig.json ${watchArg}`);
+                await exec(`yarn tsc -p examples/tsconfig.json ${watchArg}`);
                 break;
             case 'all':
                 await exec(`@compile --dir src ${watchArg}`);
@@ -79,25 +79,25 @@ cmd('watch')
         await exec(`? watching directory ${dir}`);
         switch (dir) {
             case 'es':
-                await exec(`tsc -p src/tsconfig.json -w ${clearArg}`);
+                await exec(`yarn tsc -p src/tsconfig.json -w ${clearArg}`);
                 break;
             case 'cjs':
-                await exec(`tsc -p src/tsconfig.cjs.json -w ${clearArg}`);
+                await exec(`yarn tsc -p src/tsconfig.cjs.json -w ${clearArg}`);
                 break;
             case 'test-es':
-                await exec(`tsc -p test/tsconfig.json -w ${clearArg}`);
+                await exec(`yarn tsc -p test/tsconfig.json -w ${clearArg}`);
                 break;
             case 'test-cjs':
-                await exec(`tsc -p test/tsconfig.cjs.json -w ${clearArg}`);
+                await exec(`yarn tsc -p test/tsconfig.cjs.json -w ${clearArg}`);
                 break;
             case 'all':
                 await exec(
                     escape(
                         'concurrently',
-                        `tsc -p src/tsconfig.json -w --preserveWatchOutput`,
-                        `tsc -p src/tsconfig.cjs.json -w --preserveWatchOutput`,
-                        `tsc -p test/tsconfig.json -w --preserveWatchOutput`,
-                        `tsc -p test/tsconfig.cjs.json -w --preserveWatchOutput`
+                        `yarn tsc -p src/tsconfig.json -w --preserveWatchOutput`,
+                        `yarn tsc -p src/tsconfig.cjs.json -w --preserveWatchOutput`,
+                        `yarn tsc -p test/tsconfig.json -w --preserveWatchOutput`,
+                        `yarn tsc -p test/tsconfig.cjs.json -w --preserveWatchOutput`
                     )
                 );
         }
@@ -329,7 +329,7 @@ cmd('coverage')
         await exec('? filtering out invalid paths');
         await exec('gulp filterInstrumented');
         await exec('? compiling to sourcemaps');
-        await exec('tsc -p src/tsconfig.sourcemap.json');
+        await exec('yarn tsc -p src/tsconfig.sourcemap.json');
         await exec('? joining coverages');
         await exec('nyc merge .nyc_output .nyc_output/joined.json');
         await exec('? mapping coverage to sourcemaps');

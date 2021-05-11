@@ -122,7 +122,7 @@ const I18N_GET_MESSAGE = (
 function bundleToDir(bundleDir: string) {
     return gulp.series(
         function remove() {
-            return new Promise((resolve) => {
+            return new Promise<void>((resolve) => {
                 rimraf(path.join(__dirname, bundleDir), (_err) => {
                     // Ignore errors because if it doesn't exist
                     // it's been removed anyway
@@ -188,7 +188,7 @@ function bundleToDir(bundleDir: string) {
             // For every dir, bundle the index.js file
             return Promise.all(
                 dirs.map((dir) => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise<void>((resolve, reject) => {
                         webpack(
                             {
                                 mode: 'production',

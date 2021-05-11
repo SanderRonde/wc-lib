@@ -25,6 +25,7 @@ jobs:
 
       - name: Build
         run: |
+          yarn makfy prepack
           yarn makfy compile --dir examples
           yarn makfy website
 

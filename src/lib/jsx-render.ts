@@ -216,7 +216,7 @@ export namespace html {
  */
 function isDefined(name: string) {
     /* istanbul ignore next */
-    if (typeof window === 'undefined') return true;
+    if (typeof window === 'undefined' || !window.customElements) return true;
     if (window.customElements.get(name)) {
         return true;
     }

@@ -1,5 +1,12 @@
 name: "Deploy examples website"
 
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "*.*.*"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

@@ -52,9 +52,6 @@ cmd('compile')
                 await exec(`yarn tsc -p ./tsconfig.bin.json ${watchArg}`);
                 break;
             case 'examples':
-                await exec(
-                    `? Running yarn tsc -p examples/tsconfig.json ${watchArg}`
-                );
                 await exec(`yarn tsc -p examples/tsconfig.json ${watchArg}`);
                 break;
             case 'all':

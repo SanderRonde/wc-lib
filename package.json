@@ -45,7 +45,6 @@
     },
     "devDependencies": {
         "@ava/babel": "^1.0.1",
-        "@std/esm": "^0.26.0",
         "@types/css": "^0.0.31",
         "@types/fs-extra": "^7.0.0",
         "@types/glob": "^7.1.1",

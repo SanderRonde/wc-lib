@@ -1,6 +1,6 @@
 # wc-lib
 
-[![Build Status](https://travis-ci.org/SanderRonde/wc-lib.svg?branch=master)](https://travis-ci.org/SanderRonde/wc-lib)
+[![Build Status](https://github.com/SanderRonde/wc-lib/actions/workflows/test-and-coverage.yml/badge.svg)](https://github.com/SanderRonde/wc-lib/actions/workflows/test-and-coverage.yml)
 [![npm version](https://badge.fury.io/js/wc-lib.svg)](https://badge.fury.io/js/wc-lib)
 [![codecov](https://codecov.io/gh/SanderRonde/wc-lib/branch/master/graph/badge.svg)](https://codecov.io/gh/SanderRonde/wc-lib)
 

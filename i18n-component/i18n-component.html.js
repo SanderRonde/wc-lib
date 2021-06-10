@@ -1,5 +1,5 @@
-import { render, html } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
+import { render, html } from '../modules/lit-html-bundled/lit-html.js';
+import { TemplateFn, CHANGE_TYPE } from '../modules/wc-lib/wc-lib.js';
 export const I18nComponentHTML = new TemplateFn(function () {
     return html `
 		<div>${this.__('what_is_your_name')}</div>

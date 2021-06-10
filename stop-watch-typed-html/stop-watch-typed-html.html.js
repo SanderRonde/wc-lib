@@ -1,5 +1,5 @@
-import { render } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
+import { render } from '../modules/lit-html-bundled/lit-html.js';
+import { TemplateFn, CHANGE_TYPE } from '../modules/wc-lib/wc-lib.js';
 export const StopWatchTypedHTMLHTML = new TemplateFn(function (html, { props }) {
     return html `
             <h1 id="header">

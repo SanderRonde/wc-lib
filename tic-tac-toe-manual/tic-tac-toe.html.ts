@@ -1,10 +1,10 @@
-import { TemplateFn, CHANGE_TYPE, watchFn } from '../../build/es/wc-lib.js';
+import { TemplateFn, CHANGE_TYPE, watchFn } from '../modules/wc-lib/wc-lib.js';
 import { TicTacToe, languages, ACTIVITY_STATE } from './tic-tac-toe-manual.js';
 import {
     render,
     directive,
     Part,
-} from '../../node_modules/lit-html/lit-html.js';
+} from '../modules/lit-html-bundled/lit-html.js';
 import { theme } from './theme.js';
 
 function setLocalStorageItem(name: string, value: string) {

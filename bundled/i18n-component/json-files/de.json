@@ -1,0 +1,23 @@
+{
+	"what_is_your_name": [{
+		"defaultValue": "Wie ist dein Name"
+	}],
+	"my_name_is": [{
+		"defaultValue": "Mein Name ist"
+	}],
+	"set_lang_to": [{
+		"defaultValue": "Sprache einstellen auf "
+	}, {
+		"defaultValue": "sprache",
+		"replaceable": true
+	}],
+	"english": [{
+		"defaultValue": "Englisch"
+	}],
+	"german": [{
+		"defaultValue": "Deutsch"
+	}],
+	"spanish": [{
+		"defaultValue": "Spanisch"
+	}]
+}

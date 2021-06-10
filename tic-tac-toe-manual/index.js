@@ -1,5 +1,5 @@
-import { TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange, directive, } from '../../node_modules/lit-html/lit-html.js';
-import { WebComponent } from '../../build/es/wc-lib.js';
+import { TemplateResult, PropertyCommitter, EventPart, BooleanAttributePart, AttributeCommitter, NodePart, isDirective, noChange, directive, } from '../modules/lit-html-bundled/lit-html.js';
+import { WebComponent } from '../modules/wc-lib/wc-lib.js';
 import { TicTacToe } from './tic-tac-toe-manual.js';
 import { theme } from './theme.js';
 function getLocalStorage(name) {

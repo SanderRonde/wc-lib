@@ -4,8 +4,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, } from '../../build/es/wc-lib.js';
-import { render } from '../../node_modules/lit-html/lit-html.js';
+import { ConfigurableWebComponent, config, TemplateFn, CHANGE_TYPE, } from '../modules/wc-lib/wc-lib.js';
+import { render } from '../modules/lit-html-bundled/lit-html.js';
 import { I18nComponentHTML } from './i18n-component.html.js';
 let I18nComponent = class I18nComponent extends ConfigurableWebComponent {
 };

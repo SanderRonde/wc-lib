@@ -1,0 +1,341 @@
+<html>
+	<head>
+		<title>Tic Tac Toe</title>
+	</head>
+	<body style="margin: 0; overflow: hidden;">
+		<tic-tac-toe><span data-type="css"><style>.vertical-centerer.css-tic-tac-toe,
+.horizontal-centerer.css-tic-tac-toe {
+  display: flex;
+  justify-content: center;
+}
+
+.vertical-centerer.css-tic-tac-toe {
+  flex-direction: column;
+  height: 100%;
+}
+
+.horizontal-centerer.css-tic-tac-toe {
+  flex-direction: row;
+}
+
+#main.css-tic-tac-toe {
+  background-color: rgb(222, 222, 222);
+  height: 100%;
+}
+
+table.css-tic-tac-toe {
+  border: none;
+  border-collapse: collapse;
+}
+
+td.css-tic-tac-toe {
+  border-top: 0.3vw solid rgb(3, 169, 244);
+  border-left: 0.3vw solid rgb(3, 169, 244);
+}
+
+td.css-tic-tac-toe:first-child {
+  border-left: none;
+}
+
+tr.css-tic-tac-toe:first-child td.css-tic-tac-toe {
+  border-top: none;
+}
+
+#container.css-tic-tac-toe {
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+
+#container.active.css-tic-tac-toe {
+  opacity: 1;
+}
+
+#lang-switcher.css-tic-tac-toe {
+  position: absolute;
+  right: 0.5vw;
+  top: 0.5vw;
+}
+
+.language.css-tic-tac-toe,
+.theme-preview.css-tic-tac-toe {
+  height: 2vw;
+  width: 2vw;
+  border: 0.16vw solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-left: 0.16vw;
+}
+
+.language.active.css-tic-tac-toe,
+.theme-preview.active.css-tic-tac-toe {
+  border: 0.16vw solid rgb(3, 169, 244);
+}
+
+#theme-switcher.css-tic-tac-toe {
+  position: absolute;
+  right: 0.5vw;
+  bottom: 0.5vw;
+  display: flex;
+  flex-direction: row;
+}
+
+#winner-banner.css-tic-tac-toe {
+  position: absolute;
+  width: 100vw;
+  pointer-events: none;
+  bottom: 3vw;
+  transform: translateY(6vw);
+  transition: transform 500ms ease-in;
+}
+
+#winner-banner.active.css-tic-tac-toe {
+  transform: translateY(0);
+}
+
+#winner-text.css-tic-tac-toe {
+  font-size: 200%;
+  font-family: sans-serif;
+  border-bottom: 0.3vw solid rgb(3, 169, 244);
+  display: inline;
+  pointer-events: all;
+  color: rgb(21, 21, 21);
+}</style></span><span data-type="html" class="css-tic-tac-toe-0 css-tic-tac-toe">
+            <div id="lang-switcher" class="css-tic-tac-toe-0 css-tic-tac-toe">
+                
+                        <img class="language css-tic-tac-toe-0 css-tic-tac-toe" src="images/en.png" title="Change language"/>
+                    
+                        <img class="language css-tic-tac-toe-0 css-tic-tac-toe" src="images/nl.png" title="Change language"/>
+                    
+                        <img class="language css-tic-tac-toe-0 css-tic-tac-toe" src="images/es.png" title="Change language"/>
+                    
+                        <img class="language css-tic-tac-toe-0 css-tic-tac-toe" src="images/de.png" title="Change language"/>
+                    
+            </div>
+            <div id="theme-switcher" class="css-tic-tac-toe-0 css-tic-tac-toe">
+                
+                            <div class="theme-preview css-tic-tac-toe-0 css-tic-tac-toe" style="background-color: rgb(222, 222, 222)" title="Change theme"></div>
+                        
+                            <div class="theme-preview css-tic-tac-toe-0 css-tic-tac-toe" style="background-color: rgb(21, 21, 21)" title="Change theme"></div>
+                        
+            </div>
+            <div id="winner-banner" class="horizontal-centerer css-tic-tac-toe-0 css-tic-tac-toe">
+                <div id="winner-text" class="css-tic-tac-toe-0 css-tic-tac-toe">
+                    $WINNER$ has won ðŸŽ‰
+                </div>
+            </div>
+            <div id="main" class="horizontal-centerer css-tic-tac-toe-0 css-tic-tac-toe">
+                <div class="vertical-centerer css-tic-tac-toe-0 css-tic-tac-toe">
+                    <table id="container" class="css-tic-tac-toe-0 css-tic-tac-toe">
+                        
+                                <tr class="row css-tic-tac-toe-0 css-tic-tac-toe">
+                                    
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="0" state=""><span data-type="css"><style>#topLeft.css-cell-block,
+#topRight.css-cell-block {
+  width: 10vw;
+  height: 0.3vw;
+  background-color: rgb(3, 169, 244);
+  margin-top: 3.5vw;
+  margin-left: -1.4vw;
+  position: absolute;
+  border-radius: 1vw;
+}
+
+#topLeft.css-cell-block {
+  transform: rotate(45deg);
+}
+
+#topRight.css-cell-block {
+  transform: rotate(-45deg);
+}
+
+#circle.css-cell-block {
+  height: 6vw;
+  width: 6vw;
+  border: 0.3vw solid rgb(3, 169, 244);
+  background-color: transparent;
+  border-radius: 50%;
+  margin-left: 0.3vw;
+  margin-top: 0.3vw;
+  position: absolute;
+}
+
+#cellContainer.css-cell-block {
+  width: 7.2vw;
+  height: 7.2vw;
+  padding: 1.5vw;
+}
+
+#cell.state-none.css-cell-block {
+  cursor: pointer;
+}
+
+#x.css-cell-block,
+#o.css-cell-block {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+#cell.state-x.css-cell-block #x.css-cell-block,
+#cell.state-o.css-cell-block #o.css-cell-block {
+  opacity: 1;
+}</style></span><span data-type="html" class="css-cell-block-0 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-0 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-0 css-cell-block">
+                    <div id="x" class="css-cell-block-0 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-0 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-0 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-0 css-cell-block">
+                        <div id="circle" class="css-cell-block-0 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="0" state=""><span data-type="html" class="css-cell-block-1 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-1 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-1 css-cell-block">
+                    <div id="x" class="css-cell-block-1 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-1 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-1 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-1 css-cell-block">
+                        <div id="circle" class="css-cell-block-1 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="0" state=""><span data-type="html" class="css-cell-block-2 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-2 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-2 css-cell-block">
+                    <div id="x" class="css-cell-block-2 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-2 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-2 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-2 css-cell-block">
+                        <div id="circle" class="css-cell-block-2 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                </tr>
+                            
+                                <tr class="row css-tic-tac-toe-0 css-tic-tac-toe">
+                                    
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="1" state=""><span data-type="html" class="css-cell-block-3 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-3 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-3 css-cell-block">
+                    <div id="x" class="css-cell-block-3 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-3 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-3 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-3 css-cell-block">
+                        <div id="circle" class="css-cell-block-3 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="1" state=""><span data-type="html" class="css-cell-block-4 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-4 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-4 css-cell-block">
+                    <div id="x" class="css-cell-block-4 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-4 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-4 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-4 css-cell-block">
+                        <div id="circle" class="css-cell-block-4 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="1" state=""><span data-type="html" class="css-cell-block-5 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-5 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-5 css-cell-block">
+                    <div id="x" class="css-cell-block-5 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-5 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-5 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-5 css-cell-block">
+                        <div id="circle" class="css-cell-block-5 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                </tr>
+                            
+                                <tr class="row css-tic-tac-toe-0 css-tic-tac-toe">
+                                    
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="0" y="2" state=""><span data-type="html" class="css-cell-block-6 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-6 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-6 css-cell-block">
+                    <div id="x" class="css-cell-block-6 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-6 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-6 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-6 css-cell-block">
+                        <div id="circle" class="css-cell-block-6 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="1" y="2" state=""><span data-type="html" class="css-cell-block-7 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-7 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-7 css-cell-block">
+                    <div id="x" class="css-cell-block-7 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-7 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-7 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-7 css-cell-block">
+                        <div id="circle" class="css-cell-block-7 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                            <td class="css-tic-tac-toe-0 css-tic-tac-toe">
+                                                <cell-block class="cell css-tic-tac-toe-0 css-tic-tac-toe" x="2" y="2" state=""><span data-type="html" class="css-cell-block-8 css-cell-block">
+            <div id="cell" class="state-none css-cell-block-8 css-cell-block">
+                <div id="cellContainer" class="css-cell-block-8 css-cell-block">
+                    <div id="x" class="css-cell-block-8 css-cell-block">
+                        <div id="topLeft" class="css-cell-block-8 css-cell-block"></div>
+                        <div id="topRight" class="css-cell-block-8 css-cell-block"></div>
+                    </div>
+                    <div id="o" class="css-cell-block-8 css-cell-block">
+                        <div id="circle" class="css-cell-block-8 css-cell-block"></div>
+                    </div>
+                </div>
+            </div>
+        </span></cell-block>
+                                            </td>
+                                        
+                                </tr>
+                            
+                    </table>
+                </div>
+            </div>
+        </span></tic-tac-toe>
+		<script type="module" src="./index.js"></script>
+	</body>
+</html>

@@ -2,7 +2,7 @@ import {
     ConfigurableWebComponent,
     config,
     Listeners,
-} from '../../build/es/wc-lib.js';
+} from '../modules/wc-lib/wc-lib.js';
 import { StopWatchTypedHTMLHTML } from './stop-watch-typed-html.html.js';
 import { StopWatchTypedHTMLCSS } from './stop-watch-typed-html.css.js';
 

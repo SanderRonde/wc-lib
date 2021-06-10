@@ -1,5 +1,5 @@
-import { render } from '../../node_modules/lit-html/lit-html.js';
-import { TemplateFn, CHANGE_TYPE } from '../../build/es/wc-lib.js';
+import { render } from '../modules/lit-html-bundled/lit-html.js';
+import { TemplateFn, CHANGE_TYPE } from '../modules/wc-lib/wc-lib.js';
 export const StopWatchCSS = new TemplateFn(function (html) {
     return html `
             <style>

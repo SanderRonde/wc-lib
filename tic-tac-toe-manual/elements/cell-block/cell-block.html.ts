@@ -1,9 +1,9 @@
-import { render } from '../../../../node_modules/lit-html/lit-html.js';
+import { render } from '../../../modules/lit-html-bundled/lit-html.js';
 import {
     TemplateFn,
     CHANGE_TYPE,
     watchFn,
-} from '../../../../build/es/wc-lib.js';
+} from '../../../modules/wc-lib/wc-lib.js';
 import { PLAYER } from '../../tic-tac-toe-manual.js';
 import { CellBlock } from './cell-block.js';
 

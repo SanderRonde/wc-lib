@@ -1,5 +1,5 @@
-import { TemplateFn, CHANGE_TYPE, css } from '../../build/es/wc-lib.js';
-import { render } from '../../node_modules/lit-html/lit-html.js';
+import { TemplateFn, CHANGE_TYPE, css } from '../modules/wc-lib/wc-lib.js';
+import { render } from '../modules/lit-html-bundled/lit-html.js';
 export const TicTacToeCSS = new TemplateFn(function (html, { theme }) {
     return html `
             <style>

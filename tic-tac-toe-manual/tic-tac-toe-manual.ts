@@ -3,7 +3,7 @@ import {
     Props,
     config,
     ComplexType,
-} from '../../build/es/wc-lib.js';
+} from '../modules/wc-lib/wc-lib.js';
 import { CellBlock } from './elements/cell-block/cell-block.js';
 import { TicTacToeHTML } from './tic-tac-toe.html.js';
 import { TicTacToeCSS } from './tic-tac-toe.css.js';

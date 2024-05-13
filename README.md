@@ -12,7 +12,7 @@ See below for more detailed explanations of these features, [check out the demo]
 
 ### Hello world
 
-Running the following code will define the `hello-world` component for you, making sure any future uses of `<hello-world></hello-world>` contain the text "Hello World!":
+Running the following code will define the `visitor-count` component for you, making sure any future uses of `<visitor-count></visitor-count>` will render the number of visitors:
 
 ```tsx
 @config({
